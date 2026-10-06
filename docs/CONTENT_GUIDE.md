@@ -33,6 +33,8 @@ The editor runs on your own computer only. It is not on the live site. Publishin
 
 In the editor: **Blog posts → Create**.
 
+In the admin area (`/admin` on the live site, **Blog posts → New post**) the text box of a new post starts with a suggested layout: an opening, then The problem, What I did, What happened, What I would do differently and Try it yourself. Each part holds a note in square brackets that begins `[WRITE:` and says what belongs there. Replace each note with your own words and delete any part you do not need. A post cannot be published while a note is left, while its text has a mistake the site cannot build, or while it names a picture that is not in the repository; the editor says which.
+
 | Field | What to write |
 | --- | --- |
 | Title | The headline. The page address comes from it (`/blog/your-title`). |
@@ -131,7 +133,9 @@ By file: `src/content/videos/your-title.yaml`.
 
 ## Add a LinkedIn post
 
-In the editor: **LinkedIn posts → Create**. Fill in the title (the first line of the post works well), the link to the post, the date, and optionally the series it belongs to and tags. It appears in the feed on `/writing`.
+In the editor: **LinkedIn posts → Create**. Fill in the title (the first line of the post works well), the link to the post, the date, and optionally the series it belongs to and tags. It appears under **LinkedIn posts** on the Read page (`/read`), newest first, six to a page.
+
+**Let visitors load this post on the page** is ticked for a new post. The card then has a button that shows the post itself, from LinkedIn, without leaving the site. Nothing is loaded from LinkedIn until a visitor presses it. It needs the link LinkedIn gives you under the post's menu, **Copy link to post**, because that link carries the post's number. Untick the box and the card is a title and a link only.
 
 By file: `src/content/linkedin-posts/your-title.yaml`.
 
@@ -140,11 +144,12 @@ title: "8 books I'd recommend to any designer moving into AI product design"
 url: https://www.linkedin.com/posts/aiuxaleem_...
 published: 2026-10-01
 series: "AI x UX book series"
+embed: true
 ```
 
 ## Add a LinkedIn article
 
-In the editor: **LinkedIn articles → Create**. Title, link, and if you have them the date and an excerpt. It appears in the feed on `/writing` and opens on LinkedIn.
+In the editor: **LinkedIn articles → Create**. Title, link, and if you have them the date and an excerpt. It appears under **LinkedIn articles** on the Read page (`/read`) and opens on LinkedIn.
 
 By file: `src/content/linkedin-articles/your-title.yaml`.
 

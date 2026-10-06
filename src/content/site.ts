@@ -25,7 +25,7 @@ export const site = {
   nav: [
     { key: 'work', label: 'Work', href: '/work' },
     { key: 'case-studies', label: 'Case Studies', href: '/case-studies' },
-    { key: 'writing', label: 'Writing', href: '/writing' },
+    { key: 'writing', label: 'Read', href: '/read' },
     { key: 'videos', label: 'Videos', href: '/videos' },
     { key: 'about', label: 'About', href: '/about' },
     { key: 'contact', label: 'Contact', href: '/contact' },
@@ -36,7 +36,7 @@ export const site = {
 export const legacyChrome = {
   nav: [
     { key: 'work', label: 'Work', href: '/case-studies' },
-    { key: 'content', label: 'Content', href: '/writing' },
+    { key: 'content', label: 'Content', href: '/read' },
     { key: 'guides', label: 'Guides', href: '/blog' },
     { key: 'services', label: 'Services', href: '/services' },
     { key: 'about', label: 'About', href: '/about' },
@@ -51,7 +51,7 @@ export function currentKey(pathname: string, legacy = parity): string {
   const p = pathname.replace(/^\/ar(?=\/|$)/, '').replace(/\.html$/, '') || '/';
   if (p.startsWith('/case-studies')) return legacy ? 'work' : 'case-studies';
   if (p === '/work' || p.startsWith('/work/')) return 'work';
-  if (p === '/writing') return legacy ? 'content' : 'writing';
+  if (p === '/read') return legacy ? 'content' : 'writing';
   if (p.startsWith('/blog')) return legacy ? 'guides' : 'writing';
   if (p === '/services') return legacy ? 'services' : '';
   if (p === '/about' || p === '/resume' || p === '/now') return 'about';

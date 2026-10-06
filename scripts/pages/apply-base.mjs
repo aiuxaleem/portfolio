@@ -29,6 +29,8 @@ for (const file of walk(dir)) {
   if (ext === '.html') {
     // Attributes that hold one address.
     text = text.replace(/(\s(?:href|src|poster|action|data-embed-poster|data-full|data-src)=)(["'])([^"']*)\2/g, (m, a, q, u) => { const v = fix(u); if (v !== u) counts.links++; return a + q + v + q; });
+    // A page that has moved leaves a stub that sends the visitor on: <meta http-equiv="refresh" content="0;url=/read">.
+    text = text.replace(/(<meta http-equiv="refresh" content="\d+;\s*url=)([^"]*)"/gi, (m, a, u) => { const v = fix(u); if (v !== u) counts.links++; return a + v + '"'; });
     // srcset and imagesrcset hold a comma-separated list.
     text = text.replace(/(\s(?:srcset|imagesrcset)=)(["'])([^"']*)\2/g, (m, a, q, list) => a + q + list.split(',').map(part => { const t = part.trim(); const [u, ...rest] = t.split(/\s+/); return [fix(u), ...rest].join(' '); }).join(', ') + q);
     // Inline stylesheets and style attributes.

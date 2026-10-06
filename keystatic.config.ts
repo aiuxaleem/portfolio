@@ -178,7 +178,7 @@ export default config({
     }),
     linkedinPosts: collection({
       label: 'LinkedIn posts', slugField: 'title', path: 'src/content/linkedin-posts/*', format: { data: 'yaml' },
-      schema: { title: fields.slug({ name: { label: 'Title' } }), excerpt: fields.text({ label: 'Excerpt', multiline: true }), url: fields.url({ label: 'Link to the post', validation: { isRequired: true } }), published: fields.date({ label: 'Published', validation: { isRequired: true } }), series: fields.text({ label: 'Series' }), stats: fields.text({ label: 'Stats' }), tags, ...flags },
+      schema: { title: fields.slug({ name: { label: 'Title' } }), excerpt: fields.text({ label: 'Excerpt', multiline: true }), url: fields.url({ label: 'Link to the post', validation: { isRequired: true } }), published: fields.date({ label: 'Published', validation: { isRequired: true } }), series: fields.text({ label: 'Series' }), stats: fields.text({ label: 'Stats' }), tags, embed: fields.checkbox({ label: 'Let visitors load this post on the Read page', defaultValue: true }), ...flags },
     }),
     linkedinArticles: collection({
       label: 'LinkedIn articles', slugField: 'title', path: 'src/content/linkedin-articles/*', format: { data: 'yaml' },

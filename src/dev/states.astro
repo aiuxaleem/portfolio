@@ -26,6 +26,7 @@ import PostCard from '../components/cards/post-card.astro';
 import { listedPosts } from '../lib/posts';
 const posts = await listedPosts();
 import FeedCard from '../components/cards/feed-card.astro';
+import ListPager from '../components/blog/list-pager.astro';
 import VideoCard from '../components/cards/video-card.astro';
 import HomeFeeds from '../components/home/home-feeds.astro';
 import CaseDeck from '../components/home/case-deck.astro';
@@ -184,6 +185,10 @@ const dashEmpty = { days: 7, series: dashDays.slice(0, 7).map(d => ({ ...d, view
               <li><LinkedInPost {...li} title="Fixture LinkedIn post, loading" excerpt="Fixture excerpt of the post." state="loading" /></li>
               <li><LinkedInPost {...li} title="Fixture LinkedIn post, failed" excerpt="Fixture excerpt of the post." state="failed" /></li>
               <li><LinkedInPost {...li} title={stress.longTitle} excerpt={stress.unbroken} state="facade" /></li>
+              <li><LinkedInPost url={li.url} title="Fixture LinkedIn post, link only (no post number, or the option is off)" /></li>
+              <li><LinkedInPost {...li} title="Fixture LinkedIn post in a list: heading, date and series" date={new Date('2026-01-15')} series="Fixture series" level={3} state="facade" /></li>
+              <li><LinkedInPost url={li.url} title="Work" date={new Date('2026-01-15')} level={3} /></li>
+              <li><LinkedInPost {...li} title={stress.longTitle} excerpt={stress.unbroken} date={new Date('2026-01-15')} series={stress.unbroken} level={3} state="failed" /></li>
             </ul></div>
           </div>
 
@@ -211,8 +216,17 @@ const dashEmpty = { days: 7, series: dashDays.slice(0, 7).map(d => ({ ...d, view
           </div>
 
           <div style="display: grid; gap: var(--space-4);">
-            <h2 style={h2}>Writing feed: card and filters</h2>
-            <p style={note}>Feed cards for a blog post, a LinkedIn article and a LinkedIn post (two real items, then the stress fixtures), and the filter bar with its empty-result state shown open. The live feed is at <a data-link href="/writing" style="color: var(--text-link);">/writing</a>.</p>
+            <h2 style={h2}>List shown a page at a time</h2>
+            <p style={note}>Five items, two to a page: the first page, with the links to the others. The items past the first page are in the page and hidden. One page or fewer renders no links. Live on <a data-link href="/read" style="color: var(--text-link);">/read</a>.</p>
+            <p class="project-filter-count" role="status">5 posts<span data-paged-range={`states-paged-${theme}`}> · showing 1 to 2, page 1 of 3</span></p>
+            <div data-cq><ul data-paged={`states-paged-${theme}`} data-cq-grid style="display: grid; gap: var(--grid-gap);">{[1, 2, 3, 4, 5].map(n => <li hidden={n > 2}><LinkedInPost url={li.url} title={n === 2 ? stress.longTitle : `Fixture item ${n}`} date={new Date('2026-01-15')} level={3} /></li>)}</ul></div>
+            <ListPager id={`states-paged-${theme}`} total={5} size={2} nouns={`fixture posts, ${theme} theme`} />
+            <ListPager id={`states-paged-one-${theme}`} total={2} size={2} nouns="fixture posts" />
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Feed card and filters</h2>
+            <p style={note}>Feed cards for a blog post, a LinkedIn article and a LinkedIn post (two real items, then the stress fixtures), and the filter bar with its empty-result state shown open. The cards are used on the home page and at <a data-link href="/read" style="color: var(--text-link);">/read</a>.</p>
             <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{feedSample.map(i => <li><FeedCard item={i} level={3} /></li>)}</ul></div>
             <ProjectFilters tags={feedTags(feed)} total={feed.length} options={feedTypes} optionsLabel="Type" noun="item" id={`feed-${theme}`} showEmpty />
           </div>

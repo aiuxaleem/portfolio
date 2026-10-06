@@ -9,9 +9,14 @@ import { ROOT, arg } from '../lib.mjs';
 const dir = path.join(ROOT, arg('dir', 'dist'));
 const SITE = 'https://aiuxaleem.com';
 const walk = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
-const files = walk(dir), html = files.filter(f => f.endsWith('.html'));
 const fails = [], warns = [], pages = [];
+/* A page that has moved leaves a stub that sends visitors on (astro.config.mjs `redirects`). A stub is not a page: it is
+   checked on its own terms (kept out of search, and pointing at a page that exists) and left out of the page checks. */
+const redirectOf = f => fs.readFileSync(f, 'utf8').slice(0, 400).match(/<meta http-equiv="refresh" content="0;url=([^"]+)"/)?.[1];
+const files = walk(dir), everyHtml = files.filter(f => f.endsWith('.html')), html = everyHtml.filter(f => !redirectOf(f));
+const redirects = everyHtml.filter(redirectOf).map(f => ({ from: '/' + path.relative(dir, f).replace(/\\/g, '/').replace(/\.html$/, '').replace(/(^|\/)index$/, ''), to: redirectOf(f), noindex: /name="robots" content="noindex"/.test(fs.readFileSync(f, 'utf8')) }));
 const fail = (page, check, detail) => fails.push({ page, check, detail });
+for (const r of redirects) { if (!r.noindex) fail(r.from, 'redirect', 'the stub is not marked noindex'); const t = r.to.replace(/^\//, '').replace(/\/$/, ''); if (!['.html', '/index.html'].some(end => fs.existsSync(path.join(dir, (t || 'index') + end))) && !(t === '' && fs.existsSync(path.join(dir, 'index.html')))) fail(r.from, 'redirect', `points at ${r.to}, which is not built`); }
 const warn = (page, check, detail) => warns.push({ page, check, detail });
 const meta = (s, attr, name) => { const m = s.match(new RegExp(`<meta[^>]*${attr}="${name}"[^>]*>`, 'i')); return m ? ((m[0].match(/content="([^"]*)"/i) || [])[1] ?? '').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"') : undefined; };
 const route = f => '/' + path.relative(dir, f).replace(/\\/g, '/').replace(/\.html$/, '').replace(/(^|\/)index$/, '');
@@ -87,7 +92,7 @@ for (const f of ['rss.xml', 'writing/rss.xml']) { const file = path.join(dir, f)
   if (/&(?!amp;|lt;|gt;|quot;|#\d+;)/.test(x)) fail('/' + f, 'rss', 'an unescaped & is in the feed'); if (/fixture|\[VERIFY\]/i.test(x)) fail('/' + f, 'rss', 'fixture or placeholder content is in the feed');
   if (!pages.some(p => fs.readFileSync(path.join(dir, (p.route === '/' ? 'index' : p.route.slice(1)) + '.html'), 'utf8').includes(`href="/${f}"`) || true)) warn('/' + f, 'rss', 'not linked'); }
 
-const report = { build: path.relative(ROOT, dir), hreflang: Object.fromEntries(pages.filter(p => p.hreflang.length).map(p => [p.route, p.hreflang])), pages: pages.length, indexable: pages.filter(p => !p.noindex).length, structuredData: Object.fromEntries(Object.entries(ld.byType).map(([t, rs]) => [t, rs.length])), sitemap: sitemap.urls, feeds, robots: robots?.trim().split('\n'), failures: fails.length, warnings: warns.length };
+const report = { build: path.relative(ROOT, dir), redirects, hreflang: Object.fromEntries(pages.filter(p => p.hreflang.length).map(p => [p.route, p.hreflang])), pages: pages.length, indexable: pages.filter(p => !p.noindex).length, structuredData: Object.fromEntries(Object.entries(ld.byType).map(([t, rs]) => [t, rs.length])), sitemap: sitemap.urls, feeds, robots: robots?.trim().split('\n'), failures: fails.length, warnings: warns.length };
 fs.mkdirSync(path.join(ROOT, 'reports/seo'), { recursive: true });
 fs.writeFileSync(path.join(ROOT, 'reports/seo/check-seo.json'), JSON.stringify({ report, fails, warns, pages, sitemap, structuredData: ld.objects }, null, 1));
 console.log('page'.padEnd(46) + 'title'.padEnd(7) + 'desc'.padEnd(6) + 'og image'.padEnd(10) + 'json-ld');

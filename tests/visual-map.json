@@ -11,7 +11,7 @@
   "retired": {
     "/case-studies and /case-studies/[slug]": "Rebuilt from the content collection with the new case study template (Phase 9, owner request). The legacy baselines for these pages no longer apply.",
     "/blog": "Rebuilt as the blog index from the posts collection (Phase 10, owner request). The legacy Guides baseline no longer applies.",
-    "/writing": "Rebuilt as one filterable feed from the content collections (Phase 11, owner request). The legacy Content baseline no longer applies.",
+    "/read": "Rebuilt from the content collections (Phase 11) and as the Read page in three sections (Phase 24), both at the owner's request. The legacy Content baseline no longer applies.",
     "/about": "Rebuilt from the profile data file (Phase 12, owner request): positioning, career timeline, expertise, method, tools, certifications. The legacy About baseline no longer applies.",
     "/": "Rebuilt on components (owner go-ahead, 5 October 2026): five legacy sections kept with their markup, four replaced by collection-fed sections or by their own pages. The legacy Home baseline no longer applies."
   }

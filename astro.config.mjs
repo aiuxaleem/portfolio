@@ -30,6 +30,7 @@ const devOnly = {
         injectRoute({ pattern: '/admin/login', entrypoint: './src/admin/pages/login.astro' });
         injectRoute({ pattern: '/admin/logout', entrypoint: './src/admin/pages/logout.ts' });
         injectRoute({ pattern: '/api/hit', entrypoint: './src/admin/pages/hit.ts' });
+        injectRoute({ pattern: '/admin/youtube', entrypoint: './src/admin/pages/youtube.astro' });
         injectRoute({ pattern: '/admin/images', entrypoint: './src/admin/pages/images.astro' });
         injectRoute({ pattern: '/admin/images/file', entrypoint: './src/admin/pages/image-file.ts' });
         // One list and one editor for every kind of entry: /admin/projects, /admin/case-studies, /admin/posts.
@@ -67,5 +68,7 @@ export default defineConfig({
   /* The editor's server entry imports an Astro virtual module that the dev dependency optimiser cannot resolve; leave it unbundled. */
   /* COUNT_VISITS tells the page head whether to send a page view: only where the /api/hit route exists. */
   vite: { optimizeDeps: { exclude: ['@keystatic/astro'] }, define: { 'import.meta.env.COUNT_VISITS': JSON.stringify(withAdmin || isDev ? '1' : '') } },
+  /* The Read page was at /writing until Phase 24. Old links keep working. */
+  redirects: { '/writing': '/read' },
   integrations: [mdx(), sitemap({ filter: inSitemap }), devOnly, ...(isDev ? [react(), keystatic()] : [])],
 });

@@ -1,7 +1,8 @@
-/* The Writing feed: blog posts, LinkedIn articles and LinkedIn posts as one list, newest first.
+/* What the Read page and the home page list: blog posts, LinkedIn articles and LinkedIn posts, newest first.
    Drafts never show; fixtures show only in dev and quality builds. Items with no date come last. */
 import { getCollection } from 'astro:content';
 import { listedPosts, postUrl } from './posts';
+import { linkedinUrn } from './content-schemas';
 
 const showFixtures = import.meta.env.DEV || process.env.QUALITY_BUILD === '1';
 const keep = ({ data }: { data: { draft: boolean; fixture: boolean } }) => !data.draft && (showFixtures || !data.fixture);
@@ -25,6 +26,14 @@ export async function feedItems(): Promise<FeedItem[]> {
   }));
   const when = (i: FeedItem) => (i.date ? i.date.getTime() : -Infinity);
   return [...posts, ...articles, ...linkedin].sort((a, b) => Number(a.fixture) - Number(b.fixture) || when(b) - when(a) || a.title.localeCompare(b.title) || a.id.localeCompare(b.id));
+}
+
+export interface LinkedinEntry { id: string; title: string; excerpt?: string; url: string; date: Date; series?: string; /** Set when the post may be loaded on the page. */ urn?: string; fixture: boolean }
+
+/** LinkedIn posts for the Read page, newest first, fixtures last. */
+export async function linkedinEntries(): Promise<LinkedinEntry[]> {
+  return (await getCollection('linkedinPosts', keep)).map(p => ({ id: p.id, title: p.data.title, excerpt: p.data.excerpt, url: p.data.url, date: p.data.published, series: p.data.series, urn: (p.data.embed && linkedinUrn(p.data.url)) || undefined, fixture: p.data.fixture }))
+    .sort((a, b) => Number(a.fixture) - Number(b.fixture) || b.date.getTime() - a.date.getTime() || a.title.localeCompare(b.title));
 }
 
 /** Topics offered as filters: those of real items only, so fixture tags never reach the filter bar. */

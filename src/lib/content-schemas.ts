@@ -110,6 +110,55 @@ export const postSchema = <I extends z.ZodTypeAny>(image: () => I) => S({
     seo, ...flags,
   });
 
+/* Videos and the LinkedIn posts and articles listed on Writing: one small YAML file each. */
+export const videoSchema = <I extends z.ZodTypeAny>(image: () => I) => S({
+    title: z.string(),
+    /* An 11-character YouTube id, or [VERIFY] while the real id is unknown. A made-up id cannot pass. */
+    youtubeId: z.string().regex(/^([\w-]{11}|\[VERIFY\])$/, 'Use the 11-character YouTube id, or [VERIFY]'),
+    published: z.coerce.date().optional(),
+    duration: z.string().optional(),
+    poster: z.object({ src: image(), alt }).optional(),
+    description: z.string().optional(),
+    kind: z.enum(['long-form', 'short']).default('long-form'),
+    tags: z.array(z.string()).default([]),
+    featured: z.boolean().default(false),
+    ...flags,
+  });
+
+/** The post's LinkedIn id, read from its link ("Copy link to post" gives one that ends in activity-<number>-xxxx).
+    The embed address needs it. Null when the link carries no id. */
+export const linkedinUrn = (url: string): string | null => {
+  let text = url; try { text = decodeURIComponent(url); } catch { /* keep the link as written */ }
+  const m = text.match(/urn:li:(activity|share|ugcPost):(\d{10,})/) || text.match(/\b(activity|share|ugcPost)[-:](\d{10,})/);
+  return m ? `urn:li:${m[1]}:${m[2]}` : null;
+};
+
+export const linkedinPostSchema = S({
+    title: z.string(),
+    excerpt: z.string().optional(),
+    url: z.string().url(),
+    published: z.coerce.date(),
+    series: z.string().optional(),
+    stats: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+    /* Offer the post itself on the Read page, loaded from LinkedIn when the visitor asks for it. */
+    embed: z.boolean().default(false),
+    ...flags,
+  }).superRefine((d, ctx) => {
+    const post = d as { embed?: boolean; url?: string };
+    if (post.embed && post.url && !linkedinUrn(post.url)) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['embed'], message: 'This link has no LinkedIn post number, so the post cannot be shown on the page. On LinkedIn, open the post\'s menu and choose "Copy link to post", or untick this box.' });
+  });
+
+export const linkedinArticleSchema = S({
+    title: z.string(),
+    url: z.string().url(),
+    published: z.coerce.date().optional(),
+    readingTime: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+    excerpt: z.string().optional(),
+    ...flags,
+  });
+
 /* Site settings (src/content/site/config.json) and the profile data behind About, Resume, Now and the contact form
    (src/content/site/profile.json). Both are single files, checked by the build and by the admin editor. */
 export const siteSchema = z.object({

@@ -6,7 +6,7 @@
    - nothing is invented: unknown facts are written as [VERIFY] or [METRIC: ...], and the quality run fails a production page that still shows one */
 import { defineCollection, reference, z } from 'astro:content';
 import { glob } from 'astro/loaders';
-import { S, alt, flags, link, seo, projectSchema, caseStudySchema, postSchema, siteSchema } from './lib/content-schemas';
+import { S, alt, flags, link, seo, projectSchema, caseStudySchema, postSchema, siteSchema, videoSchema, linkedinPostSchema, linkedinArticleSchema } from './lib/content-schemas';
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/projects' }),
@@ -26,46 +26,17 @@ const posts = defineCollection({
 
 const videos = defineCollection({
   loader: glob({ pattern: '**/*.yaml', base: './src/content/videos' }),
-  schema: ({ image }) => S({
-    title: z.string(),
-    /* An 11-character YouTube id, or [VERIFY] while the real id is unknown. A made-up id cannot pass. */
-    youtubeId: z.string().regex(/^([\w-]{11}|\[VERIFY\])$/, 'Use the 11-character YouTube id, or [VERIFY]'),
-    published: z.coerce.date().optional(),
-    duration: z.string().optional(),
-    poster: z.object({ src: image(), alt }).optional(),
-    description: z.string().optional(),
-    kind: z.enum(['long-form', 'short']).default('long-form'),
-    tags: z.array(z.string()).default([]),
-    featured: z.boolean().default(false),
-    ...flags,
-  }),
+  schema: ({ image }) => videoSchema(image),
 });
 
 const linkedinPosts = defineCollection({
   loader: glob({ pattern: '**/*.yaml', base: './src/content/linkedin-posts' }),
-  schema: S({
-    title: z.string(),
-    excerpt: z.string().optional(),
-    url: z.string().url(),
-    published: z.coerce.date(),
-    series: z.string().optional(),
-    stats: z.string().optional(),
-    tags: z.array(z.string()).default([]),
-    ...flags,
-  }),
+  schema: linkedinPostSchema,
 });
 
 const linkedinArticles = defineCollection({
   loader: glob({ pattern: '**/*.yaml', base: './src/content/linkedin-articles' }),
-  schema: S({
-    title: z.string(),
-    url: z.string().url(),
-    published: z.coerce.date().optional(),
-    readingTime: z.string().optional(),
-    tags: z.array(z.string()).default([]),
-    excerpt: z.string().optional(),
-    ...flags,
-  }),
+  schema: linkedinArticleSchema,
 });
 
 const certifications = defineCollection({

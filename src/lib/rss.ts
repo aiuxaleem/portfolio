@@ -1,4 +1,4 @@
-/* One RSS 2.0 writer for both feeds (/rss.xml for the blog, /writing/rss.xml for everything in the Writing feed). */
+/* One RSS 2.0 writer for both feeds (/rss.xml for the blog, /writing/rss.xml for everything on the Read page). */
 export interface RssItem { title: string; link: string; description?: string; date?: Date; category?: string }
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 

@@ -1,0 +1,85 @@
+---
+/* /read: everything to read, in three sections. The page was at /writing, which now redirects here (astro.config.mjs). Blog posts (the latest, with the rest on
+   /blog), LinkedIn posts (each can be loaded on the page when the visitor asks) and LinkedIn articles. A section with
+   nothing in it is left out, with its link at the top. Long sections are shown a page at a time; without JavaScript
+   every item is listed. */
+import PageLayout from '../layouts/page-layout.astro';
+import FeedCard from '../components/cards/feed-card.astro';
+import PostCard from '../components/cards/post-card.astro';
+import LinkedInPost from '../components/embeds/linkedin-post.astro';
+import ListPager from '../components/blog/list-pager.astro';
+import Button from '../components/ui/button.astro';
+import { feedItems, linkedinEntries } from '../lib/writing';
+import { listedPosts } from '../lib/posts';
+import { site } from '../content/site';
+
+const BLOG_SHOWN = 3, PAGE = 6;
+const posts = await listedPosts();
+const linkedin = await linkedinEntries();
+const articles = (await feedItems()).filter(i => i.type === 'article');
+const sections = [
+  { id: 'blog-posts', label: 'Blog posts', count: posts.length },
+  { id: 'linkedin-posts', label: 'LinkedIn posts', count: linkedin.length },
+  { id: 'linkedin-articles', label: 'LinkedIn articles', count: articles.length },
+].filter(s => s.count > 0);
+const counted = (n: number, one: string, many: string) => (n === 1 ? `1 ${one}` : `${n} ${many}`);
+const range = (n: number) => (n > PAGE ? ` · showing 1 to ${PAGE}, page 1 of ${Math.ceil(n / PAGE)}` : '');
+---
+<PageLayout title="Read · AIUXAleem" description="Blog posts, LinkedIn posts and LinkedIn articles by Mohammad Abdul Aleem on AI product design, design systems and making AI trustworthy." page="writing" bg="grid" mainStyle="outline: none; overflow: clip;">
+  <section class="cory-container" aria-labelledby="writing-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <p class="cory-overline" style="margin: 0px;">Read</p>
+    <h1 id="writing-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">Thinking out loud, in public.</h1>
+    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">Blog posts, LinkedIn posts and LinkedIn articles on AI product design, design systems and the craft of making AI trustworthy.</p>
+    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+      <Button variant="primary" size="lg" href={site.socials.linkedin} target="_blank" rel="noopener">Follow on LinkedIn<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
+      <Button variant="secondary" size="lg" href="/blog">Read the blog</Button>
+    </div>
+    {sections.length > 1 && (
+      <nav class="post-tags" aria-label="On this page">
+        <span class="project-filter-label">On this page</span>
+        <ul>{sections.map(s => <li><a class="ui-chip" href={`#${s.id}`}>{s.label}<span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{s.count}</a></li>)}</ul>
+      </nav>
+    )}
+  </section>
+
+  <div class="cory-container" style="display: grid; gap: var(--space-16); padding-block-end: var(--section-y);">
+    {sections.length === 0 && (
+      <div class="project-empty"><p class="project-empty-title">Nothing is published here yet.</p><p class="project-empty-body">New posts and articles are listed on this page as they are published. Until then, the latest is on LinkedIn.</p><div><Button variant="secondary" href={site.socials.linkedin} target="_blank" rel="noopener">Follow on LinkedIn<span class="cory-visually-hidden"> (opens in a new tab)</span></Button></div></div>
+    )}
+
+    {posts.length > 0 && (
+      <section id="blog-posts" class="paged-section" aria-labelledby="blog-posts-title">
+        <div class="page-section-head">
+          <h2 id="blog-posts-title" class="project-h2">Blog posts</h2>
+          <p class="project-filter-count">{counted(posts.length, 'post', 'posts')}{posts.length > BLOG_SHOWN && ` · the latest ${BLOG_SHOWN} are here`}. Guides and longer pieces, written for this site.</p>
+        </div>
+        <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{posts.slice(0, BLOG_SHOWN).map(p => <li><PostCard post={p} level={3} /></li>)}</ul></div>
+        {posts.length > BLOG_SHOWN && <div><Button variant="secondary" href="/blog">All {posts.length} blog posts</Button></div>}
+      </section>
+    )}
+
+    {linkedin.length > 0 && (
+      <section id="linkedin-posts" class="paged-section" aria-labelledby="linkedin-posts-title">
+        <div class="page-section-head">
+          <h2 id="linkedin-posts-title" class="project-h2">LinkedIn posts</h2>
+          <p class="project-filter-count" role="status">{counted(linkedin.length, 'post', 'posts')}<span data-paged-range="linkedin-posts">{range(linkedin.length)}</span></p>
+          <p class="project-filter-count">Short posts and series. A post is loaded from LinkedIn only when you ask for it.</p>
+        </div>
+        <div data-cq><ul data-paged="linkedin-posts" data-cq-grid style="display: grid; gap: var(--grid-gap);">{linkedin.map((p, i) => <li hidden={i >= PAGE}><LinkedInPost urn={p.urn} url={p.url} title={p.title} excerpt={p.excerpt} date={p.date} series={p.series} level={3} /></li>)}</ul></div>
+        <ListPager id="linkedin-posts" total={linkedin.length} size={PAGE} nouns="LinkedIn posts" />
+      </section>
+    )}
+
+    {articles.length > 0 && (
+      <section id="linkedin-articles" class="paged-section" aria-labelledby="linkedin-articles-title">
+        <div class="page-section-head">
+          <h2 id="linkedin-articles-title" class="project-h2">LinkedIn articles</h2>
+          <p class="project-filter-count" role="status">{counted(articles.length, 'article', 'articles')}<span data-paged-range="linkedin-articles">{range(articles.length)}</span></p>
+          <p class="project-filter-count">Longer pieces published on LinkedIn. Each one opens there, in a new tab.</p>
+        </div>
+        <div data-cq><ul data-paged="linkedin-articles" data-cq-balance style="display: grid; gap: var(--grid-gap);">{articles.map((a, i) => <li hidden={i >= PAGE}><FeedCard item={a} level={3} /></li>)}</ul></div>
+        <ListPager id="linkedin-articles" total={articles.length} size={PAGE} nouns="LinkedIn articles" />
+      </section>
+    )}
+  </div>
+</PageLayout>

@@ -1,0 +1,22 @@
+---
+/* Pages for a list that is all in the page: the items past the first page start hidden and the links below show a page
+   at a time. Put data-paged={id} on the list and `hidden` on each item past the first page. The page number is kept in
+   the address (?<id>=2), so a page can be linked to. Without JavaScript every item is listed and the links are left out.
+   Nothing is rendered when there is only one page. Behaviour: islands/paged-list.ts */
+interface Props { /** The id of the section the list is in; its heading is <id>-title. */ id: string; total: number; size: number; /** What is listed, plural, for the labels. */ nouns: string }
+const { id, total, size, nouns } = Astro.props;
+const pages = Math.ceil(total / size);
+const href = (n: number) => `?${id}=${n}#${id}`;
+---
+{pages > 1 && (<>
+  <noscript><style set:html={`[data-paged="${id}"] > [hidden] { display: block; } [data-pager="${id}"], [data-paged-range="${id}"] { display: none; }`}></style></noscript>
+  <nav class="post-pagination" aria-label={`Pages of ${nouns}`} data-pager={id} data-size={size}>
+    <a class="ui-chip" href={href(1)} rel="prev" data-pager-prev style="visibility: hidden;">Newer<span class="cory-visually-hidden"> {nouns}</span></a>
+    <ol>{Array.from({ length: pages }, (_, i) => i + 1).map(n => <li><a class="ui-chip" href={href(n)} data-pager-page={n} aria-current={n === 1 ? 'page' : undefined}><span class="cory-visually-hidden">{nouns}, page </span>{n}</a></li>)}</ol>
+    <a class="ui-chip" href={href(2)} rel="next" data-pager-next>Older<span class="cory-visually-hidden"> {nouns}</span></a>
+  </nav>
+</>)}
+
+<script>
+  import '../islands/paged-list.ts';
+</script>

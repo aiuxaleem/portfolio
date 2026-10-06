@@ -96,3 +96,12 @@ a.ui-chip[aria-current="page"] { background: var(--action-ink); border-color: va
 .home-video { max-inline-size: min(100%, 760px); }
 /* On a card-surface section, cards sit on the page surface, as the existing home sections do. */
 [data-home-feed][data-surface="card"] .project-card { background: var(--surface-page); }
+/* In a list of posts every card fills its cell, so cards in a row are the same height; a loaded post adds its own row below. */
+.embed-linkedin[data-fill] { block-size: 100%; grid-template-rows: 1fr; }
+.embed-linkedin[data-fill] .embed-card { align-content: start; }
+/* A list shown a page at a time (islands/paged-list.ts). The section's heading takes focus when the page changes. */
+.paged-section { display: grid; gap: var(--space-6); scroll-margin-block-start: calc(var(--header-height) + var(--space-6)); }
+.paged-section h2:focus { outline: none; }
+.paged-section h2:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: var(--space-1); }
+/* Once a post is open, the cards beside it keep their own height instead of stretching to the height of the post. */
+[data-paged]:has([data-state="loading"], [data-state="loaded"]) .embed-linkedin[data-fill] { block-size: auto; }

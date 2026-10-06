@@ -28,7 +28,7 @@ const video = real(await listedVideos())[0];
 const sections = [
   { key: 'cases', count: cases.length, overline: 'Case studies', title: 'Featured case studies', all: { href: '/case-studies', label: 'All case studies' } },
   { key: 'projects', count: projects.length, overline: 'Work', title: 'Projects', all: { href: '/work', label: 'All projects' } },
-  { key: 'writing', count: writing.length, overline: 'Writing', title: 'Latest writing', all: { href: '/writing', label: 'All writing' } },
+  { key: 'writing', count: writing.length, overline: 'Read', title: 'Latest writing', all: { href: '/read', label: 'Everything to read' } },
   { key: 'video', count: video ? 1 : 0, overline: 'Video', title: 'Latest video', all: { href: '/videos', label: 'All videos' } },
 ].filter(s => s.count > 0 && (show as string[]).includes(s.key)).sort((a, b) => (show as string[]).indexOf(a.key) - (show as string[]).indexOf(b.key));
 /* Two cards sit in two columns; three balance into three. */
