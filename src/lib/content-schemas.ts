@@ -137,7 +137,7 @@ export const linkedinPostSchema = S({
     title: z.string(),
     excerpt: z.string().optional(),
     url: z.string().url(),
-    published: z.coerce.date(),
+    published: z.coerce.date().refine(d => d.getFullYear() >= 2003 && d.getTime() < Date.now() + 86400000, 'A LinkedIn post cannot be dated before LinkedIn existed or in the future. Check the year.'),
     series: z.string().optional(),
     stats: z.string().optional(),
     tags: z.array(z.string()).default([]),
