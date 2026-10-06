@@ -58,6 +58,15 @@ const badge = 'display: inline-flex; align-items: center; gap: 6px; padding: 5px
 const h2 = 'margin: 0; font-size: var(--text-h3); font-weight: var(--weight-bold); color: var(--text-strong);';
 const note = 'margin: 0; font-size: var(--text-body-sm); color: var(--text-muted);';
 const row = 'display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center;';
+import DashboardView from '../admin/components/dashboard.astro';
+/* Fixture numbers for the visitor dashboard: 14 days with a quiet start and two empty days. */
+const dashDays = [0, 0, 3, 5, 4, 9, 12, 7, 0, 6, 14, 22, 18, 11].map((views, i) => ({ day: `2026-09-${String(17 + i).padStart(2, '0')}`, views, visitors: Math.ceil(views * 0.6) }));
+const dashFull = { days: 14, series: dashDays, totals: { views: dashDays.reduce((a, d) => a + d.views, 0), visitors: dashDays.reduce((a, d) => a + d.visitors, 0), pages: 9 },
+  pages: [{ path: '/', views: 41, visitors: 30 }, { path: '/case-studies/colaberry-design-system', views: 23, visitors: 17 }, { path: '/work/an-unbroken-string-of-sixty-characters-in-a-page-address-x1', views: 9, visitors: 8 }],
+  referrers: [{ host: 'linkedin.com', views: 38 }, { host: '', views: 29 }, { host: 'an-unbroken-string-of-sixty-characters-as-a-host-name-x1.example', views: 4 }],
+  countries: [{ country: 'SA', views: 31 }, { country: 'AE', views: 22 }, { country: 'IN', views: 19 }, { country: '', views: 3 }], devices: [{ device: 'desktop', views: 70 }, { device: 'phone', views: 38 }, { device: 'tablet', views: 3 }] };
+const dashPartial = { ...dashFull, referrers: [], countries: [] };
+const dashEmpty = { days: 7, series: dashDays.slice(0, 7).map(d => ({ ...d, views: 0, visitors: 0 })), totals: { views: 0, visitors: 0, pages: 0 }, pages: [], referrers: [], countries: [], devices: [] };
 ---
 <BaseLayout title="Component states · AIUXAleem" description="Development page listing components in their states, in both themes, with stress content. Excluded from production and the sitemap." noindex>
   <main id="main" style="display: grid;">
@@ -255,6 +264,18 @@ const row = 'display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: c
             <h2 style={h2}>Facts to check before launch</h2>
             <p style={note}>Notes kept in the profile data file. They are never shown on a public page.</p>
             <ul class="verify-list">{verifyNotes().map(n => <li><strong>{n.where}</strong><span>{n.note}</span></li>)}</ul>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Admin: visitor dashboard</h2>
+            <p style={note}>Shown on /admin after signing in (Vercel only). States: with numbers, partial (no referrers or countries yet), empty, and error. Hover a bar for its figures.</p>
+            <DashboardView plain uid={`${theme}-full`} data={dashFull} range={30} ranges={[7, 30, 90]} base="#main" />
+            <p style={note}>Partial: two of the tables have nothing to show.</p>
+            <DashboardView plain uid={`${theme}-partial`} data={dashPartial} range={30} ranges={[7, 30, 90]} base="#main" />
+            <p style={note}>Empty: no visits in the period.</p>
+            <DashboardView plain uid={`${theme}-empty`} data={dashEmpty} range={7} ranges={[7, 30, 90]} base="#main" />
+            <p style={note}>Error: the numbers could not be read.</p>
+            <DashboardView plain uid={`${theme}-error`} error="The database did not answer. Nothing is lost: visits are still being recorded if the site itself is up." range={30} ranges={[7, 30, 90]} base="#main" />
           </div>
 
           <div style="display: grid; gap: var(--space-4);">

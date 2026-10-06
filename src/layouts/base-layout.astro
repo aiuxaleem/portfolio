@@ -29,6 +29,11 @@ const { ogType = 'website', jsonLd = [] } = Astro.props;
 const image = abs(Astro.props.ogImage || await ogImageFor(Astro.url.pathname));
 /* The share title drops the site suffix; the site name is its own tag. */
 const shareTitle = title.replace(/ · AIUXAleem$/, '');
+/* Page view count: first-party, no cookie, sent after the page has loaded. Present only where the /api/hit route exists
+   (the Vercel build and dev), never on pages marked noindex. Skipped in the owner's browser and for visitors who ask not
+   to be tracked. */
+const countVisits = import.meta.env.COUNT_VISITS === '1' && !noindex;
+const countScript = "(function(){try{if(navigator.doNotTrack==='1'||navigator.globalPrivacyControl||localStorage.getItem('aiuxaleem-owner')==='1')return;var s=function(){navigator.sendBeacon('/api/hit',JSON.stringify({p:location.pathname,r:document.referrer}))};if(document.readyState==='complete')s();else addEventListener('load',s,{once:true})}catch(e){}})();";
 const canonical = Astro.props.canonical || new URL(Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/'), Astro.site);
 ---
 <!doctype html>
@@ -71,6 +76,7 @@ const canonical = Astro.props.canonical || new URL(Astro.url.pathname.replace(/\
       })();
     </script>
     {preload.map(href => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
+    {countVisits && <script is:inline set:html={countScript} />}
   </head>
   <body>
     <slot />

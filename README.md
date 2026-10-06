@@ -76,7 +76,7 @@ The site opens at `http://localhost:4321`.
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Local site, with the content editor at `/admin` and every component state at `/_states` |
+| `npm run dev` | Local site, with the content editor at `/keystatic` and every component state at `/_states` |
 | `npm run build` | Production build into `dist/` |
 | `npm run check` | Type and content schema check |
 | `npm run quality` | The automated checks on every page |

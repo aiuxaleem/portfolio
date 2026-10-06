@@ -11,7 +11,7 @@ export const chrome = {
     resumeMenu: 'Download resume (PDF)', resume: 'Download resume', resumeView: 'View resume', copyEmail: 'Copy email address', copied: 'Copied', pressCopy: 'Selected. Press Ctrl+C or Cmd+C to copy.',
     footerOverline: 'Hiring or building?', footerTitle: "Let's make it trustworthy.", call: 'Book a 15-min call', newTab: '(opens in a new tab)',
     bio: 'Mohammad Abdul Aleem, Lead AI Product Designer. Enterprise UX, design systems and AI product design from Hyderabad, on GCC hours, for teams in KSA, UAE and anywhere.',
-    rights: '© 2026 Mohammad Abdul Aleem · Hyderabad, India', footerNav: 'Footer', talk: "Let's talk",
+    rights: '© 2026 Mohammad Abdul Aleem · Hyderabad, India', privacy: 'Visits are counted without cookies. No address or personal detail is stored.', footerNav: 'Footer', talk: "Let's talk",
   },
   ar: {
     skip: 'تخطَّ إلى المحتوى', homeAria: 'الصفحة الرئيسية لـ AIUXAleem', display: 'إعدادات العرض', menu: 'القائمة', openMenu: 'افتح القائمة', closeMenu: 'أغلق القائمة',
@@ -21,7 +21,7 @@ export const chrome = {
     resumeMenu: 'تحميل السيرة الذاتية (PDF)', resume: 'تحميل السيرة الذاتية', resumeView: 'عرض السيرة الذاتية', copyEmail: 'نسخ عنوان البريد', copied: 'تم النسخ', pressCopy: 'تم التحديد. اضغط Ctrl+C أو Cmd+C للنسخ.',
     footerOverline: 'توظيف أم بناء؟', footerTitle: 'لنجعله جديرًا بالثقة.', call: 'احجز مكالمة لمدة 15 دقيقة', newTab: '(يفتح في علامة تبويب جديدة)',
     bio: 'محمد عبد العليم، مصمّم منتجات رئيسي يضع الذكاء الاصطناعي أولًا. تجربة مستخدم للمؤسسات وأنظمة تصميم وتصميم منتجات ذكاء اصطناعي، من حيدر آباد، بتوقيت الخليج، لفرق في السعودية والإمارات وأي مكان.',
-    rights: '© 2026 محمد عبد العليم · حيدر آباد، الهند', footerNav: 'تذييل الموقع', talk: 'لنتحدّث',
+    rights: '© 2026 محمد عبد العليم · حيدر آباد، الهند', privacy: 'تُحصى الزيارات دون ملفات تعريف الارتباط، ولا يُخزَّن أي عنوان أو بيانات شخصية.', footerNav: 'تذييل الموقع', talk: 'لنتحدّث',
   },
 } as const;
 

@@ -1,0 +1,125 @@
+---
+/* Visitor dashboard: three headline numbers, views per day as bars, and four short tables.
+   States: default; empty (no views in the period: says why and what to do); partial (some tables have no rows);
+   error (the numbers could not be read: says so and offers a retry). There is no loading state: the page is rendered
+   on the server with the numbers already in it.
+   The chart is one series, so it has no legend; the heading names it. Every bar shows its value on hover, and the same
+   figures are in a table below it for keyboard and screen-reader users. Styles: src/styles/admin.css. */
+import type { Dashboard } from './dashboard-data';
+import '../../styles/admin.css';
+
+interface Props { data?: Dashboard; error?: string; range: number; ranges: readonly number[]; /** Where the range links point. */ base?: string;
+  /** On /_states the dashboard is shown several times: render plain blocks with unique ids there, so the page does not gain repeated landmarks. */ plain?: boolean; uid?: string }
+const { data, error, range, ranges, base = '/admin', plain = false, uid = 'dash' } = Astro.props;
+const Block: any = plain ? 'div' : 'section';
+const Nav: any = plain ? 'div' : 'nav';
+const labelled = (id: string) => (plain ? {} : { 'aria-labelledby': `${uid}-${id}` });
+
+const short = (day: string) => new Date(day + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+const n = (v: number) => v.toLocaleString('en-GB');
+const countryName = (code: string) => { if (!code) return 'Unknown'; try { return new Intl.DisplayNames(['en'], { type: 'region' }).of(code) || code; } catch { return code; } };
+const deviceName: Record<string, string> = { desktop: 'Desktop', phone: 'Phone', tablet: 'Tablet' };
+const max = data ? Math.max(1, ...data.series.map(d => d.views)) : 1;
+const empty = !!data && data.totals.views === 0;
+const peak = data && !empty ? data.series.reduce((a, b) => (b.views > a.views ? b : a)) : undefined;
+---
+<div class="dash">
+  <Nav class="dash-range" aria-label={plain ? undefined : 'Period'}>
+    <span class="project-filter-label">Period</span>
+    <ul>
+      {ranges.map(r => <li><a class="ui-chip" href={`${base}?days=${r}`} aria-current={r === range ? 'page' : undefined}>{r} days</a></li>)}
+    </ul>
+  </Nav>
+
+  {error && (
+    <div class="form-panel" role={plain ? undefined : 'alert'}>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>
+      <div>
+        <p><strong>The visitor numbers could not be loaded.</strong></p>
+        <p>{error}</p>
+        <p><a data-link href={`${base}?days=${range}`}>Try again</a></p>
+      </div>
+    </div>
+  )}
+
+  {data && (
+    <dl class="facts dash-tiles">
+      <div><dt>Page views</dt><dd class="dash-number">{n(data.totals.views)}</dd></div>
+      <div><dt>Visitors</dt><dd class="dash-number">{n(data.totals.visitors)}</dd></div>
+      <div><dt>Pages visited</dt><dd class="dash-number">{n(data.totals.pages)}</dd></div>
+    </dl>
+  )}
+  {data && <p class="form-note">Last {data.days} days, by UTC date. A visitor is counted once per day: the site keeps no cookie and no address, so it cannot tell that two days' visits came from the same person.</p>}
+
+  {empty && (
+    <div class="project-empty">
+      <p class="project-empty-title">No visits recorded in this period.</p>
+      <p class="project-empty-body">Counting starts when a page on the live site is opened. Visits from this browser while you are signed in, from robots, and from people who ask not to be tracked are not counted.</p>
+      <p class="project-empty-body"><a data-link href="/">Open the home page</a> in a private window to record a first visit, then reload this page.</p>
+    </div>
+  )}
+
+  {data && !empty && (
+    <Block class="dash-block" {...labelled('chart-title')}>
+      <h2 id={`${uid}-chart-title`} class="dash-h2">Page views per day</h2>
+      {peak && <p class="form-note">Busiest day: {short(peak.day)}, {n(peak.views)} {peak.views === 1 ? 'view' : 'views'}.</p>}
+      <div class="dash-chart" aria-hidden="true">
+        <ol class="dash-bars" style={`--max: ${max};`}>
+          {data.series.map(d => (
+            <li style={`--v: ${d.views};`}>
+              <span class="dash-bar" data-zero={d.views === 0 ? '' : undefined}></span>
+              <span class="dash-tip"><strong>{short(d.day)}</strong>{n(d.views)} {d.views === 1 ? 'view' : 'views'} · {n(d.visitors)} {d.visitors === 1 ? 'visitor' : 'visitors'}</span>
+            </li>
+          ))}
+        </ol>
+        <p class="dash-axis"><span>{short(data.series[0].day)}</span><span>{short(data.series[data.series.length - 1].day)}</span></p>
+      </div>
+      <details class="dash-details">
+        <summary>Show these figures as a table</summary>
+        <div class="post-table" tabindex="0" role={plain ? undefined : 'region'} aria-label={plain ? undefined : 'Page views per day'}>
+          <table>
+            <thead><tr><th scope="col">Day</th><th scope="col" class="dash-num">Views</th><th scope="col" class="dash-num">Visitors</th></tr></thead>
+            <tbody>{[...data.series].reverse().map(d => <tr><th scope="row">{short(d.day)}</th><td class="dash-num">{n(d.views)}</td><td class="dash-num">{n(d.visitors)}</td></tr>)}</tbody>
+          </table>
+        </div>
+      </details>
+    </Block>
+  )}
+
+  {data && !empty && (
+    <div class="dash-grid">
+      <Block class="dash-block" {...labelled('pages-title')}>
+        <h2 id={`${uid}-pages-title`} class="dash-h2">Top pages</h2>
+        <div class="post-table dash-table"><table>
+          <thead><tr><th scope="col">Page</th><th scope="col" class="dash-num">Views</th><th scope="col" class="dash-num">Visitors</th></tr></thead>
+          <tbody>{data.pages.map(p => <tr><th scope="row"><a data-link href={p.path}>{p.path === '/' ? 'Home' : p.path}</a></th><td class="dash-num">{n(p.views)}</td><td class="dash-num">{n(p.visitors)}</td></tr>)}</tbody>
+        </table></div>
+      </Block>
+      <Block class="dash-block" {...labelled('ref-title')}>
+        <h2 id={`${uid}-ref-title`} class="dash-h2">Where visitors came from</h2>
+        {data.referrers.length === 0 ? <p class="form-note">No referring sites recorded yet.</p> : (
+          <div class="post-table dash-table"><table>
+            <thead><tr><th scope="col">Site</th><th scope="col" class="dash-num">Views</th></tr></thead>
+            <tbody>{data.referrers.map(r => <tr><th scope="row">{r.host || 'Direct, or not stated'}</th><td class="dash-num">{n(r.views)}</td></tr>)}</tbody>
+          </table></div>
+        )}
+      </Block>
+      <Block class="dash-block" {...labelled('country-title')}>
+        <h2 id={`${uid}-country-title`} class="dash-h2">Countries</h2>
+        {data.countries.length === 0 ? <p class="form-note">No countries recorded yet.</p> : (
+          <div class="post-table dash-table"><table>
+            <thead><tr><th scope="col">Country</th><th scope="col" class="dash-num">Views</th></tr></thead>
+            <tbody>{data.countries.map(c => <tr><th scope="row">{countryName(c.country)}</th><td class="dash-num">{n(c.views)}</td></tr>)}</tbody>
+          </table></div>
+        )}
+      </Block>
+      <Block class="dash-block" {...labelled('device-title')}>
+        <h2 id={`${uid}-device-title`} class="dash-h2">Devices</h2>
+        <div class="post-table dash-table"><table>
+          <thead><tr><th scope="col">Device</th><th scope="col" class="dash-num">Views</th></tr></thead>
+          <tbody>{data.devices.map(d => <tr><th scope="row">{deviceName[d.device] || d.device}</th><td class="dash-num">{n(d.views)}</td></tr>)}</tbody>
+        </table></div>
+      </Block>
+    </div>
+  )}
+</div>

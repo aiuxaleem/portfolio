@@ -10,7 +10,7 @@ There are two ways to edit, and they change the same files:
 ## Start the editor
 
 1. Open a terminal in the project folder and run `npm run dev`.
-2. Open `http://localhost:4321/admin` in your browser. It opens the editor (its address is `/keystatic`).
+2. Open `http://localhost:4321/keystatic` in your browser. It opens the editor.
 3. Pick a collection on the left, open an entry or press **Create**, edit, and press **Save**.
 
 Saving writes a file in `src/content/`. The site at `http://localhost:4321` updates at once, so you can check the page before you publish.

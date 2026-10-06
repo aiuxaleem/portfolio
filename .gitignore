@@ -7,3 +7,9 @@ tests/baseline/*.png
 docs/audit-evidence/
 .DS_Store
 tests/baseline-current/*.png
+.vercel
+
+.vercel
+.env*
+
+.env*

@@ -11,6 +11,8 @@ const { lang = 'en', hideCta = false } = Astro.props;
 const ar = lang === 'ar';
 const c = chrome[ar ? 'ar' : 'en'];
 const legacy = parity || ar;
+/* The privacy sentence is shown only where visits are counted: the Vercel build and dev, never the static copies. */
+const countsVisits = import.meta.env.COUNT_VISITS === '1' && !parity;
 const nav = ar ? arNav : parity ? legacyChrome.nav : site.nav;
 const linkStyle = 'display: inline-flex; align-items: center; min-block-size: var(--tap-target); min-inline-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-medium); color: var(--on-ink-body); text-decoration: none;';
 const socialStyle = 'display: inline-flex; align-items: center; min-block-size: var(--tap-target); color: var(--on-ink-body); text-decoration: none;';
@@ -42,7 +44,7 @@ const socialStyle = 'display: inline-flex; align-items: center; min-block-size: 
       </nav>
     </div>
     <div style="display: flex; justify-content: space-between; gap: var(--space-3) var(--space-6); flex-wrap: wrap; padding-block-start: var(--space-5); border-block-start: 1px solid var(--on-ink-border); font-size: var(--text-caption); color: var(--on-ink-muted);">
-      <span>{legacy ? c.rights : site.copyright}</span>
+      <span>{legacy ? c.rights : site.copyright}{countsVisits && <span> · {c.privacy}</span>}</span>
       <span style="display: inline-flex; gap: var(--space-4); flex-wrap: wrap; align-items: center;"><span style="color: var(--on-ink-body); font-size: var(--text-body-sm);"><EmailCopy copyLabel={c.copyEmail} copiedLabel={c.copied} fallbackLabel={c.pressCopy} /></span><a href={site.socials.linkedin} target="_blank" rel="noopener" class="footer-link" style={socialStyle}>LinkedIn<span class="cory-visually-hidden"> {c.newTab}</span></a>{!legacy && <a href={site.socials.behance} target="_blank" rel="noopener" class="footer-link" style={socialStyle}>Behance<span class="cory-visually-hidden"> {c.newTab}</span></a>}<a href={site.socials.youtube} target="_blank" rel="noopener" class="footer-link" style={socialStyle}>YouTube<span class="cory-visually-hidden"> {c.newTab}</span></a>{!legacy && <a href={site.rss} class="footer-link" style={socialStyle + ' min-inline-size: var(--tap-target); justify-content: center;'}>RSS</a>}</span>
     </div>
   </div>

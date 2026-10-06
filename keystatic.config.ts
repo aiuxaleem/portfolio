@@ -1,5 +1,5 @@
 /* Browser editor for the content collections (Keystatic). Local mode: it reads and writes the files in src/content,
-   so it runs with `npm run dev` at /keystatic (and /admin redirects there). Editing on the live site needs GitHub mode
+   so it runs with `npm run dev` at /keystatic. Editing on the live site needs GitHub mode
    and a server adapter; that is set up with hosting. Fields mirror src/content.config.ts. Alt text is required on every image. */
 import { config, collection, singleton, fields } from '@keystatic/core';
 import { block, wrapper } from '@keystatic/core/content-components';
