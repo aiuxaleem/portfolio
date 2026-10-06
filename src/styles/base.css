@@ -1,0 +1,86 @@
+/* Copied verbatim from legacy/site.css lines 499-612 (element defaults, focus, brand helpers, plain-HTML buttons). Do not edit values here without an approved finding. */
+/* ---- tokens/base.css ---- */
+/* ===========================================================================
+   AgentCory: Base element styling & brand helpers
+   =========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-md);
+  line-height: var(--leading-normal);
+  color: var(--text-body);
+  background: var(--surface-page);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color var(--duration-slow) var(--ease-out), color var(--duration-slow) var(--ease-out);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--text-strong);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
+  text-wrap: balance;
+}
+p { text-wrap: pretty; }
+/* --- No text overflow, ever: long words wrap, flex/grid children may shrink, nothing is clipped by default --- */
+body { overflow-wrap: break-word; }
+h1, h2, h3, h4, .cory-metric { overflow-wrap: break-word; hyphens: manual; }
+:where(.cory-container, .cory-grid, .cory-cards, .cory-bento, .cory-split, .cory-section) > * { min-width: 0; }
+
+table { table-layout: fixed; width: 100%; }
+pre, code { overflow-wrap: anywhere; white-space: pre-wrap; }
+img, video, svg { max-width: 100%; height: auto; display: block; }
+
+a { color: var(--text-link); text-decoration: none; transition: color var(--duration-base) var(--ease-out); }
+@media (hover: hover) { a:hover { color: var(--text-link-hover); } }
+
+/* --- Focus: visible ring on keyboard focus only, everywhere --- */
+:focus { outline: none; }
+:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; box-shadow: var(--shadow-focus); }
+
+/* --- Brand helpers --- */
+.cory-gradient-text {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.cory-overline {
+  font-size: var(--text-overline);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-overline);
+  text-transform: uppercase;
+  color: var(--text-link);
+}
+
+.cory-eyebrow-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--blue-100);
+  color: var(--blue-700);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+}
+
+/* --- Ink panel: dark spotlight surface with on-ink text, identical in both themes --- */
+.cory-ink { background: var(--gradient-ink); color: var(--on-ink-body); border-radius: var(--radius-2xl); position: relative; overflow: hidden; isolation: isolate; }
+.cory-ink h1, .cory-ink h2, .cory-ink h3, .cory-ink h4 { color: var(--on-ink-strong); }
+.cory-ink a { color: var(--on-ink-link); }
+.cory-ink::after { content: ""; position: absolute; width: 60%; aspect-ratio: 1; right: -20%; top: -30%; background: var(--glow-cyan); filter: blur(var(--blur-glow)); z-index: -1; pointer-events: none; }
+
+/* --- Metric --- */
+.cory-metric { font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-metric-lg); line-height: var(--leading-none); letter-spacing: var(--tracking-tighter); color: var(--text-strong); }
+
+.cory-visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+::selection { background: var(--cyan-200); color: var(--navy-800); }

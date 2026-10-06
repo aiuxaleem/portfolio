@@ -1,0 +1,97 @@
+/* About, resume, now, testimonials and the contact form. Built from existing tokens only. */
+
+/* Section header used on these pages: overline + heading (same values as the home sections). */
+.page-h2 { margin: 0; max-inline-size: 24ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; }
+.page-section { padding-block: var(--section-y); }
+.page-section[data-surface="card"] { background: var(--surface-card); border-block: 1px solid var(--border-subtle); }
+.page-section > .cory-container { display: grid; gap: var(--space-10); }
+.page-section-head { display: grid; gap: var(--space-3); }
+.page-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-body-lg); line-height: var(--leading-relaxed); color: var(--text-body); }
+
+/* Tiles: principles, expertise, steps, "now" items. On a card-surface section they sit on the page surface. */
+.tile { display: flex; flex-direction: column; gap: var(--space-3); block-size: 100%; padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); min-inline-size: 0; }
+.page-section[data-surface="card"] .tile, .page-section[data-surface="card"] .project-card { background: var(--surface-page); }
+.tile-num { font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--leading-mono); color: var(--text-subtle); }
+.tile h3 { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h4); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; }
+.tile p { margin: 0; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); }
+.tile .ui-badge { align-self: flex-start; }
+
+/* Career timeline: one block per company, roles inside. A rule on the inline-start edge, no fixed heights. */
+.career { display: grid; gap: var(--space-10); max-inline-size: var(--measure-body); }
+.career-company { display: grid; gap: var(--space-5); padding-inline-start: var(--space-5); border-inline-start: 3px solid var(--border-default); }
+.career-company > h3 { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; }
+.career-role { display: grid; gap: var(--space-2); }
+.career-role h4 { margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
+.career-role p { margin: 0; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); }
+.career-role ul { display: grid; gap: var(--space-2); padding-inline-start: var(--space-5); list-style: revert; }
+.career-role li { font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); }
+.tool-list { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+/* Certification rows. */
+.cert-list { display: grid; gap: var(--space-3); max-inline-size: var(--measure-body); }
+.cert-list > li { display: grid; gap: var(--space-2); padding: var(--space-5) var(--space-6); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
+.page-section[data-surface="card"] .cert-list > li { background: var(--surface-page); }
+.cert-name { margin: 0; font-size: var(--text-body-lg); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
+.cert-meta { margin: 0; font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-muted); overflow-wrap: anywhere; }
+.cert-list .ui-badge { justify-self: start; }
+
+/* Facts strip under an intro. */
+.facts { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: var(--space-4) var(--space-6); padding-block: var(--space-5); border-block: 1px solid var(--border-subtle); }
+.facts dt { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
+.facts dd { margin: 0; font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-strong); overflow-wrap: anywhere; }
+
+/* Resume: a reading page. Two columns from 1024px (the design's "lg"): label, then content. */
+.resume-block { display: grid; gap: var(--space-5); padding-block: var(--space-8); border-block-start: 1px solid var(--border-subtle); }
+.resume-block > h2 { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); }
+.resume-block > div { display: grid; gap: var(--space-5); min-inline-size: 0; }
+.resume-block p { margin: 0; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); max-inline-size: var(--measure-body); }
+@media (min-width: 1024px) { .resume-block { grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: var(--space-10); } }
+.resume-contact { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); }
+.resume-contact a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: underline; text-underline-offset: 0.22em; overflow-wrap: anywhere; }
+
+/* Testimonials. */
+.testimonial { display: flex; flex-direction: column; gap: var(--space-5); block-size: 100%; margin: 0; padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); min-inline-size: 0; }
+.page-section[data-surface="card"] .testimonial { background: var(--surface-page); }
+.testimonial blockquote { margin: 0; }
+.testimonial blockquote p { margin: 0; font-size: var(--text-body-lg); line-height: var(--leading-relaxed); color: var(--text-strong); overflow-wrap: anywhere; }
+.testimonial figcaption { margin-block-start: auto; display: flex; align-items: center; gap: var(--space-3); min-inline-size: 0; }
+.testimonial img { inline-size: 44px; block-size: 44px; border-radius: var(--radius-pill); object-fit: cover; flex-shrink: 0; }
+.testimonial-who { display: grid; gap: var(--space-1); min-inline-size: 0; font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-muted); overflow-wrap: anywhere; }
+.testimonial-who strong { color: var(--text-strong); }
+.testimonial-who a { color: var(--text-link); text-decoration: underline; text-underline-offset: 0.22em; }
+
+/* Contact form. Field values follow the design-system Input. */
+.contact-form { display: grid; gap: var(--space-5); max-inline-size: min(100%, 640px); }
+.contact-form form { display: grid; gap: var(--space-5); padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
+.contact-form form[hidden], .form-panel[hidden], .form-error[hidden] { display: none; }
+.form-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); }
+.form-note, .form-hint { margin: 0; font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-muted); }
+.form-field { display: grid; gap: var(--space-2); min-inline-size: 0; }
+.form-field label { font-size: var(--text-label); font-weight: var(--weight-semibold); color: var(--text-strong); }
+.form-field input, .form-field textarea { inline-size: 100%; min-block-size: 44px; padding: 11px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font-family: var(--font-sans); font-size: var(--text-ui); line-height: var(--leading-normal); }
+.form-field textarea { padding: 12px 14px; resize: vertical; }
+.form-field input:focus-visible, .form-field textarea:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; border-color: var(--border-focus); }
+.form-field [aria-invalid="true"] { border-color: var(--text-danger); border-width: 2px; }
+.form-field input:disabled, .form-field textarea:disabled, .form-field input:read-only, .form-field textarea:read-only { cursor: not-allowed; background: var(--surface-sunken); }
+.form-error { margin: 0; display: flex; gap: var(--space-2); align-items: flex-start; font-size: var(--text-body-sm); font-weight: var(--weight-semibold); line-height: var(--leading-normal); color: var(--text-danger); }
+.form-error svg { flex-shrink: 0; margin-block-start: 2px; }
+.form-panel { display: flex; gap: var(--space-3); align-items: flex-start; padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); border-inline-start: 3px solid var(--text-danger); }
+.form-panel > svg { flex-shrink: 0; margin-block-start: 2px; color: var(--text-danger); }
+.form-panel > div { display: grid; gap: var(--space-2); min-inline-size: 0; }
+.form-panel p, .form-panel li { margin: 0; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); }
+.form-panel ul { display: grid; gap: 0; padding-inline-start: var(--space-5); list-style: revert; }
+.form-panel a { color: var(--text-link); font-weight: var(--weight-semibold); text-decoration: underline; text-underline-offset: 0.22em; }
+/* Links in the error summary are targets of their own, so each is 44px tall. A link inside a sentence stays inline. */
+.form-panel li a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); }
+.form-panel .form-panel-title { font-weight: var(--weight-bold); color: var(--text-strong); }
+.form-panel:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
+.form-success { border-inline-start-color: var(--text-success); }
+.form-success > svg { color: var(--text-success); }
+.form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); }
+.form-actions .ui-button:disabled { opacity: var(--opacity-disabled); cursor: not-allowed; }
+.form-status { margin: 0; font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-muted); }
+
+/* Owner notes on /_states. */
+.verify-list { display: grid; gap: var(--space-3); max-inline-size: var(--measure-body); }
+.verify-list li { display: grid; gap: var(--space-1); padding: var(--space-4) var(--space-5); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-body); overflow-wrap: anywhere; }
+.verify-list strong { color: var(--text-strong); }

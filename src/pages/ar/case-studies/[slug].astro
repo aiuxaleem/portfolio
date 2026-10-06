@@ -1,0 +1,10 @@
+---
+/* Arabic case studies. Only the Colaberry Design System snapshot exists so far; the other two are added with their snapshots. */
+import SnapshotPage from '../../../layouts/snapshot-page.astro';
+import snapshot from '../../../snapshots/case-colaberry-design-system-ar.json';
+
+export function getStaticPaths() {
+  return [{ params: { slug: 'colaberry-design-system' } }];
+}
+---
+<SnapshotPage snapshot={snapshot} />

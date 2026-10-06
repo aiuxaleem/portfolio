@@ -1,0 +1,8 @@
+# aiuxaleem.com
+User-agent: *
+Allow: /
+# Internal QA and review tools: never index
+Disallow: /QA
+Disallow: /A11y
+Disallow: /Heuristic
+Disallow: /OG

@@ -1,0 +1,16 @@
+---
+/* LinkedIn article: a rich link card. LinkedIn does not reliably allow articles to be embedded, so nothing is loaded
+   from LinkedIn at all. The whole card is one link. A cover is optional. */
+interface Props { url: string; title: string; excerpt?: string; date?: string; cover?: string; coverAlt?: string }
+const { url, title, excerpt, date, cover, coverAlt = '' } = Astro.props;
+const shown = date && !Number.isNaN(Date.parse(date)) ? new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : date;
+---
+<article class="embed embed-article project-card">
+  {cover && <div class="project-card-media"><img src={cover} alt={coverAlt} loading="lazy" decoding="async" /></div>}
+  <div class="project-card-body">
+    <p class="case-kicker">LinkedIn article{shown && <> · <time datetime={date}>{shown}</time></>}</p>
+    <p class="project-card-title"><a class="project-card-link" href={url} target="_blank" rel="noopener">{title}<span class="cory-visually-hidden"> (opens LinkedIn in a new tab)</span></a></p>
+    {excerpt && <p class="project-card-summary">{excerpt}</p>}
+    <span class="project-card-cta" aria-hidden="true">Read on LinkedIn <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10M7 17 17 7"></path></svg></span>
+  </div>
+</article>

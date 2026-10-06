@@ -1,0 +1,23 @@
+---
+/* Certifications from the certifications collection (one data file each), in their set order. Drafts and fixtures are
+   left out unless `fixtures` is on (/_states). Status is words in a badge, never colour alone. */
+import { getCollection } from 'astro:content';
+
+interface Props { fixtures?: boolean; only?: ('verified' | 'completed' | 'in-progress')[] }
+const { fixtures = false, only } = Astro.props;
+const label = { verified: 'Verified', completed: 'Completed', 'in-progress': 'In progress' } as const;
+const all = (await getCollection('certifications', ({ data }) => !data.draft && (fixtures || !data.fixture)))
+  .filter(c => !only || only.includes(c.data.status)).sort((a, b) => a.data.order - b.data.order || a.id.localeCompare(b.id));
+---
+{all.length > 0 && (
+  <ul class="cert-list">
+    {all.map(({ data: c }) => (
+      <li>
+        <span class="ui-badge">{label[c.status]}</span>
+        <p class="cert-name">{c.name}</p>
+        <p class="cert-meta">{[c.issuer, c.issued, c.credentialId && `ID ${c.credentialId}`].filter(Boolean).join(' · ')}</p>
+        {c.verifyUrl && <a data-link class="embed-card-link" href={c.verifyUrl} target="_blank" rel="noopener"><span>Verify<span class="cory-visually-hidden">: {c.name} (opens in a new tab)</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"></path></svg></a>}
+      </li>
+    ))}
+  </ul>
+)}

@@ -1,0 +1,34 @@
+---
+/* Renders a page from its snapshot (src/snapshots/<name>.json): the legacy page's rendered <main>, served as static HTML,
+   inside the real shared header and footer. The wrapper elements are kept so the box tree matches the legacy page exactly.
+   Each page body is replaced by real components and content collections in later phases; the visual diff guards every step. */
+import BaseLayout from './base-layout.astro';
+import SiteHeader from '../components/layout/site-header.astro';
+import SiteFooter from '../components/layout/site-footer.astro';
+import { rewriteLinks } from '../lib/routes';
+import { tuneSnapshot } from '../lib/snapshot-tune';
+import { site, parity } from '../content/site';
+import { chrome } from '../i18n/chrome';
+
+interface Snapshot { title: string; description: string; lang: string; dir: string; langs: string; page: string; css: string; fonts: string; header: string; extras: string; main: string; footer: string }
+interface Props { snapshot: Snapshot; altLangHref?: string; title?: string; description?: string; /** The opening tag of the section before which the default slot is placed. */ slotBefore?: string; /** Image paths that are below the first view on this page at every screen size. */ lazyImages?: string[]; ogType?: string; ogImage?: string; jsonLd?: (Record<string, unknown> | undefined)[] }
+const { snapshot: s, altLangHref } = Astro.props;
+const hideCta = !s.footer.includes('data-cta-row');
+/* The availability line comes from site settings. The legacy English text is swapped for it; Arabic keeps its legacy text until a translation is supplied. */
+const LEGACY_AVAILABILITY = 'Open to Lead and Principal design or product roles · KSA, UAE, remote';
+const main = parity ? s.main : s.main.split(LEGACY_AVAILABILITY).join(site.availability.label);
+const html = parity ? rewriteLinks(main) : tuneSnapshot(rewriteLinks(main), Astro.props.lazyImages, (s.lang === 'ar' ? chrome.ar : chrome.en).newTab);
+const at = Astro.props.slotBefore ? html.indexOf(Astro.props.slotBefore) : -1;
+if (Astro.props.slotBefore && at < 0) throw new Error(`snapshot-page: "${Astro.props.slotBefore}" was not found in the ${s.page} snapshot`);
+---
+<BaseLayout title={Astro.props.title || s.title} description={Astro.props.description || s.description} page={s.page} langs={s.langs} lang={s.lang} dir={s.dir} ogType={Astro.props.ogType} ogImage={Astro.props.ogImage} jsonLd={Astro.props.jsonLd}>
+  <style is:inline set:html={s.css}></style>
+  <div id="dc-root">
+    <div class="sc-host">
+      <div class="sc-host" data-sc-name="Site Header"><SiteHeader lang={s.lang} langs={s.langs} altLangHref={altLangHref} /></div>
+      <Fragment set:html={s.extras} />
+      {at < 0 ? <Fragment set:html={html} /> : <><Fragment set:html={html.slice(0, at)} /><slot /><Fragment set:html={html.slice(at)} /></>}
+      <div class="sc-host" data-sc-name="Site Footer"><SiteFooter lang={s.lang} hideCta={hideCta} /></div>
+    </div>
+  </div>
+</BaseLayout>

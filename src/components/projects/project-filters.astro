@@ -1,0 +1,32 @@
+---
+/* Filters for the project list: toggle buttons for tags and status, a live result count, and an empty state with a
+   "Clear filters" action. Buttons are real <button>s with aria-pressed, so they work from the keyboard.
+   The bar is in the page from the first paint, so nothing moves when the script starts; without JavaScript a
+   <noscript> rule hides it and every item is listed. Behaviour: islands/project-filters.ts */
+import Button from '../ui/button.astro';
+import { statusLabel } from '../../lib/projects';
+
+interface Props { tags: string[]; total: number; /** Render the empty state open, for /_states. */ showEmpty?: boolean; /** The second filter group. Default: project status. */ options?: Record<string, string>; optionsLabel?: string; /** What is counted, singular. */ noun?: string; id?: string }
+const { tags, total, showEmpty = false, options = statusLabel, optionsLabel = 'Status', noun = 'project', id = 'filter' } = Astro.props;
+const statuses = Object.entries(options);
+const nouns = total === 1 ? noun : `${noun}s`;
+---
+<noscript><style>[data-project-filters] { display: none; }</style></noscript>
+<div class="project-filters" data-project-filters data-noun={noun}>
+  {tags.length > 0 && (
+    <div role="group" aria-labelledby={`${id}-tags`} class="project-filter-group">
+      <span id={`${id}-tags`} class="project-filter-label">Topic</span>
+      {tags.map(t => <button type="button" class="ui-chip" aria-pressed="false" data-filter-tag={t}>{t}</button>)}
+    </div>
+  )}
+  <div role="group" aria-labelledby={`${id}-status`} class="project-filter-group">
+    <span id={`${id}-status`} class="project-filter-label">{optionsLabel}</span>
+    {statuses.map(([value, label]) => <button type="button" class="ui-chip" aria-pressed="false" data-filter-status={value}>{label}</button>)}
+  </div>
+  <p class="project-filter-count" role="status" aria-live="polite" data-result-count data-total={total}>{showEmpty ? `Showing 0 of ${total} ${nouns}` : `Showing ${total} of ${total} ${nouns}`}</p>
+</div>
+<div class="project-empty" data-project-empty hidden={!showEmpty}>
+  <p class="project-empty-title">No {noun}s match these filters.</p>
+  <p class="project-empty-body">Try removing a filter, or clear them all to see every {noun}.</p>
+  <div><Button variant="secondary" data-clear-filters>Clear filters</Button></div>
+</div>

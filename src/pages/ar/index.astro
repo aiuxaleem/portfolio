@@ -1,0 +1,13 @@
+---
+/* Arabic home. The page title and description use the same site settings as the English home until Arabic versions
+   are supplied; hreflang links mark the two pages as one page in two languages. */
+import SnapshotPage from '../../layouts/snapshot-page.astro';
+import snapshot from '../../snapshots/home-ar.json';
+import { site } from '../../content/site';
+import { profile } from '../../content/profile';
+import { HOME_BELOW_FOLD } from '../../lib/snapshot-tune';
+---
+<SnapshotPage snapshot={snapshot} title={`${site.brand} · ${profile.headline}`} description={site.positioning} lazyImages={HOME_BELOW_FOLD} />
+<script>
+  import '../../components/islands/page-behaviours.ts';
+</script>

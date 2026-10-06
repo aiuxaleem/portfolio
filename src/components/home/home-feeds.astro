@@ -1,0 +1,55 @@
+---
+/* Home page sections fed by the content collections: projects, latest writing and the latest video (and featured case
+   studies, which the home page leaves out because its hero deck already shows them). They reuse the home page's section
+   layout (overline, heading, "all" link, card grid) and the existing cards. A section with no content is not rendered at
+   all. Backgrounds alternate, starting on the page surface, because the section above sits on the card surface. */
+import CaseCard from '../cards/case-card.astro';
+import ProjectCard from '../cards/project-card.astro';
+import FeedCard from '../cards/feed-card.astro';
+import VideoCard from '../cards/video-card.astro';
+import { listedCaseStudies } from '../../lib/case-studies';
+import { listedProjects } from '../../lib/projects';
+import { feedItems } from '../../lib/writing';
+import { listedVideos } from '../../lib/videos';
+
+/** Fixtures never appear on the home page, even in quality builds, unless asked for (the /_states page). */
+interface Props { fixtures?: boolean; idPrefix?: string; /** Which sections to offer, in order. Default: all four. */ show?: ('cases' | 'projects' | 'writing' | 'video')[]; /** Off on /_states, where the sections are shown twice. */ landmark?: boolean }
+const { fixtures = false, idPrefix = 'home', landmark = true, show = ['cases', 'projects', 'writing', 'video'] } = Astro.props;
+const Tag: any = landmark ? 'section' : 'div';
+const real = <T extends { data?: { fixture: boolean }; fixture?: boolean }>(list: T[]) => (fixtures ? list : list.filter(x => !(x.data?.fixture ?? x.fixture)));
+
+const cases = real(await listedCaseStudies()).filter(c => fixtures || c.data.featured).slice(0, 3);
+/* Work in progress first, then the rest in their set order; three at most. */
+const listed = real(await listedProjects());
+const projects = [...listed.filter(p => p.data.status === 'in-progress'), ...listed.filter(p => p.data.status !== 'in-progress')].slice(0, 3);
+const writing = real(await feedItems()).slice(0, 3);
+const video = real(await listedVideos())[0];
+
+const sections = [
+  { key: 'cases', count: cases.length, overline: 'Case studies', title: 'Featured case studies', all: { href: '/case-studies', label: 'All case studies' } },
+  { key: 'projects', count: projects.length, overline: 'Work', title: 'Projects', all: { href: '/work', label: 'All projects' } },
+  { key: 'writing', count: writing.length, overline: 'Writing', title: 'Latest writing', all: { href: '/writing', label: 'All writing' } },
+  { key: 'video', count: video ? 1 : 0, overline: 'Video', title: 'Latest video', all: { href: '/videos', label: 'All videos' } },
+].filter(s => s.count > 0 && (show as string[]).includes(s.key)).sort((a, b) => (show as string[]).indexOf(a.key) - (show as string[]).indexOf(b.key));
+/* Two cards sit in two columns; three balance into three. */
+const grid = (n: number) => (n === 2 ? { 'data-cq-grid': '' } : { 'data-cq-balance': '' });
+const h2 = 'margin: 0px; max-inline-size: 24ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;';
+const link = 'display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;';
+---
+{sections.map((s, i) => { const onCard = i % 2 === 1; return (
+  <Tag id={`${idPrefix}-${s.key}`} data-section={landmark ? '' : undefined} data-home-feed data-surface={onCard ? 'card' : 'page'} aria-labelledby={landmark ? `${idPrefix}-${s.key}-title` : undefined} style={`${onCard ? 'background: var(--surface-card); border-block: 1px solid var(--border-subtle); ' : ''}padding-block: var(--section-y);`}>
+    <div class="cory-container" style="display: grid; gap: var(--space-10);">
+      <div data-reveal="" style="display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap;">
+        <div style="display: grid; gap: var(--space-3);">
+          <p class="cory-overline" style="margin: 0px;">{s.overline}</p>
+          <h2 id={`${idPrefix}-${s.key}-title`} style={h2}>{s.title}</h2>
+        </div>
+        <a data-link href={s.all.href} style={link}><span>{s.all.label}</span><svg data-dir-icon width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
+      </div>
+      {s.key === 'cases' && <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{cases.map(c => <li><CaseCard entry={c} level={3} /></li>)}</ul></div>}
+      {s.key === 'projects' && <div data-cq><ul {...grid(projects.length)} style="display: grid; gap: var(--grid-gap);">{projects.map(p => <li><ProjectCard project={p} level={3} /></li>)}</ul></div>}
+      {s.key === 'writing' && <div data-cq><ul {...grid(writing.length)} style="display: grid; gap: var(--grid-gap);">{writing.map(w => <li><FeedCard item={w} level={3} /></li>)}</ul></div>}
+      {s.key === 'video' && video && <div class="home-video"><VideoCard video={video} level={3} /></div>}
+    </div>
+  </Tag>
+); })}

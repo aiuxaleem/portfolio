@@ -1,0 +1,63 @@
+---
+/* Contact form (CLAUDE.md 2.6). States: idle, inline validation on blur, error summary, submitting (disabled, with a
+   status message), success, and failure that keeps what was typed and offers email instead.
+   Fields follow the design-system Input (44px, --radius-md, --surface-card) with two audit fixes built in: the rest border
+   is --border-interactive (3:1) and an error carries an icon as well as words.
+   Without JavaScript the form posts to the form service directly and the browser's own validation applies.
+   Behaviour: islands/contact-form.ts */
+interface Props { endpoint: string; email: string; id?: string; /** Off on /_states, where several forms share the page: a named form is a landmark and landmark names must be unique. */ landmark?: boolean; /** Fix a state, for /_states. */ state?: 'idle' | 'invalid' | 'submitting' | 'success' | 'failure' }
+const { endpoint, email, id = 'contact', landmark = true, state = 'idle' } = Astro.props;
+const fixed = !!Astro.props.state;
+const invalid = state === 'invalid';
+const busy = state === 'submitting';
+const sample = fixed && state !== 'idle' && !invalid;
+const fields = [
+  { name: 'name', label: 'Your name', type: 'text', autocomplete: 'name', error: 'Enter your name.', value: sample ? 'Fixture name' : '' },
+  { name: 'email', label: 'Your email', type: 'email', autocomplete: 'email', error: 'Enter an email address like name@example.com.', hint: 'Only used to reply to you.', value: sample ? 'fixture@example.com' : invalid ? 'fixture-at-example' : '' },
+  { name: 'message', label: 'Message', type: 'textarea', autocomplete: 'off', error: 'Write a message.', value: sample ? 'Fixture message. What was typed stays in the form.' : '' },
+];
+const alertIcon = 'M12 8v4M12 16h.01';
+---
+<div class="contact-form" data-contact-form data-state={state} data-static={fixed ? '' : undefined} data-email={email}>
+  <div class="form-panel form-success" data-form-success tabindex="-1" hidden={state !== 'success'}>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8.5 12.5 2.5 2.5 4.5-5"></path></svg>
+    <div><p class="form-panel-title">Message sent.</p><p>Thank you. I reply within 48 hours, to the email address you gave.</p></div>
+  </div>
+
+  <form action={endpoint} method="post" hidden={state === 'success'} aria-labelledby={landmark ? `${id}-form-title` : undefined}>
+    <h2 id={`${id}-form-title`} class="form-title">Send a message</h2>
+    <p class="form-note">All three fields are needed.</p>
+
+    <div class="form-panel form-summary" data-form-summary tabindex="-1" role="alert" hidden={!invalid}>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={alertIcon}></path></svg>
+      <div><p class="form-panel-title" data-form-summary-title>{invalid ? 'Fix 3 fields to send your message' : ''}</p><ul data-form-summary-list>{invalid && fields.map(f => <li><a href={`#${id}-${f.name}`}>{f.error}</a></li>)}</ul></div>
+    </div>
+
+    <div class="form-panel form-failure" data-form-failure tabindex="-1" role="alert" hidden={state !== 'failure'}>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={alertIcon}></path></svg>
+      <div><p class="form-panel-title">Your message was not sent.</p><p>The form service did not answer. What you typed is still in the form. Try again, or <a data-form-mailto href={`mailto:${email}`}>send it by email instead</a>.</p></div>
+    </div>
+
+    {fields.map(f => (
+      <div class="form-field" data-field data-error-text={f.error}>
+        <label for={`${id}-${f.name}`}>{f.label}</label>
+        {f.hint && <p class="form-hint" id={`${id}-${f.name}-hint`}>{f.hint}</p>}
+        {f.type === 'textarea'
+          ? <textarea id={`${id}-${f.name}`} name={f.name} rows="6" required autocomplete={f.autocomplete} aria-invalid={invalid ? 'true' : undefined} aria-describedby={invalid ? `${id}-${f.name}-error` : undefined} disabled={busy}>{f.value}</textarea>
+          : <input id={`${id}-${f.name}`} name={f.name} type={f.type as 'text' | 'email'} required autocomplete={f.autocomplete} value={f.value} aria-invalid={invalid ? 'true' : undefined} aria-describedby={[f.hint && `${id}-${f.name}-hint`, invalid && `${id}-${f.name}-error`].filter(Boolean).join(' ') || undefined} disabled={busy} />}
+        <p class="form-error" id={`${id}-${f.name}-error`} data-field-error hidden={!invalid}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={alertIcon}></path></svg><span>{invalid ? f.error : ''}</span></p>
+      </div>
+    ))}
+    <!-- Spam trap: people never see or reach this field. -->
+    <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" hidden />
+
+    <div class="form-actions">
+      <button type="submit" class="ui-button ui-button-ink ui-button-lg" data-form-submit disabled={busy}><span class="ui-button-label">{busy ? 'Sending' : 'Send message'}</span></button>
+      <p class="form-status" role="status" data-form-status>{busy ? 'Sending your message. This can take a few seconds.' : ''}</p>
+    </div>
+  </form>
+</div>
+
+<script>
+  import '../islands/contact-form.ts';
+</script>

@@ -1,0 +1,81 @@
+---
+/* /blog/[slug]: one post. Only the title and excerpt are required; every other block is left out when its field is empty.
+   Posts still served by a page migrated from the legacy site (legacyPage) keep that page and get no route here. */
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import PageLayout from '../../layouts/page-layout.astro';
+import ReadProgress from '../../components/content/read-progress.astro';
+import Button from '../../components/ui/button.astro';
+import EmailCopy from '../../components/layout/email-copy.astro';
+import PostCard from '../../components/cards/post-card.astro';
+import { mdxComponents } from '../../components/content/mdx-components';
+import { listedPosts, related, readingTime, formatDate, postUrl, tagSlug } from '../../lib/posts';
+import { site } from '../../content/site';
+import { blogPostingLd, breadcrumbLd, ogImageFor } from '../../lib/seo';
+import { chrome } from '../../i18n/chrome';
+
+export async function getStaticPaths() {
+  const all = await listedPosts();
+  return all.map((post, i) => ({ post, prev: all[i - 1], next: all[i + 1], more: related(post, all) }))
+    .filter(x => !x.post.data.legacyPage).map(props => ({ params: { slug: props.post.id }, props }));
+}
+const { post, prev, next, more } = Astro.props;
+const d = post.data;
+const c = chrome.en;
+const { Content } = await render(post);
+const iso = (x: Date) => x.toISOString().slice(0, 10);
+const o = d.originallyPublished;
+const jsonLd = [blogPostingLd(post, await ogImageFor(postUrl(post))), breadcrumbLd([['Blog', '/blog'], [d.title, postUrl(post)]])];
+---
+<PageLayout title={`${d.seo.title || d.title} · Blog · AIUXAleem`} description={(d.seo.description || d.excerpt).slice(0, 165)} page="blog" ogType="article" jsonLd={jsonLd} noindex={d.fixture} canonical={d.canonical || o?.url} bg="grid" mainStyle="outline: none; overflow: clip;">
+  <ReadProgress />
+  <article>
+    <header class="cory-container cory-container-narrow" style="position: relative; display: grid; gap: var(--space-5); padding-block: var(--space-12) var(--space-8);">
+      <a data-link href="/blog" class="post-back"><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All posts</span></a>
+      <p class="case-kicker">{[d.category, readingTime(post)].filter(Boolean).join(' · ')}</p>
+      <h1 style="margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); overflow-wrap: anywhere; text-wrap: balance;">{d.title}</h1>
+      {d.subtitle && <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">{d.subtitle}</p>}
+      {(d.published || d.updated) && (
+        <p class="post-dates">
+          {d.published && <span>Published <time datetime={iso(d.published)}>{formatDate(d.published)}</time></span>}
+          {d.updated && <span>Updated <time datetime={iso(d.updated)}>{formatDate(d.updated)}</time></span>}
+        </p>
+      )}
+      {o && <p class="post-origin">Originally published on <a href={o.url} target="_blank" rel="noopener">{o.on}<span class="cory-visually-hidden"> (opens in a new tab)</span></a>{o.date && <>, <time datetime={iso(o.date)}>{formatDate(o.date)}</time></>}.</p>}
+      {d.tags.length > 0 && <nav class="post-tags" aria-label="Topics of this post"><ul>{d.tags.map(t => <li><a class="ui-chip" href={`/blog/tag/${tagSlug(t)}`}>{t}</a></li>)}</ul></nav>}
+      {d.cover && <div class="project-cover"><Image src={d.cover.src} alt={d.cover.alt} widths={[640, 960, 1280]} sizes="(min-width: 860px) 780px, 100vw" loading="eager" fetchpriority="high" /></div>}
+    </header>
+
+    <div class="cory-container cory-container-narrow prose post-body"><Content components={mdxComponents} /></div>
+
+    {d.download && <div class="cory-container cory-container-narrow" style="padding-block-start: var(--space-8);"><Button variant="secondary" href={d.download.file} download>{d.download.label}</Button></div>}
+
+    {more.length > 0 && (
+      <section class="cory-container" aria-labelledby="related-title" style="display: grid; gap: var(--space-6); padding-block-start: var(--space-16);">
+        <h2 id="related-title" class="project-h2">Related posts</h2>
+        <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{more.map(p => <li><PostCard post={p} level={3} /></li>)}</ul></div>
+      </section>
+    )}
+
+    {(prev || next) && (
+      <nav class="cory-container project-pager" aria-label="More posts" style="margin-block-start: var(--space-10);">
+        {prev ? <a data-link href={postUrl(prev)} rel="prev"><span>Newer</span><strong>{prev.data.title}</strong></a> : <span></span>}
+        {next ? <a data-link href={postUrl(next)} rel="next" style="text-align: end;"><span>Older</span><strong>{next.data.title}</strong></a> : <span></span>}
+      </nav>
+    )}
+  </article>
+
+  <section data-contact id="contact" class="cory-container" aria-labelledby="post-cta" style="padding-block: var(--space-10) var(--section-y);">
+    <div class="project-cta" style="padding: var(--space-8); display: flex; flex-wrap: wrap; gap: var(--space-6); align-items: center; justify-content: space-between; box-shadow: var(--shadow-md);">
+      <div style="display: grid; gap: var(--space-2); max-inline-size: var(--measure-lead);">
+        <p class="cory-overline" style="margin: 0; color: var(--on-ink-link);">Next step</p>
+        <h2 id="post-cta" style="margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong);">Working on something similar?</h2>
+        <p style="margin: 0; color: var(--on-ink-body);">Tell me what you're building. I reply within 48 hours.</p>
+      </div>
+      <div style="display: grid; gap: var(--space-2); justify-items: start;">
+        <Button variant="on-ink-solid" size="lg" href={`mailto:${site.email}`}>Email me</Button>
+        <span style="color: var(--on-ink-body); font-size: var(--text-body-sm);"><EmailCopy copyLabel={c.copyEmail} copiedLabel={c.copied} fallbackLabel={c.pressCopy} /></span>
+      </div>
+    </div>
+  </section>
+</PageLayout>

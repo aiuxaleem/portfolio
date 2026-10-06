@@ -1,0 +1,162 @@
+---
+/* /case-studies/[slug]. Every section is optional: only sections with content are rendered, and the table of contents
+   lists exactly those. Figures in Outcomes appear only for metrics marked verified. */
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import PageLayout from '../../layouts/page-layout.astro';
+import ReadProgress from '../../components/content/read-progress.astro';
+import Button from '../../components/ui/button.astro';
+import EmailCopy from '../../components/layout/email-copy.astro';
+import BeforeAfter from '../../components/case-study/before-after.astro';
+import { listedCaseStudies, sections, readingTime } from '../../lib/case-studies';
+import { mdxComponents } from '../../components/content/mdx-components';
+import { site } from '../../content/site';
+import { caseStudyLd, breadcrumbLd, ogImageFor } from '../../lib/seo';
+import { chrome } from '../../i18n/chrome';
+
+export async function getStaticPaths() {
+  const all = await listedCaseStudies();
+  return all.map((entry, i) => ({ params: { slug: entry.id }, props: { entry, prev: all[i - 1], next: all[i + 1] } }));
+}
+const { entry, prev, next } = Astro.props;
+const d = entry.data;
+const c = chrome.en;
+const { Content } = await render(entry);
+const hasBody = !!(entry.body && entry.body.trim());
+const toc = sections(d, hasBody);
+const shown = new Set(toc.map(s => s.id));
+const num = (id: string) => String(toc.findIndex(s => s.id === id) + 1).padStart(2, '0');
+const meta = [['Role', d.role], ['Company', d.confidential ? 'Confidential' : d.company], ['Timeline', d.timeline], ['Team', d.team], ['Tools', d.stack.join(' · ') || undefined], ['Platform', d.platform]].filter(([, v]) => v) as [string, string][];
+const verified = d.outcomes.metrics.filter(m => m.verified);
+const jsonLd = [caseStudyLd(entry, await ogImageFor(`/case-studies/${entry.id}`)), breadcrumbLd([['Case studies', '/case-studies'], [d.title, `/case-studies/${entry.id}`]])];
+const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
+---
+<PageLayout title={`${d.seo.title || d.title} · Case study · AIUXAleem`} description={(d.seo.description || d.lead).slice(0, 165)} page="case" ogType="article" jsonLd={jsonLd} noindex={d.fixture} bg="grid" mainStyle="outline: none; overflow: clip;">
+  <ReadProgress />
+  <article>
+    <header class="cory-container" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--space-12) var(--space-10);">
+      <a data-link href="/case-studies" style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All case studies</span></a>
+      <p class="case-kicker">{[d.index, d.category].filter(Boolean).join(' · ') || 'Case study'}<span> · {readingTime(d, entry.body)}</span></p>
+      <h1 style="margin: 0; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">{d.title}</h1>
+      <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">{d.lead}</p>
+      {d.nda && (
+        <p class="case-nda"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg><span><strong>Under NDA.</strong> {d.ndaNote || 'Some details are changed or left out to respect a confidentiality agreement.'}</span></p>
+      )}
+      {meta.length > 0 && <dl class="project-meta">{meta.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>}
+      <div class="project-cover">
+        {d.cover
+          ? <Image src={d.cover.src} alt={d.cover.alt} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1280px) 1144px, 100vw" loading="eager" fetchpriority="high" />
+          : <div data-cover-fallback aria-hidden="true"><span>{d.title}</span></div>}
+      </div>
+    </header>
+
+    {toc.length > 0 && (
+      <div class="cory-container case-layout">
+        <nav class="case-toc" data-case-toc aria-label="On this page">
+          <button type="button" class="case-toc-toggle" data-toc-toggle aria-expanded="false" aria-controls="case-toc-list"><span>On this page</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
+          <p class="case-toc-title">On this page</p>
+          <ol id="case-toc-list">{toc.map((s, i) => <li><a href={`#${s.id}`}><bdi>{String(i + 1).padStart(2, '0')}</bdi><span>{s.label}</span></a></li>)}</ol>
+        </nav>
+
+        <div class="case-body">
+          {shown.has('summary') && (
+            <section id="summary" class="case-section case-tldr" aria-labelledby="summary-title">
+              <p class="cory-overline">{num('summary')} · 30-second read</p>
+              <h2 id="summary-title" class="project-h2">In short</h2>
+              <ul>{d.tldr.map(t => <li>{t}</li>)}</ul>
+            </section>
+          )}
+          {shown.has('context') && (
+            <section id="context" class="case-section" aria-labelledby="context-title">
+              <p class="cory-overline">{num('context')} · Problem</p>
+              <h2 id="context-title" class="project-h2">Problem and context</h2>
+              {paras(d.context.problem).map(p => <p>{p}</p>)}
+              {d.context.business && <><h3>Business context</h3>{paras(d.context.business).map(p => <p>{p}</p>)}</>}
+              {d.context.constraints.length > 0 && <><h3>Constraints</h3><ul>{d.context.constraints.map(x => <li>{x}</li>)}</ul></>}
+            </section>
+          )}
+          {shown.has('research') && (
+            <section id="research" class="case-section" aria-labelledby="research-title">
+              <p class="cory-overline">{num('research')} · Research</p>
+              <h2 id="research-title" class="project-h2">Research and insights</h2>
+              {paras(d.research.summary).map(p => <p>{p}</p>)}
+              {d.research.insights.length > 0 && <ol class="case-numbered">{d.research.insights.map((x, i) => <li><bdi aria-hidden="true">{String(i + 1).padStart(2, '0')}</bdi><span>{x}</span></li>)}</ol>}
+            </section>
+          )}
+          {shown.has('process') && (
+            <section id="process" class="case-section" aria-labelledby="process-title">
+              <p class="cory-overline">{num('process')} · Process</p>
+              <h2 id="process-title" class="project-h2">Process</h2>
+              {paras(d.process.summary).map(p => <p>{p}</p>)}
+              {d.process.steps.length > 0 && <ol class="case-steps">{d.process.steps.map((s, i) => <li><span class="case-step-num" aria-hidden="true"><bdi>{String(i + 1).padStart(2, '0')}</bdi></span><div><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol>}
+              {d.process.beforeAfter && <BeforeAfter before={d.process.beforeAfter.before} after={d.process.beforeAfter.after} caption={d.process.beforeAfter.caption} />}
+              {d.process.images.map(g => <figure class="case-figure"><div class="project-cover" style="aspect-ratio: var(--aspect-case);"><Image src={g.src} alt={g.alt} widths={[640, 960, 1280]} sizes="(min-width: 1024px) 760px, 100vw" loading="lazy" decoding="async" /></div>{g.caption && <figcaption>{g.caption}</figcaption>}</figure>)}
+            </section>
+          )}
+          {shown.has('ai') && (
+            <section id="ai" class="case-section" aria-labelledby="ai-title">
+              <p class="cory-overline">{num('ai')} · AI</p>
+              <h2 id="ai-title" class="project-h2">Designing the AI</h2>
+              {paras(d.ai.summary).map(p => <p>{p}</p>)}
+              {d.ai.behaviour.length > 0 && <><h3>Agent and model behaviour</h3><ul>{d.ai.behaviour.map(x => <li>{x}</li>)}</ul></>}
+              {d.ai.trust.length > 0 && <><h3>Trust and transparency</h3><ul>{d.ai.trust.map(x => <li>{x}</li>)}</ul></>}
+              {d.ai.humanInLoop && <><h3>Human in the loop</h3>{paras(d.ai.humanInLoop).map(p => <p>{p}</p>)}</>}
+              {d.ai.guardrails.length > 0 && <><h3>Guardrails</h3><ul>{d.ai.guardrails.map(x => <li>{x}</li>)}</ul></>}
+              {d.ai.failureStates.length > 0 && <><h3>Failure and edge states</h3><ul>{d.ai.failureStates.map(x => <li>{x}</li>)}</ul></>}
+              {d.ai.evaluation && <><h3>Evaluation</h3>{paras(d.ai.evaluation).map(p => <p>{p}</p>)}</>}
+            </section>
+          )}
+          {shown.has('decisions') && (
+            <section id="decisions" class="case-section" aria-labelledby="decisions-title">
+              <p class="cory-overline">{num('decisions')} · Decisions</p>
+              <h2 id="decisions-title" class="project-h2">Key decisions and trade-offs</h2>
+              <ul class="case-decisions">{d.decisions.map(x => <li><h3>{x.decision}</h3>{x.tradeoff && <p><strong>Trade-off:</strong> {x.tradeoff}</p>}</li>)}</ul>
+            </section>
+          )}
+          {shown.has('outcomes') && (
+            <section id="outcomes" class="case-section" aria-labelledby="outcomes-title">
+              <p class="cory-overline">{num('outcomes')} · Outcomes</p>
+              <h2 id="outcomes-title" class="project-h2">Outcomes and impact</h2>
+              {verified.length > 0 && <ul class="case-metrics">{verified.map(m => <li><bdi class="cory-metric">{m.value}</bdi><span>{m.label}</span>{m.source && <small>{m.source}</small>}</li>)}</ul>}
+              {paras(d.outcomes.summary).map(p => <p>{p}</p>)}
+              {d.quote && <blockquote class="case-quote">{d.quote}</blockquote>}
+            </section>
+          )}
+          {shown.has('reflection') && (
+            <section id="reflection" class="case-section" aria-labelledby="reflection-title">
+              <p class="cory-overline">{num('reflection')} · Reflection</p>
+              <h2 id="reflection-title" class="project-h2">Reflection</h2>
+              {paras(d.reflection.summary).map(p => <p>{p}</p>)}
+              {d.reflection.learnings.length > 0 && <ul>{d.reflection.learnings.map(x => <li>{x}</li>)}</ul>}
+            </section>
+          )}
+          {shown.has('notes') && <section id="notes" class="case-section prose" aria-label="Notes"><Content components={mdxComponents} /></section>}
+        </div>
+      </div>
+    )}
+
+    {(prev || next) && (
+      <nav class="cory-container project-pager" aria-label="More case studies" style="margin-block-start: var(--space-10);">
+        {prev ? <a data-link href={`/case-studies/${prev.id}`} rel="prev"><span>Previous</span><strong>{prev.data.title}</strong></a> : <span></span>}
+        {next ? <a data-link href={`/case-studies/${next.id}`} rel="next" style="text-align: end;"><span>Next</span><strong>{next.data.title}</strong></a> : <span></span>}
+      </nav>
+    )}
+  </article>
+
+  <section data-contact id="contact" class="cory-container" aria-labelledby="case-cta" style="padding-block: var(--space-10) var(--section-y);">
+    <div class="project-cta" style="padding: var(--space-8); display: flex; flex-wrap: wrap; gap: var(--space-6); align-items: center; justify-content: space-between; box-shadow: var(--shadow-md);">
+      <div style="display: grid; gap: var(--space-2); max-inline-size: var(--measure-lead);">
+        <p class="cory-overline" style="margin: 0; color: var(--on-ink-link);">Next step</p>
+        <h2 id="case-cta" style="margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong);">Want this kind of result for your product?</h2>
+        <p style="margin: 0; color: var(--on-ink-body);">Tell me what you're building. I reply within 48 hours.</p>
+      </div>
+      <div style="display: grid; gap: var(--space-2); justify-items: start;">
+        <Button variant="on-ink-solid" size="lg" href={`mailto:${site.email}`}>Email me</Button>
+        <span style="color: var(--on-ink-body); font-size: var(--text-body-sm);"><EmailCopy copyLabel={c.copyEmail} copiedLabel={c.copied} fallbackLabel={c.pressCopy} /></span>
+      </div>
+    </div>
+  </section>
+  <script>
+    import '../../components/islands/case-study.ts';
+  </script>
+</PageLayout>

@@ -1,0 +1,39 @@
+---
+/* /resume: the web CV, from src/content/site/profile.json and the certifications collection. When the PDF named in site settings
+   exists in public/ the button downloads it; otherwise it opens the resume link from site settings (a Google Drive folder). */
+import PageLayout from '../layouts/page-layout.astro';
+import Button from '../components/ui/button.astro';
+import Career from '../components/profile/career.astro';
+import Certifications from '../components/profile/certifications.astro';
+import { profile } from '../content/profile';
+import { personLd } from '../lib/seo';
+import { site, resumePdf, resumeAttrs, resumeExternal } from '../content/site';
+---
+<PageLayout title="Resume · Mohammad Abdul Aleem · AIUXAleem" description="Resume of Mohammad Abdul Aleem, Lead AI Product Designer: experience at Colaberry, NTT DATA and Teqsar, expertise, tools and certifications." page="resume" ogType="profile" jsonLd={[personLd()]} bg="grid" mainStyle="outline: none; overflow: clip;">
+  <article class="cory-container cory-container-narrow resume-page" style="position: relative; padding-block: var(--space-12) var(--section-y);">
+    <header style="display: grid; gap: var(--space-5); padding-block-end: var(--space-8);">
+      <p class="cory-overline" style="margin: 0;">Resume</p>
+      <h1 style="margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">{site.name}</h1>
+      <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">{profile.headline}. {site.location}.</p>
+      <p class="case-kicker">{site.availability.label}</p>
+      <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+        {resumePdf
+          ? <Button variant="primary" size="lg" href={resumePdf} download>Download resume (PDF)</Button>
+          : <Button variant="primary" size="lg" href={site.resumeUrl} {...resumeAttrs}>{resumeExternal ? 'View resume' : 'Download resume'}{resumeExternal && <span class="cory-visually-hidden"> (opens in a new tab)</span>}</Button>}
+        <Button variant="secondary" size="lg" href="/contact">Get in touch</Button>
+      </div>
+      <ul class="resume-contact">
+        <li><a href={`mailto:${site.email}`}><bdi>{site.email}</bdi></a></li>
+        <li><a href={site.socials.linkedin} target="_blank" rel="noopener">LinkedIn<span class="cory-visually-hidden"> (opens in a new tab)</span></a></li>
+        {site.socials.behance && <li><a href={site.socials.behance} target="_blank" rel="noopener">Behance<span class="cory-visually-hidden"> (opens in a new tab)</span></a></li>}
+      </ul>
+    </header>
+
+    <section class="resume-block" aria-labelledby="cv-summary"><h2 id="cv-summary">Summary</h2><div><p>{profile.positioning}</p>{profile.summary.map(p => <p>{p}</p>)}</div></section>
+    <section class="resume-block" aria-labelledby="cv-experience"><h2 id="cv-experience">Experience</h2><div><Career level={3} /></div></section>
+    <section class="resume-block" aria-labelledby="cv-expertise"><h2 id="cv-expertise">Expertise</h2><div><ul style="display: grid; gap: var(--space-4);">{profile.expertise.map(e => <li><p><strong style="color: var(--text-strong);">{e.title}.</strong> {e.body}</p></li>)}</ul></div></section>
+    <section class="resume-block" aria-labelledby="cv-tools"><h2 id="cv-tools">Tools</h2><div><ul class="tool-list">{profile.tools.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul></div></section>
+    <section class="resume-block" aria-labelledby="cv-education"><h2 id="cv-education">Education</h2><div><ul style="display: grid; gap: var(--space-4);">{profile.education.map(e => <li><p><strong style="color: var(--text-strong);">{e.school}</strong><br />{e.qualification}</p></li>)}</ul></div></section>
+    <section class="resume-block" aria-labelledby="cv-certs"><h2 id="cv-certs">Certifications</h2><div><Certifications /></div></section>
+  </article>
+</PageLayout>

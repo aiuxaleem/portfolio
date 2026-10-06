@@ -1,0 +1,13 @@
+---
+/* /blog/page/N for N >= 2. Page 1 is /blog. */
+import PostList from '../../../components/blog/post-list.astro';
+import { listedPosts, usedTags, PAGE_SIZE } from '../../../lib/posts';
+
+export async function getStaticPaths() {
+  const all = await listedPosts();
+  const pages = Math.ceil(all.length / PAGE_SIZE);
+  return Array.from({ length: Math.max(0, pages - 1) }, (_, i) => i + 2).map(n => ({ params: { page: String(n) }, props: { n, pages, total: all.length, posts: all.slice((n - 1) * PAGE_SIZE, n * PAGE_SIZE) } }));
+}
+const { n, pages, total, posts } = Astro.props;
+---
+<PostList posts={posts} tags={await usedTags()} page={n} pages={pages} total={total} />

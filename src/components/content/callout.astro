@@ -1,0 +1,11 @@
+---
+/* Callout for long-form content. The tone is carried by an icon and a title, never by colour alone. */
+interface Props { tone?: 'note' | 'warning'; title?: string }
+const { tone = 'note', title = tone === 'warning' ? 'Warning' : 'Note' } = Astro.props;
+---
+<aside class="post-callout" data-tone={tone}>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    {tone === 'warning' ? <><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><path d="M12 9v4M12 17h.01"></path></> : <><circle cx="12" cy="12" r="9"></circle><path d="M12 16v-4M12 8h.01"></path></>}
+  </svg>
+  <div><p class="post-callout-title">{title}</p><slot /></div>
+</aside>

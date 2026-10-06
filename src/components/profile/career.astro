@@ -1,0 +1,24 @@
+---
+/* Career timeline from src/content/site/profile.json: one block per company, its roles inside, newest first.
+   Dates, location and highlights are optional. `level` is the heading level of the company name. */
+import { careerByCompany, period } from '../../content/profile';
+
+interface Props { level?: 2 | 3; highlights?: boolean }
+const { level = 3, highlights = true } = Astro.props;
+const Company = `h${level}` as any, RoleTag = `h${level + 1}` as any;
+---
+<ol class="career">
+  {careerByCompany().map(group => (
+    <li class="career-company">
+      <Company>{group.company}</Company>
+      {group.roles.map(r => (
+        <div class="career-role">
+          <RoleTag>{r.role}</RoleTag>
+          {(period(r) || r.location) && <p class="case-kicker">{[period(r), r.location].filter(Boolean).join(' · ')}</p>}
+          <p>{r.summary}</p>
+          {highlights && r.highlights.length > 0 && <ul>{r.highlights.map(h => <li>{h}</li>)}</ul>}
+        </div>
+      ))}
+    </li>
+  ))}
+</ol>

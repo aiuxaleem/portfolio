@@ -1,0 +1,96 @@
+---
+/* /work/[slug]: one project. Every block except the title, summary and status is optional and is left out when its
+   field is empty (CLAUDE.md 2.6, partial state). Updates are listed newest first. */
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import PageLayout from '../../layouts/page-layout.astro';
+import Button from '../../components/ui/button.astro';
+import EmailCopy from '../../components/layout/email-copy.astro';
+import { listedProjects, statusLabel, timeline, updatesNewestFirst, day } from '../../lib/projects';
+import { mdxComponents } from '../../components/content/mdx-components';
+import { site } from '../../content/site';
+import { chrome } from '../../i18n/chrome';
+
+export async function getStaticPaths() {
+  const projects = await listedProjects();
+  return projects.map((project, i) => ({ params: { slug: project.id }, props: { project, prev: projects[i - 1], next: projects[i + 1] } }));
+}
+const { project, prev, next } = Astro.props;
+const d = project.data;
+const c = chrome.en;
+const { Content } = await render(project);
+const hasBody = !!(project.body && project.body.trim());
+const updates = updatesNewestFirst(d);
+const meta = [['Role', d.role], ['Timeline', timeline(d)], ['Team', d.team], ['Tools', d.stack.join(' · ') || undefined], ['Status', statusLabel[d.status]]].filter(([, v]) => v) as [string, string][];
+const description = (d.seo.description || d.summary).slice(0, 165);
+const arrowOut = 'M7 7h10v10M7 17 17 7';
+---
+<PageLayout title={`${d.seo.title || d.title} · Work · AIUXAleem`} description={description} page="work" noindex={d.fixture} bg="grid" mainStyle="outline: none; overflow: clip;">
+  <article>
+    <header class="cory-container" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--space-12) var(--space-10);">
+      <a data-link href="/work" style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;"><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All work</span></a>
+      <p class="cory-overline" style="margin: 0;">Project</p>
+      <h1 style="margin: 0; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">{d.title}</h1>
+      <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">{d.summary}</p>
+      {(d.links.live || d.links.repo) && (
+        <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+          {d.links.live && <Button variant="primary" size="lg" href={d.links.live} target="_blank" rel="noopener">Live site<span class="cory-visually-hidden"> (opens in a new tab)</span><svg slot="icon-right" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={arrowOut}></path></svg></Button>}
+          {d.links.repo && <Button variant="secondary" size="lg" href={d.links.repo} target="_blank" rel="noopener">View on GitHub<span class="cory-visually-hidden"> (opens in a new tab)</span><svg slot="icon-right" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={arrowOut}></path></svg></Button>}
+        </div>
+      )}
+      <dl class="project-meta">
+        {meta.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
+      </dl>
+      <div class="project-cover">
+        {d.cover
+          ? <Image src={d.cover.src} alt={d.cover.alt} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1280px) 1144px, 100vw" loading="eager" fetchpriority="high" />
+          : <div data-cover-fallback aria-hidden="true"><span>{d.title}</span></div>}
+      </div>
+    </header>
+
+    {hasBody && <section class="cory-container cory-container-narrow prose" style="padding-block: var(--space-10);"><Content components={mdxComponents} /></section>}
+
+    {d.gallery.length > 0 && (
+      <section class="cory-container" aria-labelledby="gallery-title" style="display: grid; gap: var(--space-6); padding-block: var(--space-10);">
+        <h2 id="gallery-title" class="project-h2">Gallery</h2>
+        <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
+          {d.gallery.map(g => <li><figure style="margin: 0; display: grid; gap: var(--space-3);"><div class="project-cover" style="aspect-ratio: var(--aspect-case);"><Image src={g.src} alt={g.alt} widths={[400, 640, 960]} sizes="(min-width: 640px) 50vw, 100vw" loading="lazy" decoding="async" /></div>{g.caption && <figcaption style="font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--leading-mono); color: var(--text-muted);">{g.caption}</figcaption>}</figure></li>)}
+        </ul></div>
+      </section>
+    )}
+
+    <section class="cory-container cory-container-narrow" aria-labelledby="updates-title" style="display: grid; gap: var(--space-6); padding-block: var(--space-10);">
+      <h2 id="updates-title" class="project-h2">Updates</h2>
+      {updates.length === 0
+        ? <div class="project-empty"><p class="project-empty-title">No updates yet.</p><p class="project-empty-body">Dated notes are added here as the project moves.</p></div>
+        : <ol class="project-updates">{updates.map(u => <li><time datetime={u.date.toISOString().slice(0, 10)}>{day(u.date)}</time><h3>{u.title}</h3><p>{u.body}</p>{u.link && <a data-link href={u.link.href}>{u.link.label}</a>}</li>)}</ol>}
+    </section>
+
+    {d.caseStudy && (
+      <section class="cory-container cory-container-narrow" style="padding-block: var(--space-6);">
+        <a class="project-related" href={`/case-studies/${d.caseStudy}`}><span><span class="cory-overline" style="display: block;">Case study</span><strong>Read how this was designed and what changed</strong></span><svg data-dir-icon width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
+      </section>
+    )}
+
+    {(prev || next) && (
+      <nav class="cory-container cory-container-narrow project-pager" aria-label="More projects">
+        {prev ? <a data-link href={`/work/${prev.id}`} rel="prev"><span>Previous</span><strong>{prev.data.title}</strong></a> : <span></span>}
+        {next ? <a data-link href={`/work/${next.id}`} rel="next" style="text-align: end;"><span>Next</span><strong>{next.data.title}</strong></a> : <span></span>}
+      </nav>
+    )}
+  </article>
+
+  <section data-contact class="cory-container" aria-labelledby="project-cta" style="padding-block: var(--space-10) var(--section-y);">
+    <div class="project-cta" style="padding: var(--space-8); display: flex; flex-wrap: wrap; gap: var(--space-6); align-items: center; justify-content: space-between; box-shadow: var(--shadow-md);">
+      <div style="display: grid; gap: var(--space-2); max-inline-size: var(--measure-lead);">
+        <p class="cory-overline" style="margin: 0; color: var(--on-ink-link);">Next step</p>
+        <h2 id="project-cta" style="margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong);">Have a product that needs to feel trustworthy?</h2>
+        <p style="margin: 0; color: var(--on-ink-body);">Tell me what you're building. I reply within 48 hours.</p>
+      </div>
+      <div style="display: grid; gap: var(--space-2); justify-items: start;">
+        <Button variant="on-ink-solid" size="lg" href={`mailto:${site.email}`}>Email me</Button>
+        <span style="color: var(--on-ink-body); font-size: var(--text-body-sm);"><EmailCopy copyLabel={c.copyEmail} copiedLabel={c.copied} fallbackLabel={c.pressCopy} /></span>
+      </div>
+    </div>
+  </section>
+</PageLayout>

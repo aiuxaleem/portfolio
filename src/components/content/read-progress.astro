@@ -1,0 +1,6 @@
+---
+/* Reading progress: a thin brand bar under the header that fills as the page is read. Decorative, so hidden from
+   assistive technology. It stays empty (invisible) under reduced motion and in browsers without scroll timelines.
+   Markup matches the legacy article pages; the fill rule is in site.css ([data-progress]). */
+---
+<div aria-hidden="true" style="position: fixed; inset-block-start: var(--header-height); inset-inline: 0; block-size: var(--space-1); z-index: var(--z-sticky); pointer-events: none;"><div data-progress style="inline-size: 100%; block-size: 100%; background: var(--gradient-brand); transform: scaleX(0); transform-origin: var(--origin-inline-start) center;"></div></div>

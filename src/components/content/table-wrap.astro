@@ -1,0 +1,6 @@
+---
+/* A group, not a region: a post may hold several tables, and landmarks must have unique names.
+   Every table in long-form content scrolls sideways inside its own box, never the page. The box can be focused so it
+   scrolls from the keyboard. */
+---
+<div class="post-table" role="group" aria-label="Table. Scrolls sideways on small screens." tabindex="0"><table><slot /></table></div>

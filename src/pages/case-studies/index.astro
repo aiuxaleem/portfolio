@@ -1,0 +1,28 @@
+---
+/* /case-studies: every published case study, as whole-card links (same card recipe as the project card). */
+import PageLayout from '../../layouts/page-layout.astro';
+import Button from '../../components/ui/button.astro';
+import CaseCard from '../../components/cards/case-card.astro';
+import { listedCaseStudies } from '../../lib/case-studies';
+import { site, resumeAttrs, resumeExternal } from '../../content/site';
+
+const cases = await listedCaseStudies();
+---
+<PageLayout title="Case studies · AIUXAleem" description="Case studies by Mohammad Abdul Aleem: the problem, the process, the decisions and what changed, for design systems and AI product work." page="case-studies" bg="grid" mainStyle="outline: none; overflow: clip;">
+  <section id="intro" class="cory-container" aria-labelledby="cases-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <p class="cory-overline" style="margin: 0px;">Selected work</p>
+    <h1 id="cases-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">Three products, one <span style="background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent;">method</span>.</h1>
+    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">Understand the workflow, redesign it, build it with AI, validate it with people. Each case below is that method applied to a different kind of trust problem.</p>
+    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+      <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">Book a 15-min call<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
+      <Button variant="secondary" size="lg" href={site.resumeUrl} {...resumeAttrs}>{resumeExternal ? 'View resume' : 'Download resume'}{resumeExternal && <span class="cory-visually-hidden"> (opens in a new tab)</span>}</Button>
+    </div>
+  </section>
+  <section id="cases" class="cory-container" aria-label="Case study list" style="padding-block-end: var(--section-y);">
+    {cases.length === 0
+      ? <div class="project-empty"><p class="project-empty-title">No case studies are published yet.</p><p class="project-empty-body">The projects page lists current work.</p><div><Button variant="secondary" href="/work">See the projects</Button></div></div>
+      : <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">
+          {cases.map((entry, i) => <li><CaseCard entry={entry} first={i === 0} /></li>)}
+        </ul></div>}
+  </section>
+</PageLayout>

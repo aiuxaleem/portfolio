@@ -1,0 +1,27 @@
+---
+/* Blog post card. Same card recipe as the project card: one link, the whole card clickable, fixed media ratio.
+   States: with cover, without cover (typographic fallback), optional dates and tags. */
+import { Image } from 'astro:assets';
+import { type Post, postUrl, formatDate, readingTime } from '../../lib/posts';
+
+interface Props { post: Post; level?: 2 | 3 }
+const { post, level = 2 } = Astro.props;
+const d = post.data;
+const Heading = `h${level}` as any;
+const date = d.published || d.updated;
+const time = readingTime(post);
+---
+<article class="project-card">
+  <div class="project-card-media">
+    {d.cover
+      ? <Image src={d.cover.src} alt={d.cover.alt} widths={[400, 640, 960]} sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" loading="lazy" decoding="async" />
+      : <div data-cover-fallback aria-hidden="true"><span>{d.title}</span></div>}
+  </div>
+  <div class="project-card-body">
+    {(date || time) && <p class="case-kicker">{date && <>{!d.published && 'Updated '}<time datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time></>}{date && time && ' · '}{time}</p>}
+    <Heading class="project-card-title"><a class="project-card-link" href={postUrl(post)}>{d.title}</a></Heading>
+    <p class="project-card-summary">{d.excerpt}</p>
+    {d.tags.length > 0 && <ul class="project-card-tags" aria-label="Tags">{d.tags.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul>}
+    <span class="project-card-cta" aria-hidden="true">Read the post <svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span>
+  </div>
+</article>

@@ -1,0 +1,98 @@
+/* Blog pages, long-form content blocks and embeds. Built from existing tokens only. */
+
+/* Back link, dates, republish note, tag links, pagination. */
+.post-back { display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none; }
+.post-dates { margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-5); font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--leading-mono); color: var(--text-muted); }
+.post-origin { margin: 0; padding: var(--space-4) var(--space-5); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-body); }
+.post-origin a { color: var(--text-link); text-decoration: underline; text-underline-offset: 0.22em; }
+.post-tags { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.post-tags ul, .post-pagination ol { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+a.ui-chip { text-decoration: none; line-height: 1.2; overflow-wrap: anywhere; }
+/* Current tag or page: filled, with a check mark or weight, never colour alone. */
+a.ui-chip[aria-current="page"] { background: var(--action-ink); border-color: var(--action-ink); color: var(--surface-card); font-weight: var(--weight-bold); text-decoration: underline; text-underline-offset: 0.22em; }
+@media (hover: hover) {
+  a.ui-chip:not([aria-current="page"]):hover { background: var(--action-secondary-hover); transform: translateY(-1px); }
+  /* The current chip keeps its fill on hover. Without this the shared chip hover gave it a light background under a white label. */
+  a.ui-chip[aria-current="page"]:hover { background: var(--action-ink); transform: none; }
+}
+.post-pagination a.ui-chip { min-inline-size: var(--tap-target); justify-content: center; }
+.post-pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); padding-block-start: var(--space-6); border-block-start: 1px solid var(--border-subtle); }
+
+/* Long-form content. Extends .prose (components.css). Blocks that are wider than text scroll inside their own box. */
+.post-body { min-inline-size: 0; }
+.post-body > * { min-inline-size: 0; }
+.prose h4 { margin: var(--space-2) 0 0; font-size: var(--text-h4); color: var(--text-strong); }
+.prose h2, .prose h3, .prose h4 { overflow-wrap: anywhere; text-wrap: balance; }
+.prose p { overflow-wrap: anywhere; text-wrap: pretty; }
+.prose img { max-inline-size: 100%; block-size: auto; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); }
+.prose hr { inline-size: 100%; margin: var(--space-4) 0; border: 0; border-block-start: 1px solid var(--border-subtle); }
+.prose :not(pre) > code { padding: 0.1em 0.35em; border-radius: var(--radius-xs); background: var(--surface-sunken); font-family: var(--font-mono); font-size: 0.9em; color: var(--text-strong); overflow-wrap: anywhere; }
+.prose blockquote { margin: 0; padding: var(--space-2) var(--space-5); border-inline-start: 3px solid var(--border-focus); }
+.prose blockquote p { font-size: var(--text-h4); line-height: var(--leading-relaxed); font-weight: var(--weight-semibold); color: var(--text-strong); }
+.post-code { margin: 0; max-inline-size: 100%; padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface-sunken); border: 1px solid var(--border-subtle); overflow-x: auto; text-align: start; }
+.post-code code { font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--leading-mono); color: var(--text-strong); white-space: pre; overflow-wrap: normal; word-break: normal; }
+.post-table { max-inline-size: 100%; overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid var(--border-default); background: var(--surface-card); }
+/* A table keeps a readable minimum width and scrolls inside its box below that, instead of squeezing its columns. */
+.post-table table { inline-size: 100%; min-inline-size: 36rem; border-collapse: collapse; font-size: var(--text-body-sm); }
+.post-table th, .post-table td { padding: var(--space-3) var(--space-4); text-align: start; vertical-align: top; border-block-end: 1px solid var(--border-subtle); color: var(--text-body); }
+.post-table th { font-weight: var(--weight-bold); color: var(--text-strong); background: var(--surface-sunken); }
+.post-table tr:last-child td { border-block-end: 0; }
+.post-code:focus-visible, .post-table:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
+.post-figure { margin: 0; display: grid; gap: var(--space-3); }
+.post-figure > p { margin: 0; max-inline-size: none; }
+.post-figure img { display: block; inline-size: 100%; }
+.post-figure figcaption, .embed figcaption { font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--leading-mono); color: var(--text-muted); overflow-wrap: anywhere; }
+.post-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: var(--space-3); }
+.post-gallery > p { display: contents; }
+.post-gallery img { inline-size: 100%; block-size: 100%; aspect-ratio: var(--aspect-case); object-fit: cover; object-position: top center; }
+.post-callout { display: flex; gap: var(--space-3); align-items: flex-start; padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); border-inline-start: 3px solid var(--border-focus); }
+.post-callout > svg { flex-shrink: 0; margin-block-start: 2px; color: var(--text-link); }
+.post-callout[data-tone="warning"] > svg { color: var(--text-warning); }
+.post-callout > div { display: grid; gap: var(--space-2); min-inline-size: 0; }
+.post-callout .post-callout-title { font-weight: var(--weight-bold); color: var(--text-strong); }
+
+/* Embeds. data-state on the figure: facade | loading | loaded | failed. */
+.embed { margin: 0; display: grid; gap: var(--space-3); min-inline-size: 0; }
+.embed figcaption a { color: var(--text-link); text-decoration: underline; text-underline-offset: 0.22em; }
+.embed-frame { position: relative; aspect-ratio: var(--aspect-video); border-radius: var(--radius-xl); overflow: hidden; background: var(--surface-ink); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
+.embed-frame iframe { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; border: 0; }
+.embed-frame .embed-poster { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover; border: 0; border-radius: 0; }
+.embed-play { position: absolute; inset: 0; display: grid; place-items: center; inline-size: 100%; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.embed-play-disc { display: grid; place-items: center; inline-size: 72px; block-size: 72px; border-radius: var(--radius-pill); background: var(--surface-ink); color: var(--on-ink-strong); border: 2px solid var(--on-ink-strong); box-shadow: var(--shadow-lg); transition: transform var(--duration-base) var(--ease-out); }
+.embed-frame:focus { outline: none; }
+.embed-play:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: -6px; border-radius: var(--radius-xl); }
+@media (hover: hover) { .embed-play:hover .embed-play-disc { transform: scale(1.06); } }
+.embed-soon { position: absolute; inset-block-start: var(--space-4); inset-inline-start: var(--space-4); margin: 0; }
+.embed-video .embed-status, .embed-failed { position: absolute; inset: 0; display: none; place-content: center; justify-items: center; gap: var(--space-3); padding: var(--space-5); margin: 0; text-align: center; background: var(--surface-ink); color: var(--on-ink-strong); font-size: var(--text-body-md); font-weight: var(--weight-semibold); overflow-y: auto; }
+.embed-failed p { margin: 0; max-inline-size: 40ch; color: var(--on-ink-body); font-weight: var(--weight-regular); }
+.embed-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.embed-failed .embed-actions { justify-content: center; }
+.embed-video[data-state="loading"] .embed-status, .embed-video[data-state="failed"] .embed-failed { display: grid; }
+.embed-video:not([data-state="facade"]) .embed-play, .embed-video[data-state="failed"] iframe { display: none; }
+.embed-video[data-state="loading"] iframe { visibility: hidden; }
+
+.embed-card { display: grid; gap: var(--space-3); padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); min-inline-size: 0; }
+.embed-card > p { margin: 0; max-inline-size: none; }
+.embed-card .embed-card-title { font-size: var(--text-h4); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
+.embed-card .embed-card-excerpt { color: var(--text-body); line-height: var(--leading-relaxed); overflow-wrap: anywhere; }
+.embed-card-link { display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none; }
+.embed-linkedin .embed-status { font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-muted); }
+.embed-linkedin .embed-status:empty { display: none; }
+.embed-card-failed { display: none; gap: var(--space-2); align-items: flex-start; font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-body); }
+.embed-card-failed svg { flex-shrink: 0; margin-block-start: 2px; color: var(--text-danger); }
+.embed-linkedin[data-state="failed"] .embed-card-failed { display: flex; }
+.embed-linkedin[data-state="loading"] [data-embed-load], .embed-linkedin[data-state="loaded"] [data-embed-load] { display: none; }
+/* The post frame has no size until the post is asked for; then it gets a tall box that scrolls inside. */
+.embed-frame-post { display: none; aspect-ratio: auto; block-size: min(80svh, 640px); background: var(--surface-card); }
+.embed-linkedin[data-state="loading"] .embed-frame-post, .embed-linkedin[data-state="loaded"] .embed-frame-post { display: block; }
+.embed-article { block-size: auto; }
+.embed-article .project-card-title { font-size: var(--text-h4); line-height: var(--leading-heading); color: var(--text-strong); max-inline-size: none; }
+.embed-article .case-kicker { font-size: var(--text-mono); line-height: var(--leading-mono); color: var(--text-muted); }
+.prose .project-card-media img { block-size: 100%; border: 0; border-radius: 0; }
+
+/* Video card (videos page and home): facade, then text. Not a link card, so it does not lift on hover. */
+.video-card { display: flex; flex-direction: column; gap: var(--space-4); block-size: 100%; min-inline-size: 0; }
+.video-card-body { display: flex; flex-direction: column; gap: var(--space-3); min-inline-size: 0; }
+.home-video { max-inline-size: min(100%, 760px); }
+/* On a card-surface section, cards sit on the page surface, as the existing home sections do. */
+[data-home-feed][data-surface="card"] .project-card { background: var(--surface-page); }

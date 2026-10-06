@@ -1,0 +1,26 @@
+---
+/* LinkedIn post: the official embed iframe behind a click-to-load facade. Until the visitor asks for it, the card shows
+   the title, an excerpt and a link, and nothing is requested from LinkedIn. If the embed is blocked or fails, the same
+   card stays as the fallback, with the link to the post. States: facade, loading, failed. Behaviour: islands/embeds.ts */
+interface Props { urn: string; url: string; title: string; excerpt?: string; state?: 'facade' | 'loading' | 'failed' }
+const { urn, url, title, excerpt, state = 'facade' } = Astro.props;
+const valid = /^urn:li:(share|activity|ugcPost):\d+$/.test(urn);
+---
+<figure class="embed embed-linkedin" data-embed="linkedin" data-embed-src={valid ? `https://www.linkedin.com/embed/feed/update/${urn}` : undefined} data-embed-title={`LinkedIn post: ${title}`} data-embed-loading="Loading the LinkedIn post" data-state={state} data-static={Astro.props.state ? '' : undefined}>
+  <div class="embed-card">
+    <p class="cory-overline">LinkedIn post</p>
+    <p class="embed-card-title">{title}</p>
+    {excerpt && <p class="embed-card-excerpt">{excerpt}</p>}
+    <div class="embed-actions">
+      {valid && <button type="button" class="ui-button ui-button-secondary ui-button-md" data-embed-load><span class="ui-button-label">Load the post here</span></button>}
+      <a data-link class="embed-card-link" href={url} target="_blank" rel="noopener"><span>Read on LinkedIn<span class="cory-visually-hidden"> (opens in a new tab)</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"></path></svg></a>
+    </div>
+    <p class="embed-status" role="status">{state === 'loading' ? 'Loading the LinkedIn post' : ''}</p>
+    <p class="embed-card-failed"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4M12 16h.01"></path></svg><span>The post didn't load here. Your network may block LinkedIn embeds. Use the link above to read it on LinkedIn, or try again.</span></p>
+  </div>
+  <div class="embed-frame embed-frame-post"></div>
+</figure>
+
+<script>
+  import '../islands/embeds.ts';
+</script>

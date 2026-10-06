@@ -1,0 +1,7 @@
+# No testimonial exists yet. This entry shows the shape; it stays a draft until a real quote and permission are supplied.
+quote: "[VERIFY] The testimonial text, supplied by the person quoted."
+name: "[VERIFY] Name"
+role: "[VERIFY] Role"
+company: "[VERIFY] Company"
+permission: false
+draft: true

@@ -1,0 +1,50 @@
+{
+  "name": "aiuxaleem",
+  "private": true,
+  "type": "module",
+  "version": "0.4.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "legacy": "node scripts/serve.mjs legacy 4321",
+    "quality": "node scripts/quality/run.mjs",
+    "quality:quick": "node scripts/quality/run.mjs --quick",
+    "quality:legacy": "node scripts/quality/run.mjs --target=legacy",
+    "baseline:capture": "node scripts/visual/capture.mjs --target=legacy --out=tests/baseline",
+    "baseline:verify": "node scripts/visual/verify-baseline.mjs",
+    "visual": "node scripts/visual/compare.mjs",
+    "perf": "npm run build && node scripts/perf/weights.mjs --label=latest && node scripts/perf/lighthouse.mjs --label=latest",
+    "fonts": "node scripts/perf/fetch-fonts.mjs",
+    "unused": "node scripts/perf/unused.mjs"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.0.0",
+    "@astrojs/react": "^4.4.2",
+    "@astrojs/sitemap": "^3.2.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/plus-jakarta-sans": "^5.3.0",
+    "@keystatic/astro": "^6.0.0",
+    "@keystatic/core": "^0.6.9",
+    "@resvg/resvg-js": "^2.6.2",
+    "astro": "^5.0.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "satori": "^0.35.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.0",
+    "@capsizecss/unpack": "^4.0.1",
+    "axe-core": "^4.10.0",
+    "chrome-launcher": "^1.2.2",
+    "lighthouse": "^13.5.0",
+    "pixelmatch": "^6.0.0",
+    "playwright-core": "^1.48.0",
+    "pngjs": "^7.0.0",
+    "typescript": "^5.6.0"
+  }
+}

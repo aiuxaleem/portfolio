@@ -1,0 +1,55 @@
+---
+title: "Freight platform rebrand"
+index: "02"
+category: "Brand and product"
+lead: "One identity from wordmark to product UI, built as a token-driven theme from day one."
+cover:
+  src: ../../assets/cases/freight-after-dashboard.jpg
+  alt: "Freight operations dashboard after the rebrand"
+role: "Brand and product designer"
+company: "Colaberry"
+timeline: "2025"
+team: "Me + marketing lead"
+stack: ["Figma","Design tokens","Next.js"]
+context:
+  problem: "The client runs an AI product for freight operations, but its inherited identity read as generic logistics. The client is not named here. Marketing pages and the product looked like two companies, and every campaign asset was hand-built."
+process:
+  steps:
+    - title: "Identity as a system"
+      body: "Wordmark, colour and type were defined as tokens before any artwork, so the brand could ship as a theme on the Colaberry Design System."
+    - title: "Product UI themed, not rebuilt"
+      body: "The app took the new identity through the semantic token layer: zero new components, no regression in accessibility."
+    - title: "Launch surface"
+      body: "A landing page composed from system components, with motion kept to the brand’s restrained ease-out reveals."
+  images:
+    - src: ../../assets/cases/freight-before-dashboard.jpg
+      alt: "Before: dashboard on the shipped UAT console"
+      caption: "Before: dashboard on the shipped UAT console"
+    - src: ../../assets/cases/freight-after-campaigns.jpg
+      alt: "After: campaigns, themed with the new system"
+      caption: "After: campaigns, themed with the new system"
+outcomes:
+  summary: "Marketing and product now share one identity and one source of tokens. New campaign assets start from system components, and the brand lives alongside its siblings as a theme. On the shipped UAT console, the re-theme cut 1,646 below-AA text nodes to 7 in testing (0 expected on the deployed build) and gave every control a visible focus ring, across 97 screens, with no change in behaviour."
+  metrics:
+    - value: "1,646"
+      label: "below-AA text nodes on the shipped console, cut to 7 in testing"
+      kind: outcome
+      verified: false
+    - value: "97"
+      label: "screens re-themed with no change in behaviour"
+      kind: output
+      verified: false
+    - value: "0"
+      label: "control types left without a focus ring (was 7)"
+      kind: outcome
+      verified: false
+quote: "Marketing and product finally looked like the same company."
+reflection:
+  learnings:
+    - "Define the identity as tokens first; artwork second. The brand then ships anywhere the system does."
+    - "Theming the product instead of rebuilding it kept accessibility intact, and shipped in days."
+    - "One shared component library means a campaign page and the app never drift apart again."
+project: freight-design-system
+order: 2
+featured: true
+---

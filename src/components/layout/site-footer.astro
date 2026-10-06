@@ -1,0 +1,53 @@
+---
+/* Site footer on the ink surface: optional call-to-action band, brand and positioning line, navigation, then a legal row with
+   location, availability, email and social links. Markup and inline token styles match the legacy footer. */
+import Button from '../ui/button.astro';
+import EmailCopy from './email-copy.astro';
+import { site, resumeAttrs, resumeExternal, legacyChrome, parity } from '../../content/site';
+import { chrome, arNav } from '../../i18n/chrome';
+
+interface Props { lang?: string; hideCta?: boolean }
+const { lang = 'en', hideCta = false } = Astro.props;
+const ar = lang === 'ar';
+const c = chrome[ar ? 'ar' : 'en'];
+const legacy = parity || ar;
+const nav = ar ? arNav : parity ? legacyChrome.nav : site.nav;
+const linkStyle = 'display: inline-flex; align-items: center; min-block-size: var(--tap-target); min-inline-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-medium); color: var(--on-ink-body); text-decoration: none;';
+const socialStyle = 'display: inline-flex; align-items: center; min-block-size: var(--tap-target); color: var(--on-ink-body); text-decoration: none;';
+---
+<footer data-site-footer data-shared style="position: relative; z-index: var(--z-raised); background: var(--gradient-ink); color: var(--on-ink-body); border-block-start: 1px solid var(--on-ink-border);">
+  <div class="cory-container" style="padding-block: var(--space-12) var(--space-8); display: grid; gap: var(--space-8);">
+    {!hideCta && (
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: var(--space-6); flex-wrap: wrap; padding-block-end: var(--space-8); border-block-end: 1px solid var(--on-ink-border);">
+        <div style="display: grid; gap: var(--space-2); max-inline-size: var(--measure-lead);">
+          <p class="cory-overline" style="margin: 0px; color: var(--on-ink-link);">{c.footerOverline}</p>
+          <p style="margin: 0px; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); text-wrap: balance;">{c.footerTitle}</p>
+        </div>
+        <div data-cta-row style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+          <Button variant="on-ink-solid" size="md" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> {c.newTab}</span></Button>
+          <Button variant="on-ink" size="md" href={site.resumeUrl} {...resumeAttrs}>{resumeExternal ? c.resumeView : c.resume}{resumeExternal && <span class="cory-visually-hidden"> {c.newTab}</span>}</Button>
+        </div>
+      </div>
+    )}
+    <div style="display: flex; justify-content: space-between; gap: var(--space-8); flex-wrap: wrap;">
+      <div style="display: grid; gap: var(--space-3); max-inline-size: var(--measure-lead);">
+        <a href={ar ? '/ar' : '/'} style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h4); color: var(--on-ink-strong); text-decoration: none;"><span aria-hidden="true" style="inline-size: var(--space-5); block-size: var(--space-5); border-radius: var(--radius-tile); background: var(--gradient-brand);"></span><span lang="en" dir="ltr" style="white-space: nowrap;">{site.brand}</span></a>
+        <p style="margin: 0px; font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--on-ink-body);">{legacy ? c.bio : site.positioning}</p>
+        {!legacy && <p style="margin: 0px; font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--on-ink-muted);">{site.location} · {site.availability.label}</p>}
+      </div>
+      <nav aria-label={c.footerNav}>
+        <ul style="display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5);">
+          {nav.map(n => <li><a href={n.href} class="footer-link" style={linkStyle}>{n.label}</a></li>)}
+        </ul>
+      </nav>
+    </div>
+    <div style="display: flex; justify-content: space-between; gap: var(--space-3) var(--space-6); flex-wrap: wrap; padding-block-start: var(--space-5); border-block-start: 1px solid var(--on-ink-border); font-size: var(--text-caption); color: var(--on-ink-muted);">
+      <span>{legacy ? c.rights : site.copyright}</span>
+      <span style="display: inline-flex; gap: var(--space-4); flex-wrap: wrap; align-items: center;"><span style="color: var(--on-ink-body); font-size: var(--text-body-sm);"><EmailCopy copyLabel={c.copyEmail} copiedLabel={c.copied} fallbackLabel={c.pressCopy} /></span><a href={site.socials.linkedin} target="_blank" rel="noopener" class="footer-link" style={socialStyle}>LinkedIn<span class="cory-visually-hidden"> {c.newTab}</span></a>{!legacy && <a href={site.socials.behance} target="_blank" rel="noopener" class="footer-link" style={socialStyle}>Behance<span class="cory-visually-hidden"> {c.newTab}</span></a>}<a href={site.socials.youtube} target="_blank" rel="noopener" class="footer-link" style={socialStyle}>YouTube<span class="cory-visually-hidden"> {c.newTab}</span></a>{!legacy && <a href={site.rss} class="footer-link" style={socialStyle + ' min-inline-size: var(--tap-target); justify-content: center;'}>RSS</a>}</span>
+    </div>
+  </div>
+</footer>
+
+<style is:global>
+  @media (hover: hover) { .footer-link:hover { color: var(--on-ink-strong) !important; } }
+</style>

@@ -1,0 +1,8 @@
+---
+/* /blog: posts from the content collection, newest first, first page. */
+import PostList from '../../components/blog/post-list.astro';
+import { listedPosts, usedTags, PAGE_SIZE } from '../../lib/posts';
+
+const all = await listedPosts();
+---
+<PostList posts={all.slice(0, PAGE_SIZE)} tags={await usedTags()} page={1} pages={Math.max(1, Math.ceil(all.length / PAGE_SIZE))} total={all.length} />

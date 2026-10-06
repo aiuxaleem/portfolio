@@ -1,0 +1,84 @@
+---
+import '../styles/global.css';
+import { site } from '../content/site';
+import fonts from '../styles/fonts.json';
+import { ogImageFor, abs, languageAlternates } from '../lib/seo';
+
+
+interface Props {
+  title: string;
+  description: string;
+  page?: string;
+  langs?: string;
+  lang?: string;
+  dir?: string;
+  noindex?: boolean;
+  /** Canonical URL override, for a post republished from another site. */
+  canonical?: string;
+  /** Open Graph type. Pages are 'website'; posts and case studies are 'article'. */
+  ogType?: string;
+  /** Open Graph image path. Default: the image generated for this page (src/lib/seo.ts). */
+  ogImage?: string;
+  /** JSON-LD objects for this page. Empty entries are skipped. */
+  jsonLd?: (Record<string, unknown> | undefined)[];
+}
+const { title, description, page = '', langs = 'en', lang = 'en', dir = 'ltr', noindex = false } = Astro.props;
+/* Fonts are self-hosted (src/styles/fonts.css). Only the faces used above the fold are preloaded. */
+const preload = [...fonts.preload.latin, ...(lang === 'ar' ? fonts.preload.arabic : [])];
+const { ogType = 'website', jsonLd = [] } = Astro.props;
+const image = abs(Astro.props.ogImage || await ogImageFor(Astro.url.pathname));
+/* The share title drops the site suffix; the site name is its own tag. */
+const shareTitle = title.replace(/ · AIUXAleem$/, '');
+const canonical = Astro.props.canonical || new URL(Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/'), Astro.site);
+---
+<!doctype html>
+<html lang={lang} dir={dir} data-langs={langs} data-page={page}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {languageAlternates(Astro.url.pathname).map(a => <link rel="alternate" hreflang={a.lang} href={a.href} />)}
+    <meta property="og:site_name" content={site.brand} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={shareTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={shareTitle} />
+    <meta property="og:locale" content={lang === 'ar' ? 'ar_AR' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={shareTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+    <meta name="twitter:image:alt" content={shareTitle} />
+    <link rel="alternate" type="application/rss+xml" title="AIUXAleem blog" href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title="AIUXAleem writing" href="/writing/rss.xml" />
+    {jsonLd.filter(Boolean).map(o => <script type="application/ld+json" set:html={JSON.stringify(o).replace(/</g, '\\u003c')} />)}
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#0B1F36" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <!-- Theme before first paint. Same order as the legacy boot script: ?theme, stored choice, system preference. -->
+    <script is:inline>
+      (function () {
+        var d = document.documentElement, q = new URLSearchParams(location.search), t = q.get('theme');
+        if (t !== 'light' && t !== 'dark') { try { t = localStorage.getItem('aiuxaleem-theme'); } catch (e) {} }
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        d.setAttribute('data-theme', t);
+      })();
+    </script>
+    {preload.map(href => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
+  </head>
+  <body>
+    <slot />
+    <script>
+      import '../components/islands/site-chrome.ts';
+    </script>
+    <script>
+      import '../components/islands/reveal.ts';
+    </script>
+  </body>
+</html>

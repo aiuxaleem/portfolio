@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+reports/
+# Baseline screenshots are regenerated from legacy/ (npm run baseline:capture); only the manifest is tracked.
+tests/baseline/*.png
+docs/audit-evidence/
+.DS_Store
+tests/baseline-current/*.png

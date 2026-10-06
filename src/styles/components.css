@@ -1,0 +1,85 @@
+/* Small shared pieces used by more than one component: the theme-aware badge and the empty-state card. */
+/* Badge that follows the theme (surface and text tokens), used for status and tags on new pages. */
+.ui-badge { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: var(--radius-pill); font-size: var(--text-caption); font-weight: var(--weight-semibold); line-height: 1.2; background: var(--surface-sunken); color: var(--text-muted); border: 1px solid var(--border-default); overflow-wrap: anywhere; max-inline-size: 100%; }
+/* Empty states used by the project list, the filters and the updates log. */
+.project-empty { display: grid; gap: var(--space-3); padding: var(--space-8); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
+.project-empty[hidden], .project-filters[hidden] { display: none; }
+.project-empty-title { margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong); }
+.project-empty-body { margin: 0; color: var(--text-muted); }
+/* Dated updates log (project page and /_states). */
+.project-updates { display: grid; gap: var(--space-4); }
+.project-updates li { display: grid; gap: var(--space-2); padding: var(--space-6); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
+.project-updates time { font-family: var(--font-mono); font-size: var(--text-mono); color: var(--text-subtle); }
+.project-updates h3 { margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong); overflow-wrap: anywhere; }
+.project-updates p { margin: 0; line-height: var(--leading-relaxed); color: var(--text-body); }
+.project-updates a { inline-size: fit-content; min-block-size: var(--tap-target); display: inline-flex; align-items: center; font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none; }
+
+
+/* Detail-page pieces shared by project and case study pages: section heading, meta strip, cover, related link, pager, ink panel, prose. */
+.project-h2 { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); }
+.project-meta { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: var(--space-4) var(--space-6); padding-block: var(--space-5); border-block: 1px solid var(--border-subtle); }
+.project-meta dt { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
+.project-meta dd { margin: 0; font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-strong); overflow-wrap: anywhere; }
+.project-cover { position: relative; aspect-ratio: var(--aspect-video); border-radius: var(--radius-xl); overflow: hidden; background: var(--surface-sunken); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
+.project-cover img { inline-size: 100%; block-size: 100%; object-fit: cover; object-position: top center; }
+.project-related { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-6); border-radius: var(--radius-xl); border: 1px solid var(--border-default); color: var(--text-link); text-decoration: none; transition: transform var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out); }
+.project-related strong { display: block; font-size: var(--text-h4); color: var(--text-strong); }
+@media (hover: hover) { .project-related:hover { transform: translateY(var(--lift-hover)); box-shadow: var(--shadow-lg); } }
+.project-pager { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); padding-block: var(--space-6); border-block-start: 1px solid var(--border-subtle); }
+.project-pager a { display: grid; gap: var(--space-1); min-block-size: var(--tap-target); text-decoration: none; color: var(--text-link); }
+.project-pager a span { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
+.project-pager a strong { font-size: var(--text-body-md); overflow-wrap: anywhere; }
+.project-cta { background: var(--gradient-ink); color: var(--on-ink-body); border-radius: var(--radius-2xl); }
+/* The decorative title on a missing-cover fallback is clamped; the full title is the heading next to it. */
+.project-cover [data-cover-fallback] > span, .project-card-media [data-cover-fallback] > span, .embed-frame [data-cover-fallback] > span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; max-inline-size: 100%; }
+/* Case study deck (Home hero): the text on a card is a teaser, clamped so a long title cannot push the screenshot out of
+   the card. The full text is on the case study page the card links to. */
+[data-deck-title], [data-deck-line] { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; overflow-wrap: anywhere; }
+/* The kicker is set in spaced capitals; a long unbroken value must still wrap inside the card. */
+html [data-deck-kicker], html [data-deck-kicker] span { overflow-wrap: anywhere; }
+/* The still deck on /_states shows its front card only (the cards behind it are stacked out of sight by the script on Home). */
+[data-deck-static] > li:not(:first-child) { display: none; }
+/* Long-form copy from the editor (MDX body). */
+.prose { display: grid; gap: var(--space-4); }
+.prose h2 { margin: var(--space-6) 0 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); }
+.prose h3 { margin: var(--space-4) 0 0; font-size: var(--text-h3); color: var(--text-strong); }
+.prose p, .prose li { margin: 0; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); max-inline-size: var(--measure-body); }
+.prose ul, .prose ol { display: grid; gap: var(--space-2); padding-inline-start: var(--space-5); list-style: revert; }
+/* Plain links in running text. Components inside the body (buttons, cards) keep their own link styles. */
+.prose a:not([class]) { color: var(--text-link); text-decoration: underline; text-underline-offset: 0.22em; }
+
+/* Card used by the project list and the case study list (CLAUDE.md 2.7). */
+.project-card { position: relative; display: flex; flex-direction: column; block-size: 100%; border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); overflow: hidden; transition: transform var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out); }
+.project-card-media { position: relative; aspect-ratio: var(--aspect-case); background: var(--surface-sunken); overflow: hidden; }
+.project-card-media img { inline-size: 100%; block-size: 100%; object-fit: cover; object-position: top center; }
+.project-card-body { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-6); flex: 1 1 auto; }
+.project-card-meta { margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.project-card-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; }
+/* The link box is 44px tall (tap target) without moving the title: padding is cancelled by an equal negative margin. */
+.project-card-link { display: flex; align-items: center; min-block-size: var(--tap-target); padding-block: var(--space-2); margin-block: calc(var(--space-2) * -1); color: inherit; text-decoration: none; }
+.project-card-link::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.project-card-summary { margin: 0; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); }
+.project-card-tags { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.project-card-cta { margin-block-start: auto; display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); }
+.project-card-cta svg { transition: transform var(--duration-base) var(--ease-out); }
+.project-card:has(.project-card-link:focus-visible) { box-shadow: var(--shadow-lg); }
+.project-card-link:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; border-radius: var(--radius-xs); }
+@media (hover: hover) {
+  .project-card:hover { transform: translateY(var(--lift-hover)); box-shadow: var(--shadow-lg); }
+  .project-card:hover .project-card-cta svg { transform: translateX(calc(3px * var(--dir-x))) scaleX(var(--dir-x)); }
+}
+
+/* Filter bar and the chip (toggle button), used by the project filters and the before/after comparison. */
+.project-filters { display: grid; gap: var(--space-4); }
+.project-filter-group { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+/* On phones the label takes its own line, so the chips beside it cannot wrap differently when the web font arrives (L-01). */
+.project-filter-label { flex-basis: 100%; min-inline-size: 5ch; font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); margin-inline-end: var(--space-2); }
+@media (min-width: 640px) { .project-filter-label { flex-basis: auto; } }
+.project-filter-count { margin: 0; font-size: var(--text-body-sm); color: var(--text-muted); }
+/* Chip: same values as the design-system Chip, at the 44px minimum target height. */
+.ui-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; border-radius: var(--radius-pill); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font-family: var(--font-sans); font-size: var(--text-ui); font-weight: var(--weight-semibold); line-height: 1; cursor: pointer; transition: background var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out), transform var(--duration-fast) var(--ease-spring); }
+.ui-chip[aria-pressed="true"] { background: var(--action-ink); border-color: var(--action-ink); color: var(--surface-card); }
+/* Selected state is not colour alone: a check mark is added before the label. */
+.ui-chip[aria-pressed="true"]::before { content: "✓"; font-weight: var(--weight-bold); }
+.ui-chip:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
+@media (hover: hover) { .ui-chip:not([aria-pressed="true"]):hover { background: var(--action-secondary-hover); transform: translateY(-1px); } }

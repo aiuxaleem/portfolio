@@ -1,0 +1,19 @@
+---
+/* Case study card: the card used on /case-studies, as a component so the home page can use the same one. */
+import { Image } from 'astro:assets';
+import { type CaseStudy, readingTime } from '../../lib/case-studies';
+
+interface Props { entry: CaseStudy; level?: 2 | 3; /** The first card of a list at the top of a page: its image loads at once, ahead of the others. */ first?: boolean }
+const { entry, level = 2, first = false } = Astro.props;
+const d = entry.data;
+const Heading = `h${level}` as any;
+---
+<article class="project-card">
+  <div class="project-card-media">{d.cover ? <Image src={d.cover.src} alt={d.cover.alt} widths={[400, 640, 960]} sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" loading={first ? 'eager' : 'lazy'} fetchpriority={first ? 'high' : undefined} decoding="async" /> : <div data-cover-fallback aria-hidden="true"><span>{d.title}</span></div>}</div>
+  <div class="project-card-body">
+    <p class="case-kicker">{[d.index, d.category, readingTime(d, entry.body)].filter(Boolean).join(' · ')}</p>
+    <Heading class="project-card-title"><a class="project-card-link" href={`/case-studies/${entry.id}`}>{d.title}</a></Heading>
+    <p class="project-card-summary">{d.lead}</p>
+    <span class="project-card-cta" aria-hidden="true">Read the case study <svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span>
+  </div>
+</article>

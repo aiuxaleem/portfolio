@@ -1,0 +1,211 @@
+{
+  "headline": "Lead AI Product Designer",
+  "positioning": "I design AI products and the design systems behind them, so that what a model produces is something a person can check, trust and act on.",
+  "summary": [
+    "I'm Mohammad Abdul Aleem, a Lead AI Product Designer in Hyderabad. Thirteen-plus years in enterprise UX taught me that trust is a design outcome: it comes from clear states, honest copy, accessible components and systems that behave the same way every time.",
+    "Today I spend most of my time on design systems that engineers and AI agents can both consume, and on the product flows where a model's output meets a person who has to act on it."
+  ],
+  "principles": [
+    {
+      "title": "Trust is designed, not declared",
+      "body": "Every AI state, thinking, unsure, wrong, recovering, gets a deliberate design. A confident UI over an uncertain model is a lie users eventually catch."
+    },
+    {
+      "title": "Ship the system, not the screen",
+      "body": "Tokens, components and spec files outlive any single mock-up. If an engineer or an agent can't rebuild it from the spec, it isn't done."
+    },
+    {
+      "title": "Accessible by default",
+      "body": "WCAG 2.2 AA is the floor, checked in code, not a final-week audit. It is also the fastest way to make AI output readable by everyone."
+    }
+  ],
+  "career": [
+    {
+      "company": "Colaberry",
+      "role": "Lead AI Product Designer",
+      "start": "2025-01",
+      "end": "",
+      "location": "Hyderabad",
+      "summary": "Design across product, marketing, AI research and AI agent teams: enterprise products, web experiences, multi-brand design systems and AI-assisted workflows.",
+      "highlights": [
+        "Created and maintain the Colaberry Design System, which developers and coding agents use to build on-brand interfaces.",
+        "Redesigned the AI Systems Architect Accelerator homepage and three audience landing pages with Claude Design, and led site-wide QA.",
+        "Designed learner-portal features that are in production: gamification, presence and chat.",
+        "Rebranded an AI freight platform: brand identity, design system and a modernised console in light and dark themes.",
+        "Wrote UI improvement prompt packs and design direction playbooks for AI-assisted development.",
+        "Mentor the UX team and support AgentCory with UX flows and explainers."
+      ],
+      "verify": ""
+    },
+    {
+      "company": "NTT DATA",
+      "role": "Senior Product Designer",
+      "start": "2024-06",
+      "end": "2024-12",
+      "location": "Hyderabad",
+      "summary": "Modernised legacy enterprise interfaces for financial-services work, with accessibility as part of the brief.",
+      "highlights": [
+        "Ran user research and usability testing so design decisions rested on what users did.",
+        "Led design workshops that aligned stakeholders on the problem before the solution.",
+        "Designed real-time metric dashboards for stakeholders.",
+        "Brought the work to WCAG conformance."
+      ],
+      "verify": ""
+    },
+    {
+      "company": "NTT DATA",
+      "role": "Associate Business Analyst",
+      "start": "2024-02",
+      "end": "2024-05",
+      "location": "Hyderabad",
+      "summary": "Analysed customer-letter processes for a financial-services client and defined the requirements for automating them.",
+      "highlights": [
+        "Delivered flow maps, personas and solution documentation for each letter type."
+      ],
+      "verify": ""
+    },
+    {
+      "company": "NTT DATA",
+      "role": "Product Designer",
+      "start": "2022-06",
+      "end": "2024-01",
+      "location": "Hyderabad",
+      "summary": "Designer in a small agile web team for a financial-services client, working in quarterly sprints.",
+      "highlights": [
+        "Produced high-fidelity designs inside the client's design system and design language.",
+        "Redesigned mobile app interfaces and web pages.",
+        "Worked with the digital marketing team on page layouts and search requirements."
+      ],
+      "verify": ""
+    },
+    {
+      "company": "Teqsar",
+      "role": "Lead Designer",
+      "start": "2019-10",
+      "end": "2022-06",
+      "location": "Hyderabad",
+      "summary": "Led the design of a fintech platform.",
+      "highlights": [
+        "Built reusable design frameworks so new work started from shared parts.",
+        "Refined the interface through A/B tests and behaviour analytics (Google Analytics, Hotjar)."
+      ],
+      "verify": ""
+    },
+    {
+      "company": "Click2Clinic Healthcare",
+      "role": "UI Designer",
+      "start": "2015-09",
+      "end": "2019-09",
+      "location": "Hyderabad",
+      "summary": "Designed responsive healthcare web applications with agile development teams.",
+      "highlights": [],
+      "verify": ""
+    },
+    {
+      "company": "Ray SEO",
+      "role": "Web Designer",
+      "start": "2014-06",
+      "end": "2015-07",
+      "location": "",
+      "summary": "Designed websites where search visibility and usability were joint requirements.",
+      "highlights": [],
+      "verify": ""
+    }
+  ],
+  "expertise": [
+    {
+      "title": "AI product design",
+      "body": "Flows where a model's output meets a person who has to act on it: states for thinking, unsure and wrong, review steps, and honest copy."
+    },
+    {
+      "title": "Enterprise UX",
+      "body": "Dashboards, workflows and data-heavy internal tools, where clarity under load is the job."
+    },
+    {
+      "title": "Design systems",
+      "body": "Tokens, accessible components and spec files that engineers and coding agents can both build from."
+    },
+    {
+      "title": "Research and UX strategy",
+      "body": "User research, usability testing, process mapping and stakeholder workshops that settle the problem before the solution."
+    },
+    {
+      "title": "Interaction design and prototyping",
+      "body": "From flows to high-fidelity prototypes and implementation guidance for the team that builds it."
+    },
+    {
+      "title": "Design leadership",
+      "body": "Mentoring designers, running design QA and working across product, marketing, sales and engineering."
+    }
+  ],
+  "aiWorkflow": [
+    {
+      "title": "Understand the workflow",
+      "body": "I start with the business problem and how the work is done today, before any screen."
+    },
+    {
+      "title": "Redesign it",
+      "body": "I redraw the workflow around the person who has to act, and decide where a model helps and where a person must check."
+    },
+    {
+      "title": "Build it with AI",
+      "body": "I use Claude and other generative tools every day for UI exploration, interaction design, documentation and reusable prompts, working from a design system so the output stays on-system."
+    },
+    {
+      "title": "Validate it with people",
+      "body": "I prototype, test with users and stay with the work through design-to-development handoff until it is in production."
+    }
+  ],
+  "tools": [
+    "Figma",
+    "Claude",
+    "ChatGPT",
+    "Webflow",
+    "Canva",
+    "NotebookLM",
+    "HubSpot",
+    "GoHighLevel"
+  ],
+  "education": [
+    {
+      "school": "Jawaharlal Nehru Technological University",
+      "qualification": "Bachelor of Technology, Information Technology",
+      "verify": ""
+    },
+    {
+      "school": "Learners Point Academy, Dubai",
+      "qualification": "Training in Artificial Intelligence and Machine Learning (KHDA attested, 65 hours)",
+      "verify": ""
+    }
+  ],
+  "now": {
+    "updated": "2026-10",
+    "building": [
+      {
+        "title": "Learner portal: gamification, presence and chat",
+        "status": "In production",
+        "body": "Points, tiers, streaks and leaderboards are live. Next: measure retention."
+      },
+      {
+        "title": "AgentCory",
+        "status": "Ongoing",
+        "body": "UX flows and explainers for an AI agent product."
+      },
+      {
+        "title": "Design Direction Playbooks",
+        "status": "Ongoing",
+        "body": "Prompt packs that let coding agents build on-brand UI."
+      },
+      {
+        "title": "AI Systems Architect Accelerator",
+        "status": "Shipped",
+        "body": "Homepage and three audience landing pages, designed with Claude."
+      }
+    ],
+    "verify": ""
+  },
+  "contactForm": {
+    "formspreeId": "",
+    "verify": ""
+  }
+}

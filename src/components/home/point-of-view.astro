@@ -1,0 +1,39 @@
+---
+/* Home "Point of view" section, carried over from the legacy page. The portrait goes through the image pipeline. */
+import { getImage } from 'astro:assets';
+import portraitFile from '../../assets/people/portrait-home.webp';
+const portrait = await getImage({ src: portraitFile, widths: [240, 480] });
+---
+<section id="about" data-section="" aria-labelledby="about-title" style="padding-block: var(--section-y);">
+    <div class="cory-container cory-split" style="gap: var(--space-12) var(--space-16); align-items: center;">
+      <div style="display: grid; gap: var(--space-6);">
+        <p data-reveal="" id="about-title" class="cory-overline" style="margin: 0px;"><span class="sc-interp">Point of view</span></p>
+        <h2 data-manifesto-text="" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-tight); letter-spacing: var(--tracking-tighter); color: var(--text-strong);"><span class="sc-interp">AI is fast. Trust is slow. I design the gap.</span></h2>
+        <a data-link="" data-reveal="" href="/about" hreflang="en" style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;"><span class="sc-interp">More about me</span><svg data-dir-icon="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
+      </div>
+      <div data-reveal="" data-stack="" style="display: grid; grid-template-columns: minmax(0px, 220px) minmax(0px, 1fr); gap: var(--space-6) var(--space-8); align-items: start;">
+        <div style="position: relative; inline-size: min(100%, 240px); aspect-ratio: var(--aspect-portrait); border-radius: var(--radius-xl); overflow: hidden; background: var(--gradient-ink); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-md);">
+          <div data-cover-fallback="" aria-hidden="true" style="align-items: center; justify-content: center; padding: 0px;"><span lang="en" dir="ltr" style="font-size: var(--text-metric-lg); max-inline-size: none; color: var(--on-ink-muted);"><span class="sc-interp">MA</span></span></div>
+          <div style="position: absolute; inset: 0px;"><span data-image-box="portrait-home" data-alt="Portrait: Mohammad Abdul Aleem" style="display:block;position:relative;inline-size:100%;block-size:100%;aspect-ratio:3/2;overflow:hidden;"><img src={portrait.src} srcset={portrait.srcSet.attribute} sizes="240px" alt="Portrait of Mohammad Abdul Aleem" width={portrait.attributes.width} height={portrait.attributes.height} loading="lazy" decoding="async" style="position:absolute;display:block;max-width:none;left:50%;top:50%;width:100%;height:100%;transform:translate(-50%,-50%);object-fit:cover;" /></span></div>
+        </div>
+        <dl style="margin: 0px; display: grid; gap: var(--space-4);">
+          
+            <div style="display: grid; gap: var(--space-1); padding-block-start: var(--space-4); border-block-start: 1px solid var(--border-subtle);">
+              <dt style="font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle);"><span class="sc-interp">Based in</span></dt>
+              <dd style="margin: 0px; font-size: var(--text-body-lg); font-weight: var(--weight-semibold); line-height: var(--leading-snug); color: var(--text-strong);"><span class="sc-interp">Hyderabad, India</span></dd>
+            </div>
+          
+            <div style="display: grid; gap: var(--space-1); padding-block-start: var(--space-4); border-block-start: 1px solid var(--border-subtle);">
+              <dt style="font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle);"><span class="sc-interp">Hours</span></dt>
+              <dd style="margin: 0px; font-size: var(--text-body-lg); font-weight: var(--weight-semibold); line-height: var(--leading-snug); color: var(--text-strong);"><span class="sc-interp">GCC working hours</span></dd>
+            </div>
+          
+            <div style="display: grid; gap: var(--space-1); padding-block-start: var(--space-4); border-block-start: 1px solid var(--border-subtle);">
+              <dt style="font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle);"><span class="sc-interp">Experience</span></dt>
+              <dd style="margin: 0px; font-size: var(--text-body-lg); font-weight: var(--weight-semibold); line-height: var(--leading-snug); color: var(--text-strong);"><span class="sc-interp">13+ years, enterprise UX to AI products</span></dd>
+            </div>
+          
+        </dl>
+      </div>
+    </div>
+  </section>

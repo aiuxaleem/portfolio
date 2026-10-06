@@ -1,0 +1,7 @@
+title: Fixture video with every field
+youtubeId: aaaaaaaaaaa
+published: 2026-02-01
+duration: PT4M30S
+description: Fixture description of the video. It is never published.
+tags: [Fixture, Design systems]
+fixture: true

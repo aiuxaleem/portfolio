@@ -1,0 +1,12 @@
+---
+/* The guide migrated from the legacy site. Its body is still the snapshot; its entry in the posts collection supplies the
+   structured data. */
+import { getEntry } from 'astro:content';
+import SnapshotPage from '../../layouts/snapshot-page.astro';
+import snapshot from '../../snapshots/guide.json';
+import { blogPostingLd, breadcrumbLd, ogImageFor } from '../../lib/seo';
+import { postUrl } from '../../lib/posts';
+const post = await getEntry('posts', 'component-spec-files');
+const jsonLd = post ? [blogPostingLd(post, await ogImageFor(postUrl(post))), breadcrumbLd([['Blog', '/blog'], [post.data.title, postUrl(post)]])] : [];
+---
+<SnapshotPage snapshot={snapshot} ogType="article" jsonLd={jsonLd} />

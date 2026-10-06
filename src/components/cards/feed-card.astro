@@ -1,0 +1,27 @@
+---
+/* Card for one item in the Writing feed. Same card recipe as the project card, without media: one link, the whole card
+   clickable. A LinkedIn item opens LinkedIn in a new tab, says so, and carries the diagonal arrow. */
+import { type FeedItem, feedTypes } from '../../lib/writing';
+import { formatDate } from '../../lib/posts';
+
+interface Props { item: FeedItem; level?: 2 | 3 }
+const { item, level = 2 } = Astro.props;
+const Heading = `h${level}` as any;
+---
+<article class="project-card" data-project data-status={item.type} data-tags={item.tags.join('|')}>
+  <div class="project-card-body">
+    <p class="project-card-meta"><span class="ui-badge">{feedTypes[item.type]}</span></p>
+    <Heading class="project-card-title">
+      {item.external
+        ? <a class="project-card-link" href={item.href} target="_blank" rel="noopener">{item.title}<span class="cory-visually-hidden"> (opens LinkedIn in a new tab)</span></a>
+        : <a class="project-card-link" href={item.href}>{item.title}</a>}
+    </Heading>
+    {item.date && <p class="case-kicker">{item.dateLabel && `${item.dateLabel} `}<time datetime={item.date.toISOString().slice(0, 10)}>{formatDate(item.date)}</time></p>}
+    {item.excerpt && <p class="project-card-summary">{item.excerpt}</p>}
+    {item.tags.length > 0 && <ul class="project-card-tags" aria-label="Topics">{item.tags.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul>}
+    <span class="project-card-cta" aria-hidden="true">
+      {item.external ? 'Read on LinkedIn' : 'Read the post'}
+      <svg data-dir-icon={item.external ? undefined : ''} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d={item.external ? 'M7 7h10v10M7 17 17 7' : 'M5 12h14M12 5l7 7-7 7'}></path></svg>
+    </span>
+  </div>
+</article>

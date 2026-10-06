@@ -1,0 +1,4 @@
+title: A deliberately long one hundred and twenty character title used to test how every heading wraps across narrow screens ok
+url: https://example.com/an-unbroken-string-of-sixty-characters-x1
+tags: [Design systems, Accessibility, Tokens, AI workflow, Prototyping, Research, Motion, Arabic and RTL, Handoff]
+fixture: true

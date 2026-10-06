@@ -1,0 +1,393 @@
+/* Copied verbatim from legacy/site.css lines 13-448 (colour, type, layout and motion tokens, keyframes, reveal utilities). Do not edit values here without an approved finding. */
+/* ---- tokens/colors.css ---- */
+/* ===========================================================================
+   AgentCory: Color tokens
+   Brand: deep navy ink + blue→cyan signal gradient on cool off-white surfaces.
+   Two themes: light (default) and dark. Switch with <html data-theme="dark">;
+   ThemeToggle (or the one-line script at the bottom) applies the OS preference.
+   =========================================================================== */
+:root {
+  color-scheme: light;
+  /* --- Brand: Navy (the Cory mascot ink) --- */
+  --navy-950: #040C16;
+  --navy-900: #06121F;
+  --navy-850: #0E2440; /* dark-theme card */
+  --navy-800: #0B1F36; /* core brand navy */
+  --navy-700: #12304F;
+  --navy-600: #1B4068;
+  --navy-500: #2A547F;
+  --navy-400: #4C7197;
+  --navy-300: #8197AF;
+  --navy-200: #BCC7D5;
+  --navy-100: #DEE4EC;
+
+  /* --- Brand: Blue (signal / primary action, gradient start) --- */
+  --blue-700: #1568D4;
+  --blue-600: #1B79EC;
+  --blue-500: #258AFD; /* gradient start */
+  --blue-400: #5AA7FE;
+  --blue-300: #91C4FE;
+  --blue-200: #C2DEFF;
+  --blue-100: #E6F1FF;
+
+  /* --- Brand: Cyan (gradient end) --- */
+  --cyan-700: #0E7F9E; /* AA-safe cyan: white text ≥ 4.5:1 */
+  --cyan-800: #095A70; /* AA text on cyan-100 (5.2:1) */
+  --cyan-600: #169FC0;
+  --cyan-500: #29BEDD; /* gradient end */
+  --cyan-400: #5FD0E8;
+  --cyan-300: #95E1F0;
+  --cyan-200: #C4EEF8;
+  --cyan-100: #E6F8FC;
+
+  /* --- Neutrals (cool slate, tuned to the #F4F5FA surface) --- */
+  --white: #FFFFFF;
+  --slate-50: #F4F5FA;  /* page surface */
+  --slate-100: #ECEEF4;
+  --slate-150: #E2E5EE;
+  --slate-200: #D5D9E4;
+  --slate-300: #B9BFCF;
+  --slate-400: #939BAE;
+  --slate-500: #6E7689;
+  --slate-550: #636B7E; /* 4.6:1 on the page surface, 5.1:1 on white */
+  --slate-600: #525A6B;
+  --slate-700: #3B4253;
+  --slate-800: #262C3A;
+  --slate-900: #151A26;
+
+  /* --- Semantic scales --- */
+  --green-700: #0E7A4E;  /* AA text on green-100 / white */
+  --green-500: #1FB877;  /* success / positive metric (fills, dots, large text only) */
+  --green-100: #DCF6EC;
+  --amber-700: #7A4F00;  /* AA text on amber-100 */
+  --amber-500: #F5A524;  /* warning */
+  --amber-100: #FDF0D9;
+  --red-700: #B42318;    /* AA text on red-100 / white */
+  --red-500: #E5484D;    /* error / negative (fills, borders) */
+  --red-100: #FBE3E4;
+
+  /* --- Brand gradient --- */
+  --gradient-brand: linear-gradient(90deg, #258AFD 0%, #29BEDD 100%); /* @kind color */ /* decorative + large text (≥24px) */
+  --gradient-brand-135: linear-gradient(135deg, #258AFD 0%, #29BEDD 100%); /* @kind color */
+  --gradient-brand-deep: linear-gradient(90deg, #1568D4 0%, #0E7F9E 100%); /* @kind color */ /* white label passes AA at any size */
+  --gradient-ink: linear-gradient(160deg, #12304F 0%, #0B1F36 100%); /* @kind color */
+
+  /* --- Glows (off-edge radial accents; the brand's substitute for texture) --- */
+  --glow-cyan: radial-gradient(circle, rgba(41, 190, 221, 0.35) 0%, rgba(41, 190, 221, 0) 70%); /* @kind color */
+  --glow-blue: radial-gradient(circle, rgba(37, 138, 253, 0.30) 0%, rgba(37, 138, 253, 0) 70%); /* @kind color */
+  --glow-cyan-strong: radial-gradient(circle, rgba(41, 190, 221, 0.55) 0%, rgba(41, 190, 221, 0) 70%); /* @kind color */
+
+  /* =====================================================================
+     Semantic aliases: reach for these in components, not raw scales
+     ===================================================================== */
+  --text-strong: var(--navy-800);
+  --text-body: var(--slate-700);
+  --text-muted: var(--slate-600);   /* 6.5:1 on page, AA for body copy */
+  --text-subtle: var(--slate-550);  /* 4.6:1 on page, captions/labels minimum */
+  --text-disabled: var(--slate-400); /* decorative only; never for information */
+  --text-on-brand: var(--white);
+  --text-link: var(--blue-700);     /* 5.3:1 on white */
+  --text-link-hover: var(--blue-600);
+  --text-success: var(--green-700);
+  --text-warning: var(--amber-700);
+  --text-danger: var(--red-700);
+
+  --surface-page: var(--slate-50);
+  --surface-card: var(--white);
+  --surface-raised: var(--white);
+  --surface-sunken: var(--slate-100);
+  --surface-ink: var(--navy-800);
+  --surface-tile: var(--slate-50);
+  --surface-header: rgba(255, 255, 255, 0.85);
+  --surface-overlay: rgba(11, 31, 54, 0.55); /* @kind color */
+
+  --border-subtle: var(--slate-150);
+  --border-default: var(--slate-200);
+  --border-strong: var(--slate-300);
+  --border-interactive: var(--slate-500); /* 4.6:1, the only border allowed as a sole affordance */
+  --border-focus: var(--blue-500);
+
+  --action-primary: var(--blue-500);
+  --action-primary-hover: var(--blue-600);
+  --action-primary-active: var(--blue-700);
+  --action-ink: var(--navy-800);
+  --action-ink-hover: var(--navy-700);
+  --action-ink-active: var(--navy-900);
+  --action-secondary-hover: var(--slate-50);
+  --action-ghost-hover: var(--blue-100);
+
+  --focus-ring: rgba(37, 138, 253, 0.35);
+  --accent-mint: var(--green-500);
+
+  /* --- On-ink (text/borders over --surface-ink / --gradient-ink; theme-stable) --- */
+  --on-ink-strong: #FFFFFF;
+  --on-ink-body: rgba(255, 255, 255, 0.78);  /* 10.5:1 */
+  --on-ink-muted: rgba(255, 255, 255, 0.64); /* 7.4:1 */
+  --on-ink-link: var(--cyan-400);            /* 9.2:1 */
+  --on-ink-border: rgba(255, 255, 255, 0.12);
+  --on-ink-border-strong: rgba(255, 255, 255, 0.28);
+  --on-ink-fill: rgba(255, 255, 255, 0.08);
+  --on-ink-fill-hover: rgba(255, 255, 255, 0.14);
+}
+
+/* ===========================================================================
+   Dark theme: surfaces step up through navy; shadows become black + glow.
+   =========================================================================== */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --text-strong: #FFFFFF;
+  --text-body: var(--navy-100);
+  --text-muted: var(--navy-200);
+  --text-subtle: #9DB0C6; /* 6.1:1 on navy-850, 4.6:1 on navy-700 */
+  --text-disabled: var(--navy-500);
+  --text-on-brand: #FFFFFF;
+  --text-link: var(--blue-400);
+  --text-link-hover: var(--blue-300);
+  --text-success: #5FD9A5;
+  --text-warning: #FFC766;
+  --text-danger: #FF8A8E;
+
+  --surface-page: var(--navy-900);
+  --surface-card: var(--navy-850);
+  --surface-raised: var(--navy-700);
+  --surface-sunken: var(--navy-950);
+  --surface-ink: var(--navy-950);
+  --surface-tile: var(--navy-700);
+  --surface-header: rgba(6, 18, 31, 0.82);
+  --surface-overlay: rgba(4, 12, 22, 0.70);
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-default: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  --border-interactive: rgba(255, 255, 255, 0.48);
+  --border-focus: var(--blue-400);
+
+  --action-primary: var(--blue-500);
+  --action-primary-hover: var(--blue-400);
+  --action-primary-active: var(--blue-600);
+  --action-ink: #FFFFFF;
+  --action-ink-hover: var(--navy-100);
+  --action-ink-active: var(--navy-200);
+  --action-secondary-hover: var(--navy-700);
+  --action-ghost-hover: rgba(90, 167, 254, 0.14);
+
+  --focus-ring: rgba(90, 167, 254, 0.45);
+  --gradient-ink: linear-gradient(160deg, #0E2440 0%, #06121F 100%); /* @kind color */
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.30);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.32);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.36);
+  --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.42);
+  --shadow-xl: 0 32px 72px rgba(0, 0, 0, 0.50);
+  --shadow-brand: 0 12px 32px rgba(37, 138, 253, 0.40);
+  --shadow-glow: 0 0 0 1px rgba(255,255,255,0.08), 0 0 48px rgba(41, 190, 221, 0.18);
+}
+
+/* OS preference: CSS can't alias a media query onto [data-theme], so set the
+   attribute once at load (ThemeToggle does this automatically):
+   <script>document.documentElement.dataset.theme ||= matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script> */
+
+/* ---- tokens/typography.css ---- */
+/* ===========================================================================
+   AgentCory: Typography tokens
+   Plus Jakarta Sans across the brand; JetBrains Mono for data/metrics readouts.
+   Fixed steps for components; fluid steps for marketing/portfolio display.
+   =========================================================================== */
+:root {
+  /* --- Families --- */
+  --font-sans: 'Plus Jakarta Sans', 'Plus Jakarta Sans Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Plus Jakarta Sans Fallback', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* --- Weights --- */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+
+  /* --- Fixed type scale (px) --- */
+  --text-display-2xl: 72px;
+  --text-display-xl: 60px;
+  --text-display-lg: 48px;
+  --text-display-md: 40px;
+  --text-h1: 34px;
+  --text-h2: 28px;
+  --text-h3: 22px;
+  --text-h4: 18px;
+  --text-body-lg: 18px;
+  --text-body-md: 16px; /* renamed from --text-body (finding M-02): that name is the body colour token */
+  --text-body-sm: 14px;
+  --text-caption: 13px;
+  --text-overline: 12px;
+  --text-micro: 11px;   /* badge sm, legal, minimum size in the system */
+
+  /* --- UI control text (buttons, inputs, chips, tabs) --- */
+  --text-ui-sm: 14px;
+  --text-ui: 15px;
+  --text-ui-lg: 17px;
+  --text-label: 13px;   /* field labels, hints */
+
+  /* --- Metric (the biggest thing on screen is usually a number) --- */
+  --text-metric-xl: clamp(56px, 7vw, 88px); /* @kind font */
+  --text-metric-lg: clamp(40px, 6vw, 56px); /* @kind font */
+  --text-metric-md: 36px;
+  --text-metric-sm: 28px;
+
+  /* --- Fluid display (marketing / portfolio; shrink gracefully to 360px) --- */
+  --text-fluid-display: clamp(40px, 5.6vw, 72px); /* @kind font */
+  --text-fluid-title: clamp(32px, 4vw, 48px); /* @kind font */
+  --text-fluid-h2: clamp(24px, 2.8vw, 34px); /* @kind font */
+  --text-fluid-lead: clamp(16px, 1.5vw, 19px); /* @kind font */
+
+  /* --- Mono scale --- */
+  --text-mono-sm: 12px;
+  --text-mono: 13px;
+  --text-mono-lg: 15px;
+
+  /* --- Line heights --- */
+  --leading-none: 1; /* @kind other */
+  --leading-tight: 1.05;
+  --leading-snug: 1.18;
+  --leading-heading: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+  --leading-mono: 1.7; /* @kind other */
+
+  /* --- Letter spacing --- */
+  --tracking-tighter: -0.03em;
+  --tracking-tight: -0.018em;
+  --tracking-ui: -0.01em; /* @kind other */
+  --tracking-normal: 0em;
+  --tracking-wide: 0.02em;
+  --tracking-overline: 0.14em;
+
+  /* --- Measure --- */
+  --measure-body: 68ch; /* @kind other */
+  --measure-lead: 56ch; /* @kind other */
+  --measure-display: 18ch; /* @kind other */
+}
+
+/* ---- tokens/layout.css ---- */
+/* ===========================================================================
+   AgentCory: Spacing, radius, shadow, layer, layout tokens
+   8px base grid. Generous rounding (the brand's signature soft corners).
+   Motion lives in motion.css; breakpoints + grid helpers in responsive.css.
+   =========================================================================== */
+:root {
+  /* --- Spacing scale (8px base) --- */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* --- Gutters & rhythm (fluid; replace the hard-coded 20/28/72–80px) --- */
+  --gutter: clamp(16px, 2.5vw, 28px); /* @kind spacing */          /* page edge padding */
+  --grid-gap: clamp(16px, 1.8vw, 24px); /* @kind spacing */        /* card / bento gap */
+  --section-y: clamp(56px, 7vw, 96px); /* @kind spacing */         /* vertical section padding */
+  --stack-gap: var(--space-4);                 /* default vertical stack */
+
+  /* --- Radius (the logo tile rounds at ~22.7%, soft, friendly) --- */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-pill: 999px;
+  --radius-tile: 22.7%; /* mascot tile corner ratio */
+
+  /* --- Border widths --- */
+  --border-width: 1px; /* @kind other */
+  --border-width-strong: 2px; /* focus outlines, selected chips */
+
+  /* --- Shadows (soft, cool, low-spread, never harsh; dark theme overrides) --- */
+  --shadow-xs: 0 1px 2px rgba(11, 31, 54, 0.06);
+  --shadow-sm: 0 2px 8px rgba(11, 31, 54, 0.06);
+  --shadow-md: 0 8px 24px rgba(11, 31, 54, 0.08);
+  --shadow-lg: 0 18px 48px rgba(11, 31, 54, 0.10);
+  --shadow-xl: 0 32px 72px rgba(11, 31, 54, 0.14);
+  --shadow-brand: 0 12px 32px rgba(37, 138, 253, 0.28);
+  --shadow-brand-hover: 0 16px 36px rgba(37, 138, 253, 0.36); /* primary button, hover; same in both themes */
+  --shadow-glow: 0 0 0 1px rgba(11,31,54,0.04), 0 0 40px rgba(41, 190, 221, 0.14);
+  --shadow-focus: 0 0 0 4px var(--focus-ring);
+
+  /* --- Opacity --- */
+  --opacity-disabled: 0.5; /* @kind other */
+  --opacity-muted: 0.72; /* @kind other */
+  --opacity-hover-media: 0.92; /* @kind other */
+
+  /* --- Blur --- */
+  --blur-header: 12px; /* @kind other */
+  --blur-scrim: 6px; /* @kind other */
+  --blur-glow: 48px; /* @kind other */
+
+  /* --- Z-index layers --- */
+  --z-base: 0; /* @kind other */
+  --z-raised: 10; /* @kind other */
+  --z-sticky: 50; /* @kind other */
+  --z-overlay: 100; /* @kind other */
+  --z-modal: 200; /* @kind other */
+  --z-toast: 300; /* @kind other */
+  --z-tooltip: 400; /* @kind other */
+
+  /* --- Aspect ratios --- */
+  --aspect-video: 16 / 9; /* @kind other */
+  --aspect-photo: 4 / 3; /* @kind other */
+  --aspect-square: 1 / 1; /* @kind other */
+  --aspect-portrait: 4 / 5; /* @kind other */
+  --aspect-story: 9 / 16; /* @kind other */
+  --aspect-cover: 21 / 9; /* @kind other */
+
+  /* --- Layout --- */
+  --container-max: 1200px;
+  --container-wide: 1400px;
+  --container-narrow: 760px;
+  --container-prose: 68ch;
+  --header-height: 72px;
+  --header-height-compact: 60px;
+}
+
+/* ---- tokens/motion.css ---- */
+/* ===========================================================================
+   AgentCory: Motion tokens
+   Restrained by default (fades, 3px lifts, 0.97 press); a cinematic tier for
+   portfolio reveals. Every animation here respects prefers-reduced-motion.
+   =========================================================================== */
+:root {
+  /* --- Easing --- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* @kind other */ /* default: hover, enter */
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1); /* @kind other */ /* light overshoot: chips, toggles */
+
+  /* --- Duration --- */
+  --duration-fast: 140ms; /* @kind other */ /* press */
+  --duration-base: 220ms; /* @kind other */ /* hover, focus */
+  --duration-slow: 380ms; /* @kind other */ /* panels, menus */
+  --duration-enter: 600ms; /* @kind other */ /* content reveal */
+
+  /* --- Delay / stagger --- */
+  --stagger: 70ms; /* @kind other */ /* per-item: calc(var(--i) * var(--stagger)) */
+
+  /* --- Distances --- */
+  --lift-hover: -3px; /* @kind other */
+  --lift-hover-lg: -6px; /* @kind other */
+  --press-scale: 0.97; /* @kind other */
+  --reveal-distance: 24px; /* @kind other */
+}
+
+/* --- Reduced motion: keep state changes, drop movement --- */
+@media (prefers-reduced-motion: reduce) {
+  :root { --duration-enter: 1ms; /* @kind other */ --reveal-distance: 0px; /* @kind other */ --lift-hover: 0px; /* @kind other */ --lift-hover-lg: 0px; /* @kind other */ --press-scale: 1; /* @kind other */ }
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; scroll-behavior: auto !important; }
+}

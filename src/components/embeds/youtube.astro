@@ -1,0 +1,28 @@
+---
+/* YouTube embed behind a click-to-load facade (CLAUDE.md 2.6, 2.9). Nothing is requested from YouTube until the visitor
+   presses play; then the privacy-enhanced player (youtube-nocookie.com) loads. The 16:9 box is reserved from the start,
+   so nothing shifts. States: facade, loading, failed (with Retry and a link to YouTube). Behaviour: islands/embeds.ts */
+interface Props { id: string; title: string; poster?: string; /** Off when the surrounding card shows the title and the link itself. */ caption?: boolean; /** Force a state, for /_states. */ state?: 'facade' | 'loading' | 'failed' }
+const { id, title, poster, caption = true, state = 'facade' } = Astro.props;
+const valid = /^[\w-]{11}$/.test(id);
+const watch = `https://www.youtube.com/watch?v=${id}`;
+---
+<figure class="embed embed-video" data-embed="youtube" data-embed-src={valid ? `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0` : undefined} data-embed-title={title} data-embed-loading="Loading video" data-state={state} data-static={Astro.props.state ? '' : undefined}>
+  <div class="embed-frame">
+    {poster ? <img class="embed-poster" src={poster} alt="" loading="lazy" decoding="async" /> : <div data-cover-fallback aria-hidden="true"><span>{title}</span></div>}
+    {valid
+      ? <button type="button" class="embed-play" data-embed-load><span class="embed-play-disc" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></span><span class="cory-visually-hidden">Play video: {title}</span></button>
+      : <p class="embed-soon"><span class="ui-badge">Video coming soon</span></p>}
+    {valid && <p class="embed-status" role="status">{state === 'loading' ? 'Loading video' : ''}</p>}
+    {valid && <div class="embed-failed">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4M12 16h.01"></path></svg>
+      <p>The video didn't load. Your network may block YouTube.</p>
+      <div class="embed-actions"><button type="button" class="ui-button ui-button-on-ink-solid ui-button-md" data-embed-retry><span class="ui-button-label">Try again</span></button><a class="ui-button ui-button-on-ink ui-button-md" href={watch} target="_blank" rel="noopener"><span class="ui-button-label">Watch on YouTube<span class="cory-visually-hidden"> (opens in a new tab)</span></span></a></div>
+    </div>}
+  </div>
+  {caption && <figcaption>{title}{valid && <> · <a data-link href={watch} target="_blank" rel="noopener">Watch on YouTube<span class="cory-visually-hidden"> (opens in a new tab)</span></a></>}</figcaption>}
+</figure>
+
+<script>
+  import '../islands/embeds.ts';
+</script>

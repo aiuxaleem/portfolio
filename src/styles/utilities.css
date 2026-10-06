@@ -1,0 +1,41 @@
+/* Copied verbatim from legacy/site.css lines 450-497 (breakpoints, container, grids). Do not edit values here without an approved finding. */
+/* ---- tokens/responsive.css ---- */
+/* ===========================================================================
+   AgentCory: Breakpoints, containers, responsive grid + bento helpers
+   Mobile-first. Custom properties can't drive @media, so the breakpoints are
+   declared once here (for JS / docs) and repeated literally in the queries.
+     sm 640  ·  md 768  ·  lg 1024  ·  xl 1280  ·  2xl 1536
+   =========================================================================== */
+:root {
+  --bp-sm: 640px; /* @kind other */
+  --bp-md: 768px; /* @kind other */
+  --bp-lg: 1024px; /* @kind other */
+  --bp-xl: 1280px; /* @kind other */
+  --bp-2xl: 1536px; /* @kind other */
+  --cols: 4; /* @kind other */ /* responsive column count, read by .cory-grid / .cory-bento */
+}
+@media (min-width: 640px)  { :root { --cols: 6; /* @kind other */ } }
+@media (min-width: 1024px) { :root { --cols: 12; /* @kind other */ } }
+
+/* --- Container --- */
+.cory-container { width: 100%; max-width: var(--container-max); margin-inline: auto; padding-inline: var(--gutter); }
+.cory-container-narrow { max-width: var(--container-narrow); }
+
+/* --- Auto-fit card grid: columns appear as space allows (replaces fixed repeat(3,1fr)) --- */
+.cory-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-min, 280px)), 1fr)); gap: var(--grid-gap); }
+
+/* --- Bento: square-ish tiles with span rules; collapses to single column on phones --- */
+.cory-bento { display: grid; grid-template-columns: repeat(var(--bento-cols, 1), minmax(0, 1fr)); grid-auto-rows: minmax(var(--bento-row, 180px), auto); grid-auto-flow: dense; gap: var(--grid-gap); }
+.cory-bento > * { min-width: 0; border-radius: var(--radius-xl); }
+.cory-bento .span-2 { grid-column: span min(2, var(--bento-cols, 1)); }
+.cory-bento .hero { grid-column: span min(2, var(--bento-cols, 1)); grid-row: span 2; }
+@media (min-width: 640px)  { .cory-bento { --bento-cols: 2; /* @kind other */ } }
+@media (min-width: 1024px) { .cory-bento { --bento-cols: 4; /* @kind other */ --bento-row: 200px; /* @kind other */ } }
+
+/* --- Split (hero two-column that stacks) --- */
+.cory-split { display: grid; grid-template-columns: 1fr; gap: var(--space-10); align-items: center; }
+@media (min-width: 1024px) { .cory-split { grid-template-columns: 1.05fr 0.95fr; } }
+
+/* --- Visibility --- */
+
+

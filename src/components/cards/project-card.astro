@@ -1,0 +1,27 @@
+---
+/* Project card (CLAUDE.md 2.7): one primary link, the whole card clickable through a stretched link, fixed media ratio,
+   equal heights in a row, padding from the spacing scale. Built from the existing card recipe and tokens.
+   States: with cover, without cover (typographic fallback at the same size), optional tags and status. */
+import { Image } from 'astro:assets';
+import type { Project } from '../../lib/projects';
+import { statusLabel } from '../../lib/projects';
+
+interface Props { project: Project; level?: 2 | 3; /** The first card of a list at the top of a page: its image loads at once, ahead of the others. */ first?: boolean }
+const { project, level = 2, first = false } = Astro.props;
+const d = project.data;
+const Heading = `h${level}` as any;
+---
+<article class="project-card" data-project data-status={d.status} data-tags={d.tags.join('|')}>
+  <div class="project-card-media">
+    {d.cover
+      ? <Image src={d.cover.src} alt={d.cover.alt} widths={[400, 640, 960]} sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" loading={first ? 'eager' : 'lazy'} fetchpriority={first ? 'high' : undefined} decoding="async" />
+      : <div data-cover-fallback aria-hidden="true"><span>{d.title}</span></div>}
+  </div>
+  <div class="project-card-body">
+    <p class="project-card-meta"><span class="ui-badge">{statusLabel[d.status]}</span></p>
+    <Heading class="project-card-title"><a class="project-card-link" href={`/work/${project.id}`}>{d.title}</a></Heading>
+    <p class="project-card-summary">{d.summary}</p>
+    {d.tags.length > 0 && <ul class="project-card-tags" aria-label="Tags">{d.tags.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul>}
+    <span class="project-card-cta" aria-hidden="true">View project <svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span>
+  </div>
+</article>

@@ -1,0 +1,6 @@
+---
+/* A group of images in equal tiles. Each image keeps its own alt text. */
+interface Props { caption?: string }
+const { caption } = Astro.props;
+---
+<figure class="post-figure"><div class="post-gallery"><slot /></div>{caption && <figcaption>{caption}</figcaption>}</figure>

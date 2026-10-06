@@ -1,0 +1,104 @@
+---
+title: "Colaberry Design System"
+index: "01"
+category: "Design systems"
+lead: "A new brand is a token file, not a rebuild: one component library under five brands, and a school system a marketer, a developer and an AI agent can all build from."
+cover:
+  src: ../../assets/cases/colaberry-ds-social-kit.jpg
+  alt: "Colaberry social media kit template: Instagram layouts in the brand, each at its export size"
+role: "Lead AI Product Designer"
+company: "Colaberry"
+timeline: "2026"
+team: "Me, with Claude as the build agent"
+platform: "Web, print and social"
+stack: ["React 18", "CSS custom properties", "Design tokens (JSON)", "Claude skill", "GitHub Pages"]
+tldr:
+  - "Colaberry's brand as one working system: 231 token values, 20 React components, 15 templates and a marketing website kit."
+  - "Five brands on one foundation: Refactored.ai, Colaberry Enterprise, Colaberry Training, Career Pathways Network and AI Flotation share one component library, and each brand is a set of tokens."
+  - "Four ways in. Marketing and non-technical colleagues, developers, designers and AI agents each get their own starting path."
+  - "The templates cover what people ask a designer for most: slide decks, web pages, social posts, brochures, posters, certificates and email."
+  - "Core colour pairings are checked against WCAG 2.2 contrast, and the pairings that fail are documented next to the ones that pass."
+context:
+  problem: "At Colaberry, branded work is needed by people who are not designers: developers building product and web screens, and colleagues in sales and marketing who need decks, pages and campaign assets. The system's goal is written into its principles: one system, many makers, so that a marketer, a developer and an AI agent produce the same brand from the same source."
+  constraints:
+    - "It had to work as plain files a team can open or copy. There is no build step."
+    - "The brand's cherry red does not pass contrast for body text on white, so the palette needed a rule for where each red may be used."
+    - "People with no design or code background had to be able to get a usable result by describing what they need."
+process:
+  summary: "The system was built in layers: tokens first, then components, then templates, then the documentation and hand-off paths that let other people use it without me."
+  steps:
+    - title: "Tokens before components"
+      body: "Colour ramps, type, spacing, radius, shadow and motion are CSS custom properties with a JSON mirror for other tools: 187 base values and 44 dark-theme overrides. In dark theme the foreground inverts with the background and the cherry red stays constant."
+    - title: "Twenty components, each with a contract"
+      body: "Every component ships with typed props and a short usage note written for an AI agent, so a person and a model read the same rules. The documentation renders the same code that ships."
+    - title: "Templates for the work people actually request"
+      body: "Fifteen templates: deck slides, a web page, a social media kit for seven platforms, a WhatsApp batch kit, an email newsletter, an event poster, an Eventbrite kit, a standee, a brochure, a one-pager, a comparison sheet, a certificate, a case study, a proposal and a business card."
+    - title: "A path for each kind of maker"
+      body: "Marketing and non-technical colleagues start a request with the words \"Using the Colaberry design system\" and ask for three options. Developers link one stylesheet and use the bundled components. Each template has a Download button for a full-size image and an Edit button that copies the right prompt."
+    - title: "Five brands on one foundation"
+      body: "The same idea carried across five brands. The components stay the same; each brand is a set of tokens held as data: 11 colour roles in light and dark, typefaces, radius, shadow and motion. All five use the same 44 token names and the same component classes, so a new brand is a token file, not a rebuild. Each brand generates a stylesheet for developers, a brand guide for designers and a prompt block for AI tools."
+  images:
+    - src: ../../assets/cases/multi-brand-family.jpg
+      alt: "Family check: the same card, button and input shown side by side in five brands"
+      caption: "Five brands, one component library: only the tokens change"
+    - src: ../../assets/cases/colaberry-ds-components.jpg
+      alt: "Components section of the Colaberry Design System docs, with live buttons, badges, avatars and form fields"
+      caption: "The docs render the live components, not pictures of them"
+    - src: ../../assets/cases/colaberry-ds-handoff.jpg
+      alt: "Hand-off and prompting page with one card for marketing and non-technical staff and one for developers"
+      caption: "Hand-off: one path for marketing and non-technical colleagues, one for developers"
+    - src: ../../assets/cases/colaberry-ds-deck.jpg
+      alt: "Deck slide template with a red Colaberry title slide"
+      caption: "Deck slides at 16:9"
+    - src: ../../assets/cases/colaberry-ds-accessibility.jpg
+      alt: "Accessibility page listing nine colour pairings with their contrast ratios and pass or fail verdicts"
+      caption: "Contrast audit: ratios and verdicts for the core pairings, including the one that fails"
+ai:
+  summary: "The system is written to be read by an AI agent as well as by people, so asking Claude for a branded asset gives an on-system result."
+  behaviour:
+    - "A skill file tells the agent what to read first: the brand guide, the implementation guide, the tokens, the components and the logo files."
+    - "Every component has a usage note and typed props, so the agent uses the real component in place of inventing markup."
+    - "If the skill is invoked with no brief, the agent asks what to build."
+  guardrails:
+    - "A lint configuration warns on raw hex colours, raw pixel values, fonts outside the system, undeclared props and imports of component internals."
+    - "The prompt recipe asks for three options, so a person chooses and refines in plain words."
+  humanInLoop: "Strategy, brand direction and every design decision were mine. Claude ran as the executing agent for each build step."
+decisions:
+  - decision: "Text-bearing red moved one step darker."
+    tradeoff: "White on the brand cherry measured 3.8:1, below the 4.5:1 that body text needs. The next step down reaches 4.7:1. The brighter cherry stays for large type and accents."
+  - decision: "Motion is a token, like colour."
+    tradeoff: "Each brand moves in character: Enterprise stays composed, Training springs a little, Career Pathways Network never startles. It costs one more thing to define per brand, and it keeps motion out of hand-written component code."
+  - decision: "No build step."
+    tradeoff: "Static HTML, CSS variables and plain React files mean anyone can open or copy the system. The cost is that it is not yet an installable package."
+  - decision: "Show the contrast failures in the docs."
+    tradeoff: "The audit table lists cherry text on white as a body-text fail, next to the pairings that pass, so nobody has to rediscover it."
+outcomes:
+  summary: "Five brands now have a design system built on one component library, and across the five brand systems all 80 measured colour pairs meet their WCAG 2.1 AA contrast target in light and dark. Colaberry's development team uses the system for product and web work, and non-technical colleagues in sales and marketing use the templates for decks, pages and campaign assets. No usage figures are shown here because none have been measured."
+  metrics:
+    - value: "20"
+      label: "React components, each with typed props and an AI usage note"
+      kind: output
+      source: "Counted in the repository, 5 October 2026"
+      verified: true
+    - value: "15"
+      label: "templates for decks, web, social, print and email"
+      kind: output
+      source: "Counted in the repository, 5 October 2026"
+      verified: true
+    - value: "5"
+      label: "brands on one component library"
+      kind: outcome
+      source: "Multi-brand token system and the five brand repositories, 5 October 2026"
+      verified: true
+    - value: "231"
+      label: "token values: 187 base and 44 dark-theme overrides"
+      kind: output
+      source: "Counted in tokens.json, 5 October 2026"
+      verified: true
+quote: "A new brand is a token file, not a rebuild."
+reflection:
+  summary: "What is not done yet, from the system's own roadmap: Storybook, an installable package, self-hosted fonts, automated quality gates, and a server that lets agents query the system directly."
+project: colaberry-design-system
+order: 1
+featured: true
+---

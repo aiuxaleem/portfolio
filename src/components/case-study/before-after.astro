@@ -1,0 +1,44 @@
+---
+/* Before/after comparison. Keyboard operable: the divider is a native range input (arrow keys, Home, End), and two
+   buttons jump straight to either image, so nothing depends on dragging. Without JavaScript the two images are shown
+   side by side with their labels. Behaviour: islands/before-after.ts */
+import { Image } from 'astro:assets';
+interface Side { src: ImageMetadata; alt: string }
+interface Props { before: Side; after: Side; caption?: string }
+const { before, after, caption } = Astro.props;
+---
+<figure class="before-after" data-before-after>
+  <div class="ba-stage" dir="ltr" style="--pos: 50%;">
+    <div class="ba-pane ba-after"><Image src={after.src} alt={after.alt} widths={[640, 960, 1280]} sizes="(min-width: 1024px) 760px, 100vw" loading="lazy" decoding="async" /><span class="ba-tag">After</span></div>
+    <div class="ba-pane ba-before"><Image src={before.src} alt={before.alt} widths={[640, 960, 1280]} sizes="(min-width: 1024px) 760px, 100vw" loading="lazy" decoding="async" /><span class="ba-tag">Before</span></div>
+    <span class="ba-divider" aria-hidden="true"></span>
+  </div>
+  <div class="ba-controls" hidden>
+    <button type="button" class="ui-chip" data-ba-set="100">Show before</button>
+    <label class="ba-range"><span class="cory-visually-hidden">Comparison position: left is the after image, right is the before image</span><input type="range" min="0" max="100" step="5" value="50" /></label>
+    <button type="button" class="ui-chip" data-ba-set="0">Show after</button>
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style is:global>
+  .before-after { margin: 0; display: grid; gap: var(--space-3); }
+  .ba-stage { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+  .ba-pane { position: relative; aspect-ratio: var(--aspect-case); border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-sunken); border: 1px solid var(--border-subtle); }
+  .ba-pane img { inline-size: 100%; block-size: 100%; object-fit: cover; object-position: top left; }
+  .ba-tag { position: absolute; inset-block-start: var(--space-3); padding: 5px 12px; border-radius: var(--radius-pill); background: var(--surface-card); color: var(--text-strong); border: 1px solid var(--border-default); font-size: var(--text-caption); font-weight: var(--weight-semibold); line-height: 1.2; }
+  .ba-before .ba-tag { left: var(--space-3); }
+  .ba-after .ba-tag { right: var(--space-3); }
+  .ba-divider { display: none; }
+  .before-after figcaption { font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--leading-mono); color: var(--text-muted); }
+  .ba-controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+  .ba-controls[hidden] { display: none; }
+  .ba-range { flex: 1 1 200px; display: flex; align-items: center; min-block-size: var(--tap-target); }
+  .ba-range input { inline-size: 100%; min-block-size: var(--tap-target); accent-color: var(--action-primary-active); cursor: pointer; }
+  .ba-range input:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
+  /* Enhanced: the two images overlap and the before image is clipped at the divider position. */
+  [data-before-after][data-enhanced] .ba-stage { display: block; aspect-ratio: var(--aspect-case); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-subtle); }
+  [data-before-after][data-enhanced] .ba-pane { position: absolute; inset: 0; aspect-ratio: auto; border: 0; border-radius: 0; }
+  [data-before-after][data-enhanced] .ba-before { clip-path: inset(0 calc(100% - var(--pos)) 0 0); }
+  [data-before-after][data-enhanced] .ba-divider { display: block; position: absolute; inset-block: 0; left: var(--pos); inline-size: 2px; margin-left: -1px; background: var(--surface-card); box-shadow: 0 0 0 1px var(--border-interactive); }
+</style>

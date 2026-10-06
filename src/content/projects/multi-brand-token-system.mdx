@@ -1,0 +1,68 @@
+---
+title: Multi-brand token system
+summary: "One component library under five brands. Each brand is a set of tokens as data, with its own type, colour and motion, and measured contrast in light and dark."
+status: shipped
+role: Lead AI Product Designer
+stack: [CSS custom properties, Design tokens (JSON), Claude skill, Claude Design]
+cover:
+  src: ../../assets/projects/multi-brand-family.jpg
+  alt: "Family check: the same card, button and input shown side by side in five brands"
+gallery:
+  - src: ../../assets/projects/multi-brand-refactored.jpg
+    alt: "Refactored.ai specimen in light and dark: navigation, buttons, motion and tabs in blue with a monospace heading font"
+    caption: "Refactored.ai: instrumental, fast and exact"
+  - src: ../../assets/projects/multi-brand-enterprise.jpg
+    alt: "Colaberry Enterprise specimen in light and dark with a berry-blue accent"
+    caption: "Colaberry Enterprise: composed, quiet fades"
+  - src: ../../assets/projects/multi-brand-training.jpg
+    alt: "Colaberry Training specimen in light and dark with a cherry-red accent on cream"
+    caption: "Colaberry Training: warm, a little springy"
+  - src: ../../assets/projects/multi-brand-cpn.jpg
+    alt: "Career Pathways Network specimen in light and dark with a green accent and a serif heading"
+    caption: "Career Pathways Network: steady, never startles"
+  - src: ../../assets/projects/multi-brand-flotation.jpg
+    alt: "AI Flotation specimen in light and dark with a rust accent and square corners"
+    caption: "AI Flotation: decisive, crisp and immediate"
+  - src: ../../assets/projects/multi-brand-contrast.jpg
+    alt: "Contrast audit listing measured ratios for every palette in light and dark, each marked AA"
+    caption: "Contrast audit, computed from the token data for all eight palettes"
+  - src: ../../assets/projects/multi-brand-kit.jpg
+    alt: "Kit page with three outputs per brand: a stylesheet for developers, a brand guide for designers and a prompt block for AI tools"
+    caption: "Each brand generates a stylesheet, a brand guide and a prompt block for AI tools"
+links:
+  live: https://aleemcolaberry.github.io/Colaberry_FiveBrands/
+  repo: https://github.com/aleemcolaberry/Colaberry_FiveBrands
+tags: [Design systems, Accessibility, AI]
+caseStudy: colaberry-design-system
+order: 4
+featured: true
+---
+
+## What it is
+
+One component library under five brands. The components never change; each brand is a set of tokens held as data. Switching the token set restyles the same navigation, buttons, forms, cards, tables and alerts, in light and dark.
+
+## The five brands
+
+- **Refactored.ai:** platform infrastructure for AI-driven learning products. [Refactored.ai design system, live](https://aleemcolaberry.github.io/Refactored.ai-Design-System/)
+- **Colaberry Enterprise:** enterprise learning and capability programs for data teams. [Colaberry Enterprise design system, live](https://aleemcolaberry.github.io/Colaberry-Enterprise-Design-System/)
+- **Colaberry Training:** open-enrollment classes and the free-class funnel. [Colaberry Training design system, live](https://aleemcolaberry.github.io/Colaberry-Training-Design-System/)
+- **Career Pathways Network:** a nonprofit offering scholarships and career pathways. [Career Pathways Network design system, live](https://aleemcolaberry.github.io/Career-Pathways-Network-Design-System/)
+- **AI Flotation:** an AI consulting shop, from workflow intake to delivered system. [AI Flotation design system, live](https://aleemcolaberry.github.io/AI-Flotation-Design-System/)
+
+Only the two Colaberry brands share a typeface and palette. The other three each carry their own type and accent colour, and three of the five come in two visual directions, which makes eight palettes in all.
+
+## What is shared and what changes
+
+- **Shared:** the same 44 token names in every brand, the same component classes (button, input and field, card, badge, alert), the same spacing scale, a 44px touch target and the same breakpoints.
+- **Changes per brand:** 11 colour roles in light and dark, typefaces, type scale, corner radius, shadow, and motion. Motion is a token layer too, so each brand moves in character.
+
+## What each brand gets
+
+Every brand direction generates three things from its tokens: a stylesheet developers link, a brand guide designers read, and a prompt block AI tools consume. Each brand repository also has a sign-in screen, a transactional email, its tokens as JSON, and a skill file that tells an AI agent to use the semantic tokens, never raw colour values, and to keep one filled primary action per view. Change a token, regenerate, and the whole system follows.
+
+## Accessibility
+
+Contrast is computed from the token data, not checked by eye: five colour pairs per palette in light and dark, against WCAG 2.1 AA targets of 4.5:1 for text and 3:1 for the accent on its background. All 80 pairs across the eight palettes meet their target. This is a colour check, not a full accessibility audit.
+
+It sits alongside the [Colaberry Design System](/work/colaberry-design-system), the [Freight platform design system](/work/freight-design-system) and the [WoT AI Design System](/work/wot-ai-design-system).

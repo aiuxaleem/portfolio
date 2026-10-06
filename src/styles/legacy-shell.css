@@ -1,0 +1,3 @@
+/* Two rules the legacy runtime injected for its wrapper elements. Kept so the migrated box tree matches the baseline. */
+html, body { height: 100%; margin: 0; }
+#dc-root, #dc-root > .sc-host { height: 100%; }

@@ -1,0 +1,6 @@
+---
+/* An image with a caption. The image inside keeps its own alt text. */
+interface Props { caption?: string }
+const { caption } = Astro.props;
+---
+<figure class="post-figure"><slot />{caption && <figcaption>{caption}</figcaption>}</figure>

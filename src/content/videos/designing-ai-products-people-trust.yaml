@@ -1,0 +1,9 @@
+title: Designing AI products people trust
+# The real YouTube id is not known yet. The schema rejects anything except an 11-character id or this placeholder.
+youtubeId: "[VERIFY]"
+poster:
+  src: ../../assets/media/video-thumb.webp
+  alt: "[VERIFY] Describe the video poster image"
+kind: long-form
+featured: true
+draft: true

@@ -1,0 +1,59 @@
+---
+title: Freight platform design system
+summary: "Brand foundations, 43 React components, six templates and a control-tower UI kit for an AI freight platform, with a skill pack so Claude builds on-system screens."
+status: shipped
+role: Lead AI Product Designer
+stack: [React 18, CSS custom properties, Design tokens, Tailwind preset, Claude Code skill]
+cover:
+  src: ../../assets/projects/freight-ds-control-tower.jpg
+  alt: "Control-tower dashboard from the UI kit with a shipment table and two AI recommendation cards"
+gallery:
+  - src: ../../assets/projects/freight-ds-mobile.jpg
+    alt: "Mobile tracking screen showing a shipment from Shenzhen to Hamburg with a revised arrival time"
+    caption: "Mobile tracking screen for the person receiving the shipment"
+  - src: ../../assets/projects/freight-ds-exceptions.jpg
+    alt: "Exceptions page listing delayed shipments with an AI rebooking recommendation"
+    caption: "Exceptions page, built by Claude Code from the skill pack"
+  - src: ../../assets/projects/freight-ds-settings-dark.jpg
+    alt: "Settings page in dark theme with account details and notification preferences"
+    caption: "Settings page in dark theme, built by Claude Code from the skill pack"
+tags: [Design systems, AI, Accessibility]
+caseStudy: freight-platform-rebrand
+updates:
+  - date: 2026-09-17
+    title: "First release"
+    body: "Tokens, 36 components in six groups, six templates, the control-tower UI kit and the home page. An audit against ten UX laws, Nielsen's heuristics and WCAG 2.2 AA was run and its fixes applied: overlays close on Escape, and measured dark-theme contrast failures went from six to zero."
+  - date: 2026-09-18
+    title: "Claude Code skill pack added"
+    body: "A skill pack that makes Claude Code build screens the way the system intends, with a checker script for the mechanical mistakes. Ten known issues were logged openly."
+  - date: 2026-09-21
+    title: "AI disclosure, feedback and failure states"
+    body: "Components for disclosing how an AI recommendation was made, collecting feedback on it, and showing why the AI is holding back. A failure group of five components followed, and destructive menu items now have to confirm."
+order: 2
+featured: true
+---
+
+## What it is
+
+The design system for an AI freight platform that books, tracks and reroutes shipments across land, air and ocean. The client is not named here. It holds the brand foundations, 121 design tokens, 43 React components in seven groups, six templates and a four-screen control-tower UI kit, in light and dark themes.
+
+## What people make with it
+
+- **Product screens:** an app shell, a data table page and a settings page, plus the control-tower kit (dashboard, shipments, shipment detail, new quote).
+- **Marketing:** a landing page template.
+- **Presentations:** a 1920 by 1080 deck with seven slide types.
+- **Mobile:** a tracking screen for the person receiving the shipment.
+
+## How AI builds with it
+
+The repository carries a Claude Code skill pack. A person writes the brief the way a product owner would; the skill makes Claude compose from the real components and tokens, write in the house voice and handle every state. A checker script then flags what should not ship: colours outside the palette, more than one orange action per view, icon buttons without labels and fields with only a placeholder. The two example pages in the gallery were built this way with no hand edits.
+
+## How the product's own AI is designed
+
+Every AI recommendation follows one pattern: the title is the action, then cost, impact and confidence as three numbers, a "why this" disclosure in the operator's language, one primary action that opens a review and never applies itself, an undo, and a feedback control. Confidence is always a number, never a colour. The six AI experience measures the system uses are adapted from Simran Agarwal's AI Product Designer Playbook.
+
+## Who uses it
+
+Colaberry's development team builds the platform's screens on it, and the landing page and deck templates give colleagues in sales and marketing a starting point that is already on brand.
+
+It is one of the design systems I built at Colaberry, with the [Colaberry Design System](/work/colaberry-design-system), the [Multi-brand token system](/work/multi-brand-token-system) and the [WoT AI Design System](/work/wot-ai-design-system).

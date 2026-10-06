@@ -1,0 +1,99 @@
+---
+/* /about: positioning, principles, career timeline, expertise, how I work with AI, tools and certifications.
+   Copy and facts come from src/content/site/profile.json; certifications from the certifications collection.
+   Section backgrounds alternate between the page and card surfaces. */
+import { Image } from 'astro:assets';
+import PageLayout from '../layouts/page-layout.astro';
+import Button from '../components/ui/button.astro';
+import EmailCopy from '../components/layout/email-copy.astro';
+import Career from '../components/profile/career.astro';
+import Certifications from '../components/profile/certifications.astro';
+import Testimonials from '../components/profile/testimonials.astro';
+import portrait from '../assets/people/author-portrait.jpg';
+import { profile } from '../content/profile';
+import { personLd } from '../lib/seo';
+import { site } from '../content/site';
+import { chrome } from '../i18n/chrome';
+const c = chrome.en;
+const num = (i: number) => String(i + 1).padStart(2, '0');
+---
+<PageLayout title="About · AIUXAleem" description="About Mohammad Abdul Aleem, Lead AI Product Designer in Hyderabad: career, expertise, how he works with AI, tools and certifications." page="about" ogType="profile" jsonLd={[personLd()]} hideCta bg="grid" mainStyle="outline: none; overflow: clip;">
+  <section class="cory-container" aria-labelledby="about-title" style="position: relative; display: grid; gap: var(--space-8); padding-block: var(--section-y);">
+    <div data-cq><div data-cq-grid style="display: grid; gap: var(--space-10); align-items: center;">
+      <div style="display: grid; gap: var(--space-6);">
+        <p class="cory-overline" style="margin: 0;">About</p>
+        <h1 id="about-title" style="margin: 0; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">I make AI feel like something you can rely on.</h1>
+        <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">{profile.positioning}</p>
+        <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+          <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
+          <Button variant="secondary" size="lg" href="/resume">Read the resume</Button>
+        </div>
+      </div>
+      <div class="project-cover" style="aspect-ratio: var(--aspect-portrait); max-inline-size: min(100%, 420px); justify-self: center;"><Image src={portrait} alt="Portrait of Mohammad Abdul Aleem" widths={[420, 840]} sizes="(min-width: 640px) 420px, 100vw" loading="eager" fetchpriority="high" style="object-position: center;" /></div>
+    </div></div>
+    <div style="display: grid; gap: var(--space-4);">{profile.summary.map(p => <p class="page-lead">{p}</p>)}</div>
+    <dl class="facts">
+      <div><dt>Based in</dt><dd>{site.location}</dd></div>
+      <div><dt>Now</dt><dd>{profile.career[0].role}, {profile.career[0].company}</dd></div>
+      <div><dt>Focus</dt><dd>AI product design · Design systems</dd></div>
+      <div><dt>Availability</dt><dd>{site.availability.label}</dd></div>
+    </dl>
+  </section>
+
+  <section class="page-section" data-surface="card" aria-labelledby="principles-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Principles</p><h2 id="principles-title" class="page-h2">Three things I won't trade away</h2></div>
+      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.principles.map((p, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{p.title}</h3><p>{p.body}</p></div></li>)}</ol></div>
+    </div>
+  </section>
+
+  <section class="page-section" aria-labelledby="career-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Path</p><h2 id="career-title" class="page-h2">Enterprise UX to AI product design</h2></div>
+      <Career highlights={false} />
+      <a data-link class="post-back" href="/resume"><span>Full detail is in the resume</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
+    </div>
+  </section>
+
+  <section class="page-section" data-surface="card" aria-labelledby="expertise-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Expertise</p><h2 id="expertise-title" class="page-h2">What I bring to a product team</h2></div>
+      <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.expertise.map(e => <li><div class="tile"><h3>{e.title}</h3><p>{e.body}</p></div></li>)}</ul></div>
+    </div>
+  </section>
+
+  <section class="page-section" aria-labelledby="ai-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Method</p><h2 id="ai-title" class="page-h2">How I work with AI</h2></div>
+      <div data-cq><ol data-cq-grid style="display: grid; gap: var(--grid-gap);">{profile.aiWorkflow.map((s, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol></div>
+      <div style="display: grid; gap: var(--space-3);">
+        <h3 style="margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong);">Tools</h3>
+        <ul class="tool-list">{profile.tools.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section" data-surface="card" aria-labelledby="certs-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="certs-title" class="page-h2">Certifications</h2></div>
+      <Certifications />
+      <a data-link class="post-back" href="/now"><span>What I am studying now</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
+    </div>
+  </section>
+
+  <Testimonials />
+
+  <section data-contact id="contact" class="cory-container" aria-labelledby="about-cta" style="padding-block: var(--section-y);">
+    <div class="project-cta" style="padding: var(--space-8); display: flex; flex-wrap: wrap; gap: var(--space-6); align-items: center; justify-content: space-between; box-shadow: var(--shadow-md);">
+      <div style="display: grid; gap: var(--space-2); max-inline-size: var(--measure-lead);">
+        <p class="cory-overline" style="margin: 0; color: var(--on-ink-link);">Say hello</p>
+        <h2 id="about-cta" style="margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong);">Hiring, or building something that needs to feel trustworthy?</h2>
+        <p style="margin: 0; color: var(--on-ink-body);">Either way, the fastest route is email. I reply within 48 hours.</p>
+      </div>
+      <div style="display: grid; gap: var(--space-2); justify-items: start;">
+        <Button variant="on-ink-solid" size="lg" href={`mailto:${site.email}`}>Email me</Button>
+        <span style="color: var(--on-ink-body); font-size: var(--text-body-sm);"><EmailCopy copyLabel={c.copyEmail} copiedLabel={c.copied} fallbackLabel={c.pressCopy} /></span>
+      </div>
+    </div>
+  </section>
+</PageLayout>

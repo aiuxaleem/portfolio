@@ -1,0 +1,25 @@
+---
+/* One video: the click-to-load facade, then title, date, description and tags. The card is not a link; its actions are
+   the play button and the link to YouTube. Every field except the title is optional. */
+import { getImage } from 'astro:assets';
+import YouTube from '../embeds/youtube.astro';
+import type { Video } from '../../lib/videos';
+import { formatDate } from '../../lib/posts';
+
+interface Props { video: Video; level?: 2 | 3 }
+const { video, level = 2 } = Astro.props;
+const d = video.data;
+const Heading = `h${level}` as any;
+const poster = d.poster ? (await getImage({ src: d.poster.src, width: 960 })).src : undefined;
+const valid = /^[\w-]{11}$/.test(d.youtubeId);
+---
+<article class="video-card">
+  <YouTube id={d.youtubeId} title={d.title} poster={poster} caption={false} />
+  <div class="video-card-body">
+    {(d.published || d.duration) && <p class="case-kicker">{d.published && <time datetime={d.published.toISOString().slice(0, 10)}>{formatDate(d.published)}</time>}{d.published && d.duration && ' · '}{d.duration}</p>}
+    <Heading class="project-card-title">{d.title}</Heading>
+    {d.description && <p class="project-card-summary">{d.description}</p>}
+    {d.tags.length > 0 && <ul class="project-card-tags" aria-label="Tags">{d.tags.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul>}
+    {valid && <a data-link class="embed-card-link" href={`https://www.youtube.com/watch?v=${d.youtubeId}`} target="_blank" rel="noopener"><span>Watch on YouTube<span class="cory-visually-hidden">: {d.title} (opens in a new tab)</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"></path></svg></a>}
+  </div>
+</article>

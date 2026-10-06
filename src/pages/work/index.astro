@@ -1,0 +1,30 @@
+---
+/* /work: projects from the content collection, with filters by topic and status. */
+import PageLayout from '../../layouts/page-layout.astro';
+import ProjectCard from '../../components/cards/project-card.astro';
+import ProjectFilters from '../../components/projects/project-filters.astro';
+import Button from '../../components/ui/button.astro';
+import { listedProjects } from '../../lib/projects';
+
+const projects = await listedProjects();
+const tags = [...new Set(projects.filter(p => !p.data.fixture).flatMap(p => p.data.tags))].sort();
+---
+<PageLayout title="Work · AIUXAleem" description="Projects by Mohammad Abdul Aleem: design systems and AI product work, with status, tools and links to the full case studies." page="work" bg="grid" mainStyle="outline: none; overflow: clip;">
+  <section class="cory-container" aria-labelledby="work-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <p class="cory-overline" style="margin: 0px;">Work</p>
+    <h1 id="work-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">Projects</h1>
+    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">What I am building and what has shipped. Each project links to its live site, its repository and, where there is one, the full case study.</p>
+    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+      <Button variant="primary" size="lg" href="/case-studies">Read the case studies</Button>
+    </div>
+  </section>
+  <section class="cory-container" aria-label="Project list" style="display: grid; gap: var(--space-8); padding-block-end: var(--section-y);">
+    <ProjectFilters tags={tags} total={projects.length} />
+    {projects.length === 0
+      ? <div class="project-empty"><p class="project-empty-title">No projects are published yet.</p><p class="project-empty-body">The case studies cover the work in depth.</p><div><Button variant="secondary" href="/case-studies">Read the case studies</Button></div></div>
+      : <div data-cq><ul data-project-list data-cq-balance style="display: grid; gap: var(--grid-gap);">{projects.map((p, i) => <li><ProjectCard project={p} first={i === 0} /></li>)}</ul></div>}
+  </section>
+  <script>
+    import '../../components/islands/project-filters.ts';
+  </script>
+</PageLayout>

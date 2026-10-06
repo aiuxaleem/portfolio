@@ -1,0 +1,299 @@
+---
+/* /_states: components in their states, in both themes, with the stress fixtures from CLAUDE.md 2.3.
+   Served in dev and in quality builds only (see astro.config.mjs).
+   Coverage today: the components that exist as real components (Button, IconButton, Email copy, Badge, cover fallback,
+   empty state). Page-body components that are still rendered from legacy snapshots are listed at the end as not yet covered. */
+import BaseLayout from '../layouts/base-layout.astro';
+import Button from '../components/ui/button.astro';
+import IconButton from '../components/ui/icon-button.astro';
+import EmailCopy from '../components/layout/email-copy.astro';
+import { stress } from '../fixtures/stress';
+import { chrome } from '../i18n/chrome';
+import { Image } from 'astro:assets';
+import { forStates, isPlaceholder } from '../lib/content';
+import ProjectCard from '../components/cards/project-card.astro';
+import ProjectFilters from '../components/projects/project-filters.astro';
+import { listedProjects, updatesNewestFirst, day } from '../lib/projects';
+import BeforeAfter from '../components/case-study/before-after.astro';
+import { listedCaseStudies } from '../lib/case-studies';
+import YouTube from '../components/embeds/youtube.astro';
+import LinkedInPost from '../components/embeds/linkedin-post.astro';
+import LinkedInArticle from '../components/embeds/linkedin-article.astro';
+import Callout from '../components/content/callout.astro';
+import TableWrap from '../components/content/table-wrap.astro';
+import CodeBlock from '../components/content/code-block.astro';
+import PostCard from '../components/cards/post-card.astro';
+import { listedPosts } from '../lib/posts';
+const posts = await listedPosts();
+import FeedCard from '../components/cards/feed-card.astro';
+import VideoCard from '../components/cards/video-card.astro';
+import HomeFeeds from '../components/home/home-feeds.astro';
+import CaseDeck from '../components/home/case-deck.astro';
+import { feedItems, feedTags, feedTypes } from '../lib/writing';
+import { listedVideos } from '../lib/videos';
+const feed = await feedItems();
+const feedSample = [...feed.filter(i => !i.fixture).slice(0, 2), ...feed.filter(i => i.fixture)];
+const videos = await listedVideos();
+import ContactForm from '../components/forms/contact-form.astro';
+import Career from '../components/profile/career.astro';
+import Certifications from '../components/profile/certifications.astro';
+import Testimonials from '../components/profile/testimonials.astro';
+import { verifyNotes } from '../content/profile';
+import { site } from '../content/site';
+const formStates = [['idle', 'Idle (live: try it; it posts to a fixture address, so sending ends in the failure state)'], ['invalid', 'Inline errors and the error summary'], ['submitting', 'Submitting: fields locked, button disabled, status message'], ['success', 'Success'], ['failure', 'Failure: the input is kept and email is offered']] as const;
+const li = { urn: 'urn:li:share:0000000000000000000', url: 'https://www.linkedin.com/in/aiuxaleem' };
+const fullCase = (await listedCaseStudies()).find(c => c.id === 'full-fixture');
+const projects = await listedProjects();
+const fixtureProject = projects.find(p => p.data.fixture);
+const names = ['projects', 'caseStudies', 'posts', 'videos', 'linkedinPosts', 'linkedinArticles', 'certifications', 'testimonials'] as const;
+/* Sorted by id: a collection has no guaranteed order, and an unstable order changes the height of this page between builds. */
+const content = await Promise.all(names.map(async n => ({ name: n, entries: (await forStates(n)).sort((a, b) => a.id.localeCompare(b.id)) })));
+const titleOf = (d: any) => d.title || d.name || d.quote || '';
+const imageOf = (d: any) => d.cover || d.poster || d.thumb || d.photo;
+const kind = (d: any) => (d.fixture ? 'Stress fixture' : d.draft ? 'Draft' : 'Published');
+const c = chrome.en;
+const variants = ['primary', 'ink', 'secondary', 'ghost'] as const;
+const inkVariants = ['on-ink-solid', 'on-ink'] as const;
+const badge = 'display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: var(--radius-pill); font-size: var(--text-caption); font-weight: var(--weight-semibold); line-height: 1.2; background: var(--slate-100); color: var(--slate-700);';
+const h2 = 'margin: 0; font-size: var(--text-h3); font-weight: var(--weight-bold); color: var(--text-strong);';
+const note = 'margin: 0; font-size: var(--text-body-sm); color: var(--text-muted);';
+const row = 'display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center;';
+---
+<BaseLayout title="Component states · AIUXAleem" description="Development page listing components in their states, in both themes, with stress content. Excluded from production and the sitemap." noindex>
+  <main id="main" style="display: grid;">
+    <div class="cory-container" style="padding-block: var(--space-12) var(--space-6); display: grid; gap: var(--space-3);">
+      <p class="cory-overline" style="margin: 0;">Development</p>
+      <h1 style="margin: 0; font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter);">Component states</h1>
+      <p style={note}>Every block below is shown twice: light theme, then dark. Hover, press and keyboard focus are live states: move the pointer over a control or press Tab.</p>
+    </div>
+    {(['light', 'dark'] as const).map(theme => (
+      <section data-theme={theme} aria-label={`${theme} theme`} style="background: var(--surface-page); color: var(--text-body); border-block-start: 1px solid var(--border-subtle);">
+        <div class="cory-container" style="padding-block: var(--space-12); display: grid; gap: var(--space-10);">
+          <p class="cory-overline" style="margin: 0;">{theme} theme</p>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Button</h2>
+            <p style={note}>Default state, medium and large.</p>
+            <div style={row}>{variants.map(v => <Button variant={v} href="#main">{v}</Button>)}</div>
+            <div style={row}>{variants.map(v => <Button variant={v} size="lg" href="#main">{v} large</Button>)}</div>
+            <div style="padding: var(--space-6); border-radius: var(--radius-xl); background: var(--gradient-ink);"><div style={row}>{inkVariants.map(v => <Button variant={v} href="#main">{v}</Button>)}</div></div>
+            <p style={note}>Stress: one-word label, a 60-character unbroken label, and a 120-character label. The label must wrap, never clip.</p>
+            <div style="display: grid; gap: var(--space-3); max-inline-size: 320px;">
+              <Button variant="primary" href="#main" class="ui-button ui-button-primary ui-button-md states-wrap">{stress.oneWord}</Button>
+              <Button variant="secondary" href="#main" class="ui-button ui-button-secondary ui-button-md states-wrap">{stress.unbroken}</Button>
+              <Button variant="ink" href="#main" class="ui-button ui-button-ink ui-button-md states-wrap">{stress.longTitle}</Button>
+            </div>
+            <p style={note}>Not implemented yet: disabled and loading (no button on the site uses them today).</p>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Icon button</h2>
+            <div style={row}>
+              <IconButton variant="ghost" label="Ghost icon button"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg></IconButton>
+              <IconButton variant="secondary" label="Secondary icon button"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></IconButton>
+            </div>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Badge and tags</h2>
+            <p style={note}>Default, a 60-character unbroken string, a missing value (renders nothing), and nine tags.</p>
+            <div style={row}><span data-badge style={badge}>Design systems</span><span data-badge style={badge}>{stress.unbroken}</span>{stress.missing && <span data-badge style={badge}>{stress.missing}</span>}</div>
+            <ul style="display: flex; flex-wrap: wrap; gap: var(--space-2); max-inline-size: 320px;">{stress.tags.map(t => <li><span data-badge style={badge}>{t}</span></li>)}</ul>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Email copy</h2>
+            <p style={note}>Idle, success (copied), and failure (clipboard blocked: the address is selected and a hint is shown).</p>
+            <div style="display: grid; gap: var(--space-2); color: var(--text-link);">
+              <EmailCopy copyLabel={c.copyEmail} copiedLabel={c.copied} fallbackLabel={c.pressCopy} />
+              <EmailCopy copyLabel={c.copyEmail} copiedLabel={c.copied} fallbackLabel={c.pressCopy} statusText={c.copied} />
+              <EmailCopy copyLabel={c.copyEmail} copiedLabel={c.copied} fallbackLabel={c.pressCopy} statusText={c.pressCopy} />
+            </div>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Media: image missing (partial state)</h2>
+            <p style={note}>When a cover image is absent the box shows a typographic fallback at the same size, so nothing shifts.</p>
+            <div style="position: relative; inline-size: min(100%, 420px); aspect-ratio: var(--aspect-case); border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-sunken);"><div data-cover-fallback aria-hidden="true"><span>{stress.longTitle}</span><bdi>01</bdi></div></div>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Empty state</h2>
+            <p style={note}>Used on /videos: says why it is empty and offers the next action.</p>
+            <div style="display: grid; gap: var(--space-4); padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); max-inline-size: var(--measure-body);">
+              <p style="margin: 0; font-weight: var(--weight-bold); color: var(--text-strong); font-size: var(--text-h4);">No videos here yet.</p>
+              <p style="margin: 0; color: var(--text-muted);">New recordings will be listed on this page when they are published.</p>
+              <div><Button variant="secondary" href="#main">Subscribe on YouTube</Button></div>
+            </div>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Project card</h2>
+            <p style={note}>Default with a cover; and the stress fixture: no cover (typographic fallback at the same size), a 120-character title, a 60-character unbroken string and nine tags. Cards in a row stay the same height.</p>
+            <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{projects.map(p => <li><ProjectCard project={p} level={3} /></li>)}</ul></div>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Project filters</h2>
+            <p style={note}>Toggle buttons with a live result count. Shown here in the empty-result state with the "Clear filters" action. Selected chips carry a check mark as well as the fill.</p>
+            <ProjectFilters tags={['AI', 'Design systems', stress.unbroken]} total={projects.length} showEmpty />
+            <div style="display: flex; flex-wrap: wrap; gap: var(--space-2);"><button type="button" class="ui-chip" aria-pressed="true">Selected</button><button type="button" class="ui-chip" aria-pressed="false">Not selected</button></div>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Project updates log</h2>
+            <p style={note}>Empty (a project with no updates yet), then with an entry from the stress fixture.</p>
+            <div class="project-empty"><p class="project-empty-title">No updates yet.</p><p class="project-empty-body">Dated notes are added here as the project moves.</p></div>
+            {fixtureProject && <ol class="project-updates">{updatesNewestFirst(fixtureProject.data).map(u => <li><time datetime={u.date.toISOString().slice(0, 10)}>{day(u.date)}</time><h3>{u.title}</h3><p>{u.body}</p></li>)}</ol>}
+            <p style={note}>Missing cover and missing optional meta fields are shown on the fixture's own page: <a data-link href="/work/stress-fixture" style="color: var(--text-link);">/work/stress-fixture</a>.</p>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Case study pieces</h2>
+            <p style={note}>NDA notice, the 30-second summary block, and the before/after comparison (range input and two buttons, so it works from the keyboard; without JavaScript the two images sit side by side). The whole template with every section is at <a data-link href="/case-studies/full-fixture" style="color: var(--text-link);">/case-studies/full-fixture</a>; with every optional section missing at <a data-link href="/case-studies/stress-fixture" style="color: var(--text-link);">/case-studies/stress-fixture</a>.</p>
+            <p class="case-nda"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg><span><strong>Under NDA.</strong> Some details are changed or left out to respect a confidentiality agreement.</span></p>
+            <div class="case-section case-tldr"><p class="cory-overline">30-second read</p><h3 style="margin: 0; font-size: var(--text-h3); color: var(--text-strong);">In short</h3><ul>{stress.tags.slice(0, 3).map(t => <li>{t}: {stress.unbroken}</li>)}</ul></div>
+            {fullCase?.data.process.beforeAfter && <BeforeAfter before={fullCase.data.process.beforeAfter.before} after={fullCase.data.process.beforeAfter.after} caption={fullCase.data.process.beforeAfter.caption} />}
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Embed: YouTube</h2>
+            <p style={note}>Facade (nothing is requested from YouTube until play is pressed), loading, failed, and a video with no id yet. The first one is live; the others are fixed in their state. The box is 16:9 in every state.</p>
+            <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
+              <li><YouTube id="aaaaaaaaaaa" title="Fixture video, facade (live)" /></li>
+              <li><YouTube id="aaaaaaaaaaa" title="Fixture video, loading" state="loading" /></li>
+              <li><YouTube id="aaaaaaaaaaa" title="Fixture video, failed" state="failed" /></li>
+              <li><YouTube id="[VERIFY]" title={stress.longTitle} state="facade" /></li>
+            </ul></div>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Embed: LinkedIn post</h2>
+            <p style={note}>Facade card, loading, and failed (the card stays as the fallback with the link). The first one is live.</p>
+            <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
+              <li><LinkedInPost {...li} title="Fixture LinkedIn post, facade (live)" excerpt="Fixture excerpt of the post." /></li>
+              <li><LinkedInPost {...li} title="Fixture LinkedIn post, loading" excerpt="Fixture excerpt of the post." state="loading" /></li>
+              <li><LinkedInPost {...li} title="Fixture LinkedIn post, failed" excerpt="Fixture excerpt of the post." state="failed" /></li>
+              <li><LinkedInPost {...li} title={stress.longTitle} excerpt={stress.unbroken} state="facade" /></li>
+            </ul></div>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Embed: LinkedIn article</h2>
+            <p style={note}>A link card. Nothing is loaded from LinkedIn. With a cover, without one, and with stress content.</p>
+            <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
+              <li><LinkedInArticle url={li.url} title="Fixture LinkedIn article" excerpt="Fixture excerpt of the article." date="2026-01-15" cover="/assets/og-home.png" coverAlt="Fixture cover" /></li>
+              <li><LinkedInArticle url={li.url} title="Work" /></li>
+              <li><LinkedInArticle url={li.url} title={stress.longTitle} excerpt={stress.unbroken} date="2026-01-15" /></li>
+            </ul></div>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Blog: post card and content blocks</h2>
+            <p style={note}>Post cards (sample, rich fixture, stress fixture), callouts, a quote, a code block and a table that scroll inside their own box. The full post template is at <a data-link href="/blog/rich-content-fixture" style="color: var(--text-link);">/blog/rich-content-fixture</a>; the stress post at <a data-link href="/blog/stress-fixture" style="color: var(--text-link);">/blog/stress-fixture</a>; the empty tag page at <a data-link href="/blog/tag/unpublished-topic" style="color: var(--text-link);">/blog/tag/unpublished-topic</a>; pagination at <a data-link href="/blog/page/2" style="color: var(--text-link);">/blog/page/2</a>.</p>
+            <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{posts.map(p => <li><PostCard post={p} level={3} /></li>)}</ul></div>
+            <div class="prose">
+              <Callout title="Fixture note"><p>Fixture callout text. {stress.unbroken}</p></Callout>
+              <Callout tone="warning" title={stress.longTitle}><p>Fixture warning text.</p></Callout>
+              <blockquote><p>Fixture block quote.</p></blockquote>
+              <CodeBlock><code>{'variant: primary | ink | secondary | ghost\na-deliberately-long-line-of-code-that-must-scroll-inside-its-own-box-and-never-widen-the-page: true'}</code></CodeBlock>
+              <TableWrap><thead><tr><th>Fixture column one</th><th>Fixture column two</th><th>Fixture column three</th><th>Fixture column four</th></tr></thead><tbody><tr><td>Row one</td><td>A cell with a longer piece of text</td><td>12</td><td>{stress.unbroken}</td></tr><tr><td>Row two</td><td>Another cell</td><td>34</td><td>Short</td></tr></tbody></TableWrap>
+            </div>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Writing feed: card and filters</h2>
+            <p style={note}>Feed cards for a blog post, a LinkedIn article and a LinkedIn post (two real items, then the stress fixtures), and the filter bar with its empty-result state shown open. The live feed is at <a data-link href="/writing" style="color: var(--text-link);">/writing</a>.</p>
+            <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{feedSample.map(i => <li><FeedCard item={i} level={3} /></li>)}</ul></div>
+            <ProjectFilters tags={feedTags(feed)} total={feed.length} options={feedTypes} optionsLabel="Type" noun="item" id={`feed-${theme}`} showEmpty />
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Video card</h2>
+            <p style={note}>Facade, then title, date, description and tags. The stress fixture has no id yet, no date and a long title. With no published video, <a data-link href="/videos" style="color: var(--text-link);">/videos</a> shows its empty state.</p>
+            <div data-cq><ul data-cq-grid style="display: grid; gap: var(--space-10) var(--grid-gap);">{videos.map(v => <li><VideoCard video={v} level={3} /></li>)}</ul></div>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Home hero: case study deck</h2>
+            <p style={note}>The deck from the Home hero, still, with the stress fixture on the front card (a 120-character title, a long subtitle, no cover image). On Home it holds the featured case studies and the arrows bring the next card forward.</p>
+            <div style="max-inline-size: min(100%, 440px); overflow: clip;"><CaseDeck fixtures /></div>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Home page sections (with fixtures)</h2>
+            <p style={note}>The four collection-fed home sections, shown here with fixture content so all four appear. On the home page a section with no content is not rendered.</p>
+          </div>
+        </div>
+        <HomeFeeds fixtures landmark={false} idPrefix={`states-${theme}`} />
+        <div class="cory-container" style="padding-block: var(--space-12); display: grid; gap: var(--space-10);">
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Contact form</h2>
+            <p style={note}>Every form state. The first form is live; the others are fixed in their state.</p>
+            <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
+              {formStates.map(([state, label], i) => <li style="display: grid; gap: var(--space-3); align-content: start;"><p style={note}>{label}</p><ContactForm endpoint="https://formspree.io/f/fixture" email={site.email} id={`${theme}-${state}`} landmark={false} state={i === 0 ? undefined : state} /></li>)}
+            </ul></div>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Career timeline and certifications</h2>
+            <p style={note}>The timeline from the profile data file (roles grouped by company; dates, location and highlights are optional), and certification rows in each status, including the stress fixture.</p>
+            <Career level={3} />
+            <Certifications fixtures />
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Testimonials (placeholders only)</h2>
+            <p style={note}>No testimonial exists yet. These are the draft placeholder and the stress fixture; neither can be published. On the site the section is not rendered until an entry has the person's permission.</p>
+          </div>
+        </div>
+        <div data-states-testimonials><Testimonials placeholders id={`testimonials-${theme}`} /></div>
+        <div class="cory-container" style="padding-block: var(--space-12); display: grid; gap: var(--space-10);">
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Facts to check before launch</h2>
+            <p style={note}>Notes kept in the profile data file. They are never shown on a public page.</p>
+            <ul class="verify-list">{verifyNotes().map(n => <li><strong>{n.where}</strong><span>{n.note}</span></li>)}</ul>
+          </div>
+
+          <div style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Content entries</h2>
+            <p style={note}>One sample and one stress fixture per collection. Drafts and fixtures never reach a production build. Optional fields that are missing render nothing.</p>
+            {content.map(group => (
+              <div style="display: grid; gap: var(--space-3);">
+                <p class="cory-overline" style="margin: 0;">{group.name} ({group.entries.length})</p>
+                <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
+                  {group.entries.map(entry => { const d: any = entry.data; const img = imageOf(d); return (
+                    <li style="display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+                      {img && <div style="aspect-ratio: var(--aspect-case); border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-sunken);"><Image src={img.src} alt={img.alt} width={640} style="inline-size: 100%; block-size: 100%; object-fit: cover; object-position: top center;" /></div>}
+                      <div><span data-badge style={badge}>{kind(d)}</span></div>
+                      <p style="margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong);">{titleOf(d)}</p>
+                      {(d.summary || d.lead || d.description || d.excerpt || d.issuer) && <p style="margin: 0; font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-muted);">{d.summary || d.lead || d.description || d.excerpt || d.issuer}</p>}
+                      {d.tags?.length > 0 && <ul style="display: flex; flex-wrap: wrap; gap: var(--space-2);">{d.tags.map((t: string) => <li><span data-badge style={badge}>{t}</span></li>)}</ul>}
+                      {d.updates?.length > 0 && <ol style="display: grid; gap: var(--space-2);">{d.updates.map((u: any) => <li style="font-size: var(--text-body-sm); color: var(--text-body);"><span style="font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--text-subtle);">{u.date.toISOString().slice(0, 10)}</span> {u.title}</li>)}</ol>}
+                      {Object.values(d).some(isPlaceholder) && <p style="margin: 0; font-size: var(--text-caption); color: var(--text-warning);">Contains a placeholder that must be resolved before this can be published.</p>}
+                    </li>
+                  ); })}
+                </ul></div>
+              </div>
+            ))}
+          </div>
+
+          <div style="display: grid; gap: var(--space-2);">
+            <h2 style={h2}>Not covered yet</h2>
+            <p style={note}>Loading skeletons and error states (no component loads data in the browser any more). Case card, metric tile, step row, pull quote, service link card, reel card, section nav, certificate dialog and the hero deck are still rendered from legacy snapshots; each gets its fixtures here when it becomes a real component.</p>
+          </div>
+        </div>
+      </section>
+    ))}
+  </main>
+  <script>
+    import '../components/islands/case-study.ts';
+  </script>
+</BaseLayout>
+
+<style is:global>
+  /* Buttons wrap their label when it cannot fit (CLAUDE.md 2.3: buttons grow with their content and never clip). */
+  .states-wrap, .states-wrap .ui-button-label { white-space: normal; overflow-wrap: anywhere; text-align: center; line-height: 1.25; }
+</style>

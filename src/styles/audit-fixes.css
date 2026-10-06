@@ -1,0 +1,45 @@
+/* Fixes for approved findings in docs/AUDIT_FINDINGS.md. One rule per finding, each labelled with its ID.
+   Loaded last. Rules use !important only where they must beat an inline style carried over from the legacy markup. */
+
+/* M-04, M-14: badges and tags wrap, so long text is never cut off and never widens the page. */
+[data-badge] { white-space: normal !important; overflow-wrap: anywhere; max-inline-size: 100%; text-align: start; }
+
+/* M-03: under 380px of header width the language label text is hidden; the globe icon and the accessible name stay. */
+@container (max-width: 379px) { .header-lang > span[lang] { display: none; } .header-lang { padding-inline: 0 !important; } }
+
+/* M-15: the code sample scrolls inside its own box; nothing is cut and the page never scrolls sideways. */
+[data-article] pre { overflow-x: auto; max-inline-size: 100%; }
+
+/* M-16, M-17: buttons from the legacy markup get their hover and press states in CSS, only on devices that hover. */
+[data-ds-button]:active { transform: scale(var(--press-scale)) !important; }
+@media (hover: hover) {
+  [data-ds-button]:hover { transform: translateY(-1px) !important; }
+  [data-ds-button="primary"]:hover { filter: brightness(1.08) saturate(1.05); box-shadow: var(--shadow-brand-hover) !important; }
+  [data-ds-button="ink"]:hover { background: var(--action-ink-hover) !important; box-shadow: var(--shadow-md) !important; }
+  [data-ds-button="secondary"]:hover { background: var(--action-secondary-hover) !important; box-shadow: var(--shadow-sm) !important; }
+  [data-ds-button="ghost"]:hover { background: var(--action-ghost-hover) !important; color: var(--text-link-hover) !important; }
+  [data-ds-button="on-ink"]:hover { background: var(--on-ink-fill-hover) !important; }
+  [data-ds-button="on-ink-solid"]:hover { box-shadow: var(--shadow-lg), var(--shadow-glow) !important; }
+}
+
+/* M-17: navigation and footer links are underlined on hover and keyboard focus (never colour alone). */
+.header-nav-link:focus-visible, .footer-link:focus-visible { text-decoration-line: underline !important; text-underline-offset: 0.22em; }
+@media (hover: hover) { .header-nav-link:hover, .footer-link:hover { text-decoration-line: underline !important; text-underline-offset: 0.22em; } }
+
+/* M-18: the current page in the mobile menu uses the same treatment as the desktop nav (weight plus a brand underline). */
+.menu-nav-link[aria-current="page"] { background: var(--gradient-brand) no-repeat left bottom 4px / 100% 3px; }
+[dir="rtl"] .menu-nav-link[aria-current="page"] { background-position: right bottom 4px; }
+
+/* M-03 (continued): at the narrowest widths the header gaps tighten so the menu button stays inside the gutter in both directions. */
+@container (max-width: 379px) { [data-site-header] .cory-container { gap: var(--space-2) !important; } [data-site-header] [role="group"] { gap: var(--space-1) !important; } }
+
+/* MO-D2: controls that had no hover or press state get the one their siblings use. */
+:is(div:has(+ [data-hero-stack]), div:has(+ [data-deck-static])) button:not(:disabled):active { transform: scale(var(--press-scale)) !important; }
+details > summary { border-radius: inherit; transition: background var(--duration-base) var(--ease-out); }
+@media (hover: hover) {
+  :is(div:has(+ [data-hero-stack]), div:has(+ [data-deck-static])) button:not(:disabled):hover { background: var(--action-secondary-hover) !important; transform: translateY(-1px) !important; }
+  details > summary:hover { background: var(--action-ghost-hover); }
+  .resume-contact a:hover { color: var(--text-link-hover); }
+  #guides [data-card-fill] > .sc-host-x > a:hover { transform: translateY(var(--lift-hover)) !important; box-shadow: var(--shadow-lg) !important; }
+}
+#guides [data-card-fill] > .sc-host-x > a:focus-visible { transform: translateY(var(--lift-hover)) !important; box-shadow: var(--shadow-lg) !important; }

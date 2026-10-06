@@ -1,0 +1,39 @@
+---
+/* Testimonials. Only entries with the person's permission, and not drafts, are ever published; with none, the whole
+   section is left out. No testimonial exists yet, so on the live site this renders nothing. `placeholders` is for
+   /_states: it shows the draft and fixture entries so the layout can be checked. */
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+
+interface Props { placeholders?: boolean; surface?: 'page' | 'card'; id?: string }
+const { placeholders = false, surface = 'page', id = 'testimonials' } = Astro.props;
+/* With placeholders (the /_states page, where it is shown twice) it is a plain block, not a named landmark. */
+const Tag: any = placeholders ? 'div' : 'section';
+const entries = (await getCollection('testimonials', ({ data }) => (placeholders ? true : data.permission && !data.draft && !data.fixture))).sort((a, b) => a.id.localeCompare(b.id));
+---
+{entries.length > 0 && (
+  <Tag class="page-section" data-surface={surface} aria-labelledby={placeholders ? undefined : `${id}-title`}>
+    <div class="cory-container">
+      <div class="page-section-head">
+        <p class="cory-overline" style="margin: 0;">In their words</p>
+        <h2 id={`${id}-title`} class="page-h2">What it is like to work with me</h2>
+      </div>
+      <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">
+        {entries.map(({ data: t }) => (
+          <li><figure class="testimonial">
+            <blockquote><p>{t.quote}</p></blockquote>
+            <figcaption>
+              {t.photo && <Image src={t.photo.src} alt={t.photo.alt} width={88} height={88} loading="lazy" decoding="async" />}
+              <span class="testimonial-who">
+                <strong>{t.name}</strong>
+                <span>{[t.role, t.company].filter(Boolean).join(', ')}</span>
+                {t.relationship && <span>{t.relationship}</span>}
+                {t.source && <a href={t.source} target="_blank" rel="noopener">Source<span class="cory-visually-hidden">: {t.name} (opens in a new tab)</span></a>}
+              </span>
+            </figcaption>
+          </figure></li>
+        ))}
+      </ul></div>
+    </div>
+  </Tag>
+)}

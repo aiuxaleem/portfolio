@@ -1,0 +1,33 @@
+---
+/* Contact: a one-to-one call and email (the two ways the owner named on 5 October 2026), availability, and a contact form
+   (Formspree, owner decision in Phase 12).
+   The form is rendered only when a Formspree form id is set in src/content/site/profile.json; until then the page offers
+   the links alone, so no visitor meets a form that cannot send. Every form state is on /_states. */
+import PageLayout from '../layouts/page-layout.astro';
+import Button from '../components/ui/button.astro';
+import EmailCopy from '../components/layout/email-copy.astro';
+import ContactForm from '../components/forms/contact-form.astro';
+import { site } from '../content/site';
+import { formEndpoint } from '../content/profile';
+import { chrome } from '../i18n/chrome';
+const c = chrome.en;
+/* Quality builds render the form against a fixture address so its layout is checked at every width. */
+const endpoint = formEndpoint || (process.env.QUALITY_BUILD === '1' ? 'https://formspree.io/f/fixture' : undefined);
+---
+<PageLayout title="Contact · AIUXAleem" description="Contact Mohammad Abdul Aleem: book a one-to-one 15-minute call or send an email. Based in Hyderabad, working GCC hours." page="contact" hideCta bg="grid" mainStyle="outline: none; overflow: clip;">
+  <section data-contact class="cory-container" aria-labelledby="contact-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y);">
+    <p class="cory-overline" style="margin: 0px;">Contact</p>
+    <h1 id="contact-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">Get in touch.</h1>
+    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">I reply within 48 hours. A 15-minute call is the fastest way to start.</p>
+    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+      <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
+      <Button variant="secondary" size="lg" href={`mailto:${site.email}`}>Email me</Button>
+    </div>
+    <div style="color: var(--text-link); font-size: var(--text-body-md);"><EmailCopy copyLabel={c.copyEmail} copiedLabel={c.copied} fallbackLabel={c.pressCopy} /></div>
+    <dl class="facts" style="max-inline-size: var(--measure-body);">
+      <div><dt>Based in</dt><dd>{site.location}</dd></div>
+      <div><dt>Availability</dt><dd>{site.availability.label}</dd></div>
+    </dl>
+    {endpoint && <ContactForm endpoint={endpoint} email={site.email} />}
+  </section>
+</PageLayout>

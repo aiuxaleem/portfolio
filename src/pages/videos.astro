@@ -1,0 +1,29 @@
+---
+/* /videos: the videos collection as a grid, newest first. Each video is a click-to-load facade; nothing is requested
+   from YouTube until play is pressed. With no published video the page is its empty state (CLAUDE.md 2.6). */
+import PageLayout from '../layouts/page-layout.astro';
+import Button from '../components/ui/button.astro';
+import VideoCard from '../components/cards/video-card.astro';
+import { listedVideos } from '../lib/videos';
+import { site } from '../content/site';
+import { videoLd } from '../lib/seo';
+
+const videos = await listedVideos();
+const none = videos.length === 0;
+---
+<PageLayout title="Videos · AIUXAleem" description="Videos by Mohammad Abdul Aleem on designing AI products people trust. New recordings are listed here as they are published." page="videos" jsonLd={videos.map(videoLd)} bg="grid" mainStyle="outline: none; overflow: clip;">
+  <section class="cory-container" aria-labelledby="videos-title" style={`position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y)${none ? '' : ' var(--space-10)'};`}>
+    <p class="cory-overline" style="margin: 0px;">Videos</p>
+    <h1 id="videos-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">{none ? 'No videos here yet.' : 'Videos'}</h1>
+    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">{none ? 'New recordings will be listed on this page when they are published. Until then, the channel is on YouTube.' : 'Recordings on designing AI products people trust. A video loads from YouTube only when you press play.'}</p>
+    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+      <Button variant="primary" size="lg" href={site.socials.youtube} target="_blank" rel="noopener">Subscribe on YouTube<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
+      <Button variant="secondary" size="lg" href="/writing">Read the writing</Button>
+    </div>
+  </section>
+  {!none && (
+    <section class="cory-container" aria-label="Video list" style="padding-block-end: var(--section-y);">
+      <div data-cq><ul data-cq-grid style="display: grid; gap: var(--space-10) var(--grid-gap);">{videos.map(v => <li><VideoCard video={v} /></li>)}</ul></div>
+    </section>
+  )}
+</PageLayout>

@@ -1,0 +1,23 @@
+---
+/* Custom 404, in the existing design language. Ported by hand from legacy/404.dc.html; compared against the baseline. */
+import PageLayout from '../layouts/page-layout.astro';
+import Button from '../components/ui/button.astro';
+import EmailCopy from '../components/layout/email-copy.astro';
+import { site, resumeAttrs, resumeExternal } from '../content/site';
+import { chrome } from '../i18n/chrome';
+const c = chrome.en;
+---
+<PageLayout title="Page not found · AIUXAleem" description="This page does not exist. Go to the work, download the resume, or return home." page="404" noindex bg="grid" mainStyle="outline: none; min-block-size: calc(100svh - var(--header-height)); display: flex; align-items: center; overflow: clip;">
+  <div aria-hidden="true" style="position: absolute; inset-block-start: -30%; inset-inline-end: -10%; inline-size: min(50vw, 560px); aspect-ratio: 1 / 1; background: var(--glow-cyan); pointer-events: none;"></div>
+  <section class="cory-container" aria-labelledby="nf-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y);">
+    <p class="cory-overline" style="margin: 0px;"><bdi>404</bdi> · Page not found</p>
+    <h1 id="nf-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">That page is not <span style="background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent;">here</span>.</h1>
+    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">The link may be old or mistyped. The things people usually come for are one tap away.</p>
+    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+      <Button variant="primary" size="lg" href="/work">See the work</Button>
+      <Button variant="secondary" size="lg" href={site.resumeUrl} {...resumeAttrs}>{resumeExternal ? 'View resume' : 'Download resume'}{resumeExternal && <span class="cory-visually-hidden"> (opens in a new tab)</span>}</Button>
+      <Button variant="ghost" size="lg" href="/">Go home</Button>
+    </div>
+    <div style="color: var(--text-link); font-size: var(--text-body-md);"><EmailCopy copyLabel={c.copyEmail} copiedLabel={c.copied} fallbackLabel={c.pressCopy} subject="Broken link on aiuxaleem.com" /></div>
+  </section>
+</PageLayout>

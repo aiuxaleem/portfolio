@@ -1,0 +1,22 @@
+{
+  "brand": "AIUXAleem",
+  "name": "Mohammad Abdul Aleem",
+  "positioning": "Mohammad Abdul Aleem, Lead AI Product Designer. Enterprise UX, design systems and AI product design from Hyderabad, on GCC hours, for teams in KSA, UAE and anywhere.",
+  "location": "Hyderabad, India",
+  "availability": {
+    "open": true,
+    "label": "Open to Senior/Lead/Principal AI Product Design roles · Saudi Arabia, UAE, remote · Open to relocation"
+  },
+  "email": "aiuxaleem@gmail.com",
+  "calendarUrl": "https://cal.com/md-abdul-aleem-gilsy7/15min?overlayCalendar=true",
+  "resume": {
+    "path": "/resume.pdf",
+    "fallbackUrl": "https://drive.google.com/drive/folders/1sWu8wfz28YeLLNz4agRaa_PD8B8a4sY5?usp=sharing"
+  },
+  "socials": {
+    "linkedin": "https://www.linkedin.com/in/aiuxaleem",
+    "behance": "https://be.net/uxaleem",
+    "youtube": "https://www.youtube.com/@aiuxaleem"
+  },
+  "copyright": "© 2026 Mohammad Abdul Aleem"
+}

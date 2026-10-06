@@ -1,0 +1,54 @@
+---
+title: WoT AI Design System
+summary: "A working design system for WorldOfTaxonomy that people and AI agents read from the same source, with a playground that turns a prompt into on-system UI."
+status: in-progress
+role: Lead AI Product Designer
+team: Me, with Claude Code as the build agent
+stack: [React 18, TypeScript, Vite, CSS Modules, Figma MCP, Claude Code, Vercel]
+cover:
+  src: ../../assets/projects/wot-ds-showcase.jpg
+  alt: "WoT AI Design System showcase page with buttons, inputs, cards and notifications built from the system"
+gallery:
+  - src: ../../assets/projects/wot-ds-playground.jpg
+    alt: "Playground page with six suggested prompts on the left and an output panel on the right"
+    caption: "Playground: describe an interface and get it built from the system's components"
+  - src: ../../assets/projects/wot-ds-showcase-dark.jpg
+    alt: "Showcase page in dark theme"
+    caption: "The same showcase in dark theme: only the neutrals invert"
+  - src: ../../assets/projects/wot-ds-palettes.jpg
+    alt: "Color palettes page with the cyan brand scale from step 50 to 500"
+    caption: "Colour: cyan is the only saturated brand colour"
+  - src: ../../assets/projects/wot-ds-button.jpg
+    alt: "Button documentation page showing five variants and three sizes"
+    caption: "Button: variants, sizes and a props table from the real component"
+  - src: ../../assets/projects/wot-ds-text-styles.jpg
+    alt: "Text styles page listing body sizes with their font size and line height"
+    caption: "Type: Geist and Geist Mono"
+links:
+  live: https://worldoftaxonomy-design-system1.vercel.app/
+  repo: https://github.com/aiuxaleem/worldoftaxonomy-design-system
+tags: [Design systems, AI]
+order: 3
+featured: true
+---
+
+## What it is
+
+The design system for WorldOfTaxonomy, built as a running React app and not a static style guide: every component, token and colour in the documentation is the same code that uses them. It was built end to end from a Figma file through the Figma MCP server, with Claude Code as the executing agent. Strategy, brand and design decisions were mine.
+
+## What is in it
+
+- **Foundations:** 203 tokens in six layers (palette, neutral, semantic, typography, spacing, radius) and 44 dark-theme overrides. Cyan is the only saturated brand colour.
+- **Components:** ten primitives: Button, Button Group, Input, Select, Checkbox, Radio, Card, Modal, Toast and Tooltip.
+- **Documentation:** 19 pages covering foundations, each component with its props, a showcase and a playground.
+- **Brand:** a globe-in-crosshair mark with lockup and favicon masters, clear space and minimum sizes.
+
+## How AI builds with it
+
+The playground takes a plain request, such as a sign-in form or a pricing grid, and returns an interface made only from the system's components. One manifest file feeds both sides: it is the instruction given to the model and the list of what the renderer will accept. Anything the model invents outside that list shows up as a visible "unknown tag" label instead of being drawn, event handlers are removed, and links are limited to safe addresses.
+
+## Status
+
+The foundation and the components are shipped. Storybook and an installable package are pending. Still ahead: a server that lets agents query the system directly, automated quality gates, and a pilot in a first product.
+
+It is one of the design systems I built at Colaberry, with the [Colaberry Design System](/work/colaberry-design-system), the [Multi-brand token system](/work/multi-brand-token-system) and the [Freight platform design system](/work/freight-design-system).

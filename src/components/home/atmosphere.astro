@@ -1,0 +1,7 @@
+---
+/* The two fixed background layers behind the Home page (soft glows and the dot grid), and the hover rules the
+   carried-over markup refers to by class. The legacy WebGL canvas is not carried over. */
+---
+<style is:inline set:html={".scp0:focus { transform: none !important; }\n.scp4:active { transform: scale(var(--press-scale)) !important; }\n@media (hover: hover) { .scp1:hover { color: var(--text-strong) !important; } .scp2:hover { background: var(--action-ghost-hover) !important; } .scp3:hover { background: color-mix(in srgb, currentcolor 12%, transparent 88%) !important; } .scp5:hover { color: var(--on-ink-strong) !important; } }"}></style>
+<div aria-hidden="true" style="position: fixed; inset: 0px; z-index: var(--z-base); pointer-events: none; background: var(--glow-blue) no-repeat 78% 12% / 72vmax 72vmax, var(--glow-cyan) no-repeat 12% 88% / 56vmax 56vmax;"></div>
+<div data-atmosphere-dots="" aria-hidden="true" style="position: fixed; inset: 0px; z-index: var(--z-base); pointer-events: none;"></div>

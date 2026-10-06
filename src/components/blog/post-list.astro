@@ -1,0 +1,46 @@
+---
+/* The shared body of /blog, /blog/page/N and /blog/tag/<tag>: heading, tag links, cards, pagination, empty state. */
+import PageLayout from '../../layouts/page-layout.astro';
+import PostCard from '../cards/post-card.astro';
+import Button from '../ui/button.astro';
+import { type Post, tagSlug } from '../../lib/posts';
+
+interface Props { posts: Post[]; tags: string[]; tag?: string; page?: number; pages?: number; total: number }
+const { posts, tags, tag, page = 1, pages = 1, total } = Astro.props;
+const href = (n: number) => (n === 1 ? '/blog' : `/blog/page/${n}`);
+const heading = tag ? `Posts tagged ${tag}` : 'Blog';
+const title = `${tag ? `${tag} · Blog` : page > 1 ? `Blog, page ${page}` : 'Blog'} · AIUXAleem`;
+const description = tag
+  ? `Posts tagged ${tag} on the AIUXAleem blog: guides and articles by Mohammad Abdul Aleem on design systems and AI product design.`
+  : `Guides and articles by Mohammad Abdul Aleem on design systems and designing AI products.${page > 1 ? ` Page ${page} of ${pages}.` : ''}`;
+---
+<PageLayout title={title} description={description} page="blog" bg="grid" mainStyle="outline: none; overflow: clip;" noindex={!!tag && posts.length === 0}>
+  <section class="cory-container" aria-labelledby="blog-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    {tag
+      ? <a data-link href="/blog" class="post-back"><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All posts</span></a>
+      : <p class="cory-overline" style="margin: 0;">Writing</p>}
+    <h1 id="blog-title" style="margin: 0; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); overflow-wrap: anywhere;">{heading}</h1>
+    {!tag && <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">Guides and articles on design systems and designing AI products.</p>}
+    <p class="project-filter-count">{total === 1 ? '1 post' : `${total} posts`}{pages > 1 && <> · Page {page} of {pages}</>}</p>
+    {tags.length > 0 && (
+      <nav class="post-tags" aria-label="Topics">
+        <span class="project-filter-label">Topics</span>
+        <ul>{tags.map(t => <li><a class="ui-chip" href={`/blog/tag/${tagSlug(t)}`} aria-current={t === tag ? 'page' : undefined}>{t}</a></li>)}</ul>
+      </nav>
+    )}
+  </section>
+  <section class="cory-container" aria-label="Posts" style="display: grid; gap: var(--space-8); padding-block-end: var(--section-y);">
+    {posts.length === 0
+      ? (tag
+        ? <div class="project-empty"><p class="project-empty-title">No posts with this tag are published yet.</p><p class="project-empty-body">Posts on this topic are still being written. The other posts are on the blog.</p><div><Button variant="secondary" href="/blog">See all posts</Button></div></div>
+        : <div class="project-empty"><p class="project-empty-title">No posts are published yet.</p><p class="project-empty-body">The case studies cover the work in depth.</p><div><Button variant="secondary" href="/case-studies">Read the case studies</Button></div></div>)
+      : <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{posts.map(p => <li><PostCard post={p} /></li>)}</ul></div>}
+    {pages > 1 && (
+      <nav class="post-pagination" aria-label="Pages">
+        {page > 1 ? <a class="ui-chip" href={href(page - 1)} rel="prev">Newer posts</a> : <span></span>}
+        <ol>{Array.from({ length: pages }, (_, i) => i + 1).map(n => <li><a class="ui-chip" href={href(n)} aria-current={n === page ? 'page' : undefined}><span class="cory-visually-hidden">Page </span>{n}</a></li>)}</ol>
+        {page < pages ? <a class="ui-chip" href={href(page + 1)} rel="next">Older posts</a> : <span></span>}
+      </nav>
+    )}
+  </section>
+</PageLayout>

@@ -1,0 +1,39 @@
+---
+/* Home. Five sections are carried over from the legacy page with their markup intact (hero, point of view, beyond the
+   canvas, the services teaser, the closing panel), wired to site settings, the profile file and the case studies
+   collection. Projects, latest writing and the latest video come from the collections; each is left out when empty.
+   The legacy Skills, Projects, In public and Now sections are not here: About, /work, /writing and /now hold those facts. */
+import BaseLayout from '../layouts/base-layout.astro';
+import SiteHeader from '../components/layout/site-header.astro';
+import SiteFooter from '../components/layout/site-footer.astro';
+import Atmosphere from '../components/home/atmosphere.astro';
+import Hero from '../components/home/hero.astro';
+import PointOfView from '../components/home/point-of-view.astro';
+import BeyondTheCanvas from '../components/home/beyond-the-canvas.astro';
+import HomeFeeds from '../components/home/home-feeds.astro';
+import ServicesTeaser from '../components/home/services-teaser.astro';
+import Closing from '../components/home/closing.astro';
+import { site } from '../content/site';
+import { profile } from '../content/profile';
+import { personLd, websiteLd } from '../lib/seo';
+---
+<BaseLayout title={`${site.brand} · ${profile.headline}`} description={site.positioning} page="home" langs="en ar" jsonLd={[personLd(), websiteLd()]}>
+  <div id="dc-root">
+    <div class="sc-host">
+      <div class="sc-host" data-sc-name="Site Header"><SiteHeader lang="en" langs="en ar" /></div>
+      <Atmosphere />
+      <main id="main" data-page="home" tabindex="-1" style="position: relative; z-index: var(--z-raised); outline: none;">
+        <Hero />
+        <PointOfView />
+        <BeyondTheCanvas />
+        <HomeFeeds show={['projects', 'writing', 'video']} />
+        <ServicesTeaser />
+        <Closing />
+      </main>
+      <div class="sc-host" data-sc-name="Site Footer"><SiteFooter lang="en" hideCta /></div>
+    </div>
+  </div>
+  <script>
+    import '../components/islands/page-behaviours.ts';
+  </script>
+</BaseLayout>

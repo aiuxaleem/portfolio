@@ -1,0 +1,49 @@
+---
+/* The case study deck from the Home hero: up to three featured case studies as a stack of cards, with a counter and two
+   arrow buttons. Markup and inline styles are carried over from the legacy page. Behaviour: islands/page-behaviours.ts,
+   which drives the one live deck on a page. `fixtures` (for /_states) fills it with the fixture case studies and
+   renders it still, with the arrows off. */
+import { getImage } from 'astro:assets';
+import { listedCaseStudies } from '../../lib/case-studies';
+
+interface Props { fixtures?: boolean }
+const { fixtures = false } = Astro.props;
+const live = !fixtures;
+const all = await listedCaseStudies();
+const picked = (fixtures ? [...all.filter(c => c.data.fixture), ...all.filter(c => !c.data.fixture)] : all.filter(c => !c.data.fixture && c.data.featured)).slice(0, 3);
+const cards = await Promise.all(picked.map(async entry => ({ entry, image: entry.data.cover ? await getImage({ src: entry.data.cover.src, widths: [400, 640, 960] }) : undefined })));
+const countWord = ['No', 'One', 'Two', 'Three'][cards.length];
+---
+{cards.length > 0 && (
+<div data-hero-el="" style="position: relative; display: grid; gap: var(--space-4); justify-self: end; inline-size: min(100%, 440px);">
+        <div aria-hidden="true" style="position: absolute; inset: -18% -14%; background: var(--glow-cyan) no-repeat 85% 15% / 70% 70%, var(--glow-blue) no-repeat 10% 90% / 65% 65%; z-index: -1; pointer-events: none;"></div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;">
+          <p class="cory-overline" style="margin: 0px;"><span class="sc-interp">Selected work</span></p>
+          <div style="display: flex; align-items: center; gap: var(--space-2);">
+            <bdi aria-live="polite" style="font-family: var(--font-mono); font-size: var(--text-mono); color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap;"><span class="sc-interp">01 / {String(cards.length).padStart(2, '0')}</span></bdi>
+            <div class="sc-host-x" style="display: contents;"><button type="button" aria-label="Previous case study" title="Previous case study" disabled={!live} style="display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: var(--radius-pill); cursor: pointer; font-size: 20px; line-height: 1; padding: 0px; transition: background var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out), transform var(--duration-fast) var(--ease-out), filter var(--duration-base) var(--ease-out); transform: none; background: var(--surface-card); color: var(--text-strong); border: 1px solid var(--border-interactive); box-shadow: var(--shadow-xs);"><svg data-dir-icon="" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg></button></div>
+            <div class="sc-host-x" style="display: contents;"><button type="button" aria-label="Next case study" title="Next case study" disabled={!live} style="display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: var(--radius-pill); cursor: pointer; font-size: 20px; line-height: 1; padding: 0px; transition: background var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out), transform var(--duration-fast) var(--ease-out), filter var(--duration-base) var(--ease-out); transform: none; background: var(--surface-card); color: var(--text-strong); border: 1px solid var(--border-interactive); box-shadow: var(--shadow-xs);"><svg data-dir-icon="" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></button></div>
+          </div>
+        </div>
+        <ul data-hero-stack={live ? '' : undefined} data-deck-static={live ? undefined : ''} style="position: relative; inline-size: min(100%, 400px); aspect-ratio: 4 / 5; margin-inline: auto; padding-block-start: var(--space-6);">
+{cards.map((c, i) => (
+<li data-stack-card="" data-pos={i} aria-hidden={i === 0 ? 'false' : 'true'} style="position: absolute; inset: var(--space-6) 0 0; border-radius: var(--radius-xl); overflow: hidden; isolation: isolate; background: var(--gradient-ink); border: 1px solid var(--on-ink-border); box-shadow: var(--shadow-lg);">
+              <span aria-hidden="true" style="position: absolute; inline-size: 80%; aspect-ratio: 1 / 1; inset-inline-end: -30%; inset-block-end: -35%; background: var(--glow-cyan); z-index: -1; pointer-events: none;"></span>
+              <a href={`/case-studies/${c.entry.id}`} tabindex={i === 0 ? 0 : -1} style="position: absolute; inset: 0px; display: flex; flex-direction: column; color: var(--on-ink-strong); text-decoration: none; outline-offset: -3px;">
+                <span data-stack-caption="" style="flex: 0 0 auto; display: flex; flex-direction: column; align-items: stretch; gap: var(--space-2); padding: var(--space-6) var(--space-6) 0;">
+                  <span style="display: flex; justify-content: space-between; gap: var(--space-3); font-family: var(--font-mono); font-size: var(--text-mono-sm); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--on-ink-link);"><span data-deck-kicker style="flex: 1 1 auto; min-inline-size: 0px;"><span class="sc-interp">{c.entry.data.index || String(i + 1).padStart(2, '0')}</span> · <span class="sc-interp">{c.entry.data.category}</span></span><bdi style="flex: 0 0 auto;"><span class="sc-interp">{c.entry.data.timeline}</span></bdi></span>
+                  <span data-deck-title style="font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-snug); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); text-wrap: balance;"><span class="sc-interp">{c.entry.data.title}</span></span>
+                  <span data-deck-line style="font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--on-ink-body); text-wrap: pretty;"><span class="sc-interp">{c.entry.data.lead}</span></span>
+                  <span style="display: inline-flex; align-items: center; gap: var(--space-1); align-self: flex-start; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--on-ink-link);"><span style="flex: 0 1 auto;"><span class="sc-interp">Read the case study</span></span><svg data-dir-icon="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span>
+                </span>
+                <span aria-hidden="true" style="position: relative; flex: 1 1 auto; min-block-size: 120px; display: block;"><span data-stack-frame="" style="position: absolute; inset-inline: 12% -14%; inset-block-start: var(--space-4); inset-block-end: -10%; display: block; border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-card); border: 1px solid var(--on-ink-border-strong); box-shadow: var(--shadow-xl); transform: rotate(calc(-4deg * var(--dir-x))); transform-origin: 0px 100%;">
+                  <span style="display: flex; gap: 6px; align-items: center; padding: 8px 10px; border-block-end: 1px solid var(--border-subtle); background: var(--surface-sunken);"><span style="inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--border-strong);"></span><span style="inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--border-strong);"></span><span style="inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--border-strong);"></span></span>
+                  {c.image && <img src={c.image.src} srcset={c.image.srcSet.attribute} sizes="(min-width: 1024px) 400px, 90vw" alt="" loading="lazy" decoding="async" style="display: block; inline-size: 100%; block-size: 100%; object-fit: cover; object-position: left top;" width={c.image.attributes.width} height={c.image.attributes.height} />}
+                </span></span>
+              </a>
+            </li>
+))}
+</ul>
+        <p style="margin: 0px; font-size: var(--text-caption); line-height: var(--leading-normal); color: var(--text-muted); max-inline-size: 52ch;"><span class="sc-interp">{countWord} case {cards.length === 1 ? 'study' : 'studies'}. The front card opens the full write-up; the arrows bring the next one forward.</span></p>
+      </div>
+)}

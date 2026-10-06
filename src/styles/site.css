@@ -1,0 +1,261 @@
+/* Copied verbatim from legacy/site.css lines 614-876 (portfolio additions, including the token overrides that Phase 5 folds into tokens.css). Do not edit values here without an approved finding. */
+/* ---- aiuxaleem.css ---- */
+/* aiuxaleem.com: portfolio additions to AgentCory v2.
+   Two root switches drive every display state: data-theme (light | dark) and dir (ltr | rtl) + lang.
+   Everything here is scoped to [data-theme] / [dir] / [lang] selectors (not :root only) so the QA matrix
+   can render all four states side by side. Components never branch on theme or direction. */
+
+:root {
+  /* Node field (Three.js reads these at runtime) */
+  --node-color: var(--blue-500);
+  --node-line: var(--navy-200);
+  --node-accent: var(--cyan-500);
+  --node-glow: var(--cyan-400);
+  /* Headline highlight: AA at headline size on light surfaces */
+  --gradient-text: linear-gradient(90deg, var(--blue-700) 0%, var(--blue-500) 100%); /* @kind color */
+  /* Case-study cover ratio */
+  --aspect-case: 16 / 10; /* @kind other */
+  /* Minimum hit target */
+  --tap-target: 44px;
+  /* Direction tokens: the only place direction is resolved */
+  --dir-x: 1; /* @kind other */
+  --origin-inline-start: left; /* @kind other */
+  --origin-inline-end: right; /* @kind other */
+  /* Arabic families, matched to Plus Jakarta Sans weight and x-height */
+  --font-arabic: 'IBM Plex Sans Arabic', 'Noto Sans Arabic', sans-serif;
+  --font-arabic-display: 'Noto Kufi Arabic', 'IBM Plex Sans Arabic', sans-serif;
+}
+[data-theme="dark"] {
+  --node-color: var(--cyan-400);
+  --node-line: var(--navy-500);
+  --node-accent: var(--blue-400);
+  --node-glow: var(--blue-500);
+  --gradient-text: var(--gradient-brand);
+}
+[dir="ltr"] { --dir-x: 1; --origin-inline-start: left; --origin-inline-end: right; }
+[dir="rtl"] { --dir-x: -1; --origin-inline-start: right; --origin-inline-end: left; }
+
+/* Arabic type tokens: Latin stays in Plus Jakarta Sans, Arabic falls through to the matched family.
+   Letter-spacing must be zero (tracking breaks Arabic joins); leading opens up for ascenders/descenders. */
+[lang="ar"] {
+  --font-sans: 'Plus Jakarta Sans', var(--font-arabic);
+  --font-display: 'Plus Jakarta Sans', var(--font-arabic-display);
+  --font-mono: 'JetBrains Mono', var(--font-arabic);
+  --tracking-tighter: 0em; --tracking-tight: 0em; --tracking-ui: 0em; --tracking-wide: 0em; --tracking-overline: 0em;
+  --leading-tight: 1.3; --leading-snug: 1.4; --leading-heading: 1.45; --leading-normal: 1.7; --leading-relaxed: 1.85;
+  --text-body-lg: 19px; --text-body-md: 17px; --text-body-sm: 15px; --text-caption: 14px; --text-overline: 13px; --text-label: 14px;
+  font-family: var(--font-sans);
+}
+[lang="en"] { font-family: var(--font-sans); }
+
+/* Resets the system leaves to the page */
+html { scroll-padding-block-start: var(--header-height); }
+/* In-page links scroll smoothly when the visitor has not asked for reduced motion. */
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+/* Reading progress on articles and case studies: the bar fills with the page scroll. No script.
+   The bar is not rendered at all under reduced motion or without scroll timelines, so no fixed layer is created. */
+div:has(> [data-progress]) { display: none; }
+@keyframes read-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@supports (animation-timeline: scroll()) { @media (prefers-reduced-motion: no-preference) { div:has(> [data-progress]) { display: block; } [data-progress] { animation: read-progress linear both; animation-timeline: scroll(root block); } } }
+/* Scroll reveal: islands/reveal.ts marks blocks that start below the first view as pending, then lets them fade up once.
+   Without the script nothing is ever hidden. !important because carried-over markup sets transform and transition inline. */
+[data-reveal-state="pending"] { opacity: 0 !important; transform: translateY(var(--reveal-distance)) !important; }
+[data-reveal-state="in"] { transition: opacity var(--duration-enter) var(--ease-out), transform var(--duration-enter) var(--ease-out) !important; transition-delay: calc(var(--i, 0) * var(--stagger)) !important; }
+@media print { [data-reveal-state] { opacity: 1 !important; transform: none !important; } }
+body { overflow-wrap: anywhere; }
+h1, h2, h3, h4 { overflow-wrap: anywhere; text-wrap: balance; }
+/* Block copy may break anywhere; inline labels only break when they would overflow, so flex rows never shrink a word to one letter per line */
+html :is(h1, h2, h3, h4, p, li, dd, blockquote, figcaption) { overflow-wrap: anywhere; }
+/* ...but inside block copy they inherit "anywhere", so a centred heading built from word spans can still shrink */
+html :is(span, a, strong, dt, bdi):not(:is(h1, h2, h3, h4, p, li, dd, blockquote, figcaption) *) { overflow-wrap: break-word; }
+/* Short UI labels (nav links, buttons, chips) keep whole words; long copy still breaks anywhere */
+html :is(nav a, button, [role="button"], .cory-overline) { overflow-wrap: break-word; }   /* whole words, but a single over-long word may still break instead of overflowing */
+p, li, dd, figcaption, blockquote { text-wrap: pretty; }
+:where(*) { min-width: 0; }
+/* A grid with no explicit tracks must never be widened by one wide child */
+:where([style*="display:grid"]:not([style*="grid-template-columns"]), .cory-container[style*="display:grid"]:not([style*="grid-template-columns"])) { grid-template-columns: minmax(0, 1fr); }
+button { font: inherit; }
+img, iframe { display: block; max-width: 100%; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+details > summary { list-style: none; cursor: pointer; }
+details > summary::-webkit-details-marker { display: none; }
+details[open] [data-chevron] { transform: rotate(180deg); }
+[data-dir-icon] { transform: scaleX(var(--dir-x)); }
+[data-toc][aria-current="page"], [data-nav-link][aria-current="page"] { color: var(--text-strong); }
+[data-toc][aria-current="page"] { background: var(--surface-sunken); border-color: var(--border-default); }
+
+/* Empty image slots outside the editor: hide the drop scaffold so the designed fallback behind the slot shows through.
+   In the editor (data-editable) the scaffold stays, so slots can still be filled by drag and drop. */
+image-slot:not([data-editable]):not([data-filled])::part(frame) { background: transparent !important; }
+[data-cover-fallback] { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: flex-start; padding: var(--space-5); background: var(--gradient-ink); color: var(--on-ink-muted); pointer-events: none; }
+[data-cover-fallback]::after { content: ""; position: absolute; width: 70%; aspect-ratio: 1; inset-inline-end: -25%; inset-block-start: -35%; background: var(--glow-cyan); filter: blur(var(--blur-glow)); pointer-events: none; }
+[data-cover-fallback] > span { position: relative; font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--leading-mono); max-inline-size: 28ch; }
+[data-cover-fallback] > bdi { position: absolute; inset-inline-end: var(--space-4); inset-block-start: var(--space-2); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-metric-xl); line-height: var(--leading-none); letter-spacing: var(--tracking-tighter); color: var(--on-ink-fill); }
+
+/* Theme switch: one synchronized swap. Per-element colour transitions are suppressed while it happens. */
+html[data-theme-switching] *, html[data-theme-switching] *::before, html[data-theme-switching] *::after { transition: none !important; }
+
+/* Container queries: tiles and cards respond to their own width */
+[data-cq] { container-type: inline-size; }
+@container (min-width: 520px) { [data-cq-grid] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
+@container (min-width: 860px) { [data-cq-grid="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; } }
+@container (min-width: 720px) { [data-cq-3] { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; } }
+@container (min-width: 760px) { [data-case-grid] { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) !important; } }
+@container (max-width: 359px) { [data-cq-pad] { padding: var(--space-4) !important; } }
+
+/* Bento follows its own container width, not the viewport (overrides the system's viewport columns) */
+[data-bento-cq] { container-type: inline-size; }
+[data-bento-cq] > .cory-bento { --bento-cols: 1 !important; }
+@container (min-width: 600px) { [data-bento-cq] > .cory-bento { --bento-cols: 2 !important; } }
+@container (min-width: 980px) { [data-bento-cq] > .cory-bento { --bento-cols: 4 !important; --bento-row: 200px; } [data-bento-cq] .tall { grid-row: span 2; } }
+/* 2-column range: a tall tile keeps its two-row span so its neighbours stack beside it (no stretched card, no orphan cell) */
+
+
+/* Header: the page reserves its box; the header itself pins to the top (geometry lives here, not on the import wrapper) */
+[data-site-header][data-fixed="true"] { position: fixed; inset-block-start: 0; inset-inline-start: 0; inset-inline-end: 0; }
+/* The header renders its own spacer; pages must not pad for it again */
+main[tabindex] { padding-block-start: 0 !important; }
+[data-site-header] [data-hdr-talk], [data-site-header] [role="group"] { min-block-size: var(--tap-target); display: inline-flex; align-items: center; }
+
+/* Header layout follows the header's own width */
+[data-site-header] { container-type: inline-size; }
+@container (max-width: 959px) { [data-hdr-desktop] { display: none !important; } }
+@container (min-width: 960px) { [data-hdr-mobile] { display: none !important; } }
+@container (max-width: 419px) { [data-hdr-talk] { display: none !important; } }
+
+/* Viewport rules (mobile is designed, not shrunk) */
+@media (max-width: 767px) {
+  [data-desktop-only] { display: none !important; }
+  [data-work-track] { flex-direction: column !important; inline-size: auto !important; transform: none !important; }
+  [data-hero-ctas] { flex-direction: column; align-items: stretch !important; }
+  [data-hero-ctas] :is(button, a) { inline-size: 100%; }
+  [data-stack] { grid-template-columns: minmax(0, 1fr) !important; }
+}
+
+@media (max-width: 639px) { [data-hero-ctas] :is(button, a), [data-cta-row] :is(button, a) { white-space: normal !important; text-align: center; } }
+
+/* ---- Home revamp additions ---- */
+/* Nested theme scope: a subtree can be light inside a dark page (the hero demo tile). Values mirror :root. */
+[data-theme="light"] { color-scheme: light; --text-strong: var(--navy-800); --text-body: var(--slate-700); --text-muted: var(--slate-600); --text-subtle: var(--slate-550); --text-disabled: var(--slate-400); --text-on-brand: var(--white); --text-link: var(--blue-700); --text-link-hover: var(--blue-600); --text-success: var(--green-700); --text-warning: var(--amber-700); --text-danger: var(--red-700); --surface-page: var(--slate-50); --surface-card: var(--white); --surface-raised: var(--white); --surface-sunken: var(--slate-100); --surface-ink: var(--navy-800); --surface-tile: var(--slate-50); --surface-header: rgba(255, 255, 255, 0.85); --surface-overlay: rgba(11, 31, 54, 0.55); --border-subtle: var(--slate-150); --border-default: var(--slate-200); --border-strong: var(--slate-300); --border-interactive: var(--slate-500); --border-focus: var(--blue-500); --action-primary: var(--blue-500); --action-primary-hover: var(--blue-600); --action-primary-active: var(--blue-700); --action-ink: var(--navy-800); --action-ink-hover: var(--navy-700); --action-ink-active: var(--navy-900); --action-secondary-hover: var(--slate-50); --action-ghost-hover: var(--blue-100); --focus-ring: rgba(37, 138, 253, 0.35); --gradient-ink: linear-gradient(160deg, #12304F 0%, #0B1F36 100%); --shadow-xs: 0 1px 2px rgba(11, 31, 54, 0.06); --shadow-sm: 0 2px 8px rgba(11, 31, 54, 0.06); --shadow-md: 0 8px 24px rgba(11, 31, 54, 0.08); --shadow-lg: 0 18px 48px rgba(11, 31, 54, 0.10); --shadow-xl: 0 32px 72px rgba(11, 31, 54, 0.14); --shadow-brand: 0 12px 32px rgba(37, 138, 253, 0.28); --shadow-glow: 0 0 0 1px rgba(11,31,54,0.04), 0 0 40px rgba(41, 190, 221, 0.14); --node-color: var(--blue-500); --node-line: var(--navy-200); --node-accent: var(--cyan-500); --node-glow: var(--cyan-400); --gradient-text: linear-gradient(90deg, var(--blue-700) 0%, var(--blue-500) 100%); }
+
+/* Always-on atmosphere behind the page: a fine dot grid that fades out, plus the brand glows. The node field layers on top when WebGL is available. */
+[data-atmosphere-dots] { background-image: radial-gradient(circle, var(--border-strong) 1px, transparent 1.3px); background-size: 28px 28px; -webkit-mask-image: radial-gradient(ellipse 90% 70% at 60% 0%, #000 0%, transparent 100%); mask-image: radial-gradient(ellipse 90% 70% at 60% 0%, #000 0%, transparent 100%); opacity: 0.75; }
+[data-theme="dark"] [data-atmosphere-dots] { opacity: 0.45; }
+
+/* Case cover fallback: typographic cover in display type (until a real cover is dropped in) */
+[data-cover-fallback] > span { font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-snug); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); max-inline-size: 14ch; text-wrap: balance; }
+
+/* Hero demo tile follows the split: beside the headline on desktop, full width underneath when stacked */
+
+
+
+/* Work row: a native snap-scrolling row by default (no JS yet, JS blocked, reduced motion), so cards 2 and 3 are never unreachable.
+   The GSAP pin marks the viewport data-pinned and drives the track instead. */
+
+
+/* ---- Viewport tuning (responsive audit) ---- */
+/* Arabic display type: Kufi sets visibly larger than Latin at the same size, so headlines step down ~15% to keep the same line count */
+[lang="ar"] { --text-fluid-display: clamp(34px, 4.8vw, 60px); --text-fluid-title: clamp(28px, 3.4vw, 42px); }
+/* Small phones (iPhone SE, 320-374px): one size down so the hero headline keeps the primary action above the fold */
+@media (max-width: 374px) { :root { --text-fluid-display: clamp(32px, 10.5vw, 40px); --text-fluid-title: clamp(26px, 8.4vw, 32px); } }
+/* Phones in landscape: short viewports get a compact header, tighter rhythm and smaller display type */
+@media (max-height: 500px) and (orientation: landscape) {
+  :root { --header-height: var(--header-height-compact); --section-y: clamp(40px, 6vw, 64px); --text-fluid-display: clamp(30px, 4.6vw, 44px); --text-fluid-title: clamp(26px, 3.6vw, 36px); }
+}
+/* Measure, corrected for Plus Jakarta Sans: its zero (the ch unit) is ~0.73em, so the system's 68ch/56ch ran 90+ characters a line.
+   54ch / 46ch land at roughly 75 / 65 characters, inside the 45-75 range. */
+:root { --measure-body: 54ch; --measure-lead: 46ch; }
+/* Any paragraph that doesn't set its own measure (zero specificity, so inline values win) */
+:where(main) :where(p) { max-inline-size: var(--measure-body); }
+
+/* ---- Accessibility guarantees (see CLAUDE.md) ---- */
+/* Current page in the header: weight + a brand underline, never colour alone (1.4.1). !important beats the link's inline colour. */
+[data-nav-link][aria-current="page"] { color: var(--text-strong) !important; font-weight: var(--weight-bold) !important; background: var(--gradient-brand) no-repeat center bottom 6px / calc(100% - var(--space-4)) 2px; }
+/* Windows high contrast / forced colours: gradient-clipped text falls back to the system text colour, focus uses Highlight */
+@media (forced-colors: active) {
+  [style*="background-clip:text"], [style*="background-clip: text"], .cory-gradient-text, .cory-metric { background: none !important; color: CanvasText !important; -webkit-text-fill-color: CanvasText !important; }
+  :focus-visible { outline: 2px solid Highlight !important; }
+  [data-nav-link][aria-current="page"] { text-decoration: underline 2px; }
+}
+
+/* Visually hidden text: the full, engine-proof pattern (kept in the a11y tree, never in layout or overflow) */
+.cory-visually-hidden { position: absolute !important; inline-size: 1px !important; block-size: 1px !important; margin: -1px !important; padding: 0 !important; border: 0 !important; overflow: hidden !important; clip: rect(0 0 0 0) !important; clip-path: inset(50%) !important; white-space: nowrap !important; inset-block-start: 0; inset-inline-start: 0; }
+
+/* Balanced grid: 1 column, then 2 with an odd last card spanning the row, then 3. Never a lone orphan card. */
+[data-cq-balance] { grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 600px) and (max-width: 959px) { [data-cq-balance] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } [data-cq-balance] > :last-child:nth-child(odd) { grid-column: 1 / -1; } }
+@container (min-width: 960px) { [data-cq-balance] { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; } }
+
+/* Fit-content boxes (links, overline labels) never grow past their container: a long word then wraps instead of widening the page */
+:where(a, button, .cory-overline) { max-inline-size: 100%; }
+
+/* ---- Hover language (CLAUDE.md "Motion, hover and cards") ---- */
+/* Text links: underline on hover and keyboard focus, never colour alone; the arrow nudges toward where the link goes.
+   !important because links carry an inline text-decoration:none. */
+[data-link] { text-underline-offset: 0.22em; text-decoration-thickness: 1px; }
+[data-link]:focus-visible { text-decoration-line: underline !important; }
+@media (hover: hover) { [data-link]:hover { text-decoration-line: underline !important; } }
+[data-link] > svg { transition: transform var(--duration-base) var(--ease-out); }
+@media (hover: hover) { [data-link]:hover > svg[data-dir-icon] { transform: translateX(calc(3px * var(--dir-x))) scaleX(var(--dir-x)); } }
+
+/* Card components fill their grid cell: the DS Card sits behind a display:contents mount, so the root passes its height down two levels */
+:where([data-card-fill]) { block-size: 100%; }
+:where([data-card-fill]) > *, :where([data-card-fill]) > * > * { block-size: 100%; }
+
+/* ---- Contrast guarantees (CLAUDE.md "Contrast") ---- */
+/* Link hover darkens instead of lightening: blue-600 was 4.2:1 on white and 3.8:1 on the ghost-button tint.
+   blue-800 is blue-700 mixed 22% toward navy-800 (6.9:1 on white). Dark theme keeps blue-300. */
+:root { --blue-800: #1258B1; }
+/* Focus ring: blue-500 was 2.95:1 on the sunken surface; blue-600 is 3.7:1 there and 3.2:1 on ink panels */
+:root:not([data-theme="dark"]), [data-theme="light"] { --text-link-hover: var(--blue-800); --border-focus: var(--blue-600); }
+
+/* ---- Performance ---- */
+/* Glow pseudo-elements are radial gradients that already fade out; a blur filter on top doubles their paint cost for no visible gain */
+[data-cover-fallback]::after, .cory-ink::after { filter: none; }
+
+/* --- Section backdrops (decorative only). One layer behind the content, radial/linear gradients, never a filter.
+   data-bg="grid"  blueprint grid that fades out from the top inline-end corner (intros; "design as code")
+   data-bg="glow"  a brand glow bleeding in from the bottom inline-start edge (page-surface sections)
+   data-bg="beam"  a gradient hairline across the top edge plus a dot band at inline-end (card-surface sections)
+   Combine with spaces: data-bg="grid glow". Text never sits on more than a faint tint. */
+[data-bg] { position: relative; isolation: isolate; overflow-x: clip; }
+[data-bg]::before, [data-bg]::after { content: ""; position: absolute; pointer-events: none; z-index: -1; }
+[data-bg~="grid"]::before { inset: 0; background-image: linear-gradient(var(--border-default) 1px, transparent 1px), linear-gradient(90deg, var(--border-default) 1px, transparent 1px); background-size: 56px 56px; background-position: -1px -1px;
+  -webkit-mask-image: radial-gradient(ellipse 85% 100% at 100% 0%, #000 0%, transparent 72%); mask-image: radial-gradient(ellipse 85% 100% at 100% 0%, #000 0%, transparent 72%); }
+[data-bg~="grid"]::after { inline-size: min(56vw, 620px); aspect-ratio: 1; inset-inline-end: max(-18vw, -220px); inset-block-start: max(-20vw, -240px); background: var(--glow-cyan); }
+[dir="rtl"] [data-bg~="grid"]::before { -webkit-mask-image: radial-gradient(ellipse 85% 100% at 0% 0%, #000 0%, transparent 72%); mask-image: radial-gradient(ellipse 85% 100% at 0% 0%, #000 0%, transparent 72%); }
+[data-theme="dark"] [data-bg~="grid"]::before { opacity: 0.7; }
+[data-bg~="glow"]::after { inline-size: min(64vw, 720px); aspect-ratio: 1; inset-inline-start: max(-22vw, -260px); inset-block-end: max(-24vw, -280px); background: var(--glow-blue); opacity: 0.85; }
+[data-bg~="glow"]::before { inline-size: min(40vw, 460px); aspect-ratio: 1; inset-inline-end: max(-14vw, -180px); inset-block-start: max(-12vw, -160px); background: var(--glow-cyan); opacity: 0.7; }
+[data-bg~="beam"]::before { inset-block-start: -1px; inset-inline: 0; margin-inline: auto; inline-size: min(72%, 820px); block-size: min(50%, 320px);
+  background: var(--gradient-brand) no-repeat 0 0 / 100% 1px, radial-gradient(ellipse 50% 100% at 50% 0%, color-mix(in srgb, var(--blue-500) 10%, transparent), transparent 70%) no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 30%, #000 70%, transparent); mask-image: linear-gradient(90deg, transparent, #000 30%, #000 70%, transparent); }
+[data-bg~="beam"]::after { inset-block: 0; inset-inline-end: 0; inline-size: min(44%, 520px); background-image: radial-gradient(circle, var(--border-strong) 1.2px, transparent 1.6px); background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 100% 70% at 100% 25%, #000 0%, transparent 72%); mask-image: radial-gradient(ellipse 100% 70% at 100% 25%, #000 0%, transparent 72%); opacity: 0.8; }
+[dir="rtl"] [data-bg~="beam"]::after { -webkit-mask-image: radial-gradient(ellipse 100% 70% at 0% 25%, #000 0%, transparent 72%); mask-image: radial-gradient(ellipse 100% 70% at 0% 25%, #000 0%, transparent 72%); }
+[data-theme="dark"] [data-bg~="beam"]::after { opacity: 0.5; }
+[data-theme="dark"] [data-bg~="glow"]::after, [data-theme="dark"] [data-bg~="glow"]::before { opacity: 0.55; }
+/* data-bg="rings": concentric orbit rings, the node-field motif at rest, anchored to the inline-end edge */
+[data-bg~="rings"]::after { inline-size: min(70vw, 760px); aspect-ratio: 1; inset-inline-end: max(-26vw, -300px); inset-block-start: 50%; transform: translateY(-50%); border-radius: 50%;
+  background: repeating-radial-gradient(circle at center, var(--border-default) 0 1px, transparent 1px 72px);
+  -webkit-mask-image: radial-gradient(circle at center, #000 0%, transparent 70%); mask-image: radial-gradient(circle at center, #000 0%, transparent 70%); opacity: 0.9; }
+[data-theme="dark"] [data-bg~="rings"]::after { opacity: 0.6; }
+@media (max-width: 639px) { [data-bg~="beam"]::after { display: none; } }
+
+/* --- Hero work stack: three ink case cards fanned; only the front card is live. Resting poses live here; a swap moves each card to its new pose (instant under reduced motion). --- */
+[data-stack-card] { transform-origin: 50% 100%; transition: transform var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out); }
+[data-stack-card][data-pos="0"] { z-index: 3; }
+[data-stack-card][data-pos="1"] { z-index: 2; transform: translate(calc(9% * var(--dir-x)), -7%) rotate(calc(6deg * var(--dir-x))) scale(0.93); pointer-events: none; }
+[data-stack-card][data-pos="2"] { z-index: 1; transform: translate(calc(-9% * var(--dir-x)), -13%) rotate(calc(-6deg * var(--dir-x))) scale(0.86); pointer-events: none; }
+[data-stack-card]:not([data-pos="0"]) [data-stack-caption], [data-stack-card]:not([data-pos="0"]) [data-stack-frame] { visibility: hidden; }
+[data-stack-card] > a { overflow: hidden; }
+@media (hover: hover) { [data-stack-card][data-pos="0"]:hover { transform: translateY(var(--lift-hover-lg)); box-shadow: var(--shadow-xl); } }
+[data-stack-card][data-pos="0"]:has(a:focus-visible) { transform: translateY(var(--lift-hover-lg)); box-shadow: var(--shadow-xl); }
+
+/* Tool logos: one monochrome file per theme (Simple Icons CDN); the initial beneath shows if a logo is missing */
+[data-theme="dark"] [data-logo-light], :root:not([data-theme="dark"]) [data-logo-dark] { display: none; }
+
+/* A stretched 16:9 media box: when its flex parent gives it more height than the ratio needs, the ratio yields and the cover fills the box */
+[data-card-fill] [style*="aspect-ratio:var(--aspect-video)"][style*="flex:1 1 auto"] { aspect-ratio: auto; min-block-size: 0; }
+[data-card-fill] [style*="aspect-ratio:var(--aspect-video)"][style*="flex:1 1 auto"]::before { content: ""; display: block; padding-block-start: 56.25%; }
+
