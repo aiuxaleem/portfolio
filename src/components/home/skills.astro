@@ -1,0 +1,18 @@
+---
+/* "What I bring to a product team": the Skills section of Home, exactly as designed in Claude Design
+   (design/claude-design/AIUXAleem Home.dc.html, section skills). The markup is the design as the browser renders it,
+   captured by scripts/design/capture-section.mjs and prepared by adopt-section.mjs (tool logos saved into
+   public/assets/tools/, so nothing is loaded from another site). To change this section, change it in Claude Design and
+   capture it again (docs/DESIGN_SYNC.md); the text is the owner's, from the design's text file.
+   In the design the four lines of the diagram draw themselves in when the card scrolls into view; here they are
+   drawn from the start. */
+import skills from '../../snapshots/home-skills.json';
+import skillsAr from '../../snapshots/home-skills-ar.json';
+
+interface Props { lang?: 'en' | 'ar'; /** On /_states the section is shown once per theme, inside another section: its ids get this ending and it is not a landmark. */ fixture?: string }
+const { lang = 'en', fixture } = Astro.props;
+const snap = lang === 'ar' ? skillsAr : skills;
+const html = fixture ? snap.html.replace(/^<section /, '<div ').replace(/<\/section>\s*$/, '</div>').replace(' id="skills"', ` id="skills-${fixture}"`).replace(' aria-labelledby="skills-title"', '').replace(' id="skills-title"', ` id="skills-title-${fixture}"`) : snap.html;
+---
+<Fragment set:html={html} />
+<style is:inline set:html={snap.css}></style>

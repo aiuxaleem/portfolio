@@ -1,15 +1,18 @@
 ---
-/* Home. Five sections are carried over from the legacy page with their markup intact (hero, point of view, beyond the
-   canvas, the services teaser, the closing panel), wired to site settings, the profile file and the case studies
+/* Home. Nine sections follow the owner's design in Claude Design (design/claude-design/AIUXAleem Home.dc.html) with their
+   markup intact (hero, teams worked with, point of view, beyond the canvas, skills, in public, now, the services teaser, the closing panel), wired to site settings, the profile file and the case studies
    collection. Projects, latest writing and the latest video come from the collections; each is left out when empty.
-   The legacy Skills, Projects, In public and Now sections are not here: About, /work, /writing and /now hold those facts. */
+   The design's own Projects section is not here: the projects on Home are the ones in the collection. */
 import BaseLayout from '../layouts/base-layout.astro';
 import SiteHeader from '../components/layout/site-header.astro';
 import SiteFooter from '../components/layout/site-footer.astro';
 import Atmosphere from '../components/home/atmosphere.astro';
 import Hero from '../components/home/hero.astro';
+import WorkedWith from '../components/home/worked-with.astro';
 import PointOfView from '../components/home/point-of-view.astro';
 import BeyondTheCanvas from '../components/home/beyond-the-canvas.astro';
+import Skills from '../components/home/skills.astro';
+import DesignSection from '../components/home/design-section.astro';
 import HomeFeeds from '../components/home/home-feeds.astro';
 import ServicesTeaser from '../components/home/services-teaser.astro';
 import Closing from '../components/home/closing.astro';
@@ -24,9 +27,13 @@ import { personLd, websiteLd } from '../lib/seo';
       <Atmosphere />
       <main id="main" data-page="home" tabindex="-1" style="position: relative; z-index: var(--z-raised); outline: none;">
         <Hero />
+        <WorkedWith />
         <PointOfView />
         <BeyondTheCanvas />
+        <Skills />
         <HomeFeeds show={['projects', 'writing', 'video']} />
+        <DesignSection name="content" />
+        <DesignSection name="now" />
         <ServicesTeaser />
         <Closing />
       </main>

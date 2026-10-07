@@ -103,6 +103,24 @@ html[data-theme-switching] *, html[data-theme-switching] *::before, html[data-th
 @container (min-width: 760px) { [data-case-grid] { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) !important; } }
 @container (max-width: 359px) { [data-cq-pad] { padding: var(--space-4) !important; } }
 
+/* Aside layout inside a wide tile: copy on the start side, a fixed-width illustration on the end side */
+[data-cq-aside] { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-6); align-items: center; }
+@container (min-width: 680px) { [data-cq-aside] { grid-template-columns: minmax(0, 1fr) minmax(0, 360px); gap: var(--space-8); } }
+/* Home hero: each of the four lines under the buttons starts with a short brand-coloured rule */
+[data-hero-roles] > li::before { content: ""; position: absolute; inset-block-start: -1px; inset-inline-start: 0; inline-size: var(--space-8); block-size: 2px; border-radius: var(--radius-pill); background: var(--gradient-brand); }
+/* Short desktop viewports (laptops, 1280x720): smaller display type so the hero fits above the fold */
+@media (min-width: 1024px) and (max-height: 800px) { :root { --text-fluid-display: clamp(36px, 4.4vw, 58px); --text-fluid-lead: clamp(16px, 1.25vw, 17px); } }
+/* Hero button arrow tiles: the icon nudges toward where it goes on hover and focus */
+[data-arrow-tile] > svg { transition: transform var(--duration-base) var(--ease-out); }
+:is(a, button):focus-visible [data-arrow-tile][data-dir-icon] > svg { transform: translateX(calc(3px * var(--dir-x))); }
+:is(a, button):focus-visible [data-arrow-tile]:not([data-dir-icon]) > svg { transform: translate(2px, -2px); }
+@media (hover: hover) {
+  :is(a, button):hover [data-arrow-tile][data-dir-icon] > svg { transform: translateX(calc(3px * var(--dir-x))); }
+  :is(a, button):hover [data-arrow-tile]:not([data-dir-icon]) > svg { transform: translate(2px, -2px); }
+}
+/* Ink icon tiles sit on navy cards in dark theme: give them a 3:1 boundary so the tile still reads as a tile */
+[data-theme="dark"] [data-icon-tile], [data-theme="dark"] [data-ink-tile] { box-shadow: inset 0 0 0 1px var(--on-ink-border-strong); }
+
 /* Bento follows its own container width, not the viewport (overrides the system's viewport columns) */
 [data-bento-cq] { container-type: inline-size; }
 [data-bento-cq] > .cory-bento { --bento-cols: 1 !important; }
@@ -253,7 +271,9 @@ main[tabindex] { padding-block-start: 0 !important; }
 [data-stack-card][data-pos="0"]:has(a:focus-visible) { transform: translateY(var(--lift-hover-lg)); box-shadow: var(--shadow-xl); }
 
 /* Tool logos: one monochrome file per theme (Simple Icons CDN); the initial beneath shows if a logo is missing */
-[data-theme="dark"] [data-logo-light], :root:not([data-theme="dark"]) [data-logo-dark] { display: none; }
+[data-theme="dark"] [data-logo-light]:not([data-logo-light="off"]), :root:not([data-theme="dark"]) [data-logo-dark]:not([data-logo-dark="off"]) { display: none; }
+/* Ink chips keep the light logo in both themes */
+[data-logo-light="off"] { display: none; }
 
 /* A stretched 16:9 media box: when its flex parent gives it more height than the ratio needs, the ratio yields and the cover fills the box */
 [data-card-fill] [style*="aspect-ratio:var(--aspect-video)"][style*="flex:1 1 auto"] { aspect-ratio: auto; min-block-size: 0; }

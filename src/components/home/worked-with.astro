@@ -1,0 +1,40 @@
+---
+/* "Teams I have shipped with", under the Home hero, as designed in Claude Design (design/claude-design/AIUXAleem
+   Home.dc.html, section worked-with). Markup and inline styles are carried over from the design. The names and sectors
+   are the owner's, from the design's text file. The band is decoration for sighted visitors; the same names are in a
+   sentence for screen readers. The design also has a version of the band that scrolls sideways without stopping; the
+   still version is used here for everyone, because moving content needs a way to pause it (WCAG 2.2.2). */
+interface Props { /** Other names, for /_states. */ teams?: { name: string; sector: string }[]; /** A different id, where the section is shown more than once. */ id?: string; /** Off on /_states, where the section is shown inside another one. */ landmark?: boolean }
+const { id = 'worked-with', landmark = true } = Astro.props;
+const Wrap = (landmark ? 'section' : 'div') as any;
+const teams = Astro.props.teams ?? [
+  { name: 'Colaberry', sector: 'AI and data' },
+  { name: 'NTT DATA', sector: 'Enterprise · MNC' },
+  { name: 'Latitude Financial Services', sector: 'Fintech · via NTT DATA' },
+  { name: 'Teqsar Fintech Solutions', sector: 'Fintech' },
+  { name: 'Sutherland Healthcare Solutions', sector: 'Healthcare' },
+  { name: 'Click2Clinic Healthcare Solutions', sector: 'Healthcare' },
+];
+---
+<Wrap id={id} data-section="" aria-labelledby={landmark ? `${id}-title` : undefined} style="position: relative; padding-block: var(--space-10) 0;">
+    <div class="cory-container" data-reveal="" style="display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4) var(--space-8); flex-wrap: wrap;">
+      <div style="display: grid; gap: var(--space-2);">
+        <p class="cory-overline" style="margin: 0px;">Worked with</p>
+        <h2 id={`${id}-title`} style="margin: 0px; max-inline-size: 24ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); text-wrap: balance;">Teams I have shipped with</h2>
+        <p class="cory-visually-hidden">Worked with: {teams.map(t => t.name).join(', ')}.</p>
+      </div>
+      <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-body); line-height: var(--leading-relaxed); color: var(--text-muted); text-wrap: pretty;">Fintech, healthcare, enterprise and AI platforms, from first brief to production handoff.</p>
+    </div>
+    <div aria-hidden="true" style="overflow: clip; padding-block: var(--space-10) var(--space-8);">
+      <div style="inline-size: 106%; margin-inline: -3%; padding-block: var(--space-5); background: var(--gradient-brand-deep); box-shadow: var(--shadow-brand); transform: rotate(calc(-1.2deg * var(--dir-x))); direction: ltr; overflow: hidden;">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-3) var(--space-10); padding-inline: var(--gutter); color: var(--text-on-brand);">
+            {teams.map(t => (
+              <span style="display: grid; gap: var(--space-1); justify-items: center; text-align: center; min-inline-size: 0;">
+                <span style="font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h4); letter-spacing: var(--tracking-tight); line-height: var(--leading-snug); overflow-wrap: anywhere;">{t.name}</span>
+                <span class="cory-overline" style="color: var(--text-on-brand);">{t.sector}</span>
+              </span>
+            ))}
+          </div>
+      </div>
+    </div>
+</Wrap>

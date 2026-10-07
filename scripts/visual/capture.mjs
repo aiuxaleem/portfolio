@@ -26,7 +26,7 @@ async function worker() {
     // Freeze anything still moving and hide the caret so two runs of the same page are identical.
     await page.addStyleTag({ content: '*,*::before,*::after{animation:none !important;transition:none !important;caret-color:transparent !important} canvas[data-scene-canvas]{visibility:hidden !important}' });
     await page.waitForTimeout(250);
-    const buf = await page.screenshot({ fullPage: true, type: 'png' });
+    const buf = await page.screenshot({ fullPage: true, type: 'png', timeout: 180000 });
     fs.writeFileSync(path.join(out, name), buf);
     manifest[name] = { sha256: crypto.createHash('sha256').update(buf).digest('hex'), bytes: buf.length, path: route.path };
     await ctx.close();

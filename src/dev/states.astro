@@ -30,6 +30,8 @@ import ListPager from '../components/blog/list-pager.astro';
 import VideoCard from '../components/cards/video-card.astro';
 import HomeFeeds from '../components/home/home-feeds.astro';
 import CaseDeck from '../components/home/case-deck.astro';
+import WorkedWith from '../components/home/worked-with.astro';
+import Skills from '../components/home/skills.astro';
 import { feedItems, feedTags, feedTypes } from '../lib/writing';
 import { listedVideos } from '../lib/videos';
 const feed = await feedItems();
@@ -241,6 +243,14 @@ const dashEmpty = { days: 7, series: dashDays.slice(0, 7).map(d => ({ ...d, view
             <h2 style={h2}>Home hero: case study deck</h2>
             <p style={note}>The deck from the Home hero, still, with the stress fixture on the front card (a 120-character title, a long subtitle, no cover image). On Home it holds the featured case studies and the arrows bring the next card forward.</p>
             <div style="max-inline-size: min(100%, 440px); overflow: clip;"><CaseDeck fixtures /></div>
+            <h2 style={h2}>Home: skills</h2>
+            <p style={note}>The Skills section of Home, as captured from the design. It has one state: its text and tools are part of the capture, so there is nothing to be missing or empty. The Arabic capture is on the Arabic Home page.</p>
+            <Skills fixture={theme} />
+            <h2 style={h2}>Home: in public, and now</h2>
+            <p style={note}>Two more sections of Home taken whole from the design. They are not repeated here because each has fixed ids and Now carries the page's one certificate dialog; see them, in both themes, on <a data-link href="/#content" style="color: var(--text-link);">Home</a>. Each has one state.</p>
+            <h2 style={h2}>Home: teams worked with</h2>
+            <p style={note}>The band under the Home hero, with stress content: a 120-character name, an unbroken string, a one-word name and nine entries. With no entries the band is empty and only the heading shows.</p>
+            <WorkedWith id={`states-teams-${theme}`} landmark={false} teams={[{ name: stress.longTitle, sector: 'Fixture sector' }, { name: stress.unbroken, sector: stress.unbroken }, { name: 'Work', sector: 'One' }, ...[1, 2, 3, 4, 5, 6].map(n => ({ name: `Fixture team ${n}`, sector: 'Fixture sector' }))]} />
           </div>
 
           <div style="display: grid; gap: var(--space-4);">

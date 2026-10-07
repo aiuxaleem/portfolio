@@ -1,0 +1,19 @@
+---
+/* A section of Home exactly as designed in Claude Design: "In public" (content) and "Now" (now). The markup is the
+   design as the browser renders it, taken from a snapshot of the design's Home page (scripts/design/
+   adopt-page-sections.mjs; docs/DESIGN_SYNC.md). When the page is built, links to design pages become the site's
+   addresses, and the email, job title and resume link come from the site settings, as on every snapshot page.
+   To change one of these sections, change it in Claude Design and take the snapshot again.
+   The certificate pictures in "Now" open in a dialog: islands/page-behaviours.ts. */
+import content from '../../snapshots/home-content.json';
+import now from '../../snapshots/home-now.json';
+import { rewriteLinks } from '../../lib/routes';
+import { tuneSnapshot, HOME_BELOW_FOLD } from '../../lib/snapshot-tune';
+import { chrome } from '../../i18n/chrome';
+
+interface Props { name: 'content' | 'now' }
+const snap = { content, now }[Astro.props.name];
+const html = tuneSnapshot(rewriteLinks(snap.html), HOME_BELOW_FOLD, chrome.en.newTab);
+---
+<Fragment set:html={html} />
+{snap.css && <style is:inline set:html={snap.css}></style>}

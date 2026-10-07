@@ -8,11 +8,13 @@
 // <image-slot> (an editor component with a shadow DOM) is replaced by a plain <img> in a box with the same geometry.
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, serve, launch } from '../lib.mjs';
+import { ROOT, serve, launch, arg } from '../lib.mjs';
 
-const PAGES = JSON.parse(fs.readFileSync(path.join(ROOT, 'tests/routes.legacy.json'), 'utf8'));
-const out = path.join(ROOT, 'src/snapshots'); fs.mkdirSync(out, { recursive: true });
-const server = await serve('legacy', 4430); const browser = await launch();
+// By default every legacy page, into src/snapshots/. For a later pull of the design: --dir=<folder with the design files> --out=<folder> --only=home,home-ar
+const only = String(arg('only', '')).split(',').filter(Boolean);
+const PAGES = JSON.parse(fs.readFileSync(path.join(ROOT, 'tests/routes.legacy.json'), 'utf8')).filter(r => !only.length || only.includes(r.name));
+const out = path.resolve(ROOT, String(arg('out', 'src/snapshots'))); fs.mkdirSync(out, { recursive: true });
+const server = await serve(String(arg('dir', 'legacy')), 4430); const browser = await launch();
 for (const route of PAGES) {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 }, colorScheme: 'light', reducedMotion: 'reduce' });
   const page = await ctx.newPage();
