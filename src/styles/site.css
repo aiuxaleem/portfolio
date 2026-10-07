@@ -108,6 +108,14 @@ html[data-theme-switching] *, html[data-theme-switching] *::before, html[data-th
 @container (min-width: 680px) { [data-cq-aside] { grid-template-columns: minmax(0, 1fr) minmax(0, 360px); gap: var(--space-8); } }
 /* Home hero: each of the four lines under the buttons starts with a short brand-coloured rule */
 [data-hero-roles] > li::before { content: ""; position: absolute; inset-block-start: -1px; inset-inline-start: 0; inline-size: var(--space-8); block-size: 2px; border-radius: var(--radius-pill); background: var(--gradient-brand); }
+/* Home is long (nine sections). The browser lays out a section only when it comes near the screen, which takes the
+   work of the sections far below out of the first load (measured on the Arabic Home: style and layout 3.2 s). Nothing is
+   drawn differently, the text stays available to search and to screen readers, and each section keeps its real height
+   once it has been shown. The hero and the band under it are always laid out. */
+[data-page="home"] > section:not(#top):not(#worked-with) { content-visibility: auto; contain-intrinsic-size: auto 900px; }
+/* The Arabic headline is three lines in its own font and two in the fallback shown first. Room for three is kept from the
+   start, so the rest of the hero does not move when the font arrives (measured: a 39px jump at 412px wide, CLS 0.13). */
+[dir="rtl"] [data-hero-title] { min-block-size: calc(3 * var(--leading-snug) * 1em) !important; }
 /* Short desktop viewports (laptops, 1280x720): smaller display type so the hero fits above the fold */
 @media (min-width: 1024px) and (max-height: 800px) { :root { --text-fluid-display: clamp(36px, 4.4vw, 58px); --text-fluid-lead: clamp(16px, 1.25vw, 17px); } }
 /* Hero button arrow tiles: the icon nudges toward where it goes on hover and focus */
