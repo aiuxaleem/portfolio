@@ -186,3 +186,5 @@ html:has(.admin-savebar) { scroll-padding-block-end: 9rem; }
 .admin-waiting li:first-child { border-block-start: 0; }
 .admin-waiting a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); font-weight: var(--weight-semibold); color: var(--text-link); overflow-wrap: anywhere; }
 .admin-waiting-meta { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font-size: var(--text-body-sm); color: var(--text-muted); }
+/* On a phone the save bar is only the buttons, and the note that there are unsaved changes: the standing explanation would cover a fifth of the screen. */
+@media (max-width: 639px) { .admin-savebar { padding: var(--space-3) var(--space-4); } .admin-savebar-note > span:not([data-unsaved]) { display: none; } .admin-savebar-note:has([data-unsaved][hidden]) { display: none; } .admin-savebar .admin-actions { flex: 1 1 auto; } }
