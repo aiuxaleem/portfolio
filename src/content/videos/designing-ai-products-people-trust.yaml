@@ -1,9 +1,10 @@
-title: Designing AI products people trust
-# The real YouTube id is not known yet. The schema rejects anything except an 11-character id or this placeholder.
-youtubeId: "[VERIFY]"
+title: How UX Design Creates Value
+youtubeId: PU17_TFLH1o
+published: 2026-10-08
+description: "**User experience (UX) design** is a comprehensive, human-centric discipline focused on shaping how individuals perceive and interact with products, systems, and services. Unlike user interface design, which primarily targets visual layouts, **UX design** encompasses the entire consumer journey, ranging from initial brand impressions and functionality to troubleshooting and after-sales support. Practitioners of **UX design** must strategically address the motivations, practical needs, and emotional responses of users through an iterative process involving research, wireframing, prototyping, and testing. Furthermore, transitioning into this field from related areas like **graphic design** is entirely feasible, as professionals can leverage their aesthetic expertise while developing crucial research and problem-solving skills. Ultimately, investing in quality **UX design** not only guarantees intuitive and pleasurable interactions for consumers but also drives substantial growth, loyalty, and competitive advantage for businesses."
+kind: long-form
 poster:
   src: ../../assets/media/video-thumb.webp
-  alt: "[VERIFY] Describe the video poster image"
-kind: long-form
+  alt: How UX Design Creates Value
 featured: true
 draft: true
