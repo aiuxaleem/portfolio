@@ -376,6 +376,11 @@
   --duration-base: 220ms; /* @kind other */ /* hover, focus */
   --duration-slow: 380ms; /* @kind other */ /* panels, menus */
   --duration-enter: 600ms; /* @kind other */ /* content reveal */
+  /* Springs: a damped spring sampled into linear(). The duration includes the settle, so it is longer than the motion looks. */
+  --ease-spring-soft: linear(0, 0.082, 0.255, 0.447, 0.62, 0.758, 0.86, 0.93, 0.973, 0.998, 1.01, 1.015, 1.015, 1.013, 1.01, 1.007, 1.005, 1.003, 1); /* @kind other */ /* lifts and leans: 0.35 s, a 1.5% overshoot */
+  --duration-spring-soft: 550ms; /* @kind other */
+  --ease-spring-pop: linear(0, 0.122, 0.372, 0.629, 0.834, 0.969, 1.041, 1.066, 1.064, 1.049, 1.031, 1.016, 1.005, 0.999, 0.996, 0.995, 0.996, 0.997, 1); /* @kind other */ /* small turns: 0.28 s, a 6.6% overshoot */
+  --duration-spring-pop: 540ms; /* @kind other */
   --duration-ambient: 9s; /* @kind other */ /* one slow drift of the glows inside an ink card (ink aurora) */
 
   /* --- Delay / stagger --- */

@@ -289,25 +289,53 @@ main[tabindex] { padding-block-start: 0 !important; }
 
 
 /* ---------- Ink aurora: motion for the dark blue cards (islands/ink-aurora.ts) ----------
-   Three glows in the brand's cyan and blue drift inside the card; a fourth follows the pointer. The glows are the
-   existing glow tokens, moved and scaled: only transform and opacity change, so nothing is repainted or laid out again.
-   The layer sits above the card's own background and below everything in it. Its strength is set by measurement: at
-   the brightest point of the glow, with the pointer glow on, the cyan link text on the card keeps at least 4.5:1
-   (reports/aurora-probe.mjs; 5.0:1 or more on every card measured). Do not raise it without measuring again. */
+   Two things happen on every large dark blue card, both in the brand's cyan and blue:
+   1. Glows inside the card travel across it, from corner to corner. They are the existing glow tokens, moved and scaled.
+   2. A light runs along the card's edge: once round when the card comes into view, then following the pointer.
+   Only transform and opacity change, so nothing is repainted or laid out again. The layers sit above the card's own
+   background and below everything in it. The script gives each card its width and height (--aw, --ah) so the paths
+   can cross the whole card whatever its size.
+   The strength of the inner glows is set by measurement: at their brightest point, with the pointer glow on, the cyan
+   link text on the card keeps at least 4.5:1 (reports/aurora-probe.mjs). Do not raise it without measuring again. The
+   light on the edge can be bright because no text sits on the edge. */
 [data-aurora] { position: relative; isolation: isolate; overflow: clip; }
 [data-aurora][style*="position: absolute"], [data-aurora][style*="position:absolute"] { position: absolute; }
-.ink-aurora { position: absolute; inset: 0; z-index: -1; overflow: hidden; border-radius: inherit; pointer-events: none; opacity: 0.6; }
-.ink-aurora > i { position: absolute; inline-size: max(62%, 280px); aspect-ratio: 1; border-radius: 50%; will-change: transform, opacity; animation: var(--duration-ambient) var(--ease-in-out) infinite paused; }
-.ink-aurora > i:nth-child(1) { inset-block-start: -34%; inset-inline-end: -16%; background: var(--glow-cyan); animation-name: ink-aurora-a; }
-.ink-aurora > i:nth-child(2) { inset-block-end: -42%; inset-inline-start: -14%; background: var(--glow-blue); animation-name: ink-aurora-b; animation-duration: calc(var(--duration-ambient) * 1.3); }
-.ink-aurora > i:nth-child(3) { inset-block-start: 18%; inset-inline-start: 34%; inline-size: max(38%, 200px); background: var(--glow-cyan); opacity: 0.55; animation-name: ink-aurora-c; animation-duration: calc(var(--duration-ambient) * 0.8); }
+.ink-aurora, .ink-edge { position: absolute; inset: 0; z-index: -1; overflow: hidden; border-radius: inherit; pointer-events: none; }
+.ink-aurora { opacity: 0.62; }
+.ink-aurora > i { position: absolute; inset: 0 auto auto 0; inline-size: max(44%, 260px); aspect-ratio: 1; border-radius: 50%; will-change: transform, opacity; animation: var(--duration-ambient) var(--ease-in-out) infinite paused; }
+.ink-aurora > i:nth-child(1) { background: var(--glow-cyan); transform: translate3d(calc(var(--aw) * 0.72), calc(var(--ah) * -0.3), 0); animation-name: ink-aurora-a; }
+.ink-aurora > i:nth-child(2) { background: var(--glow-blue); transform: translate3d(calc(var(--aw) * -0.12), calc(var(--ah) * 0.55), 0); animation-name: ink-aurora-b; animation-duration: calc(var(--duration-ambient) * 1.2); }
+.ink-aurora > i:nth-child(3) { inline-size: max(30%, 200px); background: var(--glow-cyan); transform: translate3d(calc(var(--aw) * 0.3), calc(var(--ah) * 0.2), 0); animation-name: ink-aurora-c; animation-duration: calc(var(--duration-ambient) * 0.85); }
 /* The glow under the pointer: placed by the script, shown only while the pointer is on the card. */
-.ink-aurora > i[data-follow] { inset: 0 auto auto 0; inline-size: max(36%, 220px); background: var(--glow-cyan); opacity: 0; animation: none; transition: opacity var(--duration-slow) var(--ease-out); }
-[data-aurora-pointer] > .ink-aurora > i[data-follow] { opacity: 0.7; }
+.ink-aurora > i[data-follow] { inline-size: max(34%, 240px); background: var(--glow-cyan); opacity: 0; animation: none; transition: opacity var(--duration-slow) var(--ease-out); }
+[data-aurora-pointer] > .ink-aurora > i[data-follow] { opacity: 1; }
 [data-aurora="awake"] > .ink-aurora > i { animation-play-state: running; }
-@keyframes ink-aurora-a { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 33% { transform: translate3d(-22%, 16%, 0) scale(1.18); } 66% { transform: translate3d(-8%, 30%, 0) scale(0.92); } }
-@keyframes ink-aurora-b { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 40% { transform: translate3d(26%, -18%, 0) scale(1.22); } 70% { transform: translate3d(12%, -32%, 0) scale(0.95); } }
-@keyframes ink-aurora-c { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.55; } 50% { transform: translate3d(-30%, -14%, 0) scale(1.3); opacity: 0.3; } }
-@media (prefers-reduced-motion: reduce) { .ink-aurora > i { animation: none; } .ink-aurora > i[data-follow] { display: none; } }
+@keyframes ink-aurora-a {
+  0%, 100% { transform: translate3d(calc(var(--aw) * 0.72), calc(var(--ah) * -0.3), 0) scale(1); }
+  35% { transform: translate3d(calc(var(--aw) * 0.2), calc(var(--ah) * 0.1), 0) scale(1.25); }
+  70% { transform: translate3d(calc(var(--aw) * 0.5), calc(var(--ah) * 0.5), 0) scale(0.9); }
+}
+@keyframes ink-aurora-b {
+  0%, 100% { transform: translate3d(calc(var(--aw) * -0.12), calc(var(--ah) * 0.55), 0) scale(1); }
+  40% { transform: translate3d(calc(var(--aw) * 0.4), calc(var(--ah) * 0.15), 0) scale(1.3); }
+  75% { transform: translate3d(calc(var(--aw) * 0.62), calc(var(--ah) * 0.6), 0) scale(0.95); }
+}
+@keyframes ink-aurora-c {
+  0%, 100% { transform: translate3d(calc(var(--aw) * 0.3), calc(var(--ah) * 0.2), 0) scale(1); opacity: 1; }
+  50% { transform: translate3d(calc(var(--aw) * -0.05), calc(var(--ah) * -0.2), 0) scale(1.4); opacity: 0.5; }
+}
+/* The light on the edge. Only a ring two pixels wide is let through, so the bright spot shows as a light on the border. */
+.ink-edge { padding: 2px; opacity: 0; transition: opacity var(--duration-enter) var(--ease-out); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }
+.ink-edge > b { position: absolute; inset: 0 auto auto 0; inline-size: max(46%, 280px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, var(--on-ink-link) 0%, transparent 62%); will-change: transform; transform: translate3d(0, 0, 0) translate(-50%, -50%); animation: ink-edge-run calc(var(--duration-ambient) / 2) linear infinite paused; }
+[data-aurora="awake"] > .ink-edge { opacity: 1; }
+[data-aurora="awake"] > .ink-edge > b { animation-play-state: running; }
+[data-aurora-pointer] > .ink-edge > b { animation: none; }
+@keyframes ink-edge-run {
+  0%, 100% { transform: translate3d(0, 0, 0) translate(-50%, -50%); }
+  25% { transform: translate3d(var(--aw), 0, 0) translate(-50%, -50%); }
+  50% { transform: translate3d(var(--aw), var(--ah), 0) translate(-50%, -50%); }
+  75% { transform: translate3d(0, var(--ah), 0) translate(-50%, -50%); }
+}
+@media (prefers-reduced-motion: reduce) { .ink-aurora > i, .ink-edge > b { animation: none; } .ink-aurora > i[data-follow], .ink-edge { display: none; } }
 /* In forced colours the card is a plain system colour; the glows would only be noise. */
-@media (forced-colors: active) { .ink-aurora { display: none; } }
+@media (forced-colors: active) { .ink-aurora, .ink-edge { display: none; } }

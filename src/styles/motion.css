@@ -1,0 +1,65 @@
+/* The site's motion, in one place: how things answer the pointer and the keyboard, and how pages change.
+   Rules it keeps (CLAUDE.md 2.7):
+   - Only transform and opacity move. Colour, background and shadow may fade on hover, focus and press.
+   - Every :hover rule is inside @media (hover: hover) and has a :focus-visible twin, so touch screens get no stuck
+     states and the keyboard gets the same answer as the pointer.
+   - Durations and easings are tokens. The two springs were made the way the Motion skill describes (a damped spring
+     sampled into linear()), with a small overshoot: this is a portfolio for hiring managers, not a toy.
+   - With reduced motion the tokens collapse (tokens.css) and the blocks below that add movement are switched off.
+   - Hover never changes a control's size or the page's height. */
+
+@media (prefers-reduced-motion: no-preference) {
+
+  /* ---------- Buttons: a springy lift and press, and the icon leaning the way it points ----------
+     (A light sweeping across the main button was tried and left out: where it passed under the label, white text on the
+     brand blue fell below 4.5:1.) The buttons that come from the design markup carry their own transition inline, so
+     the spring is for the site's own buttons and chips; the leaning icon is for both. */
+  .ui-button, .ui-chip { transition-property: transform, box-shadow, background, filter, color; transition-duration: var(--duration-spring-soft), var(--duration-base), var(--duration-base), var(--duration-base), var(--duration-base); transition-timing-function: var(--ease-spring-soft), var(--ease-out), var(--ease-out), var(--ease-out), var(--ease-out); }
+  .ui-button:active, .ui-chip:active { transition-duration: var(--duration-fast); transition-timing-function: var(--ease-out); }
+  .ui-button svg, [data-ds-button] svg { transition: transform var(--duration-spring-soft) var(--ease-spring-soft); }
+  :is(.ui-button, [data-ds-button]):focus-visible svg[data-dir-icon], :is(.ui-button, [data-ds-button]):focus-visible [data-dir-icon] > svg { transform: translateX(calc(3px * var(--dir-x))) scaleX(var(--dir-x)); }
+
+  /* ---------- Cards: the picture grows a little inside its frame, the title takes the link colour, the arrow leans ---------- */
+  .project-card { transition: transform var(--duration-spring-soft) var(--ease-spring-soft), box-shadow var(--duration-slow) var(--ease-out); }
+  .project-card-media img { transition: transform var(--duration-enter) var(--ease-out); }
+  .project-card-title a, .project-card-link { transition: color var(--duration-base) var(--ease-out); }
+  .project-card:has(.project-card-link:focus-visible) { transform: translateY(var(--lift-hover)); }
+  .project-card:has(.project-card-link:focus-visible) .project-card-media img { transform: scale(1.04); }
+  .project-card:has(.project-card-link:focus-visible) .project-card-cta svg { transform: translateX(calc(3px * var(--dir-x))) scaleX(var(--dir-x)); }
+
+  /* ---------- Text links with an arrow, and "back" links: the arrow moves the way it points ---------- */
+  [data-link] > svg, .post-back > svg, .embed-card-link > svg { transition: transform var(--duration-spring-soft) var(--ease-spring-soft); }
+  [data-link]:focus-visible > svg[data-dir-icon], .embed-card-link:focus-visible > svg { transform: translateX(calc(3px * var(--dir-x))) scaleX(var(--dir-x)); }
+  [data-link]:focus-visible > svg:not([data-dir-icon]) { transform: translate(2px, -2px); }
+  .post-back:focus-visible > svg { transform: translateX(calc(-3px * var(--dir-x))) scaleX(var(--dir-x)); }
+
+  /* ---------- Chips and the questions on Services: a small pop on press, the chevron turning as the answer opens ---------- */
+  .ui-chip:active { transform: scale(var(--press-scale)); }
+  [data-chevron] { transition: transform var(--duration-spring-pop) var(--ease-spring-pop); }
+
+  /* ---------- Header: the brand mark turns a little under the pointer; the theme switch's icon swings ---------- */
+  [data-theme-toggle] svg { transition: transform var(--duration-spring-pop) var(--ease-spring-pop); }
+  [data-theme-toggle]:focus-visible svg { transform: rotate(18deg); }
+
+  @media (hover: hover) {
+    :is(.ui-button, [data-ds-button]):hover svg[data-dir-icon], :is(.ui-button, [data-ds-button]):hover [data-dir-icon] > svg { transform: translateX(calc(3px * var(--dir-x))) scaleX(var(--dir-x)); }
+    .project-card:hover .project-card-media img { transform: scale(1.04); }
+    .project-card:hover .project-card-title a { color: var(--text-link); }
+    [data-link]:hover > svg[data-dir-icon], .embed-card-link:hover > svg { transform: translateX(calc(3px * var(--dir-x))) scaleX(var(--dir-x)); }
+    [data-link]:hover > svg:not([data-dir-icon]) { transform: translate(2px, -2px); }
+    .post-back:hover > svg { transform: translateX(calc(-3px * var(--dir-x))) scaleX(var(--dir-x)); }
+    [data-theme-toggle]:hover svg { transform: rotate(18deg); }
+  }
+
+  /* ---------- Changing page: the old page fades as the new one rises into place. The header stays where it is. ----------
+     Browsers that do not know this (it is new) simply change page as before. */
+  @view-transition { navigation: auto; }
+  [data-site-header] { view-transition-name: site-header; }
+  ::view-transition-old(root) { animation: page-out var(--duration-base) var(--ease-out) both; }
+  ::view-transition-new(root) { animation: page-in var(--duration-slow) var(--ease-out) both; }
+  ::view-transition-group(site-header) { animation: none; }
+  ::view-transition-old(site-header) { display: none; }
+  ::view-transition-new(site-header) { animation: none; }
+  @keyframes page-out { to { opacity: 0; } }
+  @keyframes page-in { from { opacity: 0; transform: translateY(var(--space-3)); } }
+}
