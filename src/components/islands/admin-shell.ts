@@ -41,3 +41,7 @@ document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach(btn => btn.a
   catch { if (label) label.textContent = 'Select the text above and copy it'; if (status) status.textContent = 'Copying did not work. Select the text and copy it.'; }
   window.setTimeout(() => { if (label) label.innerHTML = was; if (status) status.textContent = ''; }, 2500);
 }));
+
+/* 5. After a publish is refused the page comes back with a list of what to fix. Focus goes to that list, so it is the
+   first thing read out and the first thing a keyboard reaches; each item in it links to its field. */
+document.getElementById('problems')?.focus({ preventScroll: false });
