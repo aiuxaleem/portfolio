@@ -9,7 +9,6 @@ import SiteFooter from '../components/layout/site-footer.astro';
 import Atmosphere from '../components/home/atmosphere.astro';
 import Hero from '../components/home/hero.astro';
 import WorkedWith from '../components/home/worked-with.astro';
-import PointOfView from '../components/home/point-of-view.astro';
 import BeyondTheCanvas from '../components/home/beyond-the-canvas.astro';
 import Skills from '../components/home/skills.astro';
 import DesignSection from '../components/home/design-section.astro';
@@ -28,7 +27,7 @@ import { personLd, websiteLd } from '../lib/seo';
       <main id="main" data-page="home" tabindex="-1" style="position: relative; z-index: var(--z-raised); outline: none;">
         <Hero />
         <WorkedWith />
-        <PointOfView />
+        <DesignSection name="about" />
         <BeyondTheCanvas />
         <Skills />
         <HomeFeeds show={['projects']} />

@@ -10,7 +10,9 @@ const profile = JSON.parse(fs.readFileSync(path.join(ROOT, 'src/content/site/pro
 const walk = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
 const files = walk(dir).filter(f => /\.(html|xml|txt)$/.test(f)), fails = [], seen = { title: 0, email: 0, resume: 0 };
 /* Titles the site used before the owner settled on the current one. "Lead product designer" without "AI" is the legacy wording. */
-const OLD_TITLES = /AI-first (Senior|Lead) Product Designer|Senior AI Product Designer|Lead product designer|UX Designer (&amp;|&) Analyst|مصمّم منتجات أول/gi;
+/* "Lead product designer" as the owner's own title is an old title. The Services page also says who it is for, "companies hiring a
+   senior or lead product designer": that names a kind of role, not the owner, and is the one wording let through (8 October 2026). */
+const OLD_TITLES = /AI-first (Senior|Lead) Product Designer|Senior AI Product Designer|(?<!hiring a senior or )Lead product designer|UX Designer (&amp;|&) Analyst|مصمّم منتجات أول/gi;
 const PHONE = /(\+?\d[\d\s().-]{8,}\d)/g;
 for (const f of files) { const rel = path.relative(dir, f).replace(/\\/g, '/'); const s = fs.readFileSync(f, 'utf8'); const text = s.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, m => (/ld\+json/.test(m) ? m : '')).replace(/<svg[\s\S]*?<\/svg>/g, '');
   /* /_states lists the owner's own notes, which quote the old titles on purpose. */

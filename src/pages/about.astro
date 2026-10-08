@@ -2,14 +2,13 @@
 /* /about: positioning, principles, career timeline, expertise, how I work with AI, tools and certifications.
    Copy and facts come from src/content/site/profile.json; certifications from the certifications collection.
    Section backgrounds alternate between the page and card surfaces. */
-import { Image } from 'astro:assets';
 import PageLayout from '../layouts/page-layout.astro';
 import Button from '../components/ui/button.astro';
+import DesignSection from '../components/home/design-section.astro';
 import EmailCopy from '../components/layout/email-copy.astro';
 import Career from '../components/profile/career.astro';
 import Certifications from '../components/profile/certifications.astro';
 import Testimonials from '../components/profile/testimonials.astro';
-import portrait from '../assets/people/author-portrait.jpg';
 import { profile } from '../content/profile';
 import { personLd } from '../lib/seo';
 import { site } from '../content/site';
@@ -18,27 +17,8 @@ const c = chrome.en;
 const num = (i: number) => String(i + 1).padStart(2, '0');
 ---
 <PageLayout title="About · AIUXAleem" description="About Mohammad Abdul Aleem, Lead AI Product Designer in Hyderabad: career, expertise, how he works with AI, tools and certifications." page="about" ogType="profile" jsonLd={[personLd()]} hideCta bg="grid" mainStyle="outline: none; overflow: clip;">
-  <section class="cory-container" aria-labelledby="about-title" style="position: relative; display: grid; gap: var(--space-8); padding-block: var(--section-y);">
-    <div data-cq><div data-cq-grid style="display: grid; gap: var(--space-10); align-items: center;">
-      <div style="display: grid; gap: var(--space-6);">
-        <p class="cory-overline" style="margin: 0;">About</p>
-        <h1 id="about-title" style="margin: 0; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">I make AI feel like something you can rely on.</h1>
-        <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">{profile.positioning}</p>
-        <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
-          <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
-          <Button variant="secondary" size="lg" href="/resume">Read the resume</Button>
-        </div>
-      </div>
-      <div class="project-cover" style="aspect-ratio: var(--aspect-portrait); max-inline-size: min(100%, 420px); justify-self: center;"><Image src={portrait} alt="Portrait of Mohammad Abdul Aleem" widths={[420, 840]} sizes="(min-width: 640px) 420px, 100vw" loading="eager" fetchpriority="high" style="object-position: center;" /></div>
-    </div></div>
-    <div style="display: grid; gap: var(--space-4);">{profile.summary.map(p => <p class="page-lead">{p}</p>)}</div>
-    <dl class="facts">
-      <div><dt>Based in</dt><dd>{site.location}</dd></div>
-      <div><dt>Now</dt><dd>{profile.career[0].role}, {profile.career[0].company}</dd></div>
-      <div><dt>Focus</dt><dd>AI product design · Design systems</dd></div>
-      <div><dt>Availability</dt><dd>{site.availability.label}</dd></div>
-    </dl>
-  </section>
+  <DesignSection name="about-hero" />
+  <DesignSection name="about-direction" />
 
   <section class="page-section" data-surface="card" aria-labelledby="principles-title">
     <div class="cory-container">

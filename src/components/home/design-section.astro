@@ -1,5 +1,6 @@
 ---
-/* A section of Home exactly as designed in Claude Design: "In public" (content) and "Now" (now). The markup is the
+/* A section of a page exactly as designed in Claude Design. On Home: "Point of view" (about), "In public" (content)
+   and "Now" (now). On About: the opening (about-hero) and "Aspiration" (about-direction). The markup is the
    design as the browser renders it, taken from a snapshot of the design's Home page (scripts/design/
    adopt-page-sections.mjs; docs/DESIGN_SYNC.md). When the page is built, links to design pages become the site's
    addresses, and the email, job title and resume link come from the site settings, as on every snapshot page.
@@ -7,12 +8,15 @@
    The certificate pictures in "Now" open in a dialog: islands/page-behaviours.ts. */
 import content from '../../snapshots/home-content.json';
 import now from '../../snapshots/home-now.json';
+import about from '../../snapshots/home-about.json';
+import aboutHero from '../../snapshots/about-about-title.json';
+import aboutDirection from '../../snapshots/about-direction.json';
 import { rewriteLinks } from '../../lib/routes';
 import { tuneSnapshot, HOME_BELOW_FOLD } from '../../lib/snapshot-tune';
 import { chrome } from '../../i18n/chrome';
 
-interface Props { name: 'content' | 'now' }
-const snap = { content, now }[Astro.props.name];
+interface Props { name: 'about' | 'content' | 'now' | 'about-hero' | 'about-direction' }
+const snap = { about, content, now, 'about-hero': aboutHero, 'about-direction': aboutDirection }[Astro.props.name];
 const html = tuneSnapshot(rewriteLinks(snap.html), HOME_BELOW_FOLD, chrome.en.newTab);
 ---
 <Fragment set:html={html} />
