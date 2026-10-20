@@ -11,6 +11,8 @@ import ResourceFilters from '../components/resources/resource-filters.astro';
 import SuggestForm from '../components/resources/suggest-form.astro';
 import { listedResources, categoryCounts } from '../lib/resources';
 import { site } from '../content/site';
+import { profile } from '../content/profile';
+import { day } from '../lib/projects';
 
 const resources = await listedResources();
 const real = resources.filter(r => !r.data.fixture);
@@ -25,19 +27,42 @@ const notes = [
   { id: 'suggest-later', ok: false, title: 'That is enough for one hour.', body: 'Five suggestions from one place within an hour is the limit. Thank you; send the rest later or by email.' },
   { id: 'suggest-failed', ok: false, title: 'The suggestion was not saved.', body: 'The site could not save it. Nothing was kept. Try again in a minute, or send it by email.' },
 ];
-const stat = 'margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong);';
+/* The hero panel: the counts, and the six fullest categories as a way in. "Updated" is the newest entry's date. */
+const fullest = [...filled].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label)).slice(0, 6);
+const updated = real.length ? real.reduce((d, r) => (r.data.added > d ? r.data.added : d), real[0].data.added) : undefined;
+const stat = 'margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); font-variant-numeric: tabular-nums;';
+const inkLink = 'display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-block-size: var(--tap-target); padding-block: var(--space-2); color: var(--on-ink-strong); text-decoration: none; font-weight: var(--weight-semibold); font-size: var(--text-body-md); border-block-start: 1px solid var(--on-ink-border);';
 ---
 <PageLayout title="UX resources · AIUXAleem" description="A curated directory of tools, references and reading for AI product design, design systems and accessibility, kept by Mohammad Abdul Aleem." page="resources" bg="grid" mainStyle="outline: none; overflow: clip;">
-  <section class="cory-container" aria-labelledby="resources-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
-    <p class="cory-overline" style="margin: 0px;">Resources</p>
-    <h1 id="resources-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">UX resources for AI product design.</h1>
-    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">The tools, references and reading I reach for in design system and AI product work, each with a line on why it is worth your time. Every entry opens on its own site.</p>
-    <ul aria-label="What is listed" style="display: flex; flex-wrap: wrap; gap: var(--space-6) var(--space-10);">
-      {counts.map(([n, label]) => <li style="display: grid; gap: var(--space-1);"><strong style={stat}>{n}</strong><span style="font-size: var(--text-body-sm); color: var(--text-muted);">{label}</span></li>)}
-    </ul>
-    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
-      <Button variant="primary" size="lg" href="#categories">Browse by category</Button>
-      <Button variant="secondary" size="lg" href="#suggest">Suggest a resource</Button>
+  <section aria-labelledby="resources-title" style="position: relative; padding-block: var(--section-y) var(--space-10); overflow: clip;">
+    <div class="cory-container cory-split" style="align-items: center;">
+      <div style="display: grid; gap: var(--space-6); align-content: center;">
+        <p class="cory-overline" style="margin: 0px;">Resources</p>
+        <h1 id="resources-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">UX resources for AI product design.</h1>
+        <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">The tools, references and reading I use in design system and AI product work, each with a line on why it earns its place. Every entry opens on its own site.</p>
+        <p class="case-kicker">Kept by <bdi>{site.name}</bdi>, {profile.headline}{updated && <Fragment> · Updated <time datetime={updated.toISOString().slice(0, 10)}>{day(updated)}</time></Fragment>}</p>
+        <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+          <Button variant="primary" size="lg" href="#categories">Browse by category</Button>
+          <Button variant="secondary" size="lg" href="#suggest">Suggest a resource</Button>
+        </div>
+      </div>
+      {real.length > 0 && (
+        <div class="project-cta" aria-labelledby="library-title" role="region" style="padding: var(--space-8); display: grid; gap: var(--space-6); box-shadow: var(--shadow-md);">
+          <div style="display: grid; gap: var(--space-2);">
+            <p class="cory-overline" style="margin: 0; color: var(--on-ink-link);">In the library</p>
+            <h2 id="library-title" style="margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong);">What is here today</h2>
+          </div>
+          <ul aria-label="Counts" style="display: flex; flex-wrap: wrap; gap: var(--space-5) var(--space-8);">
+            {counts.map(([n, label]) => <li style="display: grid; gap: var(--space-1);"><strong style={stat}>{n}</strong><span style="font-size: var(--text-body-sm); color: var(--on-ink-muted);">{label}</span></li>)}
+          </ul>
+          <div style="display: grid; gap: 0;">
+            <p style="margin: 0 0 var(--space-2); font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--on-ink-muted);">Fullest categories</p>
+            <ul aria-label="Fullest categories">
+              {fullest.map(c => <li><a class="ink-row" href={`/resources?category=${c.slug}#resources-list`} style={inkLink}><span style="min-inline-size: 0; overflow-wrap: anywhere;">{c.label}</span><span style="display: inline-flex; align-items: center; gap: var(--space-2); flex-shrink: 0; font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--on-ink-muted); font-variant-numeric: tabular-nums;">{c.count}<svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--on-ink-link);"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></a></li>)}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   </section>
 
@@ -81,6 +106,10 @@ const stat = 'margin: 0; font-family: var(--font-display); font-weight: var(--we
         : <div class="project-empty" style="max-inline-size: var(--measure-lead);"><p class="project-empty-title">Suggest it by email.</p><p class="project-empty-body">This copy of the site cannot take suggestions directly. Send the name and the link to {site.email} and I will take a look.</p><div><Button variant="secondary" href={`mailto:${site.email}?subject=${encodeURIComponent('Resource suggestion')}`}>Email a suggestion</Button></div></div>}
     </div>
   </section>
+  <style is:global>
+    .ink-row:focus-visible { outline: var(--border-width-strong) solid var(--on-ink-link); outline-offset: 2px; border-radius: var(--radius-xs); }
+    @media (hover: hover) { .ink-row:hover { color: var(--on-ink-link) !important; } }
+  </style>
   <script>
     import '../components/islands/resource-list.ts';
   </script>
