@@ -1,0 +1,8 @@
+title: "Leonardo"
+url: https://leonardocolor.io/
+category: colour
+type: tool
+cost: free
+description: "Adobe’s tool for generating colour scales from contrast ratios, so each step meets a chosen accessibility target."
+added: 2026-10-20
+tags: ["Palettes", "Contrast"]

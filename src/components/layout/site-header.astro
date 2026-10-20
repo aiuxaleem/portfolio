@@ -11,6 +11,8 @@ const { lang = 'en', langs = 'en', altLangHref } = Astro.props;
 const ar = lang === 'ar';
 const c = chrome[ar ? 'ar' : 'en'];
 const nav = ar ? arNav : parity ? legacyChrome.nav : site.nav;
+/* The menu has room for every page; the desktop bar shows the main six. */
+const menuNav = ar || parity ? nav : [...nav, ...site.moreNav];
 const cta = ar ? { label: c.talk, href: '/ar#contact' } : parity ? legacyChrome.cta : site.cta;
 const current = ar ? (Astro.url.pathname.includes('/case-studies') ? 'work' : 'home') : currentKey(Astro.url.pathname);
 const home = ar ? '/ar' : '/';
@@ -52,7 +54,7 @@ const linkStyle = 'display: inline-flex; align-items: center; justify-content: c
     <IconButton variant="secondary" label={t.closeMenu} data-menu-close><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></IconButton>
   </div>
   <nav aria-label="Primary" style="margin-block-start: var(--space-8); display: flex; flex-direction: column; gap: var(--space-2);">
-    {nav.map(n => <a data-nav-link href={n.href} aria-current={n.key === current ? 'page' : undefined} class="menu-nav-link" style="display: flex; align-items: center; min-block-size: var(--tap-target); padding-block: var(--space-2); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-decoration: none; inline-size: fit-content;">{n.label}</a>)}
+    {menuNav.map(n => <a data-nav-link href={n.href} aria-current={n.key === current ? 'page' : undefined} class="menu-nav-link" style="display: flex; align-items: center; min-block-size: var(--tap-target); padding-block: var(--space-2); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-decoration: none; inline-size: fit-content;">{n.label}</a>)}
     <a data-link href={site.resumeUrl} {...resumeAttrs} style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); margin-block-start: var(--space-4); font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;">{t.resume}{resumeExternal && <span class="cory-visually-hidden"> {t.newTab}</span>}</a>
   </nav>
   <div style="margin-block-start: auto; padding-block-start: var(--space-8); display: grid; gap: var(--space-4);">

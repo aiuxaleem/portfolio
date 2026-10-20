@@ -1,0 +1,8 @@
+title: "axe DevTools"
+url: https://www.deque.com/axe/
+category: accessibility
+type: tool
+cost: freemium
+description: "The accessibility engine behind many automated checks, including the ones in this site’s quality run, as a browser extension."
+added: 2026-10-20
+tags: ["Accessibility", "Testing"]

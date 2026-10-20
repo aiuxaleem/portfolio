@@ -157,6 +157,21 @@ By file: `src/content/linkedin-articles/your-title.yaml`.
 
 Create a blog post with the full text, then fill in **Originally published elsewhere** (site name, link, date) and set **Canonical URL** to the LinkedIn address. The post shows an "Originally published on LinkedIn" note, and search engines are told the LinkedIn version is the original.
 
+## Add a UX resource
+
+The Resources page (`/resources`) lists tools, references and reading you recommend, each linking out to its own site. In the admin area: **UX resources → Add a resource**. By file: `src/content/resources/your-resource.yaml`.
+
+| Field | What to write |
+| --- | --- |
+| Name | The resource's own name, for example "Figma". |
+| Link | Its address, starting with https://. |
+| Category, Type, Cost | Chosen from lists; these are the filters on the page. |
+| Why it is useful | One or two sentences in your own words, 220 characters at most. Optional, but a card without it says less. |
+| Added on | The list is newest first. |
+| Topics | Short tags shown on the card. |
+
+Visitors can suggest a resource from the page. A suggestion arrives in **UX resources** as a draft with a note saying when it came and who sent it; nothing is published until you publish it. The full field rules, the categories and the API that takes a resource from outside the site are in `docs/RESOURCES_API.md`.
+
 ## Embeds inside a post, case study or project
 
 Type `/` in the body and choose one.

@@ -33,6 +33,8 @@ const devOnly = {
         injectRoute({ pattern: '/admin/youtube', entrypoint: './src/admin/pages/youtube.astro' });
         injectRoute({ pattern: '/admin/images', entrypoint: './src/admin/pages/images.astro' });
         injectRoute({ pattern: '/admin/images/file', entrypoint: './src/admin/pages/image-file.ts' });
+        // Visitors suggest a UX resource here (saved as a draft for review); the owner can add or publish one with a key.
+        injectRoute({ pattern: '/api/resources', entrypoint: './src/admin/pages/resources-api.ts' });
         // One list and one editor for every kind of entry: /admin/projects, /admin/case-studies, /admin/posts.
         injectRoute({ pattern: '/admin/[kind]', entrypoint: './src/admin/pages/entries/index.astro' });
         injectRoute({ pattern: '/admin/[kind]/new', entrypoint: './src/admin/pages/entries/edit.astro' });

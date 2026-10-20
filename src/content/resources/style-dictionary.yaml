@@ -1,0 +1,8 @@
+title: "Style Dictionary"
+url: https://styledictionary.com/
+category: design-tokens
+type: tool
+cost: free
+description: "A build tool that turns one set of design tokens into variables for CSS, iOS, Android and other platforms."
+added: 2026-10-20
+tags: ["Tokens", "Code"]

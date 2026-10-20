@@ -1,0 +1,8 @@
+title: "Tokens Studio for Figma"
+url: https://tokens.studio/
+category: design-tokens
+type: plugin
+cost: freemium
+description: "A Figma plugin for defining tokens, themes and aliases in Figma and syncing them with a repository."
+added: 2026-10-20
+tags: ["Tokens", "Figma"]

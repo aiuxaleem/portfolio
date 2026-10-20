@@ -6,7 +6,7 @@
    - nothing is invented: unknown facts are written as [VERIFY] or [METRIC: ...], and the quality run fails a production page that still shows one */
 import { defineCollection, reference, z } from 'astro:content';
 import { glob } from 'astro/loaders';
-import { S, alt, flags, link, seo, projectSchema, caseStudySchema, postSchema, siteSchema, videoSchema, linkedinPostSchema, linkedinArticleSchema } from './lib/content-schemas';
+import { S, alt, flags, link, seo, projectSchema, caseStudySchema, postSchema, siteSchema, videoSchema, linkedinPostSchema, linkedinArticleSchema, resourceSchema } from './lib/content-schemas';
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/projects' }),
@@ -37,6 +37,12 @@ const linkedinPosts = defineCollection({
 const linkedinArticles = defineCollection({
   loader: glob({ pattern: '**/*.yaml', base: './src/content/linkedin-articles' }),
   schema: linkedinArticleSchema,
+});
+
+/* UX resources: the directory at /resources. One small YAML file per resource. */
+const resources = defineCollection({
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/resources' }),
+  schema: resourceSchema,
 });
 
 const certifications = defineCollection({
@@ -77,4 +83,4 @@ const site = defineCollection({
   schema: siteSchema,
 });
 
-export const collections = { projects, caseStudies, posts, videos, linkedinPosts, linkedinArticles, certifications, testimonials, site };
+export const collections = { projects, caseStudies, posts, videos, linkedinPosts, linkedinArticles, resources, certifications, testimonials, site };

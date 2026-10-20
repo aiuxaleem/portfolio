@@ -1,0 +1,9 @@
+title: A deliberately long one hundred and twenty character title used to test how every heading wraps across narrow screens ok
+url: https://example.com/an-unbroken-string-of-sixty-characters-x1
+category: utilities
+type: tool
+cost: free
+description: "A stress fixture with the longest allowed description, written to check that a card grows with its text and never clips any of it at all at any width, in both themes, at every size."
+added: 2026-10-20
+tags: [Design systems, Accessibility, Tokens, AI workflow, Prototyping, Research, Motion, Arabic and RTL, Handoff]
+fixture: true

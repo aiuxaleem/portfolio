@@ -1,0 +1,8 @@
+title: "Fontsource"
+url: https://fontsource.org/
+category: typography
+type: library
+cost: free
+description: "Open fonts packaged for self-hosting, so a site can serve its type from its own domain. This site’s fonts come from here."
+added: 2026-10-20
+tags: ["Fonts", "Performance"]

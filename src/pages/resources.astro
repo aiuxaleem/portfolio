@@ -1,0 +1,87 @@
+---
+/* /resources: a curated directory of tools, references and reading for AI product design. Every entry is a file in
+   src/content/resources/ and links out to its own site. The page: who it is for and three counts; the categories, each
+   linking to the list filtered to it; the list with filters and a sort order; and a form to suggest a resource, which
+   goes to the owner for review. The form is offered only where /api/resources exists (the Vercel build and dev); the
+   static copies offer email instead. */
+import PageLayout from '../layouts/page-layout.astro';
+import Button from '../components/ui/button.astro';
+import ResourceCard from '../components/cards/resource-card.astro';
+import ResourceFilters from '../components/resources/resource-filters.astro';
+import SuggestForm from '../components/resources/suggest-form.astro';
+import { listedResources, categoryCounts } from '../lib/resources';
+import { site } from '../content/site';
+
+const resources = await listedResources();
+const real = resources.filter(r => !r.data.fixture);
+const categories = categoryCounts(resources);
+const filled = categories.filter(c => c.count > 0);
+const aiTools = real.filter(r => r.data.type === 'ai').length;
+const counts = ([[filled.length, 'categories'], [real.length, 'resources'], [aiTools, aiTools === 1 ? 'AI tool' : 'AI tools']] as const).filter(([n]) => n > 0);
+const canSuggest = import.meta.env.COUNT_VISITS === '1';
+const notes = [
+  { id: 'suggest-sent', ok: true, title: 'Suggestion received.', body: 'Thank you. I look at every suggestion before it goes on the page, so it will not appear straight away.' },
+  { id: 'suggest-refused', ok: false, title: 'The suggestion was not accepted.', body: 'The name, a full link starting with https:// and a category are needed. Fill them in and send it again.' },
+  { id: 'suggest-later', ok: false, title: 'That is enough for one hour.', body: 'Five suggestions from one place within an hour is the limit. Thank you; send the rest later or by email.' },
+  { id: 'suggest-failed', ok: false, title: 'The suggestion was not saved.', body: 'The site could not save it. Nothing was kept. Try again in a minute, or send it by email.' },
+];
+const stat = 'margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong);';
+---
+<PageLayout title="UX resources · AIUXAleem" description="A curated directory of tools, references and reading for AI product design, design systems and accessibility, kept by Mohammad Abdul Aleem." page="resources" bg="grid" mainStyle="outline: none; overflow: clip;">
+  <section class="cory-container" aria-labelledby="resources-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <p class="cory-overline" style="margin: 0px;">Resources</p>
+    <h1 id="resources-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">UX resources for AI product design.</h1>
+    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">The tools, references and reading I reach for in design system and AI product work, each with a line on why it is worth your time. Every entry opens on its own site.</p>
+    <ul aria-label="What is listed" style="display: flex; flex-wrap: wrap; gap: var(--space-6) var(--space-10);">
+      {counts.map(([n, label]) => <li style="display: grid; gap: var(--space-1);"><strong style={stat}>{n}</strong><span style="font-size: var(--text-body-sm); color: var(--text-muted);">{label}</span></li>)}
+    </ul>
+    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+      <Button variant="primary" size="lg" href="#categories">Browse by category</Button>
+      <Button variant="secondary" size="lg" href="#suggest">Suggest a resource</Button>
+    </div>
+  </section>
+
+  {real.length === 0 && (
+    <section class="cory-container" aria-label="Nothing listed" style="padding-block-end: var(--section-y);"><div class="project-empty"><p class="project-empty-title">Nothing is listed yet.</p><p class="project-empty-body">Resources are added as they earn a place. Until then, the Read page has the writing.</p><div><Button variant="secondary" href="/read">Go to Read</Button></div></div></section>
+  )}
+
+  {filled.length > 0 && (
+    <section id="categories" class="page-section paged-section" data-surface="card" aria-labelledby="categories-title">
+      <div class="cory-container">
+        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Browse</p><h2 id="categories-title" class="page-h2">By category</h2><p class="project-filter-count">Each category opens the list below, filtered to it.</p></div>
+        <div data-cq><ul data-cq-grid="4" style="display: grid; gap: var(--grid-gap);">{filled.map(c => (
+          <li><a class="project-related" href={`/resources?category=${c.slug}#resources-list`} style="block-size: 100%;"><span style="display: grid; gap: var(--space-1); min-inline-size: 0;"><strong>{c.label}</strong><span style="font-size: var(--text-body-sm); color: var(--text-muted);">{c.count} {c.count === 1 ? 'resource' : 'resources'} · {c.blurb}</span></span><svg data-dir-icon width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a></li>
+        ))}</ul></div>
+      </div>
+    </section>
+  )}
+
+  {resources.length > 0 && (
+    <section id="resources-list" class="page-section paged-section" aria-labelledby="list-title">
+      <div class="cory-container">
+        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">All resources</p><h2 id="list-title" class="page-h2">Filter and sort</h2><p class="project-filter-count">Newest first. Each card opens the resource on its own site, in a new tab.</p></div>
+        <ResourceFilters total={resources.length} categories={categories} />
+        <div data-cq><ul data-resource-list data-cq-balance style="display: grid; gap: var(--grid-gap);">{resources.map(r => <li><ResourceCard resource={r} level={3} /></li>)}</ul></div>
+      </div>
+    </section>
+  )}
+
+  <section id="suggest" class="page-section paged-section" data-surface="card" aria-labelledby="suggest-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Missing something?</p><h2 id="suggest-title" class="page-h2">Know a resource I should list?</h2><p class="project-filter-count" style="max-inline-size: var(--measure-lead);">Send it over. I look at every suggestion before it goes on the page, and I only list what I would use myself.</p></div>
+      {/* Where the form was sent without JavaScript, the site sends the visitor back to one of these notes. */}
+      {canSuggest && notes.map(n => (
+        <div id={n.id} class:list={['form-panel', n.ok && 'form-success']} data-target-note tabindex="-1">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={n.ok ? 'm8.5 12.5 2.5 2.5 4.5-5' : 'M12 8v4M12 16h.01'}></path></svg>
+          <div><p class="form-panel-title">{n.title}</p><p>{n.body}</p></div>
+        </div>
+      ))}
+      {canSuggest
+        ? <SuggestForm email={site.email} />
+        : <div class="project-empty" style="max-inline-size: var(--measure-lead);"><p class="project-empty-title">Suggest it by email.</p><p class="project-empty-body">This copy of the site cannot take suggestions directly. Send the name and the link to {site.email} and I will take a look.</p><div><Button variant="secondary" href={`mailto:${site.email}?subject=${encodeURIComponent('Resource suggestion')}`}>Email a suggestion</Button></div></div>}
+    </div>
+  </section>
+  <script>
+    import '../components/islands/resource-list.ts';
+  </script>
+</PageLayout>

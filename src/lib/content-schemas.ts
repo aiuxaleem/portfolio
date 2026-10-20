@@ -159,6 +159,47 @@ export const linkedinArticleSchema = S({
     ...flags,
   });
 
+/* UX resources (src/content/resources/*.yaml): a curated directory of tools, references and reading for AI product
+   design, shown at /resources. Every entry links out; nothing is hosted here. The category, type and cost lists are the
+   words the page filters by, so a value outside them cannot be saved. */
+export const RESOURCE_CATEGORIES = {
+  'ai-design-patterns': 'AI design patterns',
+  'prompting-and-evaluation': 'Prompting and evaluation',
+  'design-systems': 'Design systems',
+  'design-tokens': 'Design tokens',
+  accessibility: 'Accessibility',
+  'research-and-testing': 'Research and testing',
+  prototyping: 'Prototyping',
+  typography: 'Typography',
+  colour: 'Colour',
+  'icons-and-illustration': 'Icons and illustration',
+  motion: 'Motion',
+  'handoff-and-documentation': 'Handoff and documentation',
+  learning: 'Learning',
+  inspiration: 'Inspiration',
+  utilities: 'Utilities',
+  communities: 'Communities',
+} as const;
+export const RESOURCE_TYPES = { tool: 'Tool', ai: 'AI tool', article: 'Article', library: 'Library', template: 'Template', course: 'Course', book: 'Book', plugin: 'Plugin', video: 'Video', community: 'Community' } as const;
+export const RESOURCE_COSTS = { free: 'Free', freemium: 'Free tier', paid: 'Paid' } as const;
+export type ResourceCategory = keyof typeof RESOURCE_CATEGORIES;
+export type ResourceType = keyof typeof RESOURCE_TYPES;
+export type ResourceCost = keyof typeof RESOURCE_COSTS;
+const keys = <T extends Record<string, string>>(o: T) => Object.keys(o) as [keyof T & string, ...(keyof T & string)[]];
+
+export const resourceSchema = S({
+    title: z.string().max(120),
+    url: z.string().url().max(300).refine(u => /^https?:\/\//.test(u), 'Use a full address starting with https://'),
+    category: z.enum(keys(RESOURCE_CATEGORIES)),
+    type: z.enum(keys(RESOURCE_TYPES)).default('tool'),
+    cost: z.enum(keys(RESOURCE_COSTS)).default('free'),
+    /* What it is and why it is worth a visit, in one or two sentences. Shown whole on the card. */
+    description: z.string().max(220).optional(),
+    added: z.coerce.date(),
+    tags: z.array(z.string()).default([]),
+    ...flags,
+  });
+
 /* Site settings (src/content/site/config.json) and the profile data behind About, Resume, Now and the contact form
    (src/content/site/profile.json). Both are single files, checked by the build and by the admin editor. */
 export const siteSchema = z.object({

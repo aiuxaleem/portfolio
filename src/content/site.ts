@@ -30,6 +30,8 @@ export const site = {
     { key: 'about', label: 'About', href: '/about' },
     { key: 'contact', label: 'Contact', href: '/contact' },
   ] as NavItem[],
+  /* Pages listed in the menu and the footer but not in the desktop bar, which has room for six links at 1024px. */
+  moreNav: [{ key: 'resources', label: 'Resources', href: '/resources' }] as NavItem[],
   cta: { label: 'Get in touch', href: '/contact' },
 };
 
@@ -56,6 +58,7 @@ export function currentKey(pathname: string, legacy = parity): string {
   if (p === '/services') return legacy ? 'services' : '';
   if (p === '/about' || p === '/resume' || p === '/now') return 'about';
   if (p === '/videos') return 'videos';
+  if (p === '/resources') return 'resources';
   if (p === '/contact') return 'contact';
   return '';
 }

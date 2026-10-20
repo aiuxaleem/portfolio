@@ -70,6 +70,14 @@
 .form-field label { font-size: var(--text-label); font-weight: var(--weight-semibold); color: var(--text-strong); }
 .form-field input, .form-field textarea { inline-size: 100%; min-block-size: 44px; padding: 11px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font-family: var(--font-sans); font-size: var(--text-ui); line-height: var(--leading-normal); }
 .form-field textarea { padding: 12px 14px; resize: vertical; }
+/* A menu field (the suggest-a-resource form) takes the same box as a text field, and the browser's own arrow. */
+.form-field select { inline-size: 100%; min-block-size: 44px; padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font-family: var(--font-sans); font-size: var(--text-ui); line-height: var(--leading-normal); }
+.form-field select:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; border-color: var(--border-focus); }
+.form-field select:disabled { cursor: not-allowed; background: var(--surface-sunken); }
+/* A note shown only when the address points at it: the reply to a form sent without JavaScript. */
+[data-target-note]:not(:target) { display: none; }
+/* Short fields side by side where there is room; one under another on a phone. */
+.form-row { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
 .form-field input:focus-visible, .form-field textarea:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; border-color: var(--border-focus); }
 .form-field [aria-invalid="true"] { border-color: var(--text-danger); border-width: 2px; }
 .form-field input:disabled, .form-field textarea:disabled, .form-field input:read-only, .form-field textarea:read-only { cursor: not-allowed; background: var(--surface-sunken); }

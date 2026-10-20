@@ -1,0 +1,90 @@
+---
+/* "Suggest a resource" form (CLAUDE.md 2.6). The same pattern as the contact form: states idle, inline validation on
+   blur, error summary, submitting (locked, with a status message), success, and failure that keeps what was typed and
+   offers email instead. It posts to /api/resources, which saves the suggestion as a draft for the owner to review in the
+   admin area; nothing appears on the site until it is published. Without JavaScript the form posts there directly and
+   the browser's own validation applies; the reply then sends the visitor back to this page's thank-you note.
+   Behaviour: islands/suggest-resource.ts */
+import { RESOURCE_CATEGORIES, RESOURCE_COSTS, RESOURCE_TYPES } from '../../lib/content-schemas';
+
+interface Props { email: string; id?: string; /** Off on /_states, where several forms share the page: a named form is a landmark and landmark names must be unique. */ landmark?: boolean; /** Fix a state, for /_states. */ state?: 'idle' | 'invalid' | 'submitting' | 'success' | 'failure' }
+const { email, id = 'suggest', landmark = true, state = 'idle' } = Astro.props;
+const fixed = !!Astro.props.state;
+const invalid = state === 'invalid';
+const busy = state === 'submitting';
+const sample = fixed && state !== 'idle' && !invalid;
+const alertIcon = 'M12 8v4M12 16h.01';
+const required = [
+  { name: 'title', label: 'Name of the resource', type: 'text', error: 'Enter the name of the resource.', max: 120, value: sample ? 'Fixture resource' : '' },
+  { name: 'url', label: 'Link', type: 'url', error: 'Enter a full address starting with https://', hint: 'The page the resource lives on.', max: 300, value: sample ? 'https://example.com/fixture' : invalid ? 'example' : '' },
+];
+const categoryError = 'Choose a category.';
+const plain = [{ name: 'type', label: 'Type', options: Object.entries(RESOURCE_TYPES) }, { name: 'cost', label: 'Cost', options: Object.entries(RESOURCE_COSTS) }];
+const describedBy = (name: string, hint: boolean) => [hint && `${id}-${name}-hint`, invalid && `${id}-${name}-error`].filter(Boolean).join(' ') || undefined;
+---
+<div class="contact-form" data-suggest-form data-state={state} data-static={fixed ? '' : undefined} data-email={email}>
+  <div class="form-panel form-success" data-form-success tabindex="-1" hidden={state !== 'success'}>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8.5 12.5 2.5 2.5 4.5-5"></path></svg>
+    <div><p class="form-panel-title">Suggestion received.</p><p>Thank you. I look at every suggestion before it goes on the page, so it will not appear straight away.</p></div>
+  </div>
+
+  <form action="/api/resources" method="post" hidden={state === 'success'} aria-labelledby={landmark ? `${id}-form-title` : undefined}>
+    <h3 id={`${id}-form-title`} class="form-title">Suggest a resource</h3>
+    <p class="form-note">The name, link and category are needed. The rest is optional.</p>
+
+    <div class="form-panel form-summary" data-form-summary tabindex="-1" role="alert" hidden={!invalid}>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={alertIcon}></path></svg>
+      <div><p class="form-panel-title" data-form-summary-title>{invalid ? 'Fix 3 fields to send your suggestion' : ''}</p><ul data-form-summary-list>{invalid && [...required.map(f => [f.name, f.error]), ['category', categoryError]].map(([name, error]) => <li><a href={`#${id}-${name}`}>{error}</a></li>)}</ul></div>
+    </div>
+
+    <div class="form-panel form-failure" data-form-failure tabindex="-1" role="alert" hidden={state !== 'failure'}>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={alertIcon}></path></svg>
+      <div><p class="form-panel-title">Your suggestion was not sent.</p><p data-form-failure-text>The site did not answer. What you typed is still in the form. Try again, or <a data-form-mailto href={`mailto:${email}`}>send it by email instead</a>.</p></div>
+    </div>
+
+    {required.map(f => (
+      <div class="form-field" data-field data-error-text={f.error}>
+        <label for={`${id}-${f.name}`}>{f.label}</label>
+        {f.hint && <p class="form-hint" id={`${id}-${f.name}-hint`}>{f.hint}</p>}
+        <input id={`${id}-${f.name}`} name={f.name} type={f.type as 'text' | 'url'} inputmode={f.type === 'url' ? 'url' : undefined} required maxlength={f.max} autocomplete="off" value={f.value} aria-invalid={invalid ? 'true' : undefined} aria-describedby={describedBy(f.name, !!f.hint)} disabled={busy} />
+        <p class="form-error" id={`${id}-${f.name}-error`} data-field-error hidden={!invalid}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={alertIcon}></path></svg><span>{invalid ? f.error : ''}</span></p>
+      </div>
+    ))}
+    <div class="form-row">
+      <div class="form-field" data-field data-error-text={categoryError}>
+        <label for={`${id}-category`}>Category</label>
+        <select id={`${id}-category`} name="category" required aria-invalid={invalid ? 'true' : undefined} aria-describedby={invalid ? `${id}-category-error` : undefined} disabled={busy}>
+          <option value="" selected={!sample}>Choose a category</option>
+          {Object.entries(RESOURCE_CATEGORIES).map(([v, l], i) => <option value={v} selected={sample && i === 0}>{l}</option>)}
+        </select>
+        <p class="form-error" id={`${id}-category-error`} data-field-error hidden={!invalid}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={alertIcon}></path></svg><span>{invalid ? categoryError : ''}</span></p>
+      </div>
+      {plain.map(s => (
+        <div class="form-field">
+          <label for={`${id}-${s.name}`}>{s.label}</label>
+          <select id={`${id}-${s.name}`} name={s.name} disabled={busy}>{s.options.map(([v, l]) => <option value={v}>{l}</option>)}</select>
+        </div>
+      ))}
+    </div>
+    <div class="form-field">
+      <label for={`${id}-description`}>Why is it useful? (optional)</label>
+      <p class="form-hint" id={`${id}-description-hint`}>One or two sentences. 220 characters at most.</p>
+      <textarea id={`${id}-description`} name="description" rows="3" maxlength="220" aria-describedby={`${id}-description-hint`} disabled={busy}>{sample ? 'Fixture reason. What was typed stays in the form.' : ''}</textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label for={`${id}-name`}>Your name (optional)</label><input id={`${id}-name`} name="name" type="text" maxlength="80" autocomplete="name" value={sample ? 'Fixture name' : ''} disabled={busy} /></div>
+      <div class="form-field"><label for={`${id}-email`}>Your email (optional)</label><p class="form-hint" id={`${id}-email-hint`}>Only used if I have a question about the suggestion.</p><input id={`${id}-email`} name="email" type="email" maxlength="120" autocomplete="email" value={sample ? 'fixture@example.com' : ''} aria-describedby={`${id}-email-hint`} disabled={busy} /></div>
+    </div>
+    <!-- Spam trap: people never see or reach this field. -->
+    <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" hidden />
+
+    <div class="form-actions">
+      <button type="submit" class="ui-button ui-button-ink ui-button-lg" data-form-submit disabled={busy}><span class="ui-button-label">{busy ? 'Sending' : 'Send suggestion'}</span></button>
+      <p class="form-status" role="status" data-form-status>{busy ? 'Sending your suggestion. This can take a few seconds.' : ''}</p>
+    </div>
+  </form>
+</div>
+
+<script>
+  import '../islands/suggest-resource.ts';
+</script>

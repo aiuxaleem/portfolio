@@ -1,0 +1,8 @@
+title: "OpenAI prompt engineering guide"
+url: https://platform.openai.com/docs/guides/prompt-engineering
+category: prompting-and-evaluation
+type: article
+cost: free
+description: "Strategies for getting better results from a model: clear instructions, reference text, splitting tasks, giving the model time to think, and testing changes."
+added: 2026-10-20
+tags: ["Prompting"]

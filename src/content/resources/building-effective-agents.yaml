@@ -1,0 +1,8 @@
+title: "Building effective agents"
+url: https://www.anthropic.com/research/building-effective-agents
+category: ai-design-patterns
+type: article
+cost: free
+description: "Anthropic’s write-up of the workflows and agent patterns that work in practice, and when a simpler design beats an agent."
+added: 2026-10-20
+tags: ["Agents", "AI UX"]

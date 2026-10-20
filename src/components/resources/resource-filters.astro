@@ -1,0 +1,38 @@
+---
+/* Filters and sort order for the resource list. Three groups of toggle chips (category, type, cost): within a group any
+   selected value matches, and every group must match. Two sort chips (Newest, A to Z), exactly one pressed. A live
+   result count, and an empty state with a "Clear filters" action. Buttons are real <button>s with aria-pressed, so they
+   work from the keyboard. The bar is in the page from the first paint; without JavaScript a <noscript> rule hides it and
+   every resource is listed. Behaviour: islands/resource-list.ts */
+import Button from '../ui/button.astro';
+import { costLabel, typeLabel } from '../../lib/resources';
+
+interface Props { total: number; /** Categories with at least one resource, in order. */ categories: { slug: string; label: string; count: number }[]; /** Render the empty state open, for /_states. */ showEmpty?: boolean; id?: string }
+const { total, categories, showEmpty = false, id = 'resource-filter' } = Astro.props;
+const groups = [
+  { key: 'category', label: 'Category', options: categories.filter(c => c.count > 0).map(c => [c.slug, c.label] as [string, string]) },
+  { key: 'type', label: 'Type', options: Object.entries(typeLabel) },
+  { key: 'cost', label: 'Cost', options: Object.entries(costLabel) },
+];
+const sorts: [string, string][] = [['newest', 'Newest'], ['title', 'A to Z']];
+const nouns = total === 1 ? 'resource' : 'resources';
+---
+<noscript><style>[data-resource-filters] { display: none; }</style></noscript>
+<div class="project-filters" data-resource-filters>
+  {groups.map(g => g.options.length > 0 && (
+    <div role="group" aria-labelledby={`${id}-${g.key}`} class="project-filter-group" data-filter-group={g.key}>
+      <span id={`${id}-${g.key}`} class="project-filter-label">{g.label}</span>
+      {g.options.map(([value, label]) => <button type="button" class="ui-chip" aria-pressed="false" data-filter-value={value}>{label}</button>)}
+    </div>
+  ))}
+  <div role="group" aria-labelledby={`${id}-sort`} class="project-filter-group" data-sort-group>
+    <span id={`${id}-sort`} class="project-filter-label">Sort</span>
+    {sorts.map(([value, label], i) => <button type="button" class="ui-chip" aria-pressed={i === 0 ? 'true' : 'false'} data-sort={value}>{label}</button>)}
+  </div>
+  <p class="project-filter-count" role="status" aria-live="polite" data-result-count>{showEmpty ? `Showing 0 of ${total} ${nouns}` : `Showing ${total} of ${total} ${nouns}`}</p>
+</div>
+<div class="project-empty" data-resource-empty hidden={!showEmpty}>
+  <p class="project-empty-title">No resources match these filters.</p>
+  <p class="project-empty-body">Try removing a filter, or clear them all to see every resource.</p>
+  <div><Button variant="secondary" data-clear-filters>Clear filters</Button></div>
+</div>

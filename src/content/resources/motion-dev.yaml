@@ -1,0 +1,8 @@
+title: "Motion"
+url: https://motion.dev/
+category: motion
+type: library
+cost: free
+description: "An animation library for the web (formerly Framer Motion) with React, Vue and vanilla JavaScript APIs and springs."
+added: 2026-10-20
+tags: ["Animation", "Code"]

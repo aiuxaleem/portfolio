@@ -24,6 +24,7 @@ export async function ogEntries(): Promise<OgEntry[]> {
     { path: 'read', title: 'Thinking out loud, in public.', kicker: 'Read' },
     { path: 'blog', title: 'Blog', kicker: 'Read' },
     { path: 'videos', title: 'Videos', kicker: 'Videos' },
+    { path: 'resources', title: 'UX resources for AI product design.', kicker: 'Resources' },
     { path: 'about', title: 'I make AI feel like something you can rely on.', kicker: 'About' },
     { path: 'resume', title: site.name, kicker: 'Resume' },
     { path: 'now', title: 'What I am building and learning.', kicker: 'Now' },

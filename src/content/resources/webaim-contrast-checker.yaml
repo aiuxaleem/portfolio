@@ -1,0 +1,8 @@
+title: "WebAIM Contrast Checker"
+url: https://webaim.org/resources/contrastchecker/
+category: accessibility
+type: tool
+cost: free
+description: "Enter two colours and get the contrast ratio with pass and fail against the WCAG AA and AAA levels for text and interface parts."
+added: 2026-10-20
+tags: ["Accessibility", "Contrast"]
