@@ -11,15 +11,13 @@ const { lang = 'en', langs = 'en', altLangHref } = Astro.props;
 const ar = lang === 'ar';
 const c = chrome[ar ? 'ar' : 'en'];
 const nav = ar ? arNav : parity ? legacyChrome.nav : site.nav;
-/* The menu has room for every page; the desktop bar shows the main six. */
-const menuNav = ar || parity ? nav : [...nav, ...site.moreNav];
 const cta = ar ? { label: c.talk, href: '/ar#contact' } : parity ? legacyChrome.cta : site.cta;
 const current = ar ? (Astro.url.pathname.includes('/case-studies') ? 'work' : 'home') : currentKey(Astro.url.pathname);
 const home = ar ? '/ar' : '/';
 const hasOther = langs.split(' ').includes(ar ? 'en' : 'ar');
 const t = { ...c, langHint: hasOther ? c.langHint : c.langHintFallback, langTip: hasOther ? c.langTip : c.langTipFallback, resume: resumeExternal ? c.resumeView : c.resumeMenu };
 const langHref = altLangHref || (ar ? '/' : '/ar');
-const linkStyle = 'display: inline-flex; align-items: center; justify-content: center; min-block-size: var(--tap-target); min-inline-size: var(--tap-target); padding-inline: var(--space-2); font-size: var(--text-body-sm); font-weight: var(--weight-medium); color: var(--text-body); text-decoration: none; transition: color var(--duration-base) var(--ease-out);';
+const linkStyle = 'display: inline-flex; align-items: center; justify-content: center; min-block-size: var(--tap-target); min-inline-size: var(--tap-target); padding-inline: var(--space-2); white-space: nowrap; font-size: var(--text-body-sm); font-weight: var(--weight-medium); color: var(--text-body); text-decoration: none; transition: color var(--duration-base) var(--ease-out);';
 ---
 <a href="#main" class="skip-link" style="position: fixed; inset-block-start: var(--space-4); inset-inline-start: var(--space-4); z-index: var(--z-toast); padding: var(--space-3) var(--space-5); border-radius: var(--radius-pill); background: var(--action-ink); color: var(--surface-card); font-weight: var(--weight-semibold); font-size: var(--text-body-sm); text-decoration: none; transform: translateY(-200%); transition: transform var(--duration-fast) var(--ease-out);">{t.skip}</a>
 <div aria-hidden="true" style="block-size: var(--header-height);"></div>
@@ -54,7 +52,7 @@ const linkStyle = 'display: inline-flex; align-items: center; justify-content: c
     <IconButton variant="secondary" label={t.closeMenu} data-menu-close><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></IconButton>
   </div>
   <nav aria-label="Primary" style="margin-block-start: var(--space-8); display: flex; flex-direction: column; gap: var(--space-2);">
-    {menuNav.map(n => <a data-nav-link href={n.href} aria-current={n.key === current ? 'page' : undefined} class="menu-nav-link" style="display: flex; align-items: center; min-block-size: var(--tap-target); padding-block: var(--space-2); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-decoration: none; inline-size: fit-content;">{n.label}</a>)}
+    {nav.map(n => <a data-nav-link href={n.href} aria-current={n.key === current ? 'page' : undefined} class="menu-nav-link" style="display: flex; align-items: center; min-block-size: var(--tap-target); padding-block: var(--space-2); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-decoration: none; inline-size: fit-content;">{n.label}</a>)}
     <a data-link href={site.resumeUrl} {...resumeAttrs} style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); margin-block-start: var(--space-4); font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;">{t.resume}{resumeExternal && <span class="cory-visually-hidden"> {t.newTab}</span>}</a>
   </nav>
   <div style="margin-block-start: auto; padding-block-start: var(--space-8); display: grid; gap: var(--space-4);">
@@ -69,6 +67,8 @@ const linkStyle = 'display: inline-flex; align-items: center; justify-content: c
 
 <style is:global>
   .skip-link:focus { transform: none !important; }
+  /* Seven links fit the bar from 960px up; between 960 and 1023px they sit a step closer so no label is squeezed. */
+  @container (max-width: 1023px) { [data-hdr-desktop] ul { gap: var(--space-2) !important; } }
   [data-menu]:not([hidden]) { display: flex; }
   /* Theme icons: the moon shows in light theme (switch to dark), the sun in dark. */
   [data-theme="dark"] [data-icon-moon], :root:not([data-theme="dark"]) [data-icon-sun] { display: none; }

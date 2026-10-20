@@ -27,11 +27,10 @@ export const site = {
     { key: 'case-studies', label: 'Case Studies', href: '/case-studies' },
     { key: 'writing', label: 'Read', href: '/read' },
     { key: 'videos', label: 'Videos', href: '/videos' },
+    { key: 'resources', label: 'UX Resources', href: '/resources' },
     { key: 'about', label: 'About', href: '/about' },
     { key: 'contact', label: 'Contact', href: '/contact' },
   ] as NavItem[],
-  /* Pages listed in the menu and the footer but not in the desktop bar, which has room for six links at 1024px. */
-  moreNav: [{ key: 'resources', label: 'Resources', href: '/resources' }] as NavItem[],
   cta: { label: 'Get in touch', href: '/contact' },
 };
 
