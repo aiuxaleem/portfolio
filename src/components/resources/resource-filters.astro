@@ -1,18 +1,23 @@
 ---
 /* Filters and sort order for the resource list. Three groups of toggle chips (category, type, cost): within a group any
-   selected value matches, and every group must match. Two sort chips (Newest, A to Z), exactly one pressed. A live
-   result count, and an empty state with a "Clear filters" action. Buttons are real <button>s with aria-pressed, so they
-   work from the keyboard. The bar is in the page from the first paint; without JavaScript a <noscript> rule hides it and
+   selected value matches, and every group must match. Only values that at least one listed resource has are offered,
+   and each chip carries its count, so no choice leads to an empty list and the visitor can see where the weight is.
+   Two sort chips (Newest, A to Z), exactly one pressed. A live result count with a "Clear filters" action once a
+   filter is on, and an empty state with the same action. Buttons are real <button>s with aria-pressed, so they work
+   from the keyboard. The bar is in the page from the first paint; without JavaScript a <noscript> rule hides it and
    every resource is listed. Behaviour: islands/resource-list.ts */
 import Button from '../ui/button.astro';
-import { costLabel, typeLabel } from '../../lib/resources';
+import type { Resource } from '../../lib/resources';
+import { categoryLabel, costLabel, typeLabel } from '../../lib/resources';
 
-interface Props { total: number; /** Categories with at least one resource, in order. */ categories: { slug: string; label: string; count: number }[]; /** Render the empty state open, for /_states. */ showEmpty?: boolean; id?: string }
-const { total, categories, showEmpty = false, id = 'resource-filter' } = Astro.props;
+interface Props { /** The resources the list shows, in the same order. */ resources: Resource[]; /** Render the empty state open, for /_states. */ showEmpty?: boolean; id?: string }
+const { resources, showEmpty = false, id = 'resource-filter' } = Astro.props;
+const total = resources.length;
+const counted = (field: 'category' | 'type' | 'cost', labels: Record<string, string>) => Object.entries(labels).map(([value, label]) => [value, label, resources.filter(r => r.data[field] === value).length] as [string, string, number]).filter(([, , n]) => n > 0);
 const groups = [
-  { key: 'category', label: 'Category', options: categories.filter(c => c.count > 0).map(c => [c.slug, c.label] as [string, string]) },
-  { key: 'type', label: 'Type', options: Object.entries(typeLabel) },
-  { key: 'cost', label: 'Cost', options: Object.entries(costLabel) },
+  { key: 'category', label: 'Category', options: counted('category', categoryLabel) },
+  { key: 'type', label: 'Type', options: counted('type', typeLabel) },
+  { key: 'cost', label: 'Cost', options: counted('cost', costLabel) },
 ];
 const sorts: [string, string][] = [['newest', 'Newest'], ['title', 'A to Z']];
 const nouns = total === 1 ? 'resource' : 'resources';
@@ -22,14 +27,17 @@ const nouns = total === 1 ? 'resource' : 'resources';
   {groups.map(g => g.options.length > 0 && (
     <div role="group" aria-labelledby={`${id}-${g.key}`} class="project-filter-group" data-filter-group={g.key}>
       <span id={`${id}-${g.key}`} class="project-filter-label">{g.label}</span>
-      {g.options.map(([value, label]) => <button type="button" class="ui-chip" aria-pressed="false" data-filter-value={value}>{label}</button>)}
+      {g.options.map(([value, label, n]) => <button type="button" class="ui-chip" aria-pressed="false" data-filter-value={value}>{label}<span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{n}</button>)}
     </div>
   ))}
   <div role="group" aria-labelledby={`${id}-sort`} class="project-filter-group" data-sort-group>
     <span id={`${id}-sort`} class="project-filter-label">Sort</span>
     {sorts.map(([value, label], i) => <button type="button" class="ui-chip" aria-pressed={i === 0 ? 'true' : 'false'} data-sort={value}>{label}</button>)}
   </div>
-  <p class="project-filter-count" role="status" aria-live="polite" data-result-count>{showEmpty ? `Showing 0 of ${total} ${nouns}` : `Showing ${total} of ${total} ${nouns}`}</p>
+  <div class="project-filter-group">
+    <p class="project-filter-count" role="status" aria-live="polite" data-result-count>{showEmpty ? `Showing 0 of ${total} ${nouns}` : `Showing ${total} of ${total} ${nouns}`}</p>
+    <Button variant="ghost" data-clear-filters hidden={!showEmpty}>Clear filters</Button>
+  </div>
 </div>
 <div class="project-empty" data-resource-empty hidden={!showEmpty}>
   <p class="project-empty-title">No resources match these filters.</p>

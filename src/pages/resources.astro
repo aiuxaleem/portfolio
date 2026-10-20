@@ -85,15 +85,15 @@ const inkLink = 'display: flex; align-items: center; justify-content: space-betw
     <section id="resources-list" class="page-section paged-section" aria-labelledby="list-title">
       <div class="cory-container">
         <div class="page-section-head"><p class="cory-overline" style="margin: 0;">All resources</p><h2 id="list-title" class="page-h2">Filter and sort</h2><p class="project-filter-count">Newest first. Each card opens the resource on its own site, in a new tab.</p></div>
-        <ResourceFilters total={resources.length} categories={categories} />
+        <ResourceFilters resources={resources} />
         <div data-cq><ul data-resource-list data-cq-balance style="display: grid; gap: var(--grid-gap);">{resources.map(r => <li><ResourceCard resource={r} level={3} /></li>)}</ul></div>
       </div>
     </section>
   )}
 
-  <section id="suggest" class="page-section paged-section" data-surface="card" aria-labelledby="suggest-title">
+  <section id="suggest" class="page-section paged-section" data-surface="card" aria-labelledby="suggest-heading">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Missing something?</p><h2 id="suggest-title" class="page-h2">Know a resource I should list?</h2><p class="project-filter-count" style="max-inline-size: var(--measure-lead);">Send it over. I look at every suggestion before it goes on the page, and I only list what I would use myself.</p></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Missing something?</p><h2 id="suggest-heading" class="page-h2">Know a resource I should list?</h2><p class="project-filter-count" style="max-inline-size: var(--measure-lead);">Send it over. I look at every suggestion before it goes on the page, and I only list what I would use myself.</p></div>
       {/* Where the form was sent without JavaScript, the site sends the visitor back to one of these notes. */}
       {canSuggest && notes.map(n => (
         <div id={n.id} class:list={['form-panel', n.ok && 'form-success']} data-target-note tabindex="-1">

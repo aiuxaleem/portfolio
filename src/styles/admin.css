@@ -39,6 +39,8 @@
 
 /* Admin frame and editors. */
 .admin-note { margin: 0; }
+/* A note to the owner (who sent in a suggestion) is information, not a fault: the panel keeps its shape without the red edge. */
+.admin-form .form-panel[role="note"] { border-inline-start-color: var(--border-focus); }
 .admin-form { display: grid; gap: var(--space-8); min-inline-size: 0; }
 .admin-group { display: grid; gap: var(--space-5); min-inline-size: 0; margin: 0; padding: var(--space-6); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); background: var(--surface-card); }
 .admin-group > legend { padding-inline: var(--space-2); font-family: var(--font-display); font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong); }

@@ -20,6 +20,8 @@ document.querySelectorAll<HTMLElement>('[data-suggest-form]:not([data-static])')
   let tried = false;
 
   const check = (f: (typeof fields)[number]) => {
+    // A link typed without its scheme ("figma.com") is taken as https, not refused.
+    if (f.input.getAttribute('type') === 'url' && /^[\w-]+(\.[\w-]+)+(\/\S*)?$/.test(f.input.value.trim())) f.input.value = 'https://' + f.input.value.trim();
     const value = f.input.value.trim();
     const ok = value !== '' && (f.input.getAttribute('type') !== 'url' || /^https?:\/\/\S+\.\S+/.test(value));
     f.error.hidden = ok; f.error.querySelector('span')!.textContent = ok ? '' : f.text;
@@ -62,8 +64,9 @@ document.querySelectorAll<HTMLElement>('[data-suggest-form]:not([data-static])')
     fields.forEach(check);
     if (summarise().length) { root.dataset.state = 'invalid'; summary.focus(); return; }
     if ((form.elements.namedItem('_gotcha') as HTMLInputElement | null)?.value) return; // filled by a bot
-    busy(true);
+    // Read the form before locking it: a disabled menu is left out of the form's data.
     const data = Object.fromEntries([...new FormData(form).entries()].map(([k, v]) => [k, String(v).trim()]));
+    busy(true);
     const stop = new AbortController(), timer = window.setTimeout(() => stop.abort(), SEND_TIMEOUT);
     try {
       const res = await fetch(form.action, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(data), signal: stop.signal });
