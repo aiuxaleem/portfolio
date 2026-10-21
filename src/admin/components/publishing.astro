@@ -1,0 +1,70 @@
+---
+/* The publishing row at the top of the admin home: what is waiting to be published, beside what was published last.
+   Two tiles of the same bento grid the visitor numbers use (admin.css, .admin-bento). Unfinished work comes first on
+   the page (Zeigarnik): a visitor's suggestion before the owner's own drafts, newest first, eight rows at most with a
+   line saying how many more. In a row the kind's icon sits beside the title and the facts sit under the title (law of
+   proximity). States: with work; nothing waiting; the drafts could not be read.
+   On /_states the tiles are shown several times: `plain` renders blocks with unique ids there, so the page gains no
+   repeated landmarks. */
+import AdminIcon from './admin-icon.astro';
+import type { AdminIcon as IconName } from './admin-icons';
+import { when, type Recent, type Waiting } from '../lib/publishing';
+
+interface Props { waiting: Waiting[]; recent: Recent[]; /** The drafts could not be read. */ fault?: boolean; plain?: boolean; uid?: string }
+const { waiting, recent, fault = false, plain = false, uid = 'pub' } = Astro.props;
+const Block: any = plain ? 'div' : 'section';
+const labelled = (id: string) => (plain ? {} : { 'aria-labelledby': `${uid}-${id}` });
+const SHOWN = 8;
+const shown = waiting.slice(0, SHOWN), more = waiting.length - shown.length;
+/* The rows not shown, by section, so the line under the list says where they are. */
+const rest = [...waiting.slice(SHOWN).reduce((m, w) => m.set(w.kindPath, { label: w.kind, n: (m.get(w.kindPath)?.n || 0) + 1 }), new Map<string, { label: string; n: number }>())];
+const words = { suggested: 'Sent in by a visitor, waiting for your review', new: 'New, not published', changes: 'Unpublished changes' } as const;
+const kindIcon = (path: string): IconName => (path in { projects: 1, 'case-studies': 1, posts: 1, videos: 1, 'linkedin-posts': 1, 'linkedin-articles': 1, resources: 1, site: 1, profile: 1 } ? (path as IconName) : 'published');
+---
+<div class="admin-bento">
+  <ul class="cory-bento">
+    <li class="span-2">
+      <Block class="admin-card" {...labelled('waiting-title')}>
+        <div class="admin-card-head">
+          <h2 id={`${uid}-waiting-title`} class="dash-h2"><AdminIcon name="waiting" />Waiting to be published</h2>
+          {waiting.length > 0 && <span class="ui-badge admin-state" data-state="changes">{waiting.length}<span class="cory-visually-hidden"> {waiting.length === 1 ? 'entry' : 'entries'}</span></span>}
+        </div>
+        {fault && <p class="form-note" role={plain ? undefined : 'alert'}><AdminIcon name="alert" size={16} />The drafts could not be read: the database did not answer. Reload to try again.</p>}
+        {!fault && waiting.length === 0 && <p class="form-note"><AdminIcon name="ok" size={16} />Nothing is waiting. Every saved change is on the site.</p>}
+        {shown.length > 0 && (
+          <ul class="admin-waiting">
+            {shown.map(w => (
+              <li>
+                <AdminIcon name={kindIcon(w.kindPath)} />
+                <div>
+                  <a data-link href={w.href}>{w.title}</a>
+                  <span class="admin-waiting-meta"><span class="ui-badge">{w.kind}</span><span class="admin-state"><AdminIcon name={w.state} size={14} />{words[w.state]}</span><span class="admin-state"><AdminIcon name="clock" size={14} />saved {when(w.at)}</span></span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+        {more > 0 && <p class="form-note">{more} more: {rest.map(([path, r], i) => <Fragment>{i > 0 && ', '}<a data-link href={`/admin/${path}`}>{r.label}{r.n > 1 ? ` ${r.n}` : ''}</a></Fragment>)}.</p>}
+      </Block>
+    </li>
+    <li class="span-2">
+      <Block class="admin-card" {...labelled('recent-title')}>
+        <div class="admin-card-head"><h2 id={`${uid}-recent-title`} class="dash-h2"><AdminIcon name="recent" />Recently published</h2></div>
+        {recent.length === 0 && <p class="form-note"><AdminIcon name="recent" size={16} />Nothing published from this admin yet. Open an entry and press Publish.</p>}
+        {recent.length > 0 && (
+          <ul class="admin-recent">
+            {recent.map(r => (
+              <li>
+                <AdminIcon name={kindIcon(r.kindPath)} />
+                <div>
+                  <a data-link href={r.href}><bdi>{r.slug}</bdi></a>
+                  <span class="admin-waiting-meta"><span class="ui-badge">{r.kind}</span><span>{r.action === 'create' ? 'added' : 'updated'}</span><span class="admin-state"><AdminIcon name="clock" size={14} />{when(r.at)}</span></span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Block>
+    </li>
+  </ul>
+</div>

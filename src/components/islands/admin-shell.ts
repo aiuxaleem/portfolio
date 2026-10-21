@@ -3,7 +3,12 @@
    2. A form marked data-guard warns before the page is left with changes that have not been saved; pressing one of its
       own buttons (Publish, Save draft, Discard) is not leaving.
    3. A list filter: an input marked data-filter-rows hides the rows of the table it names that do not contain the text,
-      and says how many are shown. */
+      and says how many are shown.
+   4. A Copy button puts its text on the clipboard and says so.
+   5. After a refused publish, focus goes to the list of what to fix.
+   6. A form marked data-busy says it has been sent: its buttons dim and the pressed one shows its busy words.
+   7. A Show password box shows the password field's text while it is ticked.
+   Every part is selector-guarded, so the file is a no-op on a page that has none of it (the sign-in page has 6 and 7 only). */
 const button = document.querySelector<HTMLButtonElement>('[data-admin-menu]'), panel = document.querySelector<HTMLElement>('[data-admin-panel]');
 if (button && panel) {
   const set = (open: boolean) => { button.setAttribute('aria-expanded', String(open)); if (open) panel.setAttribute('data-open', ''); else panel.removeAttribute('data-open'); };
@@ -23,7 +28,7 @@ document.querySelectorAll<HTMLFormElement>('form[data-guard]').forEach(form => {
 document.querySelectorAll<HTMLInputElement>('[data-filter-rows]').forEach(input => {
   const table = document.getElementById(input.dataset.filterRows!), count = document.querySelector<HTMLElement>('[data-filter-count]'), empty = document.querySelector<HTMLElement>('[data-filter-empty]');
   if (!table) return;
-  const rows = [...table.querySelectorAll<HTMLElement>('tbody tr')], noun = count?.dataset.noun || 'entry', nouns = count?.dataset.nouns || 'entries';
+  const rows = [...table.querySelectorAll<HTMLElement>('tbody tr, [data-filter-row]')], noun = count?.dataset.noun || 'entry', nouns = count?.dataset.nouns || 'entries';
   const run = () => {
     const q = input.value.trim().toLowerCase(); let shown = 0;
     for (const row of rows) { const hit = !q || (row.textContent || '').toLowerCase().includes(q); row.hidden = !hit; if (hit) shown++; }
@@ -37,10 +42,30 @@ document.querySelectorAll<HTMLInputElement>('[data-filter-rows]').forEach(input 
 /* 4. A button marked data-copy puts its text on the clipboard and says so, in its label and to screen readers. */
 document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach(btn => btn.addEventListener('click', async () => {
   const label = btn.querySelector<HTMLElement>('.ui-button-label'), status = btn.parentElement?.querySelector<HTMLElement>('[role="status"]'), was = label?.innerHTML ?? '';
-  try { await navigator.clipboard.writeText(btn.dataset.copy || ''); if (label) label.textContent = btn.dataset.copied || 'Copied'; if (status) status.textContent = 'Copied to the clipboard'; }
+  const idle = btn.querySelector<HTMLElement>('[data-copy-idle]'), done = btn.querySelector<HTMLElement>('[data-copy-done]');
+  try { await navigator.clipboard.writeText(btn.dataset.copy || ''); if (idle && done) { idle.hidden = true; done.hidden = false; } else if (label) label.textContent = btn.dataset.copied || 'Copied'; if (status) status.textContent = 'Copied to the clipboard'; }
   catch { if (label) label.textContent = 'Select the text above and copy it'; if (status) status.textContent = 'Copying did not work. Select the text and copy it.'; }
   window.setTimeout(() => { if (label) label.innerHTML = was; if (status) status.textContent = ''; }, 2500);
 }));
+
+/* 6. A sent form: aria-busy on the form dims its buttons (admin.css) and the pressed button shows its busy words. The
+   buttons are not disabled: a button disabled inside its own submit event can drop its name and value from what is
+   sent, and the server needs them to know which action was asked for. */
+document.querySelectorAll<HTMLFormElement>('form[data-busy]').forEach(form => form.addEventListener('submit', event => {
+  /* Discarding deletes the draft and cannot be undone, so it asks first. The browser's own question works from the keyboard and is read out. */
+  const pressed = (event as SubmitEvent).submitter as HTMLElement | null;
+  if (pressed?.getAttribute('value') === 'discard' && !confirm('Discard this draft? The saved draft is deleted. The published version, if there is one, is kept.')) { event.preventDefault(); return; }
+  form.setAttribute('aria-busy', 'true');
+  form.querySelectorAll<HTMLButtonElement>('button[type="submit"]').forEach(b => b.setAttribute('aria-disabled', 'true'));
+  const label = pressed?.querySelector<HTMLElement>('.ui-button-label');
+  if (label && pressed?.dataset.busyLabel) label.textContent = pressed.dataset.busyLabel;
+}));
+
+/* 7. Show password. */
+document.querySelectorAll<HTMLInputElement>('[data-show-password]').forEach(box => {
+  const field = document.getElementById(box.dataset.showPassword!) as HTMLInputElement | null;
+  if (field) box.addEventListener('change', () => { field.type = box.checked ? 'text' : 'password'; });
+});
 
 /* 5. After a publish is refused the page comes back with a list of what to fix. Focus goes to that list, so it is the
    first thing read out and the first thing a keyboard reaches; each item in it links to its field. */

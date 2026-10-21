@@ -1,0 +1,10 @@
+---
+/* One icon of the admin area, drawn like every inline icon on the site: 24-unit grid, 1.75 stroke, round caps and
+   joins, sized to the text beside it. Decorative by default: the word is always written beside it. Give it `label`
+   only when it stands alone. The drawings come from Lucide (admin-icons.ts, fetched by scripts/perf/fetch-admin-icons.mjs). */
+import { ADMIN_ICONS, type AdminIcon as IconName } from './admin-icons';
+
+interface Props { name: IconName; size?: number; class?: string; label?: string; [key: string]: unknown }
+const { name, size = 20, class: className, label, ...rest } = Astro.props;
+---
+<svg class:list={['admin-icon', className]} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden={label ? undefined : 'true'} role={label ? 'img' : undefined} aria-label={label} focusable="false" {...rest} set:html={ADMIN_ICONS[name].paths} />

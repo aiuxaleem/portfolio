@@ -103,3 +103,19 @@ Residual, proposed for the owner's decision (section 1 of `CLAUDE.md`: enhanceme
 | Zeigarnik effect | A suggestion waiting for review is listed on the owner's dashboard until it is published or discarded. | Pass | Flow 8 |
 
 Not covered by this review: a real visitor, a screen reader session, Safari, and the API's publish path (Part 2, flow 9).
+
+## Part 4: The admin area, 21 October 2026
+
+The owner asked for the same treatment on the admin pages: icons, a bento layout, better information architecture, Hick's law and the law of proximity. Method: three proposals from different angles (the owner's weekly tasks, information density through bento tiles, the Laws of UX as the brief), scored by three judges (a design systems lead, an accessibility specialist, the owner's own view), merged into one plan; the build was then reviewed by four adversarial readers (Hick's and proximity, icon meaning, the 2.11 rules, the design lock) and every finding was checked by a skeptic. 42 findings were raised, 30 confirmed, 27 fixed in the same session.
+
+What the owner sees now:
+
+- The side panel says how many entries each section holds and how many are waiting to be published, so the place to go is known before anything is opened (Zeigarnik, serial position).
+- The home opens with Waiting to be published beside Recently published, then the visitor numbers on a bento grid with four stat tiles, the chart, two tables, and the long tail folded away: seven open blocks became two tiles, one control, four numbers, one chart and two tables (Hick's law).
+- Period chips sit on the heading of the numbers they change; a list's count sits under its search box; a row's facts sit under its title; a folder's name and count sit over its pictures (law of proximity).
+- One icon set with one meaning per icon: the pencil means unpublished changes only, the inbox means waiting, the chain link means referrers only, the eye means page views only.
+- Discard asks before deleting; Copy shows Copied; busy forms say so.
+
+Found by the review and fixed: the Copy and Copied labels both showing (an author display rule beat the hidden attribute); Discard with no question; 37 pictures in one phone column with no search; the pencil icon used for three states; two icons for one YouTube action; the chain link with two meanings; a recent list filled by one entry published three times; empty facts on phone rows; the Top pages header clipped at 390 px; the chart framed inside a framed card; the show-password box drawn twice; a legend icon alone of its kind; heading icons of one size for two heading sizes; dead CSS.
+
+Waiting for the owner's yes: renaming the home page and its link from Visitors to Overview (the design names it Visitors); storing titles in the publish log so Recently published shows titles instead of addresses (a migration); keeping the side-panel totals in the database instead of asking the repository (today they come from the repository, cached for twenty seconds and capped at 1.5 s, and are left out when late); regrouping the side panel by publishing frequency; folding blank optional editor sections.

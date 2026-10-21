@@ -1,6 +1,7 @@
-/* Admin area: the visitor dashboard. Existing tokens only. Tables reuse .post-table, tiles reuse .facts, the period
-   links reuse .ui-chip, and messages reuse .form-panel and .project-empty. */
-.dash { display: grid; gap: var(--space-8); min-inline-size: 0; }
+/* Admin area. Existing tokens only. Blocks sit on a bento grid (.admin-bento on the site's .cory-bento helper); icons
+   come from admin-icon.astro (Lucide at the site's stroke); tables reuse .post-table, stat tiles reuse .facts, the
+   period links reuse .ui-chip, messages reuse .form-panel and .project-empty, disclosures reuse .resource-disclosure. */
+.dash { display: grid; gap: var(--space-5); min-inline-size: 0; }
 .dash-range { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 .dash-range ul { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .dash-range .ui-chip { text-decoration: none; }
@@ -8,9 +9,7 @@
 /* The current period is not shown by colour alone: a check mark is added, as on the filter chips. */
 .dash-range .ui-chip[aria-current="page"]::before { content: "✓"; font-weight: var(--weight-bold); }
 .dash-tiles .dash-number { font-family: var(--font-display); font-size: var(--text-metric-sm); font-weight: var(--weight-extrabold); line-height: var(--leading-snug); font-variant-numeric: tabular-nums; }
-.dash-block { display: grid; gap: var(--space-4); min-inline-size: 0; align-content: start; }
 .dash-h2 { margin: 0; font-family: var(--font-display); font-size: var(--text-h3); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
-.dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); gap: var(--space-8) var(--grid-gap); }
 .dash-table table { min-inline-size: 0; }
 .dash-table th[scope="row"] { font-weight: var(--weight-regular); background: transparent; color: var(--text-body); overflow-wrap: anywhere; }
 .dash-num { text-align: end !important; font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -33,14 +32,12 @@
 .dash-axis { margin: 0; max-inline-size: none; display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--text-muted); }
 .dash-details > summary { display: inline-flex; align-items: center; min-block-size: var(--tap-target); padding-inline: var(--space-3); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); }
 .dash-details[open] > summary { margin-block-end: var(--space-3); }
-.dash-table th:first-child { inline-size: 58%; }
+@media (min-width: 640px) { .dash-table th:first-child { inline-size: 58%; } }
 /* Links inside the dashboard meet the 44px touch target. */
 .dash-table th a, .dash .form-panel a, .dash .project-empty a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); min-inline-size: var(--tap-target); overflow-wrap: anywhere; }
 
 /* Admin frame and editors. */
 .admin-note { margin: 0; }
-/* A note to the owner (who sent in a suggestion) is information, not a fault: the panel keeps its shape without the red edge. */
-.admin-form .form-panel[role="note"] { border-inline-start-color: var(--border-focus); }
 .admin-form { display: grid; gap: var(--space-8); min-inline-size: 0; }
 .admin-group { display: grid; gap: var(--space-5); min-inline-size: 0; margin: 0; padding: var(--space-6); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); background: var(--surface-card); }
 .admin-group > legend { padding-inline: var(--space-2); font-family: var(--font-display); font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong); }
@@ -62,13 +59,12 @@
 .admin-problems a, .admin-list th a, .admin-form .form-note a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); min-inline-size: var(--tap-target); overflow-wrap: anywhere; }
 .admin-list th[scope="row"] { font-weight: var(--weight-semibold); background: transparent; }
 .admin-list td .ui-badge { margin-inline-end: var(--space-2); }
-.admin-recent { display: grid; gap: var(--space-2); font-size: var(--text-body-sm); color: var(--text-body); }
 .admin-repeats, .admin-image { display: grid; gap: var(--space-4); min-inline-size: 0; }
 .admin-checkline { display: grid; gap: var(--space-1); }
 
 /* Images page. */
 .admin-form input[type="file"] { padding: 9px 12px; font: inherit; color: var(--text-body); }
-.admin-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: var(--space-6) var(--grid-gap); }
+.admin-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr)); gap: var(--space-5) var(--grid-gap); }
 .admin-images li { display: grid; gap: var(--space-2); min-inline-size: 0; align-content: start; }
 .admin-thumb { aspect-ratio: 16 / 10; overflow: hidden; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); background: var(--surface-sunken); }
 .admin-thumb img { inline-size: 100%; block-size: 100%; object-fit: cover; object-position: top; }
@@ -112,7 +108,7 @@ html:not([data-admin-js]) .admin-menu-button { display: none; }
   .admin-side { block-size: 100vh; block-size: 100dvh; display: flex; flex-direction: column; border-block-end: 0; border-inline-end: 1px solid var(--border-subtle); }
   .admin-bar { padding: var(--space-5) var(--space-5) var(--space-3); }
   .admin-menu-button { display: none; }
-  .admin-panel, [data-admin-js] .admin-panel:not([data-open]) { display: flex; flex-direction: column; justify-content: space-between; flex: 1 1 auto; min-block-size: 0; max-block-size: none; padding: var(--space-3) var(--space-3) var(--space-5); border-block-start: 0; }
+  .admin-panel, [data-admin-js] .admin-panel:not([data-open]) { display: flex; flex-direction: column; justify-content: space-between; flex: 1 1 auto; min-block-size: 0; max-block-size: none; padding: var(--space-3) var(--space-3) var(--space-5); border-block-start: 0; overflow-y: auto; }
   .admin-main { padding-block-start: var(--space-10); }
 }
 
@@ -126,11 +122,9 @@ html:not([data-admin-js]) .admin-menu-button { display: none; }
 /* ---------- Pages inside the frame ---------- */
 .admin-signin { grid-template-columns: minmax(0, 26rem); }
 .admin-signin-card { inline-size: 100%; }
-@media (min-width: 1024px) { .admin-panel, [data-admin-js] .admin-panel:not([data-open]) { overflow-y: auto; } }
 /* A card: the surface every block of an admin page sits on. */
 .admin-card { display: grid; gap: var(--space-5); padding: var(--space-6); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-xs); min-inline-size: 0; }
-.admin-toolbar { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-3) var(--space-5); }
-.admin-search { flex: 1 1 16rem; max-inline-size: 26rem; }
+.admin-toolbar { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--space-3) var(--space-5); }
 .admin-card .post-table { border-radius: var(--radius-md); }
 .admin-state { display: inline-flex; align-items: center; gap: var(--space-1); }
 .admin-state svg { flex-shrink: 0; }
@@ -148,6 +142,7 @@ html:not([data-admin-js]) .admin-menu-button { display: none; }
   .admin-list tbody tr:last-child { border-block-end: 0; }
   .admin-list th[scope="row"], .admin-list td { padding: var(--space-1) var(--space-4) !important; border: 0 !important; }
   .admin-list td[data-label]::before { content: attr(data-label) ": "; font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
+  .admin-list td[data-empty] { display: none; }
 }
 
 /* ---------- The editor: a list of the form's sections beside it, fields in two columns, and the buttons always in reach ---------- */
@@ -171,22 +166,108 @@ html:has(.admin-savebar) { scroll-padding-block-end: 9rem; }
   .admin-editor:has(.admin-index) { grid-template-columns: 13rem minmax(0, 1fr); }
   .admin-index { position: sticky; inset-block-start: var(--space-6); display: grid; gap: var(--space-3); max-block-size: calc(100dvh - var(--space-12)); overflow-y: auto; }
   .admin-index > p { margin: 0; color: var(--text-subtle); }
-  .admin-index ol { display: grid; gap: var(--space-1); }
-  .admin-index a { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); min-block-size: var(--tap-target); padding: var(--space-1) var(--space-3); border-radius: var(--radius-md); color: var(--text-body); font-size: var(--text-body-sm); font-weight: var(--weight-medium); text-decoration: none; overflow-wrap: anywhere; }
-  .admin-index a:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
 }
-@media (hover: hover) { .admin-index a:hover { background: var(--action-ghost-hover); color: var(--text-strong); } }
 .admin-work { min-inline-size: 0; outline: none; }
 
 /* ---------- Dashboard ---------- */
-.dash-tiles { grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--space-4); padding-block: 0; border-block: 0; }
+.dash-tiles { grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); gap: var(--space-4); padding-block: 0; border-block: 0; }
 .dash-tiles > div { display: grid; gap: var(--space-1); padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-xs); min-inline-size: 0; }
 .dash-chart { box-shadow: var(--shadow-xs); }
-.dash-grid > .dash-block { padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-xs); }
 .admin-waiting { display: grid; }
-.admin-waiting li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-1) var(--space-4); padding-block: var(--space-2); border-block-start: 1px solid var(--border-subtle); min-inline-size: 0; }
-.admin-waiting li:first-child { border-block-start: 0; }
 .admin-waiting a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); font-weight: var(--weight-semibold); color: var(--text-link); overflow-wrap: anywhere; }
 .admin-waiting-meta { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font-size: var(--text-body-sm); color: var(--text-muted); }
 /* On a phone the save bar is only the buttons, and the note that there are unsaved changes: the standing explanation would cover a fifth of the screen. */
 @media (max-width: 639px) { .admin-savebar { padding: var(--space-3) var(--space-4); } .admin-savebar-note > span:not([data-unsaved]) { display: none; } .admin-savebar-note:has([data-unsaved][hidden]) { display: none; } .admin-savebar .admin-actions { flex: 1 1 auto; } }
+
+/* ---------- Icons (admin-icon.astro): never shrink beside their word; inside running text they sit on the line (base.css draws an svg as a block) ---------- */
+.admin-icon { flex-shrink: 0; }
+.form-note > .admin-icon, .form-error > .admin-icon, .admin-savebar-note .admin-icon, .form-panel p a > .admin-icon, .admin-signin-foot a > .admin-icon { display: inline-block; vertical-align: -3px; margin-inline-end: var(--space-1); }
+
+/* ---------- Side panel: a waiting badge and a count at the end of a row; the toggle's icon and words follow its state ---------- */
+.admin-nav a > span:not(.ui-badge) { flex: 1 1 auto; min-inline-size: 0; }
+.admin-nav a .ui-badge { flex-shrink: 0; gap: var(--space-1); }
+.admin-count { flex-shrink: 0; font-family: var(--font-mono); font-size: var(--text-mono-sm); line-height: var(--leading-mono); color: var(--text-subtle); font-variant-numeric: tabular-nums; }
+.admin-nav a[aria-current="page"] .admin-count { color: var(--text-strong); }
+:root[data-theme="dark"] [data-when-light], :root:not([data-theme="dark"]) [data-when-dark] { display: none; }
+[data-admin-menu][aria-expanded="true"] [data-when-closed], [data-admin-menu]:not([aria-expanded="true"]) [data-when-open] { display: none; }
+.admin-menu-button .ui-button-label > span { display: inline-flex; align-items: center; gap: var(--space-2); }
+
+/* ---------- Messages: a good outcome has the success edge and a check, information the focus-blue edge and an i; a fault keeps the red edge ---------- */
+.form-panel[data-tone="success"] { border-inline-start-color: var(--text-success); }
+.form-panel[data-tone="success"] > svg { color: var(--text-success); }
+.form-panel[data-tone="info"] { border-inline-start-color: var(--border-focus); }
+.form-panel[data-tone="info"] > svg { color: var(--border-focus); }
+.form-note > svg { vertical-align: -3px; margin-inline-end: var(--space-1); }
+
+/* ---------- Bento: the work area's own container, so columns follow the work area and not the viewport.
+   .admin-bento > .cory-bento (0,2,0) outranks the helper's viewport rules (0,1,0) with no !important. ---------- */
+.admin-bento { container-type: inline-size; min-inline-size: 0; }
+.admin-bento > .cory-bento { --bento-cols: 1; --bento-row: auto; }
+@container (min-width: 600px) { .admin-bento > .cory-bento { --bento-cols: 2; } }
+@container (min-width: 880px) { .admin-bento > .cory-bento { --bento-cols: 4; } }
+/* A tile is as tall as its contents: a short tile beside a long one leaves page background, not an empty card. */
+.admin-bento > .cory-bento > li { display: grid; align-items: start; align-content: start; min-inline-size: 0; }
+.admin-bento .span-4 { grid-column: 1 / -1; }
+.admin-bento .admin-card { align-content: start; }
+
+/* ---------- Headings with their icon, and a head row that keeps a heading with what belongs beside it ---------- */
+.dash-h2, .admin-card-title { display: flex; align-items: center; gap: var(--space-2); min-inline-size: 0; }
+.admin-card-title { margin: 0; font-family: var(--font-display); font-size: var(--text-h4); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
+.dash-h2 > svg, .admin-card-title > svg { color: var(--text-link); inline-size: 1em; block-size: 1em; }
+.admin-card-head, .admin-section-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-4); min-inline-size: 0; }
+
+/* ---------- Stat tiles: an ink icon tile beside the label, the number under them, one line of context ---------- */
+.dash-tiles dt { display: flex; align-items: center; gap: var(--space-3); min-inline-size: 0; }
+.dash-tiles [data-icon-tile] { display: grid; place-items: center; inline-size: var(--tap-target); block-size: var(--tap-target); flex-shrink: 0; border-radius: var(--radius-md); background: var(--gradient-ink); color: var(--on-ink-strong); }
+.dash-tiles .dash-stat-note { font-size: var(--text-body-sm); font-weight: var(--weight-regular); color: var(--text-muted); }
+
+/* ---------- Rows in the Waiting and Recently published tiles: the kind's icon, then the title with its facts under it ---------- */
+.admin-waiting li, .admin-recent li { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--space-3); align-items: start; padding-block: var(--space-2); border-block-start: 1px solid var(--border-subtle); min-inline-size: 0; }
+.admin-waiting li:first-child, .admin-recent li:first-child { border-block-start: 0; }
+.admin-waiting li > svg, .admin-recent li > svg { margin-block-start: var(--space-3); color: var(--text-muted); }
+.admin-recent { display: grid; font-size: var(--text-body-sm); color: var(--text-body); }
+.admin-recent a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); min-inline-size: var(--tap-target); font-weight: var(--weight-semibold); color: var(--text-link); overflow-wrap: anywhere; }
+.admin-recent li > span { display: inline-flex; flex-wrap: wrap; align-items: center; min-block-size: var(--tap-target); overflow-wrap: anywhere; }
+
+/* ---------- The long tail of the visitor numbers in one closed disclosure (the Resources recipe) ---------- */
+.admin-fold > .admin-row { padding: 0 var(--space-5) var(--space-5); }
+.admin-card > .dash-chart { padding: 0; border: 0; background: transparent; box-shadow: none; }
+.admin-fold > .admin-row > div { display: grid; gap: var(--space-4); min-inline-size: 0; }
+
+/* ---------- Lists: label, box and count as one stack, so the count reads as the search's result ---------- */
+.admin-search { display: grid; gap: var(--space-2); max-inline-size: 26rem; }
+.admin-search label { display: inline-flex; align-items: center; gap: var(--space-2); }
+.admin-search .project-filter-count { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); }
+.project-empty > svg { color: var(--text-muted); }
+.admin-state svg { color: currentColor; }
+
+/* ---------- Editor: a numbered section index, and under 1280px the same list folded at the top of the form ---------- */
+.admin-index > p { display: flex; align-items: center; gap: var(--space-2); }
+.admin-index-list { counter-reset: sec; display: grid; gap: var(--space-1); }
+.admin-index-list li { counter-increment: sec; }
+.admin-index-list a { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); padding: var(--space-1) var(--space-3); border-radius: var(--radius-md); color: var(--text-body); font-size: var(--text-body-sm); font-weight: var(--weight-medium); text-decoration: none; overflow-wrap: anywhere; }
+.admin-index-list a::before { content: counter(sec); min-inline-size: 1.5em; font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--text-subtle); font-variant-numeric: tabular-nums; }
+.admin-index-list a:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
+@media (hover: hover) { .admin-index-list a:hover { background: var(--action-ghost-hover); color: var(--text-strong); } }
+.admin-index-fold { grid-column: 1 / -1; }
+.admin-index-fold > .admin-index-list { padding: 0 var(--space-5) var(--space-5); }
+@media (min-width: 1280px) { .admin-index-fold { display: none; } }
+/* A form that has been sent: its buttons dim and stop answering until the next page arrives (the island sets aria-busy and swaps the pressed label). */
+form[aria-busy="true"] .ui-button { opacity: var(--opacity-disabled); pointer-events: none; }
+
+/* ---------- Images: the upload button at the foot of its own card, pictures grouped under their folder's name and count ---------- */
+.admin-upload-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; }
+.admin-images-group { display: grid; gap: var(--space-4); }
+.admin-images-group > h3 { margin: 0; display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-strong); overflow-wrap: anywhere; }
+.admin-images-group > h3 svg { color: var(--text-muted); }
+[data-copy] .ui-button-label > span { display: inline-flex; align-items: center; gap: var(--space-2); }
+[data-copy] .ui-button-label > span[hidden] { display: none; }
+/* A pictures group folds (open to start), and its pictures sit two to a row on a phone. */
+.admin-images-fold > summary { gap: var(--space-2); }
+.admin-images-fold > .admin-images { padding: 0 var(--space-5) var(--space-5); }
+.admin-images { grid-template-columns: repeat(auto-fill, minmax(min(100%, 7.5rem), 1fr)); }
+/* The sign-in page's checkbox inherits the text field's box from .form-field input; only its own 20px box is drawn. */
+.admin-check input { border: 0; padding: 0; min-block-size: 0; }
+
+/* ---------- Sign-in: a control that needs JavaScript is not shown without it ---------- */
+html:not([data-admin-js]) [data-needs-js] { display: none; }

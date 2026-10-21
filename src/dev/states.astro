@@ -69,6 +69,24 @@ const h2 = 'margin: 0; font-size: var(--text-h3); font-weight: var(--weight-bold
 const note = 'margin: 0; font-size: var(--text-body-sm); color: var(--text-muted);';
 const row = 'display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center;';
 import DashboardView from '../admin/components/dashboard.astro';
+import Publishing from '../admin/components/publishing.astro';
+/* Fixture rows for the publishing tiles: a visitor's suggestion first, a long title, nine rows so the tile caps at eight; and the last publishes. */
+const pubAt = (h: number) => `2026-10-20T${String(h).padStart(2, '0')}:19:00.000Z`;
+const pubFull = {
+  waiting: [
+    { href: '#main', title: 'A resource a visitor sent in', kind: 'Resource', kindPath: 'resources', state: 'suggested' as const, at: pubAt(10) },
+    { href: '#main', title: stress.longTitle, kind: 'Post', kindPath: 'posts', state: 'new' as const, at: pubAt(9) },
+    { href: '#main', title: 'Colaberry design system', kind: 'Project', kindPath: 'projects', state: 'changes' as const, at: pubAt(8) },
+    ...['Case study', 'Video', 'LinkedIn post', 'LinkedIn article', 'Settings', 'Project'].map((kind, i) => ({ href: '#main', title: `Fixture ${kind.toLowerCase()} ${i + 1}`, kind, kindPath: ['case-studies', 'videos', 'linkedin-posts', 'linkedin-articles', 'site', 'projects'][i], state: (i % 2 ? 'new' : 'changes') as 'new' | 'changes', at: pubAt(7 - i) })),
+  ],
+  recent: [
+    { href: '#main', slug: 'colaberry-design-system', kind: 'Project', kindPath: 'projects', action: 'update', at: pubAt(12) },
+    { href: '#main', slug: 'an-unbroken-string-of-sixty-characters-in-a-page-address-x1', kind: 'Case study', kindPath: 'case-studies', action: 'create', at: pubAt(11) },
+    { href: '#main', slug: 'component-spec-files', kind: 'Post', kindPath: 'posts', action: 'update', at: pubAt(10) },
+    { href: '#main', slug: 'the-state-of-designer-2026', kind: 'Video', kindPath: 'videos', action: 'update', at: pubAt(9) },
+    { href: '#main', slug: 'config', kind: 'Settings', kindPath: 'site', action: 'update', at: pubAt(8) },
+  ],
+};
 /* Fixture numbers for the visitor dashboard: 14 days with a quiet start and two empty days. */
 const dashDays = [0, 0, 3, 5, 4, 9, 12, 7, 0, 6, 14, 22, 18, 11].map((views, i) => ({ day: `2026-09-${String(17 + i).padStart(2, '0')}`, views, visitors: Math.ceil(views * 0.6) }));
 const dashFull = { days: 14, series: dashDays, totals: { views: dashDays.reduce((a, d) => a + d.views, 0), visitors: dashDays.reduce((a, d) => a + d.visitors, 0), pages: 9 },
@@ -309,8 +327,14 @@ const dashEmpty = { days: 7, series: dashDays.slice(0, 7).map(d => ({ ...d, view
           </div>
 
           <div style="display: grid; gap: var(--space-4);">
-            <h2 style={h2}>Admin: visitor dashboard</h2>
-            <p style={note}>Shown on /admin after signing in (Vercel only). States: with numbers, partial (no referrers or countries yet), empty, and error. Hover a bar for its figures.</p>
+            <h2 style={h2}>Admin: dashboard</h2>
+            <p style={note}>Shown on /admin after signing in (Vercel only). The publishing row: with work (a suggestion first, a long title, nine rows so the tile caps at eight), empty, and a fault. The visitor numbers: with numbers (four tiles, the chart, two tables, the folded countries and devices: press it to open), partial, empty, and error. Hover a bar for its figures.</p>
+            <Publishing plain uid={`${theme}-pub`} waiting={pubFull.waiting} recent={pubFull.recent} />
+            <p style={note}>Publishing: nothing waiting and nothing published yet.</p>
+            <Publishing plain uid={`${theme}-pub-empty`} waiting={[]} recent={[]} />
+            <p style={note}>Publishing: the drafts could not be read.</p>
+            <Publishing plain uid={`${theme}-pub-fault`} waiting={[]} recent={[]} fault />
+            <p style={note}>Visitor numbers, with numbers.</p>
             <DashboardView plain uid={`${theme}-full`} data={dashFull} range={30} ranges={[7, 30, 90]} base="#main" />
             <p style={note}>Partial: two of the tables have nothing to show.</p>
             <DashboardView plain uid={`${theme}-partial`} data={dashPartial} range={30} ranges={[7, 30, 90]} base="#main" />
