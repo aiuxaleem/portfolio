@@ -31,7 +31,8 @@ import VideoCard from '../components/cards/video-card.astro';
 import ResourceCard from '../components/cards/resource-card.astro';
 import ResourceFilters from '../components/resources/resource-filters.astro';
 import SuggestForm from '../components/resources/suggest-form.astro';
-import { listedResources } from '../lib/resources';
+import CategoryBento from '../components/resources/category-bento.astro';
+import { listedResources, categoryCounts } from '../lib/resources';
 const resourcesAll = await listedResources();
 const resourceSample = [...resourcesAll.filter(r => !r.data.fixture).slice(0, 2), ...resourcesAll.filter(r => r.data.fixture).sort((a, b) => a.id.localeCompare(b.id))];
 import HomeFeeds from '../components/home/home-feeds.astro';
@@ -241,8 +242,9 @@ const dashEmpty = { days: 7, series: dashDays.slice(0, 7).map(d => ({ ...d, view
 
           <div style="display: grid; gap: var(--space-4);">
             <h2 style={h2}>Resource card, filters and the suggestion form</h2>
-            <p style={note}>Cards for a UX resource: two real ones, the partial fixture (one-word title, no description, no tags) and the stress fixture (long title, unbroken address, nine tags). Then the filter and sort bar with its empty-result state shown open, and every state of the suggest-a-resource form. Used at <a data-link href="/resources" style="color: var(--text-link);">/resources</a>.</p>
+            <p style={note}>Cards for a UX resource: two real ones, the partial fixture (one-word title, no description, no tags) and the stress fixture (long title, unbroken address, nine tags). Then the category bento grid (the fullest four take two columns), the filter and sort bar with its empty-result state shown open, and every state of the suggest-a-resource form. Used at <a data-link href="/resources" style="color: var(--text-link);">/resources</a>.</p>
             <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{resourceSample.map(r => <li><ResourceCard resource={r} level={3} /></li>)}</ul></div>
+            <CategoryBento categories={categoryCounts(resourcesAll)} />
             <ResourceFilters resources={resourcesAll} id={`resource-${theme}`} showEmpty />
             <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
               {formStates.map(([state, label], i) => <li style="display: grid; gap: var(--space-3); align-content: start;"><p style={note}>{label.replace('it posts to a fixture address, so sending ends in the failure state', 'it posts to /api/resources and saves a draft for review')}</p><SuggestForm email={site.email} id={`suggest-${theme}-${state}`} landmark={false} state={i === 0 ? undefined : state} /></li>)}

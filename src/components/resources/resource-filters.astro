@@ -1,33 +1,49 @@
 ---
-/* Filters and sort order for the resource list. Three groups of toggle chips (category, type, cost): within a group any
-   selected value matches, and every group must match. Only values that at least one listed resource has are offered,
-   and each chip carries its count, so no choice leads to an empty list and the visitor can see where the weight is.
-   Two sort chips (Newest, A to Z), exactly one pressed. A live result count with a "Clear filters" action once a
-   filter is on, and an empty state with the same action. Buttons are real <button>s with aria-pressed, so they work
-   from the keyboard. The bar is in the page from the first paint; without JavaScript a <noscript> rule hides it and
-   every resource is listed. Behaviour: islands/resource-list.ts */
+/* Filters and sort order for the resource list.
+   Three groups of toggle chips (category, type, cost): within a group any selected value matches, and every group
+   must match. Only values that at least one listed resource has are offered, each with its count, so no choice
+   leads to an empty list. The sixteen category chips sit inside a closed disclosure, so the open bar shows the
+   handful of type and cost choices (Hick's law); the disclosure's own line says which categories are chosen, and the
+   bento grid above the list is the main way into a category. Two sort chips (Newest, A to Z), exactly one pressed.
+   A live result count with a "Clear filters" action once a filter is on, and an empty state with the same action.
+   Buttons are real <button>s with aria-pressed, so they work from the keyboard. The bar is in the page from the
+   first paint; without JavaScript a <noscript> rule hides it and every resource is listed.
+   Behaviour: islands/resource-list.ts */
 import Button from '../ui/button.astro';
+import CategoryIcon from './category-icon.astro';
 import type { Resource } from '../../lib/resources';
+import type { ResourceCategory } from '../../lib/content-schemas';
 import { categoryLabel, costLabel, typeLabel } from '../../lib/resources';
 
 interface Props { /** The resources the list shows, in the same order. */ resources: Resource[]; /** Render the empty state open, for /_states. */ showEmpty?: boolean; id?: string }
 const { resources, showEmpty = false, id = 'resource-filter' } = Astro.props;
 const total = resources.length;
 const counted = (field: 'category' | 'type' | 'cost', labels: Record<string, string>) => Object.entries(labels).map(([value, label]) => [value, label, resources.filter(r => r.data[field] === value).length] as [string, string, number]).filter(([, , n]) => n > 0);
-const groups = [
-  { key: 'category', label: 'Category', options: counted('category', categoryLabel) },
-  { key: 'type', label: 'Type', options: counted('type', typeLabel) },
-  { key: 'cost', label: 'Cost', options: counted('cost', costLabel) },
-];
+const categories = counted('category', categoryLabel);
+const groups = [{ key: 'type', label: 'Type', options: counted('type', typeLabel) }, { key: 'cost', label: 'Cost', options: counted('cost', costLabel) }];
 const sorts: [string, string][] = [['newest', 'Newest'], ['title', 'A to Z']];
 const nouns = total === 1 ? 'resource' : 'resources';
+const chip = (value: string, label: string, n: number) => ({ value, label, n });
 ---
 <noscript><style>[data-resource-filters] { display: none; }</style></noscript>
 <div class="project-filters" data-resource-filters>
+  {categories.length > 0 && (
+    <details class="resource-disclosure" data-filter-disclosure>
+      <summary>
+        <span class="project-filter-label" style="flex-basis: auto; margin: 0;">Category</span>
+        <span data-disclosure-state>{categories.length} to choose from</span>
+        <svg data-chevron width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+      </summary>
+      <div role="group" aria-labelledby={`${id}-category`} class="project-filter-group" data-filter-group="category">
+        <span id={`${id}-category`} class="cory-visually-hidden">Category</span>
+        {categories.map(([value, label, n]) => <button type="button" class="ui-chip" aria-pressed="false" data-filter-value={value} data-filter-label={label}><CategoryIcon category={value as ResourceCategory} size={16} />{label}<span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{n}</button>)}
+      </div>
+    </details>
+  )}
   {groups.map(g => g.options.length > 0 && (
     <div role="group" aria-labelledby={`${id}-${g.key}`} class="project-filter-group" data-filter-group={g.key}>
       <span id={`${id}-${g.key}`} class="project-filter-label">{g.label}</span>
-      {g.options.map(([value, label, n]) => <button type="button" class="ui-chip" aria-pressed="false" data-filter-value={value}>{label}<span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{n}</button>)}
+      {g.options.map(([value, label, n]) => chip(value, label, n)).map(c => <button type="button" class="ui-chip" aria-pressed="false" data-filter-value={c.value} data-filter-label={c.label}>{c.label}<span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{c.n}</button>)}
     </div>
   ))}
   <div role="group" aria-labelledby={`${id}-sort`} class="project-filter-group" data-sort-group>

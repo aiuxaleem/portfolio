@@ -65,7 +65,7 @@ Each flow was walked on the development server with a script (`flows.mjs`, `flow
 
 Residual, proposed for the owner's decision (section 1 of `CLAUDE.md`: enhancements wait for approval):
 
-- On a phone the filter bar is tall (16 category chips before the first card). A disclosure ("Filters, 3 on") that opens the chips would shorten the path to the cards. Not done: it changes the layout of a component.
+- ~~On a phone the filter bar is tall (16 category chips before the first card).~~ Done on 21 October at the owner's request: the category chips sit in a closed disclosure whose line names the chosen categories; the categories themselves are a bento grid with an icon per category (Lucide, the set the site's inline icons already follow), the fullest four taking two columns and coming first; on a narrow screen the other tiles keep only icon, name and count.
 - The hero's primary button goes to the category tiles, two steps from a resource. Pointing it at the list, with the tiles as the second route, would be one step shorter. Not done: a judgement call on the page's story.
 - Category pages (`/resources/design-systems`) would make each category shareable and indexable. Not done: 16 more routes in the quality run and the sitemap.
 

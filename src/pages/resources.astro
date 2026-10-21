@@ -9,6 +9,8 @@ import Button from '../components/ui/button.astro';
 import ResourceCard from '../components/cards/resource-card.astro';
 import ResourceFilters from '../components/resources/resource-filters.astro';
 import SuggestForm from '../components/resources/suggest-form.astro';
+import CategoryBento from '../components/resources/category-bento.astro';
+import CategoryIcon from '../components/resources/category-icon.astro';
 import { listedResources, categoryCounts } from '../lib/resources';
 import { site } from '../content/site';
 import { profile } from '../content/profile';
@@ -58,7 +60,7 @@ const inkLink = 'display: flex; align-items: center; justify-content: space-betw
           <div style="display: grid; gap: 0;">
             <p style="margin: 0 0 var(--space-2); font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--on-ink-muted);">Fullest categories</p>
             <ul aria-label="Fullest categories">
-              {fullest.map(c => <li><a class="ink-row" href={`/resources?category=${c.slug}#resources-list`} style={inkLink}><span style="min-inline-size: 0; overflow-wrap: anywhere;">{c.label}</span><span style="display: inline-flex; align-items: center; gap: var(--space-2); flex-shrink: 0; font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--on-ink-muted); font-variant-numeric: tabular-nums;">{c.count}<svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--on-ink-link);"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></a></li>)}
+              {fullest.map(c => <li><a class="ink-row" href={`/resources?category=${c.slug}#resources-list`} style={inkLink}><span style="display: inline-flex; align-items: center; gap: var(--space-3); min-inline-size: 0;"><CategoryIcon category={c.slug} size={18} style="flex-shrink: 0; color: var(--on-ink-link);" /><span style="min-inline-size: 0; overflow-wrap: anywhere;">{c.label}</span></span><span style="display: inline-flex; align-items: center; gap: var(--space-2); flex-shrink: 0; font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--on-ink-muted); font-variant-numeric: tabular-nums;">{c.count}<svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--on-ink-link);"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></a></li>)}
             </ul>
           </div>
         </div>
@@ -73,10 +75,8 @@ const inkLink = 'display: flex; align-items: center; justify-content: space-betw
   {filled.length > 0 && (
     <section id="categories" class="page-section paged-section" data-surface="card" aria-labelledby="categories-title">
       <div class="cory-container">
-        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Browse</p><h2 id="categories-title" class="page-h2">By category</h2><p class="project-filter-count">Each category opens the list below, filtered to it.</p></div>
-        <div data-cq><ul data-cq-grid="4" style="display: grid; gap: var(--grid-gap);">{filled.map(c => (
-          <li><a class="project-related" href={`/resources?category=${c.slug}#resources-list`} style="block-size: 100%;"><span style="display: grid; gap: var(--space-1); min-inline-size: 0;"><strong>{c.label}</strong><span style="font-size: var(--text-body-sm); color: var(--text-muted);">{c.count} {c.count === 1 ? 'resource' : 'resources'} · {c.blurb}</span></span><svg data-dir-icon width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a></li>
-        ))}</ul></div>
+        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Browse</p><h2 id="categories-title" class="page-h2">By category</h2><p class="project-filter-count">The fullest categories are the wide tiles. Each tile opens the list below, filtered to it.</p></div>
+        <CategoryBento categories={categories} />
       </div>
     </section>
   )}

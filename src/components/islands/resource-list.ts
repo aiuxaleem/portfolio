@@ -18,6 +18,10 @@ if (bar && list) {
   const section = list.closest<HTMLElement>('section');
   const heading = section?.querySelector<HTMLElement>('h2');
   const pressed = (chips: HTMLButtonElement[]) => chips.filter(c => c.getAttribute('aria-pressed') === 'true');
+  const disclosure = bar.querySelector<HTMLElement>('[data-filter-disclosure] [data-disclosure-state]');
+  const categoryChips = groups.find(g => g.key === 'category')?.chips || [];
+  /* The closed disclosure still says which categories are chosen. */
+  const describe = () => { if (!disclosure) return; const on = pressed(categoryChips).map(c => c.dataset.filterLabel || ''); disclosure.textContent = on.length ? `Chosen: ${on.join(', ')}` : `${categoryChips.length} to choose from`; };
 
   const apply = (remember: boolean) => {
     const chosen = groups.map(g => ({ key: g.key, values: pressed(g.chips).map(c => c.dataset.filterValue!) }));
@@ -27,6 +31,7 @@ if (bar && list) {
     const sorted = [...items].sort((a, b) => (order === 'title' ? a.title.localeCompare(b.title) || b.added.localeCompare(a.added) : b.added.localeCompare(a.added) || a.title.localeCompare(b.title)));
     sorted.forEach(item => list.append(item.row));
     const active = chosen.some(g => g.values.length > 0);
+    describe();
     if (count) count.textContent = `Showing ${shown} of ${items.length} ${items.length === 1 ? 'resource' : 'resources'}`;
     if (barClear) barClear.hidden = !active || shown === 0;
     if (empty) empty.hidden = shown !== 0;

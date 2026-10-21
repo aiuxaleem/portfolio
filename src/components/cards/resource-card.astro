@@ -6,6 +6,7 @@
 import type { Resource } from '../../lib/resources';
 import { categoryLabel, costLabel, hostOf, typeLabel } from '../../lib/resources';
 import { day } from '../../lib/projects';
+import CategoryIcon from '../resources/category-icon.astro';
 
 interface Props { resource: Resource; level?: 2 | 3 }
 const { resource, level = 2 } = Astro.props;
@@ -15,7 +16,7 @@ const host = hostOf(d.url);
 ---
 <article class="project-card" data-resource data-category={d.category} data-type={d.type} data-cost={d.cost} data-added={d.added.toISOString().slice(0, 10)} data-title={d.title}>
   <div class="project-card-body">
-    <p class="project-card-meta"><span class="ui-badge">{categoryLabel[d.category]}</span><span class="ui-badge">{typeLabel[d.type]}</span><span class="ui-badge">{costLabel[d.cost]}</span></p>
+    <p class="project-card-meta"><span class="ui-badge" style="gap: 6px;"><CategoryIcon category={d.category} size={14} />{categoryLabel[d.category]}</span><span class="ui-badge">{typeLabel[d.type]}</span><span class="ui-badge">{costLabel[d.cost]}</span></p>
     <Heading class="project-card-title"><a class="project-card-link" href={d.url} target="_blank" rel="noopener">{d.title}<span class="cory-visually-hidden"> (opens {host} in a new tab)</span></a></Heading>
     <p class="case-kicker"><bdi>{host}</bdi> · Added <time datetime={d.added.toISOString().slice(0, 10)}>{day(d.added)}</time></p>
     {d.description && <p class="project-card-summary">{d.description}</p>}

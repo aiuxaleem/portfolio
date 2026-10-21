@@ -1,0 +1,41 @@
+---
+/* The resource categories as a bento grid (the site's .cory-bento helper, with its own row height and column counts).
+   Each tile is one link into the list filtered to that category. The fullest categories take two columns, so the
+   eye lands on them first; the rest sit one column wide. Inside a tile everything that belongs together sits
+   together (law of proximity): the icon with the name, the count beside the name, the one-line description under
+   them, the arrow last. Rows take the height of their content, so on a phone a tile is as tall as its words.
+   On a narrow screen the narrower tiles keep only the icon, the name and the count, so sixteen choices stay one
+   short scroll (Hick's law); the fullest four keep their line of description. Only categories with at least one
+   resource are shown. */
+import CategoryIcon from './category-icon.astro';
+import type { ResourceCategory } from '../../lib/content-schemas';
+
+interface Props { categories: { slug: ResourceCategory; label: string; blurb: string; count: number }[]; /** How many of the fullest categories take two columns. */ wide?: number }
+const { categories, wide = 4 } = Astro.props;
+const shown = categories.filter(c => c.count > 0);
+const byCount = [...shown].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+const big = new Set(byCount.slice(0, wide).map(c => c.slug));
+/* The fullest first (serial position), then the rest in the order the categories are defined. */
+const ordered = [...byCount.slice(0, wide), ...shown.filter(c => !big.has(c.slug))];
+const tile = 'display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: var(--space-4); block-size: 100%; padding: var(--space-6); background: var(--surface-page);';
+const iconTile = 'inline-size: 44px; block-size: 44px; flex-shrink: 0; display: grid; place-items: center; border-radius: var(--radius-md); background: var(--gradient-ink); color: var(--on-ink-strong);';
+---
+<div data-bento-cq>
+  <ul class="cory-bento" aria-label="Categories" style="--bento-row: auto;">
+    {ordered.map(c => (
+      <li class:list={[big.has(c.slug) && 'span-2']}>
+        <a class="project-related" href={`/resources?category=${c.slug}#resources-list`} style={tile}>
+          <span style="display: flex; align-items: center; gap: var(--space-3); min-inline-size: 0;">
+            <span aria-hidden="true" style={iconTile}><CategoryIcon category={c.slug} size={22} /></span>
+            <span style="display: grid; gap: 2px; min-inline-size: 0;">
+              <strong style="font-size: var(--text-h4); line-height: var(--leading-heading);">{c.label}</strong>
+              <span style="font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--text-subtle); font-variant-numeric: tabular-nums;">{c.count} {c.count === 1 ? 'resource' : 'resources'}</span>
+            </span>
+          </span>
+          <span data-tile-extra style="font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-muted); overflow-wrap: anywhere;">{c.blurb}</span>
+          <span data-tile-extra aria-hidden="true" style="margin-block-start: auto; display: inline-flex; align-items: center; gap: var(--space-1); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link);">Open<svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>

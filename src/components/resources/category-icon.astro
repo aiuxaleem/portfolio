@@ -1,0 +1,11 @@
+---
+/* The icon of one resource category, drawn like every other inline icon on the site: 24-unit grid, 1.75 stroke, round
+   caps and joins, sized to the text beside it. Decorative: the category's name is always written next to it. */
+import type { ResourceCategory } from '../../lib/content-schemas';
+import { CATEGORY_ICONS } from './category-icons';
+
+interface Props { category: ResourceCategory; size?: number; class?: string; style?: string }
+const { category, size = 20, class: className, style } = Astro.props;
+const icon = CATEGORY_ICONS[category];
+---
+<svg class={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style={style} set:html={icon.paths} />

@@ -83,3 +83,17 @@ html [data-deck-kicker], html [data-deck-kicker] span { overflow-wrap: anywhere;
 .ui-chip[aria-pressed="true"]::before { content: "✓"; font-weight: var(--weight-bold); }
 .ui-chip:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
 @media (hover: hover) { .ui-chip:not([aria-pressed="true"]):hover { background: var(--action-secondary-hover); transform: translateY(-1px); } }
+
+/* The category chips of the resource filters sit in a closed disclosure (the Services FAQ recipe), so the open bar
+   offers few choices at once. The summary line says what is chosen; the chevron turns when open. */
+.resource-disclosure { background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); }
+.resource-disclosure > summary { display: flex; align-items: center; gap: var(--space-3); min-block-size: var(--tap-target); padding: var(--space-3) var(--space-5); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-strong); }
+.resource-disclosure > summary [data-disclosure-state] { flex: 1 1 auto; min-inline-size: 0; font-weight: var(--weight-medium); color: var(--text-muted); overflow-wrap: anywhere; }
+.resource-disclosure > summary [data-chevron] { flex-shrink: 0; transition: transform var(--duration-base) var(--ease-out); }
+.resource-disclosure[open] > summary [data-chevron] { transform: rotate(180deg); }
+.resource-disclosure > summary:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
+.resource-disclosure > .project-filter-group { padding: 0 var(--space-5) var(--space-5); }
+.resource-disclosure .ui-chip svg { flex-shrink: 0; }
+/* Category bento: on a narrow screen the one-column tiles drop their description and "Open" line, so the whole grid
+   stays a short scroll; the wide (fullest) tiles keep theirs. */
+@container (max-width: 599px) { [data-bento-cq] .cory-bento > li:not(.span-2) [data-tile-extra] { display: none !important; } [data-bento-cq] .cory-bento > li:not(.span-2) .project-related { padding: var(--space-5); } }

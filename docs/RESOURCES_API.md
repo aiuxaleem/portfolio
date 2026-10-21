@@ -50,7 +50,7 @@ Categories, with the word to write in the file:
 | `utilities` | Utilities |
 | `communities` | Communities |
 
-The lists live in `RESOURCE_CATEGORIES`, `RESOURCE_TYPES` and `RESOURCE_COSTS` in `src/lib/content-schemas.ts`. A new category is added there (the word and how it is shown) and given a one-line description in `categoryBlurb` in `src/lib/resources.ts`; the page, the editor and the API pick it up from there. The build refuses any value outside the lists.
+The lists live in `RESOURCE_CATEGORIES`, `RESOURCE_TYPES` and `RESOURCE_COSTS` in `src/lib/content-schemas.ts`. A new category is added there (the word and how it is shown), given a one-line description in `categoryBlurb` in `src/lib/resources.ts`, and an icon in `scripts/perf/fetch-resource-icons.mjs` (a Lucide icon name; run the script once to fetch it); the page, the editor and the API pick it up from there. The build refuses any value outside the lists.
 
 ## Three ways in
 
