@@ -20,6 +20,8 @@ export const ICONS = {
   search: 'search', nomatch: 'search-x', add: 'plus', youtube: 'youtube', refresh: 'refresh-cw', upload: 'upload', publish: 'send', draft: 'save', discard: 'trash-2', copy: 'copy', copied: 'clipboard-check',
   // dashboard
   waiting: 'inbox', recent: 'history', clock: 'clock', numbers: 'activity', views: 'eye', people: 'users', pages: 'files', busiest: 'calendar-days', chart: 'chart-column', top: 'trending-up', referrers: 'link', countries: 'globe', devices: 'monitor-smartphone',
+  // deltas
+  up: 'arrow-up-right', down: 'arrow-down-right', flat: 'minus', target: 'target',
   // messages
   info: 'info', alert: 'circle-alert', ok: 'circle-check',
 };

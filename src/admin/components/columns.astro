@@ -1,0 +1,46 @@
+---
+/* A column chart: one series as thin columns from one baseline, 24px at most and never the whole of their slot,
+   rounded at the data end by no more than half their height, on a hairline axis. The scale is one hairline at the
+   largest value with that value at its right end. Optional: a second series of the same measure drawn as a dashed 2px
+   line in the de-emphasis gray over the same axis (the previous period, by position), painted beneath the columns so
+   the series that is the point stays in front; a zero in it is no mark, so the line breaks rather than lying on the
+   axis, and a lone value between zeros is an 8px dot with a ring in the surface colour, painted above the columns so
+   it is never hidden by one; a key names the two. A partial last column (today so far) in the de-emphasis gray, named
+   in the key only when it holds a value; markers under the baseline on the days something was published. Every
+   column shows its value on hover (the note stays while hovered and goes on Escape); the same figures are in the
+   table the caller renders beside it, so the drawing itself is decorative (aria-hidden). Labels centred under every
+   `tick`th column; a weekly chart hides every other label on a phone. Styles: admin.css (.dash-chart). */
+interface Item { /** The axis label: short. */ label: string; /** The column's name in the hover note, when longer than the label ("week of 5 Oct"). */ name?: string; value: number; /** The hover text: value first. */ tip: string; /** Words for a marker under this column, if any. */ mark?: string; /** A column still being counted. */ partial?: boolean }
+interface Props { items: Item[]; /** A second series of the same length, drawn as a line. */ line?: number[]; lineLabel?: string; label?: string; /** Words for the partial column in the key. */ partialLabel?: string; /** Words under the axis explaining the markers. */ markNote?: string; height?: 'tall' | 'short'; /** Label every nth column under the axis. */ tick?: number; /** Columns are weeks: fewer labels on a phone. */ weekly?: boolean }
+const { items, line, lineLabel, label, partialLabel, markNote = 'a day you published something', height = 'tall', tick = 1, weekly = false } = Astro.props;
+const max = Math.max(1, ...items.map(i => i.value), ...(line || []));
+const W = 1000, H = 100;
+/* The line as runs of values above zero; a run of one is drawn as a dot. */
+const runs: string[] = [], dots: string[] = [];
+if (line && line.length === items.length && items.length > 1) {
+  let run: string[] = [];
+  const flush = () => { if (run.length > 1) runs.push(run.join(' ')); else if (run.length === 1) dots.push(run[0]); run = []; };
+  line.forEach((v, i) => { if (v > 0) run.push(`${((i + 0.5) / items.length) * W},${H - (v / max) * H}`); else flush(); });
+  flush();
+}
+const hasLine = runs.length > 0 || dots.length > 0;
+const hasMarks = items.some(i => i.mark), hasPartial = items.some(i => i.partial && i.value > 0);
+---
+<div class="dash-chart" data-height={height} data-weekly={weekly ? '' : undefined} data-tick={tick} aria-hidden="true">
+  {(hasLine || hasPartial) && label && <p class="dash-key"><span><i class="dash-key-col"></i>{label}</span>{hasLine && lineLabel && <span><i class="dash-key-line"></i>{lineLabel}</span>}{hasPartial && partialLabel && <span><i class="dash-key-col" data-partial></i>{partialLabel}</span>}</p>}
+  <div class="dash-plot">
+    <p class="dash-max"><span>{max.toLocaleString('en-GB')}</span></p>
+    {runs.length > 0 && <svg class="dash-line" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">{runs.map(r => <polyline points={r} vector-effect="non-scaling-stroke" />)}</svg>}
+    <ol class="dash-bars" style={`--max: ${max};`}>
+      {items.map((d, i) => (
+        <li style={`--v: ${d.value};`} data-mark={d.mark ? '' : undefined}>
+          <span class="dash-bar" data-zero={d.value === 0 ? '' : undefined} data-partial={d.partial ? '' : undefined}></span>
+          <span class="dash-tip"><strong>{d.tip}</strong>{d.name ?? d.label}{d.mark && <em>{d.mark}</em>}</span>
+          {i % tick === 0 && <span class="dash-tick">{d.label}</span>}
+        </li>
+      ))}
+    </ol>
+    {dots.length > 0 && <svg class="dash-line" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">{dots.map(d => <Fragment><polyline class="dash-line-ring" points={`${d} ${d}`} vector-effect="non-scaling-stroke" /><polyline class="dash-line-dot" points={`${d} ${d}`} vector-effect="non-scaling-stroke" /></Fragment>)}</svg>}
+  </div>
+  {hasMarks && <p class="dash-marks-note"><i class="dash-mark-key"></i>{markNote}</p>}
+</div>

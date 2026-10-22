@@ -1,46 +1,143 @@
 ---
-/* Visitor dashboard: one section, "Visitor numbers", with the period chips on its heading row (they change the numbers
-   under them), then a bento grid (admin.css, .admin-bento): four stat tiles with an ink icon tile beside each label
-   (views, visitors, pages, busiest day), the chart, Top pages beside Where visitors came from, and the long tail
-   (Countries and Devices) in one closed disclosure, so the first screen holds the numbers that matter.
-   States: default; empty (no views in the period: says why and what to do); partial (a table has no rows); error (the
-   numbers could not be read: says so and offers a retry). There is no loading state: the page is rendered on the server
-   with the numbers already in it.
-   The chart is one series, so it has no legend; the heading names it. Every bar shows its value on hover, and the same
-   figures are in a table below it for keyboard and screen-reader users. Tile headings are h3 under the section's h2.
-   Styles: src/styles/admin.css. */
+/* The visitor dashboard. It answers, in order: is attention growing (four stat tiles with the change against the
+   previous period, as an absolute change with the earlier value, a percentage only once the base is 20 or more);
+   did what I published bring people (views over time with the previous period as a dashed line, today drawn as a
+   partial day, a mark on every day something was published, and the list of what was published with the views its
+   page has had since); what do they read (parts of the site, with Contact and resume held in the accent, and the top
+   pages in a fold); where they are (Saudi Arabia and the UAE always first, the rest stepping back when a target
+   market has visits; devices under them); where they came from (LinkedIn always first, Google, direct or app, other
+   sites); when they visit (hour of the day in Gulf time and weekday, over the last 90 days, each shown once the log
+   holds enough). Only days the log covers are drawn: nothing before counting began is shown as a zero. From 90 days
+   the columns are calendar weeks (Monday to Sunday), a week with fewer counted days saying so.
+   A visit is one visitor on one day; its source, country and device come from its first page view. One filter row
+   (the period) scopes the numbers above the publishing tiles. The standing definitions sit in one closed fold at the
+   foot, so the first screen holds the numbers.
+   Forms follow the site's data-visualisation rules: one hue (the link blue) and a de-emphasis gray, thin marks with
+   rounded data ends no larger than half the mark, hairline solid axes, a key whenever two series share a plot,
+   values as text in text colours, a table twin for every drawing, hover tooltips that never gate, no percentage on a
+   base under 20, a zero drawn as no mark.
+   States: default; empty (no views in the period); partial (no earlier period, an earlier period only partly covered,
+   a breakdown with no rows, too few days for a pattern); error. Rendered on the server: no loading state.
+   On /_states the dashboard is shown several times: `plain` renders blocks with unique ids there. */
 import AdminIcon from './admin-icon.astro';
+import BarList from './bar-list.astro';
+import Columns from './columns.astro';
 import type { Dashboard } from './dashboard-data';
+import type { AdminIcon as IconName } from './admin-icons';
 import '../../styles/admin.css';
 
-interface Props { data?: Dashboard; error?: string; range: number; ranges: readonly number[]; /** Where the range links point. */ base?: string;
-  /** On /_states the dashboard is shown several times: render plain blocks with unique ids there, so the page does not gain repeated landmarks. */ plain?: boolean; uid?: string }
+interface Props { data?: Dashboard; error?: string; range: number; ranges: readonly number[]; /** Where the range links point. */ base?: string; plain?: boolean; uid?: string }
 const { data, error, range, ranges, base = '/admin', plain = false, uid = 'dash' } = Astro.props;
 const Block: any = plain ? 'div' : 'section';
 const Nav: any = plain ? 'div' : 'nav';
 const labelled = (id: string) => (plain ? {} : { 'aria-labelledby': `${uid}-${id}` });
 
-const short = (day: string) => new Date(day + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
 const n = (v: number) => v.toLocaleString('en-GB');
+const short = (day: string) => new Date(day + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }).replace(' ', ' '); // a date never breaks across lines
+const one = (v: number) => (Math.round(v * 10) / 10).toLocaleString('en-GB', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const countryName = (code: string) => { if (!code) return 'Unknown'; try { return new Intl.DisplayNames(['en'], { type: 'region' }).of(code) || code; } catch { return code; } };
+const pageName = (p: { path: string; name?: string }) => p.name || (p.path === '/' ? 'Home' : p.path);
 const deviceName: Record<string, string> = { desktop: 'Desktop', phone: 'Phone', tablet: 'Tablet' };
-const max = data ? Math.max(1, ...data.series.map(d => d.views)) : 1;
+const kindName: Record<string, string> = { projects: 'Project', caseStudies: 'Case study', posts: 'Blog post', videos: 'Video', linkedinPosts: 'LinkedIn post', linkedinArticles: 'LinkedIn article', resources: 'Resource' };
+const kindIcon: Record<string, IconName> = { projects: 'projects', caseStudies: 'case-studies', posts: 'posts', videos: 'videos', linkedinPosts: 'linkedin-posts', linkedinArticles: 'linkedin-articles', resources: 'resources' };
+const TARGETS = new Set(['SA', 'AE']);
+const FLOOR = 20; // no percentage on a smaller base
+const SHOWN = 6; // publishes listed before the fold
 const empty = !!data && data.totals.views === 0;
-const peak = data && !empty ? data.series.reduce((a, b) => (b.views > a.views ? b : a)) : undefined;
-const tiles = data ? [
-  { icon: 'views', label: 'Page views', value: n(data.totals.views), note: `last ${data.days} days` },
-  { icon: 'people', label: 'Visitors', value: n(data.totals.visitors), note: `last ${data.days} days` },
-  { icon: 'pages', label: 'Pages visited', value: n(data.totals.pages), note: `last ${data.days} days` },
-  { icon: 'busiest', label: 'Busiest day', value: peak ? short(peak.day) : '—', note: peak ? `${n(peak.views)} ${peak.views === 1 ? 'view' : 'views'}` : 'no views yet' },
-] as const : [];
+const perVisit = (t: { views: number; visits: number }) => (t.visits ? t.views / t.visits : 0);
+const ago = (iso: string) => { const m = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000)); return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} d ago`; };
+
+/* The change against the previous period, computed on the figures as they are displayed: the absolute change with the
+   earlier value, and a percentage only once the earlier value is 20 or more, so a small base never reads as a big
+   swing. Nothing when both periods are zero. */
+type Delta = { dir: 'up' | 'down' | 'flat' | 'none'; text: string; note: string };
+const NONE: Delta = { dir: 'none', text: '', note: '' };
+const incomplete = !!data && !!data.previous && data.previousCovered < data.days;
+const delta = (cur: number, prev: number | undefined, fmt: (v: number) => string = n): Delta => {
+  if (prev === undefined || incomplete) return NONE; // an earlier period only partly in the log is not compared: the head line says so
+  if (cur === 0 && prev === 0) return { dir: 'none', text: '', note: 'none in either period' };
+  const r = (v: number) => (fmt === n ? v : Math.round(v * 10) / 10); const diff = r(cur) - r(prev); const small = fmt === n ? Math.abs(diff) < 0.5 : Math.abs(diff) < 0.05;
+  if (small) return { dir: 'flat', text: 'no change', note: `was ${fmt(prev)}` };
+  const sign = diff > 0 ? '+' : '−';
+  if (prev >= FLOOR) return { dir: diff > 0 ? 'up' : 'down', text: `${sign}${Math.abs(Math.round((diff / prev) * 100))}%`, note: `was ${fmt(prev)}` };
+  return { dir: diff > 0 ? 'up' : 'down', text: `${sign}${fmt(Math.abs(diff))}`, note: `was ${fmt(prev)}` };
+};
+const prev = data?.previous?.totals;
+/* A ratio on a small base swings with one visit: under 20 visits in either period only the earlier value is shown. */
+const ratioDelta: Delta = !data || !prev || !prev.visits || incomplete ? NONE : data.totals.visits < FLOOR || prev.visits < FLOOR ? { dir: 'none', text: '', note: `was ${one(perVisit(prev))}` } : delta(perVisit(data.totals), perVisit(prev), one);
+/* The change rows appear only when the earlier period is wholly in the log. */
+const compared = !!data?.previous && !incomplete;
+const targetNote = !data || data.totals.visits === 0 ? 'Saudi Arabia and the UAE' : data.totals.visits >= FLOOR ? `Saudi Arabia and the UAE · ${Math.round((data.totals.target / data.totals.visits) * 100)}% of visits` : `Saudi Arabia and the UAE · ${n(data.totals.target)} of ${n(data.totals.visits)} ${data.totals.visits === 1 ? 'visit' : 'visits'}`;
+const tiles: { icon: IconName; label: string; value: string; delta: Delta; note?: string }[] = data ? [
+  { icon: 'views', label: 'Page views', value: n(data.totals.views), delta: delta(data.totals.views, prev?.views) },
+  { icon: 'people', label: 'Visits', value: n(data.totals.visits), delta: delta(data.totals.visits, prev?.visits), note: 'A visit is one visitor on one day' },
+  { icon: 'pages', label: 'Pages per visit', value: data.totals.visits ? one(perVisit(data.totals)) : '—', delta: ratioDelta },
+  { icon: 'target', label: 'Target markets', value: n(data.totals.target), delta: delta(data.totals.target, prev?.target), note: targetNote },
+] : [];
+const arrow: Record<Delta['dir'], IconName | undefined> = { up: 'up', down: 'down', flat: 'flat', none: undefined };
+type Publish = Dashboard['publishes'][number];
+/* What was published is named by its title; the slug stands in when the page has not looked one up. */
+const nameOf = (p: Publish) => p.title || p.slug;
+
+/* Views over time: one column per day, or per calendar week (Monday to Sunday) from 90 days; only the days the log
+   covers; the previous period, when complete, as a line over the same columns (the same days, one period earlier);
+   today, or this week, as a partial column. */
+const weekly = !!data && data.days > 31;
+const monday = (day: string) => { const d = new Date(day + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7)); return d.toISOString().slice(0, 10); };
+type Bucket = { first: string; last: string; /** The axis label: the day, or the week's Monday. */ label: string; /** The name in words: "week of 5 Oct". */ name: string; views: number; visits: number; daysIn: number; prevViews?: number; pub: Dashboard['publishes'] };
+const buckets: Bucket[] = (() => {
+  if (!data) return [];
+  const ranges: [number, number][] = [];
+  if (weekly) { let start = 0; for (let i = 1; i <= data.series.length; i++) { if (i === data.series.length || monday(data.series[i].day) !== monday(data.series[start].day)) { ranges.push([start, i - 1]); start = i; } } }
+  else data.series.forEach((_, i) => ranges.push([i, i]));
+  const prevRows = data.previous && !incomplete ? data.previous.series : undefined;
+  const out: Bucket[] = [];
+  for (const [a, b] of ranges) {
+    const rows = data.series.slice(a, b + 1).filter(d => d.day >= data.countingSince);
+    if (!rows.length) continue;
+    const first = rows[0].day, last = rows[rows.length - 1].day;
+    out.push({ first, last, label: weekly ? short(monday(first)) : short(first), name: weekly ? `week of ${short(monday(first))}` : short(first), views: rows.reduce((s, r) => s + r.views, 0), visits: rows.reduce((s, r) => s + r.visits, 0), daysIn: rows.length, prevViews: prevRows ? prevRows.slice(a, b + 1).reduce((s, r) => s + r.views, 0) : undefined, pub: data.publishes.filter(p => p.day >= first && p.day <= last) });
+  }
+  return out;
+})();
+const covered = data ? data.series.filter(d => d.day >= data.countingSince).length : 0;
+const peak = buckets.length ? buckets.reduce((a, b) => (b.views > a.views ? b : a)) : undefined;
+const isLast = (i: number) => i === buckets.length - 1;
+const partOf = (b: Bucket, i: number) => (isLast(i) ? (weekly ? 'this week so far' : 'today so far') : weekly && b.daysIn < 7 ? `${b.daysIn} of 7 days` : '');
+const items = buckets.map((b, i) => ({ label: b.label, name: b.name, value: b.views, tip: `${n(b.views)} ${b.views === 1 ? 'view' : 'views'} · ${n(b.visits)} ${b.visits === 1 ? 'visit' : 'visits'}${b.prevViews !== undefined ? ` · previous period ${n(b.prevViews)}` : ''}${partOf(b, i) ? ` · ${partOf(b, i)}` : ''}`, mark: b.pub.length ? `Published: ${b.pub.map(nameOf).join(', ')}` : undefined, partial: isLast(i) }));
+const prevLine = buckets.length > 1 && buckets.every(b => b.prevViews !== undefined) ? buckets.map(b => b.prevViews as number) : undefined;
+const tick = weekly ? (buckets.length <= 6 ? 1 : 2) : (data?.days ?? 30) <= 7 ? 2 : 7;
+const rangeNote = data ? (covered < data.days ? `${short(data.countingSince)} to today, ${covered} of ${data.days} days in the log.` : `${short(data.from)} to today.`) : '';
+const peakNote = peak ? `; busiest ${peak.name}, ${n(peak.views)} ${peak.views === 1 ? 'view' : 'views'}${peak.pub.length ? ` · ${n(peak.pub.length)} published that ${weekly ? 'week' : 'day'}` : ''}` : '';
+const compare = data ? (data.previous ? `Compared with ${short(data.previous.series[0].day)} to ${short(data.previous.series[data.previous.series.length - 1].day)}${incomplete ? `, only ${data.previousCovered} ${data.previousCovered === 1 ? 'day' : 'days'} of which ${data.previousCovered === 1 ? 'is' : 'are'} in the log, so changes are withheld` : ''}.` : 'Nothing earlier to compare with yet.') : '';
+const pubIcon = (p: Publish): IconName => kindIcon[p.kind] || 'published';
+
+/* Breakdowns. */
+/* The parts of the site keep one hue (the question is which are biggest); Contact and resume carry a badge instead. */
+const sections = data ? data.sections.map(s => ({ label: s.section, value: s.views, badge: s.section === 'Contact and resume' ? 'Key pages' : undefined })) : [];
+const hasContact = sections.some(s => s.badge);
+/* An entry published to a shared page shows that page's views once per page and day; the next entry says so. */
+const pubRows = data ? data.publishes.map((p, i) => ({ p, again: !!(p.shared && p.path && data.publishes.slice(0, i).some(q => q.shared && q.path === p.path && q.day === p.day)) })) : [];
+const sources = data ? data.sources.map(s => ({ label: s.source, value: s.visits, note: s.hosts.length ? s.hosts.map(h => h.host).join(', ') : s.source === 'LinkedIn' && s.visits === 0 ? 'no visits from LinkedIn this period' : s.source === 'Direct or app' ? 'includes the LinkedIn app, email and messages' : undefined })) : [];
+const countries = data ? data.countries.map(c => ({ label: countryName(c.country), value: c.visits, accent: TARGETS.has(c.country), badge: TARGETS.has(c.country) ? 'Target market' : undefined, note: TARGETS.has(c.country) && c.visits === 0 ? 'no visits this period' : undefined })) : [];
+const targetHasVisits = countries.some(c => c.accent && c.value > 0);
+const hours = data ? data.hours.map((v, h) => ({ label: `${String(h).padStart(2, '0')}:00`, value: v, tip: `${n(v)} ${v === 1 ? 'visit' : 'visits'}` })) : [];
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const weekdays = data ? data.weekdays.map((v, i) => ({ label: DAYS[i], value: v, tip: `${n(v)} ${v === 1 ? 'visit' : 'visits'}` })) : [];
+const showHours = !!data && data.patternDays >= 7, showWeekdays = !!data && data.patternDays >= 28;
+const devices = data ? data.devices.map(d => ({ label: deviceName[d.device] || d.device, value: d.visits })) : [];
 ---
 <Block class="dash" {...labelled('numbers-title')}>
   <div class="admin-section-head">
-    <h2 id={`${uid}-numbers-title`} class="dash-h2"><AdminIcon name="numbers" />Visitor numbers</h2>
+    <div class="admin-head-text">
+      <h2 id={`${uid}-numbers-title`} class="dash-h2"><AdminIcon name="numbers" />Visitors</h2>
+      {data && <p class="form-note">{rangeNote} {compare}</p>}
+      {data?.lastVisit && <p class="form-note">Last view {ago(data.lastVisit.at)}: {countryName(data.lastVisit.country)}, <bdi>{pageName(data.lastVisit)}</bdi>.</p>}
+    </div>
     <Nav class="dash-range" aria-label={plain ? undefined : 'Period'}>
       <span class="project-filter-label">Period</span>
       <ul>
-        {ranges.map(r => <li><a class="ui-chip" href={`${base}?days=${r}`} aria-current={r === range ? 'page' : undefined}>{r} days</a></li>)}
+        {ranges.map(r => <li><a class="ui-chip" href={`${base}?days=${r}`} aria-current={r === range ? 'page' : undefined} data-period-link>{r} days</a></li>)}
       </ul>
     </Nav>
   </div>
@@ -57,102 +154,152 @@ const tiles = data ? [
   )}
 
   {data && (
-    <div class="admin-bento">
+    <div class="admin-bento" data-dash-grid>
       <ul class="cory-bento">
         <li class="span-4">
           <dl class="facts dash-tiles">
-            {tiles.map(t => <div><dt><span data-icon-tile aria-hidden="true"><AdminIcon name={t.icon} size={22} /></span>{t.label}</dt><dd class="dash-number">{t.value}</dd><dd class="dash-stat-note">{t.note}</dd></div>)}
+            {tiles.map(t => (
+              <div>
+                <dt><span data-icon-tile aria-hidden="true"><AdminIcon name={t.icon} size={22} /></span><span>{t.label}</span></dt>
+                <dd class="dash-number">{t.value}</dd>
+                {compared && <dd class="dash-delta" data-dir={t.delta.dir}>{t.delta.text ? <Fragment>{arrow[t.delta.dir] && <AdminIcon name={arrow[t.delta.dir]!} size={14} />}<span>{t.delta.text}</span>{t.delta.note && <Fragment>{' '}<span class="dash-delta-vs">{t.delta.note}</span></Fragment>}</Fragment> : t.delta.note ? <span class="dash-delta-vs">{t.delta.note}</span> : <Fragment><span aria-hidden="true">—</span><span class="cory-visually-hidden">no change to show</span></Fragment>}</dd>}
+                {t.note && <dd class="dash-tile-note">{t.note}</dd>}
+              </div>
+            ))}
           </dl>
-          <p class="form-note">Last {data.days} days, by UTC date. A visitor is counted once per day: the site keeps no cookie and no address, so it cannot tell that two days' visits came from the same person.</p>
         </li>
 
         {empty && (
           <li class="span-4">
             <div class="project-empty">
-              <p class="project-empty-title"><AdminIcon name="info" />No visits recorded in this period.</p>
+              <AdminIcon name="info" size={24} />
+              <p class="project-empty-title">No visits recorded in this period.</p>
               <p class="project-empty-body">Counting starts when a page on the live site is opened. Visits from this browser while you are signed in, from robots, and from people who ask not to be tracked are not counted.</p>
-              <p class="project-empty-body"><a data-link href="/">Open the home page</a> in a private window to record a first visit, then reload this page.</p>
+              <p class="project-empty-body"><a data-link href="/" target="_blank" rel="noopener">Open the home page<span class="cory-visually-hidden"> (opens in a new tab)</span></a> in a private window to record a first visit, then reload this page.</p>
             </div>
           </li>
         )}
 
         {!empty && (
           <li class="span-4">
-            <div class="admin-card">
-              <h3 class="admin-card-title"><AdminIcon name="chart" />Page views per day</h3>
-              <div class="dash-chart" aria-hidden="true">
-                <ol class="dash-bars" style={`--max: ${max};`}>
-                  {data.series.map(d => (
-                    <li style={`--v: ${d.views};`}>
-                      <span class="dash-bar" data-zero={d.views === 0 ? '' : undefined}></span>
-                      <span class="dash-tip"><strong>{short(d.day)}</strong>{n(d.views)} {d.views === 1 ? 'view' : 'views'} · {n(d.visitors)} {d.visitors === 1 ? 'visitor' : 'visitors'}</span>
-                    </li>
-                  ))}
-                </ol>
-                <p class="dash-axis"><span>{short(data.series[0].day)}</span><span>{short(data.series[data.series.length - 1].day)}</span></p>
-              </div>
+            <div class="admin-card" data-dash-series>
+              <div class="admin-card-head"><h3 class="admin-card-title"><AdminIcon name="chart" />Page views over time</h3><span class="form-note">{weekly ? 'by week' : 'by day'}{peakNote}</span></div>
+              <Columns items={items} line={prevLine} lineLabel={weekly ? `the same days, ${data.days} days earlier` : `previous ${data.days} days`} label="this period" partialLabel={weekly ? 'this week so far' : 'today so far'} markNote={weekly ? 'a week in which you published something; the list and table below name it' : 'a day you published something; the list and table below name it'} tick={tick} weekly={weekly} />
               <details class="dash-details">
-                <summary>Show these figures as a table</summary>
-                <div class="post-table" tabindex="0" role={plain ? undefined : 'region'} aria-label={plain ? undefined : 'Page views per day'}>
+                <summary><AdminIcon name="chevron" size={16} data-chevron />These figures as a table</summary>
+                <div class="post-table dash-table">
                   <table>
-                    <thead><tr><th scope="col">Day</th><th scope="col" class="dash-num">Views</th><th scope="col" class="dash-num">Visitors</th></tr></thead>
-                    <tbody>{[...data.series].reverse().map(d => <tr><th scope="row">{short(d.day)}</th><td class="dash-num">{n(d.views)}</td><td class="dash-num">{n(d.visitors)}</td></tr>)}</tbody>
+                    <caption class="cory-visually-hidden">Page views by {weekly ? 'week' : 'day'}</caption>
+                    <thead><tr><th scope="col">{weekly ? 'Week of' : 'Day'}</th><th scope="col" class="dash-num">Views</th><th scope="col" class="dash-num">Visits</th>{prevLine && <th scope="col" class="dash-num">Previous period</th>}<th scope="col">Published</th></tr></thead>
+                    <tbody>{[...buckets].reverse().map((b, k) => { const i = buckets.length - 1 - k; const part = partOf(b, i); return <tr><th scope="row" class="dash-day">{weekly ? short(monday(b.first)) : short(b.first)}{part && <span class="dash-part">{part}</span>}</th><td class="dash-num">{n(b.views)}</td><td class="dash-num">{n(b.visits)}</td>{prevLine && <td class="dash-num">{n(prevLine[i])}</td>}<td>{b.pub.length ? <Fragment><span class="dash-pub-count">{n(b.pub.length)} published</span><ul class="dash-cell-list">{b.pub.map(p => <li><bdi>{nameOf(p)}</bdi></li>)}</ul></Fragment> : '—'}</td></tr>; })}</tbody>
                   </table>
                 </div>
               </details>
+              {data.publishes.length > 0 && (
+                <div class="dash-published">
+                  <h4 class="dash-published-title"><AdminIcon name="published" size={18} />What you published</h4>
+                  <p class="form-note">In this period, with the views its page has had since.</p>
+                  <ul class="admin-recent">{pubRows.slice(0, SHOWN).map(({ p, again }) => (
+                    <li>
+                      <AdminIcon name={pubIcon(p)} />
+                      <div>
+                        <a data-link href={p.path} target="_blank" rel="noopener"><bdi>{nameOf(p)}</bdi><AdminIcon name="view" size={14} /><span class="cory-visually-hidden"> (opens the page in a new tab)</span></a>
+                        <span class="admin-waiting-meta"><span class="ui-badge">{kindName[p.kind] || p.kind}</span><span>{short(p.day)}</span>{p.views !== undefined && (again ? <span>same page and day as above</span> : <span>{n(p.views)} {p.views === 1 ? 'view' : 'views'} of {p.shared ? `the ${p.pathName || p.path} page` : 'its page'} since</span>)}</span>
+                      </div>
+                    </li>
+                  ))}</ul>
+                  {data.publishes.length > SHOWN && (
+                    <details class="dash-details dash-more">
+                      <summary><AdminIcon name="chevron" size={16} data-chevron /><span data-when-closed>Show {n(data.publishes.length - SHOWN)} more</span><span data-when-open>Show fewer</span></summary>
+                      <ul class="admin-recent">{pubRows.slice(SHOWN).map(({ p, again }) => (
+                        <li>
+                          <AdminIcon name={pubIcon(p)} />
+                          <div>
+                            <a data-link href={p.path} target="_blank" rel="noopener"><bdi>{nameOf(p)}</bdi><AdminIcon name="view" size={14} /><span class="cory-visually-hidden"> (opens the page in a new tab)</span></a>
+                            <span class="admin-waiting-meta"><span class="ui-badge">{kindName[p.kind] || p.kind}</span><span>{short(p.day)}</span>{p.views !== undefined && (again ? <span>same page and day as above</span> : <span>{n(p.views)} {p.views === 1 ? 'view' : 'views'} of {p.shared ? `the ${p.pathName || p.path} page` : 'its page'} since</span>)}</span>
+                          </div>
+                        </li>
+                      ))}</ul>
+                    </details>
+                  )}
+                </div>
+              )}
             </div>
           </li>
         )}
 
         {!empty && (
           <li class="span-2">
-            <div class="admin-card" data-dash-pages>
-              <h3 class="admin-card-title"><AdminIcon name="top" />Top pages</h3>
-              <div class="post-table dash-table"><table>
-                <thead><tr><th scope="col">Page</th><th scope="col" class="dash-num">Views</th><th scope="col" class="dash-num">Visitors</th></tr></thead>
-                <tbody>{data.pages.map(p => <tr><th scope="row"><a data-link href={p.path}>{p.path === '/' ? 'Home' : p.path}</a></th><td class="dash-num">{n(p.views)}</td><td class="dash-num">{n(p.visitors)}</td></tr>)}</tbody>
-              </table></div>
-            </div>
-          </li>
-        )}
-        {!empty && (
-          <li class="span-2">
             <div class="admin-card">
-              <h3 class="admin-card-title"><AdminIcon name="referrers" />Where visitors came from</h3>
-              {data.referrers.length === 0 ? <p class="form-note">No referring sites recorded yet.</p> : (
-                <div class="post-table dash-table"><table>
-                  <thead><tr><th scope="col">Site</th><th scope="col" class="dash-num">Views</th></tr></thead>
-                  <tbody>{data.referrers.map(r => <tr><th scope="row">{r.host || 'Direct, or not stated'}</th><td class="dash-num">{n(r.views)}</td></tr>)}</tbody>
-                </table></div>
+              <h3 class="admin-card-title"><AdminIcon name="pages" />What they read</h3>
+              <BarList rows={sections} label="Views by part of the site" what="Part of the site" />
+              {hasContact && <p class="form-note"><AdminIcon name="target" size={16} />Contact and resume are the pages a hiring manager opens before writing.</p>}
+              {data.pages.length > 0 && (
+                <details class="dash-details">
+                  <summary><AdminIcon name="chevron" size={16} data-chevron />Top {data.pages.length === 1 ? 'page' : `${n(data.pages.length)} pages`}</summary>
+                  <div class="post-table dash-table" data-dash-pages><table>
+                    <caption class="cory-visually-hidden">The most read pages</caption>
+                    <thead><tr><th scope="col">Page</th><th scope="col" class="dash-num">Views</th><th scope="col" class="dash-num">Visits</th></tr></thead>
+                    <tbody>{data.pages.map(p => <tr><th scope="row"><a data-link href={p.path} target="_blank" rel="noopener"><bdi>{pageName(p)}</bdi><AdminIcon name="view" size={14} /><span class="cory-visually-hidden"> (opens the page in a new tab)</span></a>{pageName(p) !== p.path && p.path !== '/' && <span class="dash-path"><bdi>{p.path}</bdi></span>}</th><td class="dash-num">{n(p.views)}</td><td class="dash-num">{n(p.visits)}</td></tr>)}</tbody>
+                  </table></div>
+                </details>
               )}
             </div>
           </li>
         )}
         {!empty && (
-          <li class="span-4">
-            <details class="resource-disclosure admin-fold">
-              <summary><AdminIcon name="countries" size={18} /><span data-disclosure-state>Countries and devices</span><AdminIcon name="chevron" size={16} data-chevron /></summary>
-              <div class="admin-row">
-                <div>
-                  <h3 class="admin-card-title"><AdminIcon name="countries" />Countries</h3>
-                  {data.countries.length === 0 ? <p class="form-note">No countries recorded yet.</p> : (
-                    <div class="post-table dash-table"><table>
-                      <thead><tr><th scope="col">Country</th><th scope="col" class="dash-num">Views</th></tr></thead>
-                      <tbody>{data.countries.map(c => <tr><th scope="row">{countryName(c.country)}</th><td class="dash-num">{n(c.views)}</td></tr>)}</tbody>
-                    </table></div>
-                  )}
-                </div>
-                <div>
-                  <h3 class="admin-card-title"><AdminIcon name="devices" />Devices</h3>
-                  <div class="post-table dash-table"><table>
-                    <thead><tr><th scope="col">Device</th><th scope="col" class="dash-num">Views</th></tr></thead>
-                    <tbody>{data.devices.map(d => <tr><th scope="row">{deviceName[d.device] || d.device}</th><td class="dash-num">{n(d.views)}</td></tr>)}</tbody>
-                  </table></div>
-                </div>
-              </div>
-            </details>
+          <li class="span-2">
+            <div class="admin-card">
+              <h3 class="admin-card-title"><AdminIcon name="countries" />Where they are and what they use</h3>
+              <BarList rows={countries} label="Visits by country" what="Country" unit="Visits" emphasis={targetHasVisits} />
+              <h4 class="dash-h4">Devices</h4>
+              <BarList rows={devices} label="Visits by device" what="Device" unit="Visits" shareOfTotal />
+            </div>
           </li>
         )}
+        {!empty && (
+          <li class="span-2">
+            <div class="admin-card">
+              <h3 class="admin-card-title"><AdminIcon name="referrers" />Where they came from</h3>
+              <BarList rows={sources} label="Visits by source" what="Source" unit="Visits" shareOfTotal />
+            </div>
+          </li>
+        )}
+        {data.patternDays > 0 && (
+          <li class="span-2">
+            <div class="admin-card">
+              <h3 class="admin-card-title"><AdminIcon name="clock" />When they visit</h3>
+              <p class="form-note">Last 90 days, whichever period is chosen above; {n(data.patternDays)} {data.patternDays === 1 ? 'day' : 'days'} with visits.</p>
+              {showHours && <h4 class="dash-h4">Hour of the day, Gulf time (UTC+3; the UAE is one hour later)</h4>}
+              {showHours && <Columns items={hours} height="short" tick={6} />}
+              {!showHours && <p class="form-note">Hours are shown once seven days have had visits; {n(data.patternDays)} so far.</p>}
+              {showWeekdays && <h4 class="dash-h4">Day of the week</h4>}
+              {showWeekdays && <Columns items={weekdays} height="short" tick={1} />}
+              {showHours && !showWeekdays && <p class="form-note">Weekdays are shown once 28 days have had visits; {n(data.patternDays)} so far.</p>}
+              {showHours && (
+                <details class="dash-details">
+                  <summary><AdminIcon name="chevron" size={16} data-chevron />These figures as a table</summary>
+                  <div class="admin-row">
+                    <div class="post-table dash-table"><table><caption class="cory-visually-hidden">Visits by hour, Gulf time</caption><thead><tr><th scope="col">Hour</th><th scope="col" class="dash-num">Visits</th></tr></thead><tbody>{hours.filter(h => h.value > 0).map(h => <tr><th scope="row">{h.label}</th><td class="dash-num">{n(h.value)}</td></tr>)}</tbody></table></div>
+                    {showWeekdays && <div class="post-table dash-table"><table><caption class="cory-visually-hidden">Visits by weekday</caption><thead><tr><th scope="col">Day</th><th scope="col" class="dash-num">Visits</th></tr></thead><tbody>{weekdays.map(d => <tr><th scope="row">{d.label}</th><td class="dash-num">{n(d.value)}</td></tr>)}</tbody></table></div>}
+                  </div>
+                </details>
+              )}
+            </div>
+          </li>
+        )}
+        <li class="span-4">
+          <details class="resource-disclosure dash-how">
+            <summary><AdminIcon name="info" size={18} /><span data-disclosure-state>How these numbers are counted</span><AdminIcon name="chevron" size={16} data-chevron /></summary>
+            <ul class="dash-how-list">
+              <li>A page view is one page opened on the live site. Views from this browser while you are signed in, from robots, and from people who ask not to be tracked are not counted.</li>
+              <li>A visit is one visitor on one day: the site keeps no cookie and no address, so the same person on two days counts twice. Its source, country and device come from its first page view.</li>
+              <li>Changes are against the previous {data.days} days, which are complete, while today is still being counted. A percentage is shown only when the earlier value is {FLOOR} or more; a share only when the list holds {FLOOR} visits or more. Today, or this week, is drawn in gray.</li>
+              <li>The LinkedIn app, email and messaging apps send no referring site, so visits from them count as direct or app. lnkd.in and the LinkedIn app count as LinkedIn.</li>
+              <li>Days are UTC; from 90 days the columns are calendar weeks, Monday to Sunday. Hours are Gulf time (UTC+3; the UAE is one hour later). The hour and weekday patterns use the last 90 days, because a week cannot show a pattern.</li>
+            </ul>
+          </details>
+        </li>
       </ul>
     </div>
   )}

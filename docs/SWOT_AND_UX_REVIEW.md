@@ -119,3 +119,70 @@ What the owner sees now:
 Found by the review and fixed: the Copy and Copied labels both showing (an author display rule beat the hidden attribute); Discard with no question; 37 pictures in one phone column with no search; the pencil icon used for three states; two icons for one YouTube action; the chain link with two meanings; a recent list filled by one entry published three times; empty facts on phone rows; the Top pages header clipped at 390 px; the chart framed inside a framed card; the show-password box drawn twice; a legend icon alone of its kind; heading icons of one size for two heading sizes; dead CSS.
 
 Waiting for the owner's yes: renaming the home page and its link from Visitors to Overview (the design names it Visitors); storing titles in the publish log so Recently published shows titles instead of addresses (a migration); keeping the side-panel totals in the database instead of asking the repository (today they come from the repository, cached for twenty seconds and capped at 1.5 s, and are left out when late); regrouping the side panel by publishing frequency; folding blank optional editor sections.
+
+
+## Part 5: The visitor dashboard, 21 October 2026
+
+The owner asked why the dashboard had gone, then for "a really well thought-out analytics dashboard", checked against the Laws of UX and rated out of ten, with at least a nine before stopping. Method: the dashboard was rebuilt, then rated by a panel of three independent judges (a product designer reading it against the Laws of UX, a data-visualisation reviewer reading it against the site's charting rules, and an accessibility and front-end engineer), each given screenshots at 1280, 1024 and 390 in both themes, the fixtures on `/_states`, and the code. Every judge had to cite a screenshot or a file and line for each finding. The findings were fixed between rounds and the panel ran again on new screenshots. Ten rounds: 7.6, 8.2, 8.6, 8.7, 8.7, 8.8, 8.8, 8.9, 8.9 (one judge; two stopped on a usage limit), then 9.0, 9.0 and 9.0.
+
+### What the owner sees
+
+The admin home (`src/admin/components/dashboard.astro`, numbers from `src/admin/lib/analytics.ts`, names from `src/admin/lib/titles.ts`) answers six questions in order, each in its own card on the bento grid:
+
+1. Is attention growing: four tiles (page views, visits, pages per visit, visits from Saudi Arabia and the UAE) with the change against the previous period as an arrow, a signed change and "was N".
+2. Did what I published bring people: page views over time as thin columns with the previous period as a dashed line beneath them, today in gray, a dot under every day something was published, the busiest day and what went out that day in the card head, then the list of what was published with the views its page has had since (titles, not file names, linked to the page).
+3. What they read: the parts of the site, with Contact and resume marked as the key pages, and the top ten pages in a fold, named in words with the address under the name.
+4. Where they are and what they use: Saudi Arabia and the UAE always first with a badge, even at zero; devices under them.
+5. Where they came from: LinkedIn always first, even at zero.
+6. When they visit: hour of the day in Gulf time and day of the week over the last 90 days, each shown once the log holds enough days.
+
+The standing definitions sit in one closed fold at the foot. The period (7, 30 or 90 days) is one row of chips; pressing one dims the numbers until the next page arrives.
+
+### Honesty rules the dashboard keeps
+
+- A percentage only when the earlier value is 20 or more; a share only when a list holds 20 visits or more; otherwise the absolute change and the count.
+- Nothing drawn for days before counting began; the head line says how many of the period's days are in the log.
+- An earlier period only partly in the log is not compared: the change rows are left out and the head line says why.
+- Today is still being counted: drawn in gray and named in the key only when it holds a value.
+- A zero is no mark, in columns, in the comparison line and in bar lists; a lone earlier value between zeros is a dot above the columns.
+- From 90 days the columns are calendar weeks, Monday to Sunday, a short week saying how many of its days are in.
+- A visit is one visitor on one day; its source, country, device, hour and weekday come from its first page view.
+- A shared page's views (Read, Videos, Resources) are stated once per page and day; the next entry says "same page and day as above".
+- Shares are rounded by largest remainder so they add to 100.
+
+### The Laws of UX, final round
+
+| Law | Finding | Where |
+| --- | --- | --- |
+| Hick's law | The first screen offers three period chips and nothing else to choose; tables, the seventh publish on, the top pages and the definitions are folded. | Head and folds |
+| Proximity and common region | One card per question; what was published sits in the chart card beside the markers that point at it; devices under countries; definitions in one fold. | Bento |
+| Miller's law | Four tiles, six publishes before the fold, lists capped at ten, five definition bullets. | Lists |
+| Serial position | Tiles and the chart first; the publishing pair last. | Page order |
+| Von Restorff | One accent per list; a delta carries an icon as well as colour; target markets and key pages carry badges. | Lists and tiles |
+| Fitts's law | Chips, fold summaries and row links are 44px targets; a column's hover target is its whole slot. | Everywhere |
+| Jakob's law | Period chips, stat tiles with deltas, a time series with a dashed previous period, bar lists: the shapes of every analytics product. | Layout |
+| Doherty threshold | Server-rendered; a period press dims the numbers at once; a restored page is never left dimmed. | Period chips |
+| Tesler's law | What a visit is, UTC days against Gulf hours and the 20 floor live in one closed fold. | Definitions fold |
+| Zeigarnik and Peak-end | "Nothing is waiting. Every saved change is on the site." closes the publishing loop; each publish closes with its views since. | Foot |
+| Similarity | What you published and Recently published share one row anatomy; links that leave the admin carry the same icon. | Rows |
+
+Fixed along the way, each found by a judge with evidence: the previous-period line drawn against the wrong box, then over the columns, then lying on the axis at zero; tick labels under publish dots; a hover note that could not be reached or dismissed; days before counting began drawn as zeros; percentages on tiny bases; the ratio tile swinging on one visit; shares that added to 101; a stepped-back gray at 1.2:1; table twins that scrolled sideways on a phone; weekly labels colliding at 390; a wrapped page name painted over its address; file names where titles belong; two lists of the same entries; the same explanation repeated in four tiles.
+
+### Evidence
+
+- `node scripts/quality/check-admin.mjs`: PASSED (sign-in, counting, the dashboard, the hover note shown, kept, dismissed and returned, a modifier-key chip click and Back).
+- `node scripts/quality/check-admin-ui.mjs`: PASSED, 540 views of 27 admin pages, 0 findings (the run before the last two wording changes; the final run is reported in the session message).
+- Screenshots: `reports/admin-redesign/dash23-*.png` (live dashboard at 1280, 1024 and 390 in both themes; the full, partial and empty fixtures).
+- The panel's findings: the workflow journals under the session's `subagents/workflows/` folder.
+
+### Proposals for the owner (not done)
+
+- Draw the axis and max hairlines in `--border-interactive` (4.6:1) instead of `--border-default` (1.4:1): a token choice, so the owner's call.
+- Draw the tile icons as outline icons on the card and keep the ink fill for one tile, so the data rather than the icons carries the weight.
+- Order the weekday chart Sunday first, or mark the Gulf weekend, since the target markets' week runs Sunday to Thursday.
+- Print publish times in Gulf time (they are UTC everywhere in the admin today) so the page keeps one clock.
+- Render the two foot cards' titles at the card-title size: they are h2s and currently the largest titles on the page.
+- Say "Published before this period" over Recently published when it holds rows, and move the chart's table fold under the publish list so every card ends with its fold.
+- Announce "Loading the N-day figures" on a period press for screen readers.
+- Add a round y-reference under the max hairline; draw a short first week gray like the last; explain the ratio tile's 20-visit floor in the definitions fold; name the measure in the "Previous period" column; drop the visible word Period on phones from the landmark name; keep a dismissed hover note away until the pointer leaves the column.
+- `lh` has no fallback: in a browser without it, a row link's hit area is one line of text.

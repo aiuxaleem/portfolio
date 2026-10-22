@@ -1,6 +1,6 @@
 /* The admin area's icons: drawing commands from Lucide (ISC licence, https://lucide.dev), fetched once by
    scripts/perf/fetch-admin-icons.mjs (lucide-static 0.544.0). Do not edit by hand; change the list there and run it. */
-export type AdminIcon = 'visitors' | 'projects' | 'case-studies' | 'posts' | 'videos' | 'linkedin-posts' | 'linkedin-articles' | 'resources' | 'site' | 'profile' | 'images' | 'view' | 'dark' | 'light' | 'signout' | 'menu' | 'close' | 'back' | 'chevron' | 'sections' | 'published' | 'changes' | 'new' | 'hidden' | 'suggested' | 'search' | 'nomatch' | 'add' | 'youtube' | 'refresh' | 'upload' | 'publish' | 'draft' | 'discard' | 'copy' | 'copied' | 'waiting' | 'recent' | 'clock' | 'numbers' | 'views' | 'people' | 'pages' | 'busiest' | 'chart' | 'top' | 'referrers' | 'countries' | 'devices' | 'info' | 'alert' | 'ok';
+export type AdminIcon = 'visitors' | 'projects' | 'case-studies' | 'posts' | 'videos' | 'linkedin-posts' | 'linkedin-articles' | 'resources' | 'site' | 'profile' | 'images' | 'view' | 'dark' | 'light' | 'signout' | 'menu' | 'close' | 'back' | 'chevron' | 'sections' | 'published' | 'changes' | 'new' | 'hidden' | 'suggested' | 'search' | 'nomatch' | 'add' | 'youtube' | 'refresh' | 'upload' | 'publish' | 'draft' | 'discard' | 'copy' | 'copied' | 'waiting' | 'recent' | 'clock' | 'numbers' | 'views' | 'people' | 'pages' | 'busiest' | 'chart' | 'top' | 'referrers' | 'countries' | 'devices' | 'up' | 'down' | 'flat' | 'target' | 'info' | 'alert' | 'ok';
 
 export const ADMIN_ICONS: Record<AdminIcon, { name: string; paths: string }> = {
   'visitors': { name: 'layout-dashboard', paths: "<rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\" /><rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\" /><rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\" /><rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\" />" },
@@ -52,6 +52,10 @@ export const ADMIN_ICONS: Record<AdminIcon, { name: string; paths: string }> = {
   'referrers': { name: 'link', paths: "<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\" /><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\" />" },
   'countries': { name: 'globe', paths: "<circle cx=\"12\" cy=\"12\" r=\"10\" /><path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20\" /><path d=\"M2 12h20\" />" },
   'devices': { name: 'monitor-smartphone', paths: "<path d=\"M18 8V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8\" /><path d=\"M10 19v-3.96 3.15\" /><path d=\"M7 19h5\" /><rect width=\"6\" height=\"10\" x=\"16\" y=\"12\" rx=\"2\" />" },
+  'up': { name: 'arrow-up-right', paths: "<path d=\"M7 7h10v10\" /><path d=\"M7 17 17 7\" />" },
+  'down': { name: 'arrow-down-right', paths: "<path d=\"m7 7 10 10\" /><path d=\"M17 7v10H7\" />" },
+  'flat': { name: 'minus', paths: "<path d=\"M5 12h14\" />" },
+  'target': { name: 'target', paths: "<circle cx=\"12\" cy=\"12\" r=\"10\" /><circle cx=\"12\" cy=\"12\" r=\"6\" /><circle cx=\"12\" cy=\"12\" r=\"2\" />" },
   'info': { name: 'info', paths: "<circle cx=\"12\" cy=\"12\" r=\"10\" /><path d=\"M12 16v-4\" /><path d=\"M12 8h.01\" />" },
   'alert': { name: 'circle-alert', paths: "<circle cx=\"12\" cy=\"12\" r=\"10\" /><line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"12\" /><line x1=\"12\" x2=\"12.01\" y1=\"16\" y2=\"16\" />" },
   'ok': { name: 'circle-check', paths: "<circle cx=\"12\" cy=\"12\" r=\"10\" /><path d=\"m9 12 2 2 4-4\" />" },

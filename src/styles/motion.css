@@ -37,6 +37,9 @@
   .ui-chip:active { transform: scale(var(--press-scale)); }
   [data-chevron] { transition: transform var(--duration-spring-pop) var(--ease-spring-pop); }
 
+  /* ---------- Admin dashboard: the numbers step back while the next period loads ---------- */
+  .dash[aria-busy="true"] [data-dash-grid] { transition: opacity var(--duration-base) var(--ease-out); }
+
   /* ---------- Header: the brand mark turns a little under the pointer; the theme switch's icon swings ---------- */
   [data-theme-toggle] svg { transition: transform var(--duration-spring-pop) var(--ease-spring-pop); }
   [data-theme-toggle]:focus-visible svg { transform: rotate(18deg); }

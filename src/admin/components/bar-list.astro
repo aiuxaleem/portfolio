@@ -1,0 +1,32 @@
+---
+/* A list of named amounts, each with a thin horizontal bar for its share of the largest: the form for "which parts are
+   biggest" with up to about ten rows. One hue (the site's link blue); a row marked `accent` keeps the hue and the
+   others step back to the de-emphasis gray (the emphasis form), so one thing can be the point. Values are text, never
+   coloured; the bar is 4px rounded at its data end. A list of one row shows no bar: the number is the chart. The whole
+   list is a table for assistive technology: the column headings are in flow with their words hidden, and the row
+   header keeps its own display, so neither loses its role. */
+interface Row { label: string; value: number; /** Extra words after the label, muted, on a line of their own. */ note?: string; /** Keep the hue while the other rows step back. */ accent?: boolean; /** A small badge after the label. */ badge?: string }
+interface Props { rows: Row[]; /** Column heading for the values. */ unit?: string; /** Column heading for the labels. */ what?: string; /** Accessible name of the table. */ label: string; /** The share of the list's total after each value, once that total is 20 or more (no percentage on a small base). */ shareOfTotal?: boolean; /** A row with `accent` dims the others. */ emphasis?: boolean }
+const { rows, unit = 'Views', what = 'Name', label, shareOfTotal = false, emphasis = false } = Astro.props;
+const max = Math.max(1, ...rows.map(r => r.value));
+const total = Math.max(1, rows.reduce((a, r) => a + r.value, 0));
+const showShare = shareOfTotal && total >= 20;
+/* A zero draws no mark: the empty track says it. */
+const width = (v: number) => (v ? Math.max(1, Math.round((v / max) * 100)) : 0);
+const n = (v: number) => v.toLocaleString('en-GB');
+/* Shares that add up to 100: whole percentages, the remainder given to the largest fractions (largest remainder). */
+const shares = (() => { if (!showShare) return [] as number[]; const raw = rows.map(r => (r.value / total) * 100); const whole = raw.map(Math.floor); let rest = 100 - whole.reduce((a, b) => a + b, 0); for (const [, i] of raw.map((v, i) => [v - whole[i], i] as const).sort((a, b) => b[0] - a[0])) { if (rest <= 0) break; whole[i]++; rest--; } return whole; })();
+---
+<table class="bar-list" data-emphasis={emphasis ? '' : undefined} data-single={rows.length === 1 ? '' : undefined}>
+  <caption class="cory-visually-hidden">{label}</caption>
+  <thead class="bar-list-head"><tr><th scope="col"><span class="cory-visually-hidden">{what}</span></th><th scope="col"><span class="cory-visually-hidden">{unit}</span></th>{showShare && <th scope="col"><span class="cory-visually-hidden">Share</span></th>}</tr></thead>
+  <tbody>
+    {rows.map((r, i) => (
+      <tr data-accent={r.accent ? '' : undefined}>
+        <th scope="row"><div class="bar-list-cell"><span class="bar-list-label">{r.label}{r.badge && <span class="ui-badge">{r.badge}</span>}{r.note && <span class="bar-list-note">{r.note}</span>}</span><span class="bar-list-track" aria-hidden="true"><span class="bar-list-fill" style={`inline-size: ${width(r.value)}%;`}></span></span></div></th>
+        <td class="dash-num">{n(r.value)}</td>
+        {showShare && <td class="dash-num bar-list-share">{shares[i]}%</td>}
+      </tr>
+    ))}
+  </tbody>
+</table>

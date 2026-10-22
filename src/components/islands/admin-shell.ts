@@ -61,6 +61,16 @@ document.querySelectorAll<HTMLFormElement>('form[data-busy]').forEach(form => fo
   if (label && pressed?.dataset.busyLabel) label.textContent = pressed.dataset.busyLabel;
 }));
 
+/* 8. A period chip on the dashboard: the numbers step back until the next page arrives, so the press is seen to have worked. */
+document.querySelectorAll<HTMLAnchorElement>('[data-period-link]').forEach(a => a.addEventListener('click', e => { if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; a.closest('.dash')?.setAttribute('aria-busy', 'true'); }));
+window.addEventListener('pageshow', () => { document.querySelector('.dash[aria-busy]')?.removeAttribute('aria-busy'); });
+
+/* 9. A chart's hover note goes on Escape and comes back when the pointer moves, so it can be dismissed without moving away (WCAG 1.4.13). */
+if (document.querySelector('.dash-tip')) {
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.documentElement.setAttribute('data-tips-off', ''); });
+  document.addEventListener('pointermove', () => { document.documentElement.removeAttribute('data-tips-off'); }, { passive: true });
+}
+
 /* 7. Show password. */
 document.querySelectorAll<HTMLInputElement>('[data-show-password]').forEach(box => {
   const field = document.getElementById(box.dataset.showPassword!) as HTMLInputElement | null;

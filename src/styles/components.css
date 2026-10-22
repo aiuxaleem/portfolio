@@ -80,7 +80,7 @@ html [data-deck-kicker], html [data-deck-kicker] span { overflow-wrap: anywhere;
 .ui-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; border-radius: var(--radius-pill); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font-family: var(--font-sans); font-size: var(--text-ui); font-weight: var(--weight-semibold); line-height: 1; cursor: pointer; transition: background var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out), transform var(--duration-fast) var(--ease-spring); }
 .ui-chip[aria-pressed="true"] { background: var(--action-ink); border-color: var(--action-ink); color: var(--surface-card); }
 /* Selected state is not colour alone: a check mark is added before the label. */
-.ui-chip[aria-pressed="true"]::before { content: "✓"; font-weight: var(--weight-bold); }
+.ui-chip[aria-pressed="true"]::before { content: "✓" / ""; font-weight: var(--weight-bold); }
 .ui-chip:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
 @media (hover: hover) { .ui-chip:not([aria-pressed="true"]):hover { background: var(--action-secondary-hover); transform: translateY(-1px); } }
 
@@ -89,7 +89,7 @@ html [data-deck-kicker], html [data-deck-kicker] span { overflow-wrap: anywhere;
 .resource-disclosure { background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); }
 .resource-disclosure > summary { display: flex; align-items: center; gap: var(--space-3); min-block-size: var(--tap-target); padding: var(--space-3) var(--space-5); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-strong); }
 .resource-disclosure > summary [data-disclosure-state] { flex: 1 1 auto; min-inline-size: 0; font-weight: var(--weight-medium); color: var(--text-muted); overflow-wrap: anywhere; }
-.resource-disclosure > summary [data-chevron] { flex-shrink: 0; transition: transform var(--duration-base) var(--ease-out); }
+.resource-disclosure > summary [data-chevron] { flex-shrink: 0; }
 .resource-disclosure[open] > summary [data-chevron] { transform: rotate(180deg); }
 .resource-disclosure > summary:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
 .resource-disclosure > .project-filter-group { padding: 0 var(--space-5) var(--space-5); }

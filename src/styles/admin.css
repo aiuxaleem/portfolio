@@ -4,37 +4,65 @@
 .dash { display: grid; gap: var(--space-5); min-inline-size: 0; }
 .dash-range { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 .dash-range ul { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.dash-range .ui-chip { text-decoration: none; }
-.dash-range .ui-chip[aria-current="page"] { background: var(--action-ink); border-color: var(--action-ink); color: var(--surface-card); }
+.dash-range a.ui-chip[aria-current="page"] { text-decoration: none; }
+/* On a phone the chips say "7 days", "30 days", "90 days" by themselves; the word Period stays for assistive technology (the nav is also named Period). */
+@media (max-width: 639px) { .dash-range > .project-filter-label { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; } }
 /* The current period is not shown by colour alone: a check mark is added, as on the filter chips. */
-.dash-range .ui-chip[aria-current="page"]::before { content: "✓"; font-weight: var(--weight-bold); }
-.dash-tiles .dash-number { font-family: var(--font-display); font-size: var(--text-metric-sm); font-weight: var(--weight-extrabold); line-height: var(--leading-snug); font-variant-numeric: tabular-nums; }
+.dash-range .ui-chip[aria-current="page"]::before { content: "✓" / ""; font-weight: var(--weight-bold); }
+.dash-tiles .dash-number { font-family: var(--font-display); font-size: var(--text-metric-sm); font-weight: var(--weight-extrabold); line-height: var(--leading-snug); }
 .dash-h2 { margin: 0; font-family: var(--font-display); font-size: var(--text-h3); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
-.dash-table table { min-inline-size: 0; }
+.dash-table table { min-inline-size: 0; table-layout: auto; }
+/* A day or week in the series table keeps to one line; its part ("today so far") sits under it. */
+.dash-table .dash-day { white-space: nowrap; overflow-wrap: normal; }
+.dash-path { display: block; font-size: var(--text-caption); font-weight: var(--weight-regular); color: var(--text-muted); overflow-wrap: anywhere; }
+.dash-part { display: block; font-size: var(--text-caption); font-weight: var(--weight-regular); color: var(--text-muted); white-space: nowrap; }
+/* What was published on a day, one name a line; on a phone the count stands in, the list above the table naming them. */
+.dash-cell-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; overflow-wrap: anywhere; }
+.dash-pub-count { display: none; }
+@media (max-width: 639px) { .dash-cell-list { display: none; } .dash-pub-count { display: inline; } }
+.dash-table .dash-num { inline-size: 1%; }
+.dash-table tr:last-child th { border-block-end: 0; }
+@media (max-width: 639px) { .dash .dash-table th, .dash .dash-table td { padding-inline: var(--space-2); } }
 .dash-table th[scope="row"] { font-weight: var(--weight-regular); background: transparent; color: var(--text-body); overflow-wrap: anywhere; }
 .dash-num { text-align: end !important; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 /* Bars: one series in the link blue, thin, rounded at the data end, a 2px gap between neighbours, on a card surface. */
-.dash-chart { display: grid; gap: var(--space-2); padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); }
+.dash-chart { display: grid; gap: var(--space-2); }
+.dash-plot { position: relative; --plot-pad: 1rem; padding-block-start: var(--plot-pad); }
+/* The scale: one hairline at the largest value with that value at its right end; every other column is read from the hover note or the table. */
+.dash-max { position: absolute; inset-inline: 0; inset-block-start: var(--plot-pad); margin: 0; max-inline-size: none; border-block-start: 1px solid var(--border-default); }
+.dash-max > span { position: absolute; inset-inline-end: 0; inset-block-end: 100%; font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--text-muted); }
 .dash-bars { display: flex; align-items: flex-end; gap: 2px; block-size: 11rem; border-block-end: 1px solid var(--border-default); }
+.dash-chart[data-height="short"] .dash-bars { block-size: 5rem; }
 .dash-bars li { position: relative; flex: 1 1 0; min-inline-size: 0; block-size: 100%; display: flex; align-items: flex-end; justify-content: center; }
-.dash-bar { inline-size: 100%; max-inline-size: 24px; block-size: calc(var(--v) / var(--max) * 100%); min-block-size: 2px; border-radius: var(--radius-xs) var(--radius-xs) 0 0; background: var(--text-link); }
-.dash-bar[data-zero] { background: var(--border-default); }
-.dash-tip { position: absolute; inset-block-end: calc(100% + var(--space-1)); inset-inline-start: 50%; transform: translateX(-50%); z-index: var(--z-raised); display: none; inline-size: max-content; max-inline-size: 16rem; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); background: var(--surface-ink); color: var(--on-ink-strong); font-size: var(--text-caption); line-height: var(--leading-normal); box-shadow: var(--shadow-md); pointer-events: none; }
+/* A column: rounded at its data end by no more than half its height, never less than 4px tall when it holds a value. */
+.dash-bar { inline-size: 60%; max-inline-size: 24px; block-size: calc(var(--v) / var(--max) * 100%); min-block-size: 4px; border-radius: min(4px, 50%) min(4px, 50%) 0 0; background: var(--text-link); }
+.dash-bar[data-zero] { min-block-size: 0; block-size: 0; }
+/* Today (or this week) is still being counted: the column steps back. */
+.dash-bar[data-partial]:not([data-zero]) { background: var(--text-subtle); }
+.dash-key-col[data-partial] { background: var(--text-subtle); }
+.dash-tip { position: absolute; inset-block-end: 100%; border-block-end: var(--space-1) solid transparent; background-clip: padding-box; inset-inline-start: 50%; transform: translateX(-50%); z-index: var(--z-raised); display: none; inline-size: max-content; max-inline-size: 16rem; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); background: var(--surface-ink); color: var(--on-ink-strong); font-size: var(--text-caption); line-height: var(--leading-normal); box-shadow: var(--shadow-md); }
 .dash-tip strong { display: block; }
 /* Bars near either edge keep their note inside the chart. */
 .dash-bars li:nth-child(-n+3) .dash-tip { inset-inline-start: 0; transform: none; }
 .dash-bars li:nth-last-child(-n+3) .dash-tip { inset-inline-start: auto; inset-inline-end: 0; transform: none; }
 @media (hover: hover) {
   .dash-bars li:hover .dash-tip { display: block; }
+  [data-tips-off] .dash-bars li:hover .dash-tip { display: none; }
   .dash-bars li:hover .dash-bar:not([data-zero]) { background: var(--text-link-hover); }
 }
-.dash-axis { margin: 0; max-inline-size: none; display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--text-muted); }
-.dash-details > summary { display: inline-flex; align-items: center; min-block-size: var(--tap-target); padding-inline: var(--space-3); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); }
+.dash-details > summary { display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); padding-inline: var(--space-3); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); }
 .dash-details[open] > summary { margin-block-end: var(--space-3); }
-@media (min-width: 640px) { .dash-table th:first-child { inline-size: 58%; } }
+.dash-more[open] > summary { margin-block: 0; }
+/* A fold whose words change when open ("Show 2 more" / "Show fewer"). */
+.dash-details[open] > summary [data-when-closed], .dash-details:not([open]) > summary [data-when-open] { display: none; }
+/* How the numbers are counted: the site disclosure in its own bento cell, its list indented inside the padding. */
+.dash-how > .dash-how-list { display: grid; gap: var(--space-2); margin: 0; padding: 0 var(--space-5) var(--space-5) calc(var(--space-5) + 1.25em); list-style: disc; font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-body); }
 /* Links inside the dashboard meet the 44px touch target. */
-.dash-table th a, .dash .form-panel a, .dash .project-empty a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); min-inline-size: var(--tap-target); overflow-wrap: anywhere; }
+.dash .form-panel a, .dash .project-empty a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); min-inline-size: var(--tap-target); overflow-wrap: anywhere; }
+/* A link in a table row or a publish row flows as text, however many lines it takes: its 44px hit area comes from padding that an equal negative margin takes back, so the row keeps the text's own height; the leave-the-admin icon rides the last word. */
+.dash-table th a, .admin-recent a { display: inline-block; min-inline-size: var(--tap-target); padding-block: calc((var(--tap-target) - 1lh) / 2); margin-block: calc((1lh - var(--tap-target)) / 2); font-weight: var(--weight-semibold); color: var(--text-link); overflow-wrap: anywhere; }
+.dash-table th a > svg, .admin-recent a > svg { display: inline-block; vertical-align: -2px; margin-inline-start: var(--space-1); }
 
 /* Admin frame and editors. */
 .admin-note { margin: 0; }
@@ -96,6 +124,7 @@ html:not([data-admin-js]) .admin-menu-button { display: none; }
 @media (hover: hover) { .admin-nav a:not([aria-current="page"]):hover, .admin-side-link:hover { background: var(--action-ghost-hover); color: var(--text-strong); } }
 .admin-side-foot { display: grid; gap: var(--space-1); padding-block-start: var(--space-4); border-block-start: 1px solid var(--border-subtle); }
 .admin-side-foot form { padding: var(--space-2) var(--space-3) 0; }
+.admin-side-who { margin: 0; padding: var(--space-2) var(--space-3); font-size: var(--text-body-sm); color: var(--text-muted); overflow-wrap: anywhere; }
 .admin-main { display: grid; align-content: start; gap: var(--space-8); inline-size: 100%; max-inline-size: 76rem; margin-inline: auto; padding: var(--space-8) var(--gutter) var(--space-16); min-inline-size: 0; outline: none; }
 .admin-main-narrow { max-inline-size: 58rem; }
 .admin-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-4) var(--space-6); padding-block-end: var(--space-6); border-block-end: 1px solid var(--border-subtle); }
@@ -171,8 +200,10 @@ html:has(.admin-savebar) { scroll-padding-block-end: 9rem; }
 
 /* ---------- Dashboard ---------- */
 .dash-tiles { grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); gap: var(--space-4); padding-block: 0; border-block: 0; }
-.dash-tiles > div { display: grid; gap: var(--space-1); padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-xs); min-inline-size: 0; }
-.dash-chart { box-shadow: var(--shadow-xs); }
+/* Two tiles a row from a 600px work area, four from 880px (the bento breakpoints), so a label never wraps beside its icon. */
+@container (min-width: 600px) { .dash-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container (min-width: 880px) { .dash-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.dash-tiles > div { display: grid; align-content: start; gap: var(--space-1); padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-xs); min-inline-size: 0; }
 .admin-waiting { display: grid; }
 .admin-waiting a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); font-weight: var(--weight-semibold); color: var(--text-link); overflow-wrap: anywhere; }
 .admin-waiting-meta { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font-size: var(--text-body-sm); color: var(--text-muted); }
@@ -205,34 +236,31 @@ html:has(.admin-savebar) { scroll-padding-block-end: 9rem; }
 .admin-bento > .cory-bento { --bento-cols: 1; --bento-row: auto; }
 @container (min-width: 600px) { .admin-bento > .cory-bento { --bento-cols: 2; } }
 @container (min-width: 880px) { .admin-bento > .cory-bento { --bento-cols: 4; } }
-/* A tile is as tall as its contents: a short tile beside a long one leaves page background, not an empty card. */
-.admin-bento > .cory-bento > li { display: grid; align-items: start; align-content: start; min-inline-size: 0; }
+/* Cards in a row share a height (the card keeps its content at the top). */
+.admin-bento > .cory-bento > li { display: grid; align-items: stretch; align-content: stretch; min-inline-size: 0; }
+/* An open fold grows only its own card: the half-width cells pair in source order, so the cell with the open fold and its partner stop stretching while other rows keep their shared height. */
+.admin-bento > .cory-bento > :is(li.span-2:has(.dash-details[open]), li.span-2:has(.dash-details[open]) + li, li:has(+ li.span-2 .dash-details[open])) { align-items: start; align-content: start; }
 .admin-bento .span-4 { grid-column: 1 / -1; }
 .admin-bento .admin-card { align-content: start; }
 
 /* ---------- Headings with their icon, and a head row that keeps a heading with what belongs beside it ---------- */
-.dash-h2, .admin-card-title { display: flex; align-items: center; gap: var(--space-2); min-inline-size: 0; }
+.dash-h2, .admin-card-title { display: flex; align-items: start; gap: var(--space-2); min-inline-size: 0; }
 .admin-card-title { margin: 0; font-family: var(--font-display); font-size: var(--text-h4); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
-.dash-h2 > svg, .admin-card-title > svg { color: var(--text-link); inline-size: 1em; block-size: 1em; }
+.dash-h2 > svg, .admin-card-title > svg { flex-shrink: 0; margin-block-start: calc((1lh - 1em) / 2); color: var(--text-link); inline-size: 1em; block-size: 1em; }
 .admin-card-head, .admin-section-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-4); min-inline-size: 0; }
 
 /* ---------- Stat tiles: an ink icon tile beside the label, the number under them, one line of context ---------- */
 .dash-tiles dt { display: flex; align-items: center; gap: var(--space-3); min-inline-size: 0; }
 .dash-tiles [data-icon-tile] { display: grid; place-items: center; inline-size: var(--tap-target); block-size: var(--tap-target); flex-shrink: 0; border-radius: var(--radius-md); background: var(--gradient-ink); color: var(--on-ink-strong); }
-.dash-tiles .dash-stat-note { font-size: var(--text-body-sm); font-weight: var(--weight-regular); color: var(--text-muted); }
 
 /* ---------- Rows in the Waiting and Recently published tiles: the kind's icon, then the title with its facts under it ---------- */
 .admin-waiting li, .admin-recent li { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--space-3); align-items: start; padding-block: var(--space-2); border-block-start: 1px solid var(--border-subtle); min-inline-size: 0; }
 .admin-waiting li:first-child, .admin-recent li:first-child { border-block-start: 0; }
+/* The title on its own line, the facts under it, at every width. */
+.admin-waiting li > div, .admin-recent li > div { display: grid; justify-items: start; min-inline-size: 0; }
 .admin-waiting li > svg, .admin-recent li > svg { margin-block-start: var(--space-3); color: var(--text-muted); }
 .admin-recent { display: grid; font-size: var(--text-body-sm); color: var(--text-body); }
-.admin-recent a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); min-inline-size: var(--tap-target); font-weight: var(--weight-semibold); color: var(--text-link); overflow-wrap: anywhere; }
-.admin-recent li > span { display: inline-flex; flex-wrap: wrap; align-items: center; min-block-size: var(--tap-target); overflow-wrap: anywhere; }
 
-/* ---------- The long tail of the visitor numbers in one closed disclosure (the Resources recipe) ---------- */
-.admin-fold > .admin-row { padding: 0 var(--space-5) var(--space-5); }
-.admin-card > .dash-chart { padding: 0; border: 0; background: transparent; box-shadow: none; }
-.admin-fold > .admin-row > div { display: grid; gap: var(--space-4); min-inline-size: 0; }
 
 /* ---------- Lists: label, box and count as one stack, so the count reads as the search's result ---------- */
 .admin-search { display: grid; gap: var(--space-2); max-inline-size: 26rem; }
@@ -257,9 +285,6 @@ form[aria-busy="true"] .ui-button { opacity: var(--opacity-disabled); pointer-ev
 
 /* ---------- Images: the upload button at the foot of its own card, pictures grouped under their folder's name and count ---------- */
 .admin-upload-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; }
-.admin-images-group { display: grid; gap: var(--space-4); }
-.admin-images-group > h3 { margin: 0; display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-strong); overflow-wrap: anywhere; }
-.admin-images-group > h3 svg { color: var(--text-muted); }
 [data-copy] .ui-button-label > span { display: inline-flex; align-items: center; gap: var(--space-2); }
 [data-copy] .ui-button-label > span[hidden] { display: none; }
 /* A pictures group folds (open to start), and its pictures sit two to a row on a phone. */
@@ -271,3 +296,58 @@ form[aria-busy="true"] .ui-button { opacity: var(--opacity-disabled); pointer-ev
 
 /* ---------- Sign-in: a control that needs JavaScript is not shown without it ---------- */
 html:not([data-admin-js]) [data-needs-js] { display: none; }
+
+/* ---------- Dashboard: stat tiles with a change, a line for the previous period, markers for publishes, bar lists ---------- */
+.dash-tiles dt > span:not([data-icon-tile]) { min-inline-size: 0; }
+.dash-tiles .dash-tile-note { font-size: var(--text-body-sm); font-weight: var(--weight-regular); line-height: var(--leading-normal); color: var(--text-muted); }
+.dash-published { display: grid; gap: var(--space-2); }
+.dash-published-title { display: flex; align-items: center; gap: var(--space-2); margin: var(--space-3) 0 0; font-size: var(--text-body-md); font-weight: var(--weight-semibold); line-height: var(--leading-snug); color: var(--text-strong); overflow-wrap: anywhere; }
+.dash-published-title > svg { flex-shrink: 0; color: var(--text-link); }
+.dash-published > .form-note { margin: 0; }
+/* The rows beyond six sit inside the fold, after its control in the source, and above it on screen. */
+.dash-more { display: flex; flex-direction: column-reverse; }
+.dash-more > .admin-recent > li:first-child { border-block-start: 1px solid var(--border-subtle); }
+/* While the next period loads, the numbers step back (the island marks the block busy when a period chip is pressed). */
+.dash[aria-busy="true"] [data-dash-grid] { opacity: var(--opacity-disabled); }
+.dash-tiles .dash-delta { display: flex; flex-wrap: wrap; align-items: center; align-content: start; gap: var(--space-1); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-muted); }
+.dash-tiles .dash-delta[data-dir="up"] { color: var(--text-success); }
+.dash-tiles .dash-delta[data-dir="down"] { color: var(--text-danger); }
+.dash-tiles .dash-delta-vs { font-weight: var(--weight-regular); color: var(--text-muted); }
+/* The previous period as a 2px line in the de-emphasis gray over the same axis. */
+.dash-line { position: absolute; inset: var(--plot-pad, 0px) 0 1px 0; inline-size: 100%; block-size: calc(100% - var(--plot-pad, 0px) - 1px); pointer-events: none; overflow: visible; }
+.dash-line polyline { fill: none; stroke: var(--text-muted); stroke-width: 2px; stroke-dasharray: 6 4; stroke-linejoin: round; stroke-linecap: round; }
+.dash-line .dash-line-ring { stroke: var(--surface-card); stroke-width: 12px; stroke-dasharray: none; }
+.dash-line .dash-line-dot { stroke-dasharray: none; stroke-width: 8px; }
+.dash-key { margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); font-size: var(--text-caption); color: var(--text-muted); }
+.dash-key > span { display: inline-flex; align-items: center; gap: var(--space-2); }
+.dash-key-col { display: inline-block; inline-size: 8px; block-size: 12px; border-radius: min(4px, 50%) min(4px, 50%) 0 0; background: var(--text-link); }
+.dash-key-line { display: inline-block; inline-size: 16px; block-size: 0; border-block-start: 2px dashed var(--text-muted); }
+/* A day with a publish: a dot under the baseline; the tooltip names what was published. */
+.dash-chart:has([data-mark]) .dash-plot { margin-block-end: 10px; }
+.dash-bars li[data-mark]::after { content: ""; position: absolute; inset-block-end: -8px; inset-inline-start: 50%; transform: translateX(-50%); inline-size: 6px; block-size: 6px; border-radius: 50%; background: var(--text-strong); }
+.dash-tip em { display: block; font-style: normal; color: var(--on-ink-muted); }
+.dash-mark-key { display: inline-block; inline-size: 6px; block-size: 6px; border-radius: 50%; background: var(--text-strong); margin-inline-end: var(--space-2); vertical-align: middle; }
+.dash-marks-note { display: block; margin: 0; max-inline-size: none; font-size: var(--text-body-sm); color: var(--text-muted); }
+/* Axis labels under every nth column. */
+.dash-chart:has(.dash-tick) .dash-plot { margin-block-end: 1.3rem; }
+/* With both dots and labels, the labels start under the dots' band. */
+.dash-chart:has([data-mark]):has(.dash-tick) .dash-plot { margin-block-end: calc(1.3rem + 12px); }
+.dash-chart:has([data-mark]) .dash-tick { margin-block-start: 14px; }
+/* A weekly chart on a phone keeps every other label. */
+@container (max-width: 599px) { .dash-chart[data-weekly][data-tick="2"] .dash-bars li:nth-child(4n+3) .dash-tick { display: none; } }
+.dash-tick { position: absolute; inset-block-start: 100%; inset-inline-start: 50%; transform: translateX(-50%); margin-block-start: 4px; font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--text-muted); white-space: nowrap; }
+.dash-h4 { margin: var(--space-2) 0 0; font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
+/* Bar list: a name, a thin bar for its share of the largest, the value as text. */
+.bar-list { inline-size: 100%; border-collapse: collapse; }
+.bar-list th[scope="row"] { padding-block: var(--space-2); font-weight: var(--weight-regular); text-align: start; min-inline-size: 0; }
+.bar-list-cell { display: grid; gap: 4px; }
+.bar-list-head th { padding: 0; block-size: 0; line-height: 0; font-size: 0; border: 0; }
+.bar-list-label { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); font-size: var(--text-body-sm); color: var(--text-body); overflow-wrap: anywhere; }
+.bar-list-note { flex-basis: 100%; font-size: var(--text-caption); color: var(--text-muted); overflow-wrap: anywhere; }
+.bar-list-track { display: block; block-size: 6px; border-radius: 3px; background: var(--surface-sunken); overflow: hidden; }
+.bar-list[data-single] .bar-list-track { display: none; }
+.bar-list-fill { display: block; block-size: 100%; border-radius: 0 3px 3px 0; background: var(--text-link); }
+.bar-list[data-emphasis] tr:not([data-accent]) .bar-list-fill { background: var(--text-subtle); }
+.bar-list td { padding: var(--space-2) 0 var(--space-2) var(--space-3); vertical-align: top; font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-strong); white-space: nowrap; }
+.bar-list td.bar-list-share { font-weight: var(--weight-regular); color: var(--text-muted); }
+.bar-list tr + tr th, .bar-list tr + tr td { border-block-start: 1px solid var(--border-subtle); }

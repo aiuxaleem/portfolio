@@ -80,21 +80,32 @@ const pubFull = {
     ...['Case study', 'Video', 'LinkedIn post', 'LinkedIn article', 'Settings', 'Project'].map((kind, i) => ({ href: '#main', title: `Fixture ${kind.toLowerCase()} ${i + 1}`, kind, kindPath: ['case-studies', 'videos', 'linkedin-posts', 'linkedin-articles', 'site', 'projects'][i], state: (i % 2 ? 'new' : 'changes') as 'new' | 'changes', at: pubAt(7 - i) })),
   ],
   recent: [
-    { href: '#main', slug: 'colaberry-design-system', kind: 'Project', kindPath: 'projects', action: 'update', at: pubAt(12) },
-    { href: '#main', slug: 'an-unbroken-string-of-sixty-characters-in-a-page-address-x1', kind: 'Case study', kindPath: 'case-studies', action: 'create', at: pubAt(11) },
-    { href: '#main', slug: 'component-spec-files', kind: 'Post', kindPath: 'posts', action: 'update', at: pubAt(10) },
-    { href: '#main', slug: 'the-state-of-designer-2026', kind: 'Video', kindPath: 'videos', action: 'update', at: pubAt(9) },
-    { href: '#main', slug: 'config', kind: 'Settings', kindPath: 'site', action: 'update', at: pubAt(8) },
+    { href: '#main', slug: 'colaberry-design-system', title: 'Colaberry design system', kind: 'Project', kindPath: 'projects', action: 'update', at: pubAt(12) },
+    { href: '#main', slug: 'an-unbroken-string-of-sixty-characters-in-a-page-address-x1', title: 'An unbroken string of sixty characters in a page address x1', kind: 'Case study', kindPath: 'case-studies', action: 'create', at: pubAt(11) },
+    { href: '#main', slug: 'component-spec-files', title: 'Component spec files', kind: 'Post', kindPath: 'posts', action: 'update', at: pubAt(10) },
+    { href: '#main', slug: 'the-state-of-designer-2026', title: 'The state of designer 2026', kind: 'Video', kindPath: 'videos', action: 'update', at: pubAt(9) },
+    { href: '#main', slug: 'config', title: 'Config', kind: 'Settings', kindPath: 'site', action: 'update', at: pubAt(8) },
   ],
 };
-/* Fixture numbers for the visitor dashboard: 14 days with a quiet start and two empty days. */
-const dashDays = [0, 0, 3, 5, 4, 9, 12, 7, 0, 6, 14, 22, 18, 11].map((views, i) => ({ day: `2026-09-${String(17 + i).padStart(2, '0')}`, views, visitors: Math.ceil(views * 0.6) }));
-const dashFull = { days: 14, series: dashDays, totals: { views: dashDays.reduce((a, d) => a + d.views, 0), visitors: dashDays.reduce((a, d) => a + d.visitors, 0), pages: 9 },
-  pages: [{ path: '/', views: 41, visitors: 30 }, { path: '/case-studies/colaberry-design-system', views: 23, visitors: 17 }, { path: '/work/an-unbroken-string-of-sixty-characters-in-a-page-address-x1', views: 9, visitors: 8 }],
-  referrers: [{ host: 'linkedin.com', views: 38 }, { host: '', views: 29 }, { host: 'an-unbroken-string-of-sixty-characters-as-a-host-name-x1.example', views: 4 }],
-  countries: [{ country: 'SA', views: 31 }, { country: 'AE', views: 22 }, { country: 'IN', views: 19 }, { country: '', views: 3 }], devices: [{ device: 'desktop', views: 70 }, { device: 'phone', views: 38 }, { device: 'tablet', views: 3 }] };
-const dashPartial = { ...dashFull, referrers: [], countries: [] };
-const dashEmpty = { days: 7, series: dashDays.slice(0, 7).map(d => ({ ...d, views: 0, visitors: 0 })), totals: { views: 0, visitors: 0, pages: 0 }, pages: [], referrers: [], countries: [], devices: [] };
+/* Fixture numbers for the visitor dashboard: 30 days (the chip the fixture marks current) with a quiet start and two empty days. */
+const dayOf = (first: string, i: number) => new Date(new Date(first + 'T00:00:00Z').getTime() + i * 86_400_000).toISOString().slice(0, 10);
+const dashDays = [0, 0, 3, 5, 4, 9, 12, 7, 0, 6, 14, 22, 18, 11, 9, 3, 8, 10, 15, 6, 4, 12, 17, 9, 11, 8, 14, 19, 12, 10].map((views, i) => ({ day: dayOf('2026-09-17', i), views, visitors: Math.ceil(views * 0.6) }));
+const dayViews = [2, 4, 1, 6, 3, 5, 8, 4, 2, 5, 9, 11, 7, 6, 0, 5, 0, 4, 6, 8, 5, 3, 6, 9, 7, 5, 4, 6, 8, 5]; // a lone value between zeros, drawn as a dot
+const dashPrev = dayViews.map((v, i) => ({ day: dayOf('2026-08-18', i), views: v, visits: Math.ceil(v * 0.6) }));
+const dashSeries = dashDays.map(d => ({ day: d.day, views: d.views, visits: d.visitors }));
+const dashFull = { days: 30, from: dashDays[0].day, to: dashDays[dashDays.length - 1].day, countingSince: '2026-08-01', previousCovered: 30, series: dashSeries, totals: { views: dashSeries.reduce((a, d) => a + d.views, 0), visits: dashSeries.reduce((a, d) => a + d.visits, 0), target: 93 },
+  previous: { series: dashPrev, totals: { views: dashPrev.reduce((a, d) => a + d.views, 0), visits: dashPrev.reduce((a, d) => a + d.visits, 0), target: 12 } },
+  pages: [{ path: '/', name: 'Home', views: 117, visits: 85 }, { path: '/case-studies/colaberry-design-system', name: 'Colaberry design system', views: 66, visits: 48 }, { path: '/work/an-unbroken-string-of-sixty-characters-in-a-page-address-x1', name: 'A project whose title runs to one hundred and twenty characters so that a wrapped name in this table keeps its path under it', views: 26, visits: 23 }, { path: '/resources', name: 'UX resources', views: 20, visits: 17 }, { path: '/read', name: 'Read', views: 14, visits: 11 }, { path: '/about', name: 'About', views: 11, visits: 11 }, { path: '/contact', name: 'Contact', views: 9, visits: 9 }],
+  sections: [{ section: 'Home', views: 117 }, { section: 'Case studies', views: 83 }, { section: 'Projects', views: 34 }, { section: 'Resources', views: 20 }, { section: 'Read', views: 14 }, { section: 'About', views: 11 }, { section: 'Contact and resume', views: 9 }],
+  sources: [{ source: 'LinkedIn', visits: 95, hosts: [{ host: 'linkedin.com', visits: 76 }, { host: 'lnkd.in', visits: 19 }] }, { source: 'Direct or app', visits: 78, hosts: [] }, { source: 'Other sites', visits: 12, hosts: [{ host: 'an-unbroken-string-of-sixty-characters-as-a-host-name-x1.example', visits: 12 }] }],
+  countries: [{ country: 'SA', visits: 62 }, { country: 'AE', visits: 31 }, { country: 'IN', visits: 55 }, { country: 'GB', visits: 27 }, { country: '', visits: 10 }], devices: [{ device: 'desktop', visits: 120 }, { device: 'phone', visits: 55 }, { device: 'tablet', visits: 10 }],
+  hours: [0, 0, 0, 4, 8, 16, 24, 36, 44, 32, 28, 24, 20, 28, 36, 32, 24, 16, 20, 24, 16, 8, 4, 0], weekdays: [72, 88, 60, 76, 56, 32, 60], patternDays: 61,
+  publishes: [{ day: '2026-09-28', kind: 'linkedinPosts', slug: 'ux-is-what-you-see-and-touch', title: 'UX is what you see and touch', path: '/read', pathName: 'Read', shared: true, views: 40 }, { day: '2026-09-28', kind: 'videos', slug: 'the-state-of-designer-2026', title: 'The state of the designer in 2026', path: '/videos', pathName: 'Videos', shared: true, views: 25 }, { day: '2026-09-23', kind: 'posts', slug: 'component-spec-files', title: 'Component spec files: six tiers deep, eight sections wide, and the one hundred and twenty character title fixture', path: '/blog/component-spec-files', views: 14 }],
+  lastVisit: { at: '2026-09-30T08:12:00.000Z', country: 'SA', path: '/case-studies/colaberry-design-system', name: 'Colaberry design system' } };
+/* The earlier period only partly in the log: its totals are the five covered days, as the query would return them. */
+const prevTail = dashPrev.slice(-5);
+const dashPartial = { ...dashFull, totals: { ...dashFull.totals, target: 0 }, previous: { series: dashPrev, totals: { views: prevTail.reduce((a, d) => a + d.views, 0), visits: prevTail.reduce((a, d) => a + d.visits, 0), target: 2 } }, previousCovered: 5, countingSince: '2026-09-12', sources: [{ source: 'LinkedIn', visits: 0, hosts: [] }, { source: 'Direct or app', visits: 185, hosts: [] }], countries: [{ country: 'SA', visits: 0 }, { country: 'AE', visits: 0 }, { country: 'IN', visits: 120 }, { country: 'GB', visits: 65 }], publishes: [], patternDays: 20, lastVisit: undefined };
+const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countingSince: dashDays[2].day, previousCovered: 0, series: dashSeries.slice(0, 7).map(d => ({ ...d, views: 0, visits: 0 })), totals: { views: 0, visits: 0, target: 0 }, previous: null, pages: [], sections: [], sources: [], countries: [{ country: 'SA', visits: 0 }, { country: 'AE', visits: 0 }], devices: [], hours: Array(24).fill(0), weekdays: Array(7).fill(0), patternDays: 0, publishes: [] };
 ---
 <BaseLayout title="Component states · AIUXAleem" description="Development page listing components in their states, in both themes, with stress content. Excluded from production and the sitemap." noindex>
   <main id="main" style="display: grid;">
@@ -328,7 +339,7 @@ const dashEmpty = { days: 7, series: dashDays.slice(0, 7).map(d => ({ ...d, view
 
           <div style="display: grid; gap: var(--space-4);">
             <h2 style={h2}>Admin: dashboard</h2>
-            <p style={note}>Shown on /admin after signing in (Vercel only). The publishing row: with work (a suggestion first, a long title, nine rows so the tile caps at eight), empty, and a fault. The visitor numbers: with numbers (four tiles, the chart, two tables, the folded countries and devices: press it to open), partial, empty, and error. Hover a bar for its figures.</p>
+            <p style={note}>Shown on /admin after signing in (Vercel only). The publishing row: with work (a suggestion first, a long title, nine rows so the tile caps at eight), empty, and a fault. The visitor numbers: with numbers (four tiles with the change against the previous period, the chart with the previous period as a dashed line, publish markers and tick labels, what was published with the views since, what they read with the top pages folded, where they are and what they use, where they came from, when they visit), partial (an earlier period only partly in the log, so no change rows; no visits from LinkedIn or the target markets; nothing published; hours drawn but not yet weekdays), empty, and error. Hover a column for its figures; Escape hides the note.</p>
             <Publishing plain uid={`${theme}-pub`} waiting={pubFull.waiting} recent={pubFull.recent} />
             <p style={note}>Publishing: nothing waiting and nothing published yet.</p>
             <Publishing plain uid={`${theme}-pub-empty`} waiting={[]} recent={[]} />
@@ -336,8 +347,8 @@ const dashEmpty = { days: 7, series: dashDays.slice(0, 7).map(d => ({ ...d, view
             <Publishing plain uid={`${theme}-pub-fault`} waiting={[]} recent={[]} fault />
             <p style={note}>Visitor numbers, with numbers.</p>
             <DashboardView plain uid={`${theme}-full`} data={dashFull} range={30} ranges={[7, 30, 90]} base="#main" />
-            <p style={note}>Partial: two of the tables have nothing to show.</p>
-            <DashboardView plain uid={`${theme}-partial`} data={dashPartial} range={30} ranges={[7, 30, 90]} base="#main" />
+            <p style={note}>Partial: the earlier period only partly in the log, so no change rows; no visits from LinkedIn or the target markets; nothing published; under four weeks with visits, so hours are drawn but weekdays are not yet; in the dark theme the log is younger than a week, so hours are withheld too.</p>
+            <DashboardView plain uid={`${theme}-partial`} data={theme === 'dark' ? { ...dashPartial, patternDays: 5 } : dashPartial} range={30} ranges={[7, 30, 90]} base="#main" />
             <p style={note}>Empty: no visits in the period.</p>
             <DashboardView plain uid={`${theme}-empty`} data={dashEmpty} range={7} ranges={[7, 30, 90]} base="#main" />
             <p style={note}>Error: the numbers could not be read.</p>

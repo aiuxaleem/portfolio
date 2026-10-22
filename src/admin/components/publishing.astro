@@ -10,8 +10,8 @@ import AdminIcon from './admin-icon.astro';
 import type { AdminIcon as IconName } from './admin-icons';
 import { when, type Recent, type Waiting } from '../lib/publishing';
 
-interface Props { waiting: Waiting[]; recent: Recent[]; /** The drafts could not be read. */ fault?: boolean; plain?: boolean; uid?: string }
-const { waiting, recent, fault = false, plain = false, uid = 'pub' } = Astro.props;
+interface Props { waiting: Waiting[]; recent: Recent[]; /** Publishes left out because the visitor numbers above already name them. */ listedAbove?: number; /** The drafts could not be read. */ fault?: boolean; plain?: boolean; uid?: string }
+const { waiting, recent, listedAbove = 0, fault = false, plain = false, uid = 'pub' } = Astro.props;
 const Block: any = plain ? 'div' : 'section';
 const labelled = (id: string) => (plain ? {} : { 'aria-labelledby': `${uid}-${id}` });
 const SHOWN = 8;
@@ -50,14 +50,14 @@ const kindIcon = (path: string): IconName => (path in { projects: 1, 'case-studi
     <li class="span-2">
       <Block class="admin-card" {...labelled('recent-title')}>
         <div class="admin-card-head"><h2 id={`${uid}-recent-title`} class="dash-h2"><AdminIcon name="recent" />Recently published</h2></div>
-        {recent.length === 0 && <p class="form-note"><AdminIcon name="recent" size={16} />Nothing published from this admin yet. Open an entry and press Publish.</p>}
+        {recent.length === 0 && <p class="form-note"><AdminIcon name="recent" size={16} />{listedAbove > 0 ? `Everything published lately is listed under the chart, with the views it brought.` : 'Nothing published from this admin yet. Open an entry and press Publish.'}</p>}
         {recent.length > 0 && (
           <ul class="admin-recent">
             {recent.map(r => (
               <li>
                 <AdminIcon name={kindIcon(r.kindPath)} />
                 <div>
-                  <a data-link href={r.href}><bdi>{r.slug}</bdi></a>
+                  <a data-link href={r.href}><bdi>{r.title}</bdi></a>
                   <span class="admin-waiting-meta"><span class="ui-badge">{r.kind}</span><span>{r.action === 'create' ? 'added' : 'updated'}</span><span class="admin-state"><AdminIcon name="clock" size={14} />{when(r.at)}</span></span>
                 </div>
               </li>
