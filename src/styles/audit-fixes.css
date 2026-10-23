@@ -14,7 +14,7 @@
 [data-ds-button]:active { transform: scale(var(--press-scale)) !important; }
 @media (hover: hover) {
   [data-ds-button]:hover { transform: translateY(-1px) !important; }
-  [data-ds-button="primary"]:hover { filter: brightness(1.08) saturate(1.05); box-shadow: var(--shadow-brand-hover) !important; }
+  [data-ds-button="primary"]:hover { box-shadow: var(--shadow-brand-hover) !important; } /* no brightness filter: L-05 */
   [data-ds-button="ink"]:hover { background: var(--action-ink-hover) !important; box-shadow: var(--shadow-md) !important; }
   [data-ds-button="secondary"]:hover { background: var(--action-secondary-hover) !important; box-shadow: var(--shadow-sm) !important; }
   [data-ds-button="ghost"]:hover { background: var(--action-ghost-hover) !important; color: var(--text-link-hover) !important; }
@@ -39,7 +39,13 @@ details > summary { border-radius: inherit; transition: background var(--duratio
 @media (hover: hover) {
   :is(div:has(+ [data-hero-stack]), div:has(+ [data-deck-static])) button:not(:disabled):hover { background: var(--action-secondary-hover) !important; transform: translateY(-1px) !important; }
   details > summary:hover { background: var(--action-ghost-hover); }
+}
+details > summary:focus-visible { background: var(--action-ghost-hover); } /* the pointer's tint, for the keyboard too */
+@media (hover: hover) {
   .resume-contact a:hover { color: var(--text-link-hover); }
+}
+.resume-contact a:focus-visible { color: var(--text-link-hover); } /* the pointer's colour, for the keyboard too */
+@media (hover: hover) {
   #guides [data-card-fill] > .sc-host-x > a:hover { transform: translateY(var(--lift-hover)) !important; box-shadow: var(--shadow-lg) !important; }
 }
 #guides [data-card-fill] > .sc-host-x > a:focus-visible { transform: translateY(var(--lift-hover)) !important; box-shadow: var(--shadow-lg) !important; }

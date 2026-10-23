@@ -22,6 +22,7 @@
   --navy-100: #DEE4EC;
 
   /* --- Brand: Blue (signal / primary action, gradient start) --- */
+  --blue-800: #1258B1; /* link hover: blue-700 mixed 22% toward navy-800, 6.9:1 on white where blue-600 was 4.2:1 (CLAUDE.md "Contrast") */
   --blue-700: #1568D4;
   --blue-600: #1B79EC;
   --blue-500: #258AFD; /* gradient start */
@@ -351,6 +352,7 @@
   --aspect-cover: 21 / 9; /* @kind other */
 
   /* --- Layout --- */
+  --tap-target: 44px; /* minimum hit target (CLAUDE.md 2.4) */
   --container-max: 1200px;
   --container-wide: 1400px;
   --container-narrow: 760px;

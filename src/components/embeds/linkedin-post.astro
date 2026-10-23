@@ -18,7 +18,7 @@ const Title = (level ? `h${level}` : 'p') as any;
     {(date || series) && <p class="case-kicker">{date && <time datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time>}{date && series && ' · '}{series}</p>}
     {excerpt && <p class="embed-card-excerpt">{excerpt}</p>}
     <div class="embed-actions">
-      {valid && <button type="button" class="ui-button ui-button-secondary ui-button-md" data-embed-load><span class="ui-button-label">Load the post here<span class="cory-visually-hidden">: {title}</span></span></button>}
+      {valid && <button type="button" class="ui-button ui-button-secondary ui-button-sm" data-embed-load><span class="ui-button-label">Load the post here<span class="cory-visually-hidden">: {title}</span></span></button>}
       <a data-link class="embed-card-link" href={url} target="_blank" rel="noopener"><span>Read on LinkedIn<span class="cory-visually-hidden">: {title} (opens in a new tab)</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"></path></svg></a>
     </div>
     <p class="embed-status" role="status">{state === 'loading' ? 'Loading the LinkedIn post' : ''}</p>

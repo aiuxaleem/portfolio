@@ -7,7 +7,7 @@ interface Props { level?: 2 | 3; highlights?: boolean }
 const { level = 3, highlights = true } = Astro.props;
 const Company = `h${level}` as any, RoleTag = `h${level + 1}` as any;
 ---
-<ol class="career">
+<ol class="career" data-compact={highlights ? undefined : ''}>
   {careerByCompany().map(group => (
     <li class="career-company">
       <Company>{group.company}</Company>

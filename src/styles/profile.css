@@ -18,7 +18,9 @@
 
 /* Career timeline: one block per company, roles inside. A rule on the inline-start edge, no fixed heights. */
 .career { display: grid; gap: var(--space-10); max-inline-size: var(--measure-body); }
-.career-company { display: grid; gap: var(--space-5); padding-inline-start: var(--space-5); border-inline-start: 3px solid var(--border-default); }
+/* Without the highlight lists (the About page) the companies fill the container two to a row from 1024px; the resume keeps the reading column. */
+@media (min-width: 1024px) { .career[data-compact] { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8) var(--space-10); max-inline-size: none; } }
+.career-company { display: grid; align-content: start; gap: var(--space-5); padding-inline-start: var(--space-5); border-inline-start: 3px solid var(--border-default); }
 .career-company > h3 { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; }
 .career-role { display: grid; gap: var(--space-2); }
 .career-role h4 { margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
@@ -28,12 +30,19 @@
 .tool-list { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 
 /* Certification rows. */
-.cert-list { display: grid; gap: var(--space-3); max-inline-size: var(--measure-body); }
+.cert-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: var(--grid-gap); }
 .cert-list > li { display: grid; gap: var(--space-2); padding: var(--space-5) var(--space-6); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
 .page-section[data-surface="card"] .cert-list > li { background: var(--surface-page); }
 .cert-name { margin: 0; font-size: var(--text-body-lg); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
 .cert-meta { margin: 0; font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-muted); overflow-wrap: anywhere; }
 .cert-list .ui-badge { justify-self: start; }
+/* The resume lists certifications as rows, not cards: name, issuer and date, the state and the Verify link on one line. */
+.cert-list-compact { grid-template-columns: 1fr; gap: 0; max-inline-size: var(--measure-body); }
+.cert-list-compact > li, .page-section[data-surface="card"] .cert-list-compact > li { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name badge" "meta verify"; column-gap: var(--space-4); row-gap: var(--space-1); padding: var(--space-3) 0; border-radius: 0; background: transparent; border: 0; border-block-end: 1px solid var(--border-subtle); box-shadow: none; }
+.cert-list-compact > li > .cert-name { grid-area: name; }
+.cert-list-compact > li > .cert-meta { grid-area: meta; }
+.cert-list-compact > li > .ui-badge { grid-area: badge; justify-self: end; }
+.cert-list-compact > li > .embed-card-link { grid-area: verify; justify-self: end; }
 
 /* Facts strip under an intro. */
 .facts { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: var(--space-4) var(--space-6); padding-block: var(--space-5); border-block: 1px solid var(--border-subtle); }
@@ -65,10 +74,17 @@
 .contact-form form { display: grid; gap: var(--space-5); padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
 .contact-form form[hidden], .form-panel[hidden], .form-error[hidden] { display: none; }
 .form-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); }
-.form-note, .form-hint { margin: 0; font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-muted); }
+.form-note { margin: 0; font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-muted); }
+/* A field's hint and error are the design's Input message: 12px, as the invalid border is the design's 1px (L-07). */
+.form-hint { margin: 0; font-size: var(--text-overline); line-height: var(--leading-normal); color: var(--text-muted); }
 .form-field { display: grid; gap: var(--space-2); min-inline-size: 0; }
+/* The hint reads under its field, as the design system's Input does; the error after it. The source order (label, hint, field) keeps aria-describedby and the scripts as they are. */
+.form-field > .form-hint { order: 2; }
+.form-field > .form-error { order: 3; }
 .form-field label { font-size: var(--text-label); font-weight: var(--weight-semibold); color: var(--text-strong); }
 .form-field input, .form-field textarea { inline-size: 100%; min-block-size: 44px; padding: 11px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font-family: var(--font-sans); font-size: var(--text-ui); line-height: var(--leading-normal); }
+/* Placeholder text takes a token, not the browser's grey (about 2.3:1): --text-subtle is 5.1:1 on the field in light and 6.1:1 in dark. */
+.form-field :is(input, textarea)::placeholder { color: var(--text-subtle); opacity: 1; }
 .form-field textarea { padding: 12px 14px; resize: vertical; }
 /* A menu field (the suggest-a-resource form) takes the same box as a text field, and the browser's own arrow. */
 .form-field select { inline-size: 100%; min-block-size: 44px; padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font-family: var(--font-sans); font-size: var(--text-ui); line-height: var(--leading-normal); }
@@ -77,11 +93,12 @@
 /* A note shown only when the address points at it: the reply to a form sent without JavaScript. */
 [data-target-note]:not(:target) { display: none; }
 /* Short fields side by side where there is room; one under another on a phone. */
-.form-row { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
+.form-row { display: grid; align-items: start; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
 .form-field input:focus-visible, .form-field textarea:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; border-color: var(--border-focus); }
-.form-field [aria-invalid="true"] { border-color: var(--text-danger); border-width: 2px; }
-.form-field input:disabled, .form-field textarea:disabled, .form-field input:read-only, .form-field textarea:read-only { cursor: not-allowed; background: var(--surface-sunken); }
-.form-error { margin: 0; display: flex; gap: var(--space-2); align-items: flex-start; font-size: var(--text-body-sm); font-weight: var(--weight-semibold); line-height: var(--leading-normal); color: var(--text-danger); }
+.form-field [aria-invalid="true"] { border-color: var(--red-500); } /* the design's Input: red-500, 3.9:1 on white */
+/* [readonly], not :read-only: a checkbox or a file field is never read-write, so the pseudo-class would paint them as disabled. */
+.form-field input:disabled, .form-field textarea:disabled, .form-field input[readonly], .form-field textarea[readonly] { cursor: not-allowed; background: var(--surface-sunken); }
+.form-error { margin: 0; display: flex; gap: var(--space-2); align-items: flex-start; font-size: var(--text-overline); font-weight: var(--weight-medium); line-height: var(--leading-normal); color: var(--text-danger); }
 .form-error svg { flex-shrink: 0; margin-block-start: 2px; }
 .form-panel { display: flex; gap: var(--space-3); align-items: flex-start; padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); border-inline-start: 3px solid var(--text-danger); }
 .form-panel > svg { flex-shrink: 0; margin-block-start: 2px; color: var(--text-danger); }

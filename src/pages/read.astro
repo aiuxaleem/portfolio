@@ -23,7 +23,8 @@ const sections = [
   { id: 'linkedin-articles', label: 'LinkedIn articles', count: articles.length },
 ].filter(s => s.count > 0);
 const counted = (n: number, one: string, many: string) => (n === 1 ? `1 ${one}` : `${n} ${many}`);
-const range = (n: number) => (n > PAGE ? ` · showing 1 to ${PAGE}, page 1 of ${Math.ceil(n / PAGE)}` : '');
+/* The count line of a paged list, in the words Work and Resources use; the island rewrites it as the page changes. */
+const shown = (n: number, one: string, many: string) => (n > PAGE ? `Showing 1 to ${PAGE} of ${n} ${many} · Page 1 of ${Math.ceil(n / PAGE)}` : counted(n, one, many));
 ---
 <PageLayout title="Read · AIUXAleem" description="Blog posts, LinkedIn posts and LinkedIn articles by Mohammad Abdul Aleem on AI product design, design systems and making AI trustworthy." page="writing" bg="grid" mainStyle="outline: none; overflow: clip;">
   <section class="cory-container" aria-labelledby="writing-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
@@ -51,7 +52,8 @@ const range = (n: number) => (n > PAGE ? ` · showing 1 to ${PAGE}, page 1 of ${
       <section id="blog-posts" class="paged-section" aria-labelledby="blog-posts-title">
         <div class="page-section-head">
           <h2 id="blog-posts-title" class="project-h2">Blog posts</h2>
-          <p class="project-filter-count">{counted(posts.length, 'post', 'posts')}{posts.length > BLOG_SHOWN && ` · the latest ${BLOG_SHOWN} are here`}. Guides and longer pieces, written for this site.</p>
+          <p class="project-filter-count">{posts.length > BLOG_SHOWN ? `Showing ${BLOG_SHOWN} of ${posts.length} posts` : counted(posts.length, 'post', 'posts')}</p>
+          <p class="project-filter-count">Guides and longer pieces, written for this site.</p>
         </div>
         <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{posts.slice(0, BLOG_SHOWN).map(p => <li><PostCard post={p} level={3} /></li>)}</ul></div>
         {posts.length > BLOG_SHOWN && <div><Button variant="secondary" href="/blog">All {posts.length} blog posts</Button></div>}
@@ -62,7 +64,7 @@ const range = (n: number) => (n > PAGE ? ` · showing 1 to ${PAGE}, page 1 of ${
       <section id="linkedin-posts" class="paged-section" aria-labelledby="linkedin-posts-title">
         <div class="page-section-head">
           <h2 id="linkedin-posts-title" class="project-h2">LinkedIn posts</h2>
-          <p class="project-filter-count" role="status">{counted(linkedin.length, 'post', 'posts')}<span data-paged-range="linkedin-posts">{range(linkedin.length)}</span></p>
+          <p class="project-filter-count" role="status"><span data-paged-range="linkedin-posts">{shown(linkedin.length, 'LinkedIn post', 'LinkedIn posts')}</span><noscript>{counted(linkedin.length, 'LinkedIn post', 'LinkedIn posts')}</noscript></p>
           <p class="project-filter-count">Short posts and series. A post is loaded from LinkedIn only when you ask for it.</p>
         </div>
         <div data-cq><ul data-paged="linkedin-posts" data-cq-grid style="display: grid; gap: var(--grid-gap);">{linkedin.map((p, i) => <li hidden={i >= PAGE}><LinkedInPost urn={p.urn} url={p.url} title={p.title} excerpt={p.excerpt} date={p.date} series={p.series} level={3} /></li>)}</ul></div>
@@ -74,7 +76,7 @@ const range = (n: number) => (n > PAGE ? ` · showing 1 to ${PAGE}, page 1 of ${
       <section id="linkedin-articles" class="paged-section" aria-labelledby="linkedin-articles-title">
         <div class="page-section-head">
           <h2 id="linkedin-articles-title" class="project-h2">LinkedIn articles</h2>
-          <p class="project-filter-count" role="status">{counted(articles.length, 'article', 'articles')}<span data-paged-range="linkedin-articles">{range(articles.length)}</span></p>
+          <p class="project-filter-count" role="status"><span data-paged-range="linkedin-articles">{shown(articles.length, 'LinkedIn article', 'LinkedIn articles')}</span><noscript>{counted(articles.length, 'LinkedIn article', 'LinkedIn articles')}</noscript></p>
           <p class="project-filter-count">Longer pieces published on LinkedIn. Each one opens there, in a new tab.</p>
         </div>
         <div data-cq><ul data-paged="linkedin-articles" data-cq-balance style="display: grid; gap: var(--grid-gap);">{articles.map((a, i) => <li hidden={i >= PAGE}><FeedCard item={a} level={3} /></li>)}</ul></div>

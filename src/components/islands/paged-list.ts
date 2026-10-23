@@ -2,7 +2,7 @@
    ones on other pages. Changing page moves focus to the section's heading, so keyboard and screen reader users land at
    the top of the new page, and the address keeps the page number. */
 document.querySelectorAll<HTMLElement>('[data-pager]').forEach(nav => {
-  const id = nav.dataset.pager!, size = Number(nav.dataset.size) || 6;
+  const id = nav.dataset.pager!, size = Number(nav.dataset.size) || 6, nouns = nav.dataset.nouns || 'items';
   const list = document.querySelector<HTMLElement>(`[data-paged="${id}"]`);
   if (!list) return;
   const items = [...list.children] as HTMLElement[], pages = Math.ceil(items.length / size);
@@ -20,7 +20,7 @@ document.querySelectorAll<HTMLElement>('[data-pager]').forEach(nav => {
     if (prev) { prev.href = href(current - 1); prev.style.visibility = current > 1 ? '' : 'hidden'; }
     if (next) { next.href = href(current + 1); next.style.visibility = current < pages ? '' : 'hidden'; }
     const from = (current - 1) * size + 1, to = Math.min(current * size, items.length);
-    if (range) range.textContent = ` · showing ${from} to ${to}, page ${current} of ${pages}`;
+    if (range) range.textContent = `Showing ${from} to ${to} of ${items.length} ${nouns} · Page ${current} of ${pages}`;
     if (!moved) return;
     const url = new URL(location.href);
     if (current === 1) url.searchParams.delete(id); else url.searchParams.set(id, String(current));

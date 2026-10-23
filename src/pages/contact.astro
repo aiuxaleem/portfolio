@@ -14,7 +14,7 @@ const c = chrome.en;
 /* Quality builds render the form against a fixture address so its layout is checked at every width. */
 const endpoint = formEndpoint || (process.env.QUALITY_BUILD === '1' ? 'https://formspree.io/f/fixture' : undefined);
 ---
-<PageLayout title="Contact · AIUXAleem" description="Contact Mohammad Abdul Aleem: book a one-to-one 15-minute call or send an email. Based in Hyderabad, working GCC hours." page="contact" hideCta bg="grid" mainStyle="outline: none; overflow: clip;">
+<PageLayout hideHeaderCta title="Contact · AIUXAleem" description="Contact Mohammad Abdul Aleem: book a one-to-one 15-minute call or send an email. Based in Hyderabad, working GCC hours." page="contact" hideCta bg="grid" mainStyle="outline: none; overflow: clip;">
   <section data-contact class="cory-container" aria-labelledby="contact-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y);">
     <p class="cory-overline" style="margin: 0px;">Contact</p>
     <h1 id="contact-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">Get in touch.</h1>

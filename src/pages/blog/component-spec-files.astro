@@ -5,8 +5,14 @@ import { getEntry } from 'astro:content';
 import SnapshotPage from '../../layouts/snapshot-page.astro';
 import snapshot from '../../snapshots/guide.json';
 import { blogPostingLd, breadcrumbLd, ogImageFor } from '../../lib/seo';
-import { postUrl } from '../../lib/posts';
+import { postUrl, readingTime, formatDate } from '../../lib/posts';
 const post = await getEntry('posts', 'component-spec-files');
 const jsonLd = post ? [blogPostingLd(post, await ogImageFor(postUrl(post))), breadcrumbLd([['Blog', '/blog'], [post.data.title, postUrl(post)]])] : [];
+/* The snapshot's meta line and back link say what the post's card and the other post pages say: the reading time counted from
+   the text, the date from the entry, and the listing called posts. */
+const when = post && (post.data.updated || post.data.published);
+const meta = post && when ? `Updated ${formatDate(when)} · ${readingTime(post)}` : undefined;
+const main = snapshot.main.replace('> All guides<', '> All posts<');
+const tuned = { ...snapshot, main: meta ? main.replace(/\d+ min read · Updated [A-Za-z]+ \d{4}/, () => meta) : main };
 ---
-<SnapshotPage snapshot={snapshot} ogType="article" jsonLd={jsonLd} />
+<SnapshotPage snapshot={tuned} hideCta ogType="article" jsonLd={jsonLd} />

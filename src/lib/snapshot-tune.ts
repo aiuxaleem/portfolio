@@ -16,6 +16,7 @@ const LEGACY_RESUME = 'https://drive.google.com/uc?export=download&amp;id=1cmkje
 /* Job title, as the legacy English pages wrote it, and what replaces it. The legacy Arabic pages already say "lead product
    designer", so their wording is left alone. */
 const TITLES: [string, string][] = [
+  ['an AI-first Senior Product Designer', `${/^[aeiou]/i.test(profile.headline) ? 'an' : 'a'} ${profile.headline}`], // the article follows the headline's first letter
   ['AI-first Senior Product Designer', profile.headline],
   ['Lead product designer with 13+ years', `${profile.headline} with 13+ years`],
   ['Lead product designer', profile.headline],

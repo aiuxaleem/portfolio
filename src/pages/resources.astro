@@ -17,7 +17,7 @@ import { profile } from '../content/profile';
 import { day } from '../lib/projects';
 
 const resources = await listedResources();
-const real = resources.filter(r => !r.data.fixture);
+const real = resources; // the same list the filters count, so every number on the page agrees (fixtures are listed only in dev and quality builds)
 const categories = categoryCounts(resources);
 const filled = categories.filter(c => c.count > 0);
 const aiTools = real.filter(r => r.data.type === 'ai').length;
@@ -84,9 +84,10 @@ const inkLink = 'display: flex; align-items: center; justify-content: space-betw
   {resources.length > 0 && (
     <section id="resources-list" class="page-section paged-section" aria-labelledby="list-title">
       <div class="cory-container">
-        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">All resources</p><h2 id="list-title" class="page-h2">Filter and sort</h2><p class="project-filter-count">Newest first. Each card opens the resource on its own site, in a new tab.</p></div>
+        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">All resources</p><h2 id="list-title" class="page-h2">Filter and sort</h2><p class="project-filter-count">Each card opens the resource on its own site, in a new tab.</p></div>
         <ResourceFilters resources={resources} />
         <div data-cq><ul data-resource-list data-cq-balance style="display: grid; gap: var(--grid-gap);">{resources.map(r => <li><ResourceCard resource={r} level={3} /></li>)}</ul></div>
+        <p data-resource-more hidden style="margin: var(--space-6) 0 0;"><Button variant="secondary" data-show-more>Show more</Button></p>
       </div>
     </section>
   )}

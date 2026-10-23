@@ -5,10 +5,12 @@ import PostCard from '../cards/post-card.astro';
 import Button from '../ui/button.astro';
 import { type Post, tagSlug } from '../../lib/posts';
 
-interface Props { posts: Post[]; tags: string[]; tag?: string; page?: number; pages?: number; total: number }
+interface Props { posts: Post[]; /** Every published topic with its post count. */ tags: { tag: string; n: number }[]; tag?: string; page?: number; pages?: number; total: number }
 const { posts, tags, tag, page = 1, pages = 1, total } = Astro.props;
 const href = (n: number) => (n === 1 ? '/blog' : `/blog/page/${n}`);
 const heading = tag ? `Posts tagged ${tag}` : 'Blog';
+/* Which posts this page holds, for the count line (every page but the last is full). */
+const last = page < pages ? page * posts.length : total, first = last - posts.length + 1;
 const title = `${tag ? `${tag} · Blog` : page > 1 ? `Blog, page ${page}` : 'Blog'} · AIUXAleem`;
 const description = tag
   ? `Posts tagged ${tag} on the AIUXAleem blog: guides and articles by Mohammad Abdul Aleem on design systems and AI product design.`
@@ -21,13 +23,13 @@ const description = tag
       : <p class="cory-overline" style="margin: 0;">Read</p>}
     <h1 id="blog-title" style="margin: 0; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); overflow-wrap: anywhere;">{heading}</h1>
     {!tag && <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">Guides and articles on design systems and designing AI products.</p>}
-    <p class="project-filter-count">{total === 1 ? '1 post' : `${total} posts`}{pages > 1 && <> · Page {page} of {pages}</>}</p>
     {tags.length > 0 && (
       <nav class="post-tags" aria-label="Topics">
-        <span class="project-filter-label">Topics</span>
-        <ul>{tags.map(t => <li><a class="ui-chip" href={`/blog/tag/${tagSlug(t)}`} aria-current={t === tag ? 'page' : undefined}>{t}</a></li>)}</ul>
+        <span class="project-filter-label">Topic</span>
+        <ul>{tags.map(t => <li><a class="ui-chip" href={`/blog/tag/${tagSlug(t.tag)}`} aria-current={t.tag === tag ? 'page' : undefined}>{t.tag}<span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{t.n}</a></li>)}</ul>
       </nav>
     )}
+    <p class="project-filter-count">{pages > 1 ? `Showing ${first} to ${last} of ${total} posts · Page ${page} of ${pages}` : total === 1 ? '1 post' : `${total} posts`}</p>
   </section>
   <section class="cory-container" aria-label="Posts" style="display: grid; gap: var(--space-8); padding-block-end: var(--section-y);">
     {posts.length === 0
@@ -37,9 +39,9 @@ const description = tag
       : <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{posts.map(p => <li><PostCard post={p} /></li>)}</ul></div>}
     {pages > 1 && (
       <nav class="post-pagination" aria-label="Pages">
-        {page > 1 ? <a class="ui-chip" href={href(page - 1)} rel="prev">Newer posts</a> : <span></span>}
+        {page > 1 ? <a class="ui-chip" href={href(page - 1)} rel="prev">Newer<span class="cory-visually-hidden"> posts</span></a> : <span></span>}
         <ol>{Array.from({ length: pages }, (_, i) => i + 1).map(n => <li><a class="ui-chip" href={href(n)} aria-current={n === page ? 'page' : undefined}><span class="cory-visually-hidden">Page </span>{n}</a></li>)}</ol>
-        {page < pages ? <a class="ui-chip" href={href(page + 1)} rel="next">Older posts</a> : <span></span>}
+        {page < pages ? <a class="ui-chip" href={href(page + 1)} rel="next">Older<span class="cory-visually-hidden"> posts</span></a> : <span></span>}
       </nav>
     )}
   </section>

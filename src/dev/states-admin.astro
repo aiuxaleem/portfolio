@@ -1,0 +1,7 @@
+---
+/* /_states-admin: the admin area's pieces in their states, in both themes. The site's components are on /_states; the two
+   are one component (states.astro) rendered in halves, because one page holding both took seconds per layout pass and
+   timed out in the quality suite. Served in dev and in quality builds only (see astro.config.mjs). */
+import States from './states.astro';
+---
+<States part="admin" />

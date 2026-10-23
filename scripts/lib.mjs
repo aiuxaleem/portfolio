@@ -48,6 +48,7 @@ export function routes(target) {
   const found = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => new URL(m[1]).pathname);
   const list = found.map(p => ({ name: p === '/' ? 'home' : p.replace(/^\/|\/$/g, '').replace(/\//g, '-'), path: p }));
   if (fs.existsSync(path.join(dist, '_states.html'))) list.push({ name: 'states', path: '/_states' });
+  if (fs.existsSync(path.join(dist, '_states-admin.html'))) list.push({ name: 'states-admin', path: '/_states-admin' });
   return list;
 }
 
@@ -73,6 +74,8 @@ const target_settle = route => (route.path.includes('.dc.html') ? 1500 : 200);
 
 /** Scrolls through the page so scroll-revealed content is present, then returns to the top. */
 export async function revealAll(page, viewportHeight) {
+  // Sections the site lays out only when near the viewport are laid out now, so a full-page capture holds them all.
+  await page.addStyleTag({ content: '[data-page="home"] > section, [data-lazy-block] { content-visibility: visible !important; }' }).catch(() => {});
   const height = await page.evaluate(() => document.documentElement.scrollHeight);
   for (let y = 0; y < height; y += Math.round(viewportHeight * 0.8)) { await page.evaluate(v => scrollTo(0, v), y); await page.waitForTimeout(60); }
   // Lazy images must be loaded and decoded before any measurement or screenshot, or two runs differ.

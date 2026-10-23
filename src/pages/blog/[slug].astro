@@ -27,7 +27,7 @@ const iso = (x: Date) => x.toISOString().slice(0, 10);
 const o = d.originallyPublished;
 const jsonLd = [blogPostingLd(post, await ogImageFor(postUrl(post))), breadcrumbLd([['Blog', '/blog'], [d.title, postUrl(post)]])];
 ---
-<PageLayout title={`${d.seo.title || d.title} · Blog · AIUXAleem`} description={(d.seo.description || d.excerpt).slice(0, 165)} page="blog" ogType="article" jsonLd={jsonLd} noindex={d.fixture} canonical={d.canonical || o?.url} bg="grid" mainStyle="outline: none; overflow: clip;">
+<PageLayout hideCta title={`${d.seo.title || d.title} · Blog · AIUXAleem`} description={(d.seo.description || d.excerpt).slice(0, 165)} page="blog" ogType="article" jsonLd={jsonLd} noindex={d.fixture} canonical={d.canonical || o?.url} bg="grid" mainStyle="outline: none; overflow: clip;">
   <ReadProgress />
   <article>
     <header class="cory-container cory-container-narrow" style="position: relative; display: grid; gap: var(--space-5); padding-block: var(--space-12) var(--space-8);">

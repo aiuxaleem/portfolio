@@ -7,11 +7,13 @@
 .post-origin a { color: var(--text-link); text-decoration: underline; text-underline-offset: 0.22em; }
 .post-tags { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 .post-tags ul, .post-pagination ol { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-a.ui-chip { text-decoration: none; line-height: 1.2; overflow-wrap: anywhere; }
+a.ui-chip { text-decoration: none; overflow-wrap: anywhere; }
 /* Current tag or page: filled, with a check mark or weight, never colour alone. */
-a.ui-chip[aria-current="page"] { background: var(--action-ink); border-color: var(--action-ink); color: var(--surface-card); font-weight: var(--weight-bold); text-decoration: underline; text-underline-offset: 0.22em; }
+/* A current topic or page: filled, bold; a topic also carries the check mark the pressed filter chips use. */
+a.ui-chip[aria-current="page"] { background: var(--action-ink); box-shadow: inset 0 0 0 1px var(--action-ink); color: var(--surface-card); }
+.post-tags a.ui-chip[aria-current="page"]::before { content: "✓" / ""; }
 @media (hover: hover) {
-  a.ui-chip:not([aria-current="page"]):hover { background: var(--action-secondary-hover); transform: translateY(-1px); }
+  a.ui-chip:not([aria-current="page"]):hover { background: var(--action-secondary-hover); }
   /* The current chip keeps its fill on hover. Without this the shared chip hover gave it a light background under a white label. */
   a.ui-chip[aria-current="page"]:hover { background: var(--action-ink); transform: none; }
 }
@@ -36,7 +38,7 @@ a.ui-chip[aria-current="page"] { background: var(--action-ink); border-color: va
 .post-table table { inline-size: 100%; min-inline-size: 36rem; border-collapse: collapse; font-size: var(--text-body-sm); }
 .post-table th, .post-table td { padding: var(--space-3) var(--space-4); text-align: start; vertical-align: top; border-block-end: 1px solid var(--border-subtle); color: var(--text-body); }
 .post-table th { font-weight: var(--weight-bold); color: var(--text-strong); background: var(--surface-sunken); }
-.post-table tr:last-child td { border-block-end: 0; }
+.post-table tr:last-child :is(th, td) { border-block-end: 0; }
 .post-code:focus-visible, .post-table:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
 .post-figure { margin: 0; display: grid; gap: var(--space-3); }
 .post-figure > p { margin: 0; max-inline-size: none; }
@@ -58,7 +60,7 @@ a.ui-chip[aria-current="page"] { background: var(--action-ink); border-color: va
 .embed-frame iframe { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; border: 0; }
 .embed-frame .embed-poster { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover; border: 0; border-radius: 0; }
 .embed-play { position: absolute; inset: 0; display: grid; place-items: center; inline-size: 100%; padding: 0; border: 0; background: transparent; cursor: pointer; }
-.embed-play-disc { display: grid; place-items: center; inline-size: 72px; block-size: 72px; border-radius: var(--radius-pill); background: var(--surface-ink); color: var(--on-ink-strong); border: 2px solid var(--on-ink-strong); box-shadow: var(--shadow-lg); transition: transform var(--duration-base) var(--ease-out); }
+.embed-play-disc { display: grid; place-items: center; inline-size: var(--space-16); block-size: var(--space-16); border-radius: var(--radius-pill); background: var(--action-ink); color: var(--surface-card); border: 2px solid var(--surface-card); /* the design's disc, plus a ring for its boundary on the ink fallback (L-09) */ box-shadow: var(--shadow-lg); transition: transform var(--duration-fast) var(--ease-out); }
 .embed-frame:focus { outline: none; }
 .embed-play:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: -6px; border-radius: var(--radius-xl); }
 @media (hover: hover) { .embed-play:hover .embed-play-disc { transform: scale(1.06); } }
@@ -93,6 +95,8 @@ a.ui-chip[aria-current="page"] { background: var(--action-ink); border-color: va
 /* Video card (videos page and home): facade, then text. Not a link card, so it does not lift on hover. */
 .video-card { display: flex; flex-direction: column; gap: var(--space-4); block-size: 100%; min-inline-size: 0; }
 .video-card-body { display: flex; flex-direction: column; gap: var(--space-3); min-inline-size: 0; }
+/* The description is a teaser: four lines; the whole text is one click away on YouTube. */
+.video-card .project-card-summary { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
 .home-video { max-inline-size: min(100%, 760px); }
 /* On a card-surface section, cards sit on the page surface, as the existing home sections do. */
 [data-home-feed][data-surface="card"] .project-card { background: var(--surface-page); }

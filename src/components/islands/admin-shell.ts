@@ -8,6 +8,11 @@
    5. After a refused publish, focus goes to the list of what to fix.
    6. A form marked data-busy says it has been sent: its buttons dim and the pressed one shows its busy words.
    7. A Show password box shows the password field's text while it is ticked.
+   10. A repeating group in an editor offers one empty row; "Add another" reveals the next (the rows are in the markup).
+   11. A path field shows the picture it names, small, while the path is one the repository holds.
+   12. A required field left empty says "This is needed." when it loses focus, and stops saying it once it is filled;
+       the server's check stays the source of truth.
+   13. A thumbnail on the Images page that cannot be loaded says so.
    Every part is selector-guarded, so the file is a no-op on a page that has none of it (the sign-in page has 6 and 7 only). */
 const button = document.querySelector<HTMLButtonElement>('[data-admin-menu]'), panel = document.querySelector<HTMLElement>('[data-admin-panel]');
 if (button && panel) {
@@ -29,9 +34,14 @@ document.querySelectorAll<HTMLInputElement>('[data-filter-rows]').forEach(input 
   const table = document.getElementById(input.dataset.filterRows!), count = document.querySelector<HTMLElement>('[data-filter-count]'), empty = document.querySelector<HTMLElement>('[data-filter-empty]');
   if (!table) return;
   const rows = [...table.querySelectorAll<HTMLElement>('tbody tr, [data-filter-row]')], noun = count?.dataset.noun || 'entry', nouns = count?.dataset.nouns || 'entries';
+  /* Rows grouped in folds (the Images page): while a search is on, a fold with a match opens and one with none is hidden; cleared, each fold goes back to how it was. */
+  const folds = [...table.querySelectorAll<HTMLDetailsElement>('details')], wasOpen = new Map<HTMLDetailsElement, boolean>(); let searching = false;
   const run = () => {
     const q = input.value.trim().toLowerCase(); let shown = 0;
     for (const row of rows) { const hit = !q || (row.textContent || '').toLowerCase().includes(q); row.hidden = !hit; if (hit) shown++; }
+    if (q && !searching) { searching = true; for (const f of folds) wasOpen.set(f, f.open); }
+    if (q) for (const f of folds) { const any = rows.some(r => !r.hidden && f.contains(r)); f.hidden = !any; if (any) f.open = true; }
+    else if (searching) { searching = false; for (const f of folds) { f.hidden = false; f.open = wasOpen.get(f) ?? true; } }
     if (count) count.textContent = q ? `Showing ${shown} of ${rows.length} ${rows.length === 1 ? noun : nouns}` : `${rows.length} ${rows.length === 1 ? noun : nouns}`;
     if (empty) empty.hidden = shown > 0; table.closest<HTMLElement>('[data-filter-table]')?.toggleAttribute('hidden', shown === 0);
   };
@@ -55,6 +65,8 @@ document.querySelectorAll<HTMLFormElement>('form[data-busy]').forEach(form => fo
   /* Discarding deletes the draft and cannot be undone, so it asks first. The browser's own question works from the keyboard and is read out. */
   const pressed = (event as SubmitEvent).submitter as HTMLElement | null;
   if (pressed?.getAttribute('value') === 'discard' && !confirm('Discard this draft? The saved draft is deleted. The published version, if there is one, is kept.')) { event.preventDefault(); return; }
+  /* Removing an entry deletes its file from the repository: it asks first, in the same way. */
+  if (pressed?.getAttribute('value') === 'delete' && !confirm('Remove this entry from the site? Its file is deleted from the repository and any draft with it. This cannot be undone from here.')) { event.preventDefault(); return; }
   form.setAttribute('aria-busy', 'true');
   form.querySelectorAll<HTMLButtonElement>('button[type="submit"]').forEach(b => b.setAttribute('aria-disabled', 'true'));
   const label = pressed?.querySelector<HTMLElement>('.ui-button-label');
@@ -70,6 +82,48 @@ if (document.querySelector('.dash-tip')) {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') document.documentElement.setAttribute('data-tips-off', ''); });
   document.addEventListener('pointermove', () => { document.documentElement.removeAttribute('data-tips-off'); }, { passive: true });
 }
+
+/* 10. A repeating group: one empty row stays in view and the other spare rows are hidden; Add another reveals the next one
+   and puts focus in it. A row with anything typed in it is never hidden. Without JavaScript every spare row is shown. */
+document.querySelectorAll<HTMLElement>('[data-repeat]').forEach(group => {
+  const rows = [...group.querySelectorAll<HTMLElement>(':scope > .admin-repeat, :scope > .admin-repeat-fold > .admin-repeat')], button = group.querySelector<HTMLButtonElement>('[data-repeat-add]');
+  const filled = (row: HTMLElement) => [...row.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input:not([type=hidden]):not([type=checkbox]), textarea')].some(f => f.value.trim() !== '') || [...row.querySelectorAll<HTMLInputElement>('input[type=checkbox]')].some(b => b.checked);
+  let kept = false;
+  for (const row of rows) { if (filled(row)) continue; if (!kept) { kept = true; continue; } row.hidden = true; }
+  const next = () => rows.find(r => r.hidden);
+  if (!button) return;
+  /* With every spare row in use the button stays, disabled, and says why: saving the draft brings new rows. */
+  const exhausted = () => { button.setAttribute('aria-disabled', 'true'); if (!button.parentElement?.querySelector('[data-add-hint]')) { const hint = document.createElement('p'); hint.className = 'form-hint'; hint.dataset.addHint = ''; hint.textContent = 'Save the draft to add more.'; button.parentElement?.append(hint); } };
+  if (!next()) exhausted();
+  button.addEventListener('click', () => { if (button.getAttribute('aria-disabled') === 'true') return; const row = next(); if (!row) return; row.hidden = false; row.querySelector<HTMLElement>('input:not([type=hidden]), textarea, select')?.focus(); if (!next()) exhausted(); });
+});
+
+/* 11. A picture preview under a path field: shown while the path is one of the pictures the repository holds (the
+   datalist the field offers), from the same route the Images page draws its thumbnails with. */
+const pictures = new Set([...document.querySelectorAll<HTMLOptionElement>('#image-list option')].map(o => o.value));
+document.querySelectorAll<HTMLElement>('[data-preview]').forEach(box => {
+  const field = document.getElementById(box.dataset.preview!) as HTMLInputElement | null, img = box.querySelector('img');
+  if (!field || !img) return;
+  const show = () => { const v = field.value.trim(); if (!pictures.has(v)) { box.hidden = true; return; } const src = '/admin/images/file?path=' + encodeURIComponent(v.replace(/^\.\.\/\.\.\/assets\//, '')); if (img.getAttribute('src') !== src) img.src = src; box.hidden = false; };
+  field.addEventListener('input', show); field.addEventListener('change', show);
+  img.addEventListener('error', () => { box.hidden = true; });
+});
+
+/* 12. Blur validation: the same error line the server draws (cloned from a template in the editor), under an empty
+   required field when focus leaves it, removed as soon as something is typed. Only the lines this adds are removed. */
+const errorTemplate = document.querySelector<HTMLTemplateElement>('template[data-field-error]');
+if (errorTemplate) {
+  type Field = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+  const isField = (t: EventTarget | null): t is Field => t instanceof HTMLElement && t.matches('input[aria-required="true"], textarea[aria-required="true"], select[aria-required="true"]') && !!t.id;
+  const described = (f: Field) => (f.getAttribute('aria-describedby') || '').split(' ').filter(Boolean);
+  const clear = (f: Field) => { const id = f.id + '-error', node = document.getElementById(id); if (!node || !('clientError' in node.dataset)) return; node.remove(); f.removeAttribute('aria-invalid'); const rest = described(f).filter(x => x !== id); if (rest.length) f.setAttribute('aria-describedby', rest.join(' ')); else f.removeAttribute('aria-describedby'); };
+  const mark = (f: Field) => { if (f.value.trim()) { clear(f); return; } const id = f.id + '-error'; if (document.getElementById(id)) return; const node = errorTemplate.content.firstElementChild!.cloneNode(true) as HTMLElement; node.id = id; node.dataset.clientError = ''; node.querySelector('span')!.textContent = 'This is needed.'; f.setAttribute('aria-invalid', 'true'); f.setAttribute('aria-describedby', [...described(f), id].join(' ')); (f.closest('.form-field') || f.parentElement)?.append(node); };
+  document.addEventListener('focusout', e => { if (isField(e.target)) mark(e.target); });
+  document.addEventListener('input', e => { if (isField(e.target) && e.target.value.trim()) clear(e.target); });
+}
+
+/* 13. A thumbnail that cannot be loaded leaves words, not a blank box. */
+document.querySelectorAll<HTMLImageElement>('.admin-thumb img').forEach(img => img.addEventListener('error', () => { const box = img.parentElement; if (!box) return; img.remove(); box.dataset.failed = ''; box.textContent = 'Preview not available'; }));
 
 /* 7. Show password. */
 document.querySelectorAll<HTMLInputElement>('[data-show-password]').forEach(box => {

@@ -19,7 +19,7 @@ const tags = [...new Set(projects.filter(p => !p.data.fixture).flatMap(p => p.da
     </div>
   </section>
   <section class="cory-container" aria-label="Project list" style="display: grid; gap: var(--space-8); padding-block-end: var(--section-y);">
-    <ProjectFilters tags={tags} total={projects.length} />
+    <ProjectFilters tags={tags} total={projects.length} items={projects.map(p => ({ tags: p.data.tags, status: p.data.status }))} />
     {projects.length === 0
       ? <div class="project-empty"><p class="project-empty-title">No projects are published yet.</p><p class="project-empty-body">The case studies cover the work in depth.</p><div><Button variant="secondary" href="/case-studies">Read the case studies</Button></div></div>
       : <div data-cq><ul data-project-list data-cq-balance style="display: grid; gap: var(--grid-gap);">{projects.map((p, i) => <li><ProjectCard project={p} first={i === 0} /></li>)}</ul></div>}

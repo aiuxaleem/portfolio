@@ -25,6 +25,7 @@ const devOnly = {
   hooks: {
     'astro:config:setup': ({ command, injectRoute }) => {
       if (command === 'dev' || withStates) injectRoute({ pattern: '/_states', entrypoint: './src/dev/states.astro' });
+      if (command === 'dev' || withStates) injectRoute({ pattern: '/_states-admin', entrypoint: './src/dev/states-admin.astro' });
       if (command === 'dev' || withAdmin) {
         injectRoute({ pattern: '/admin', entrypoint: './src/admin/pages/index.astro' });
         injectRoute({ pattern: '/admin/login', entrypoint: './src/admin/pages/login.astro' });

@@ -296,7 +296,7 @@ const devices = data ? data.devices.map(d => ({ label: deviceName[d.device] || d
               <li>A visit is one visitor on one day: the site keeps no cookie and no address, so the same person on two days counts twice. Its source, country and device come from its first page view.</li>
               <li>Changes are against the previous {data.days} days, which are complete, while today is still being counted. A percentage is shown only when the earlier value is {FLOOR} or more; a share only when the list holds {FLOOR} visits or more. Today, or this week, is drawn in gray.</li>
               <li>The LinkedIn app, email and messaging apps send no referring site, so visits from them count as direct or app. lnkd.in and the LinkedIn app count as LinkedIn.</li>
-              <li>Days are UTC; from 90 days the columns are calendar weeks, Monday to Sunday. Hours are Gulf time (UTC+3; the UAE is one hour later). The hour and weekday patterns use the last 90 days, because a week cannot show a pattern.</li>
+              <li>Days are UTC; from 90 days the columns are calendar weeks, Monday to Sunday. Hours are Gulf time (UTC+3; the UAE is one hour later), and so is every publish and edit time in the admin, shown as GMT+3. The hour and weekday patterns use the last 90 days, because a week cannot show a pattern.</li>
             </ul>
           </details>
         </li>

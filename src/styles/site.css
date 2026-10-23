@@ -15,8 +15,6 @@
   --gradient-text: linear-gradient(90deg, var(--blue-700) 0%, var(--blue-500) 100%); /* @kind color */
   /* Case-study cover ratio */
   --aspect-case: 16 / 10; /* @kind other */
-  /* Minimum hit target */
-  --tap-target: 44px;
   /* Direction tokens: the only place direction is resolved */
   --dir-x: 1; /* @kind other */
   --origin-inline-start: left; /* @kind other */
@@ -113,6 +111,8 @@ html[data-theme-switching] *, html[data-theme-switching] *::before, html[data-th
    drawn differently, the text stays available to search and to screen readers, and each section keeps its real height
    once it has been shown. The hero and the band under it are always laid out. */
 [data-page="home"] > section:not(#top):not(#worked-with) { content-visibility: auto; contain-intrinsic-size: auto 900px; }
+/* Printed, or captured whole: every section is laid out. */
+@media print { [data-page="home"] > section, [data-lazy-block] { content-visibility: visible; } }
 /* The Arabic headline is three lines in its own font and two in the fallback shown first. Room for three is kept from the
    start, so the rest of the hero does not move when the font arrives (measured: a 39px jump at 412px wide, CLS 0.13). */
 [dir="rtl"] [data-hero-title] { min-block-size: calc(3 * var(--leading-snug) * 1em) !important; }
@@ -148,6 +148,8 @@ main[tabindex] { padding-block-start: 0 !important; }
 @container (max-width: 959px) { [data-hdr-desktop] { display: none !important; } }
 @container (min-width: 960px) { [data-hdr-mobile] { display: none !important; } }
 @container (max-width: 419px) { [data-hdr-talk] { display: none !important; } }
+/* The slot kept only to hold the nav still: where the desktop nav is not drawn, it takes no space. */
+@container (max-width: 959px) { [data-hdr-talk][aria-hidden="true"] { display: none !important; } }
 
 /* Viewport rules (mobile is designed, not shrunk) */
 @media (max-width: 767px) {
@@ -156,6 +158,7 @@ main[tabindex] { padding-block-start: 0 !important; }
   [data-hero-ctas] { flex-direction: column; align-items: stretch !important; }
   [data-hero-ctas] :is(button, a) { inline-size: 100%; }
   [data-stack] { grid-template-columns: minmax(0, 1fr) !important; }
+  [data-footer-email] { flex-basis: 100%; } /* the email on its own line, the social links together under it */
 }
 
 @media (max-width: 639px) { [data-hero-ctas] :is(button, a), [data-cta-row] :is(button, a) { white-space: normal !important; text-align: center; } }
@@ -229,9 +232,7 @@ main[tabindex] { padding-block-start: 0 !important; }
 :where([data-card-fill]) > *, :where([data-card-fill]) > * > * { block-size: 100%; }
 
 /* ---- Contrast guarantees (CLAUDE.md "Contrast") ---- */
-/* Link hover darkens instead of lightening: blue-600 was 4.2:1 on white and 3.8:1 on the ghost-button tint.
-   blue-800 is blue-700 mixed 22% toward navy-800 (6.9:1 on white). Dark theme keeps blue-300. */
-:root { --blue-800: #1258B1; }
+/* Link hover darkens instead of lightening (blue-800, declared with the blue scale in tokens.css). Dark theme keeps blue-300. */
 /* Focus ring: blue-500 was 2.95:1 on the sunken surface; blue-600 is 3.7:1 there and 3.2:1 on ink panels */
 :root:not([data-theme="dark"]), [data-theme="light"] { --text-link-hover: var(--blue-800); --border-focus: var(--blue-600); }
 

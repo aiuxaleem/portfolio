@@ -1,14 +1,14 @@
 ---
-/* Filters and sort order for the resource list.
-   Three groups of toggle chips (category, type, cost): within a group any selected value matches, and every group
-   must match. Only values that at least one listed resource has are offered, each with its count, so no choice
-   leads to an empty list. The sixteen category chips sit inside a closed disclosure, so the open bar shows the
-   handful of type and cost choices (Hick's law); the disclosure's own line says which categories are chosen, and the
-   bento grid above the list is the main way into a category. Two sort chips (Newest, A to Z), exactly one pressed.
-   A live result count with a "Clear filters" action once a filter is on, and an empty state with the same action.
-   Buttons are real <button>s with aria-pressed, so they work from the keyboard. The bar is in the page from the
-   first paint; without JavaScript a <noscript> rule hides it and every resource is listed.
-   Behaviour: islands/resource-list.ts */
+/* Find, filter and sort the resource list.
+   A search field first (name, site or tag), then three groups of toggle chips (category, type, cost): within a group
+   any selected value matches, and every group must match. Only values that at least one listed resource has are
+   offered, each with its count, so no choice leads to an empty list. The sixteen category chips sit inside a closed
+   disclosure, so the open bar shows the handful of type and cost choices (Hick's law); the disclosure opens when a
+   category is chosen from elsewhere on the page and its own line says which categories are chosen. Two sort chips
+   (Newest, A to Z), exactly one pressed. A live result count with a "Clear filters" action once a filter or search
+   is on, and an empty state with the same action. Buttons are real <button>s with aria-pressed, so they work from the
+   keyboard. The bar is in the page from the first paint; without JavaScript a <noscript> rule hides it and every
+   resource is listed. Behaviour: islands/resource-list.ts */
 import Button from '../ui/button.astro';
 import CategoryIcon from './category-icon.astro';
 import type { Resource } from '../../lib/resources';
@@ -27,6 +27,10 @@ const chip = (value: string, label: string, n: number) => ({ value, label, n });
 ---
 <noscript><style>[data-resource-filters] { display: none; }</style></noscript>
 <div class="project-filters" data-resource-filters>
+  <div class="form-field project-filter-search">
+    <label for={`${id}-search`}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>Find a resource</label>
+    <input id={`${id}-search`} type="search" placeholder="Name, site or tag" autocomplete="off" spellcheck="false" data-resource-search />
+  </div>
   {categories.length > 0 && (
     <details class="resource-disclosure" data-filter-disclosure>
       <summary>
@@ -51,12 +55,12 @@ const chip = (value: string, label: string, n: number) => ({ value, label, n });
     {sorts.map(([value, label], i) => <button type="button" class="ui-chip" aria-pressed={i === 0 ? 'true' : 'false'} data-sort={value}>{label}</button>)}
   </div>
   <div class="project-filter-group">
-    <p class="project-filter-count" role="status" aria-live="polite" data-result-count>{showEmpty ? `Showing 0 of ${total} ${nouns}` : `Showing ${total} of ${total} ${nouns}`}</p>
+    <p class="project-filter-count" role="status" aria-live="polite" data-result-count>{showEmpty ? `Showing 0 of ${total} matching ${nouns}` : `${total} ${nouns}`}</p>
     <Button variant="ghost" data-clear-filters hidden={!showEmpty}>Clear filters</Button>
   </div>
 </div>
 <div class="project-empty" data-resource-empty hidden={!showEmpty}>
-  <p class="project-empty-title">No resources match these filters.</p>
-  <p class="project-empty-body">Try removing a filter, or clear them all to see every resource.</p>
+  <p class="project-empty-title">No resources match.</p>
+  <p class="project-empty-body">Try another word, remove a filter, or clear them all to see every resource.</p>
   <div><Button variant="secondary" data-clear-filters>Clear filters</Button></div>
 </div>

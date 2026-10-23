@@ -25,7 +25,7 @@ const meta = [['Role', d.role], ['Timeline', timeline(d)], ['Team', d.team], ['T
 const description = (d.seo.description || d.summary).slice(0, 165);
 const arrowOut = 'M7 7h10v10M7 17 17 7';
 ---
-<PageLayout title={`${d.seo.title || d.title} · Work · AIUXAleem`} description={description} page="work" noindex={d.fixture} bg="grid" mainStyle="outline: none; overflow: clip;">
+<PageLayout hideCta title={`${d.seo.title || d.title} · Work · AIUXAleem`} description={description} page="work" noindex={d.fixture} bg="grid" mainStyle="outline: none; overflow: clip;">
   <article>
     <header class="cory-container" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--space-12) var(--space-10);">
       <a data-link href="/work" style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;"><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All work</span></a>
@@ -48,7 +48,7 @@ const arrowOut = 'M7 7h10v10M7 17 17 7';
       </div>
     </header>
 
-    {hasBody && <section class="cory-container cory-container-narrow prose" style="padding-block: var(--space-10);"><Content components={mdxComponents} /></section>}
+    {hasBody && <section class="cory-container prose" style="padding-block: var(--space-10);"><Content components={mdxComponents} /></section>}
 
     {d.gallery.length > 0 && (
       <section class="cory-container" aria-labelledby="gallery-title" style="display: grid; gap: var(--space-6); padding-block: var(--space-10);">
@@ -59,21 +59,19 @@ const arrowOut = 'M7 7h10v10M7 17 17 7';
       </section>
     )}
 
-    <section class="cory-container cory-container-narrow" aria-labelledby="updates-title" style="display: grid; gap: var(--space-6); padding-block: var(--space-10);">
+    {updates.length > 0 && (<section class="cory-container" aria-labelledby="updates-title" style="display: grid; gap: var(--space-6); padding-block: var(--space-10);">
       <h2 id="updates-title" class="project-h2">Updates</h2>
-      {updates.length === 0
-        ? <div class="project-empty"><p class="project-empty-title">No updates yet.</p><p class="project-empty-body">Dated notes are added here as the project moves.</p></div>
-        : <ol class="project-updates">{updates.map(u => <li><time datetime={u.date.toISOString().slice(0, 10)}>{day(u.date)}</time><h3>{u.title}</h3><p>{u.body}</p>{u.link && <a data-link href={u.link.href}>{u.link.label}</a>}</li>)}</ol>}
-    </section>
+      <ol class="project-updates">{updates.map(u => <li><time datetime={u.date.toISOString().slice(0, 10)}>{day(u.date)}</time><h3>{u.title}</h3><p>{u.body}</p>{u.link && <a data-link href={u.link.href}>{u.link.label}</a>}</li>)}</ol>
+    </section>)}
 
     {d.caseStudy && (
-      <section class="cory-container cory-container-narrow" style="padding-block: var(--space-6);">
+      <section class="cory-container" style="padding-block: var(--space-6);">
         <a class="project-related" href={`/case-studies/${d.caseStudy}`}><span><span class="cory-overline" style="display: block;">Case study</span><strong>Read how this was designed and what changed</strong></span><svg data-dir-icon width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
       </section>
     )}
 
     {(prev || next) && (
-      <nav class="cory-container cory-container-narrow project-pager" aria-label="More projects">
+      <nav class="cory-container project-pager" aria-label="More projects">
         {prev ? <a data-link href={`/work/${prev.id}`} rel="prev"><span>Previous</span><strong>{prev.data.title}</strong></a> : <span></span>}
         {next ? <a data-link href={`/work/${next.id}`} rel="next" style="text-align: end;"><span>Next</span><strong>{next.data.title}</strong></a> : <span></span>}
       </nav>

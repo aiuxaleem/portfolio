@@ -5,6 +5,8 @@ export type Project = CollectionEntry<'projects'>;
 const showFixtures = import.meta.env.DEV || process.env.QUALITY_BUILD === '1';
 
 export const statusLabel: Record<Project['data']['status'], string> = { 'in-progress': 'In progress', shipped: 'Shipped', concept: 'Concept' };
+/** The badge's dot colour by status (the design's Badge tone); the word is always there too. */
+export const statusTone: Record<Project['data']['status'], 'brand' | 'success' | 'neutral'> = { 'in-progress': 'brand', shipped: 'success', concept: 'neutral' };
 
 /** Projects shown on the site, in order. Drafts never show. Stress fixtures show only in dev and quality builds. */
 export async function listedProjects(): Promise<Project[]> {

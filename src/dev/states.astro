@@ -1,5 +1,7 @@
 ---
-/* /_states: components in their states, in both themes, with the stress fixtures from CLAUDE.md 2.3.
+/* /_states: components in their states, in both themes, with the stress fixtures from CLAUDE.md 2.3. The admin's pieces are
+   the same page rendered with part="admin" at /_states-admin (src/dev/states-admin.astro): one page holding both took
+   seconds per layout pass and timed out in the quality suite.
    Served in dev and in quality builds only (see astro.config.mjs).
    Coverage today: the components that exist as real components (Button, IconButton, Email copy, Badge, cover fallback,
    empty state). Page-body components that are still rendered from legacy snapshots are listed at the end as not yet covered. */
@@ -12,6 +14,7 @@ import { chrome } from '../i18n/chrome';
 import { Image } from 'astro:assets';
 import { forStates, isPlaceholder } from '../lib/content';
 import ProjectCard from '../components/cards/project-card.astro';
+import CaseCard from '../components/cards/case-card.astro';
 import ProjectFilters from '../components/projects/project-filters.astro';
 import { listedProjects, updatesNewestFirst, day } from '../lib/projects';
 import BeforeAfter from '../components/case-study/before-after.astro';
@@ -52,7 +55,9 @@ import { verifyNotes } from '../content/profile';
 import { site } from '../content/site';
 const formStates = [['idle', 'Idle (live: try it; it posts to a fixture address, so sending ends in the failure state)'], ['invalid', 'Inline errors and the error summary'], ['submitting', 'Submitting: fields locked, button disabled, status message'], ['success', 'Success'], ['failure', 'Failure: the input is kept and email is offered']] as const;
 const li = { urn: 'urn:li:share:0000000000000000000', url: 'https://www.linkedin.com/in/aiuxaleem' };
-const fullCase = (await listedCaseStudies()).find(c => c.id === 'full-fixture');
+const allCases = await listedCaseStudies();
+const fullCase = allCases.find(c => c.id === 'full-fixture');
+const caseCards = allCases.filter(c => c.data.fixture);
 const projects = await listedProjects();
 const fixtureProject = projects.find(p => p.data.fixture);
 const names = ['projects', 'caseStudies', 'posts', 'videos', 'linkedinPosts', 'linkedinArticles', 'certifications', 'testimonials'] as const;
@@ -64,11 +69,13 @@ const kind = (d: any) => (d.fixture ? 'Stress fixture' : d.draft ? 'Draft' : 'Pu
 const c = chrome.en;
 const variants = ['primary', 'ink', 'secondary', 'ghost'] as const;
 const inkVariants = ['on-ink-solid', 'on-ink'] as const;
-const badge = 'display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: var(--radius-pill); font-size: var(--text-caption); font-weight: var(--weight-semibold); line-height: 1.2; background: var(--slate-100); color: var(--slate-700);';
 const h2 = 'margin: 0; font-size: var(--text-h3); font-weight: var(--weight-bold); color: var(--text-strong);';
+/** Which half of the fixtures this page shows: the site's components, or the admin's pieces (/_states-admin). */
+const part = ((Astro.props as { part?: 'site' | 'admin' }).part ?? 'site');
 const note = 'margin: 0; font-size: var(--text-body-sm); color: var(--text-muted);';
 const row = 'display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center;';
 import DashboardView from '../admin/components/dashboard.astro';
+import AdminIcon from '../admin/components/admin-icon.astro';
 import Publishing from '../admin/components/publishing.astro';
 /* Fixture rows for the publishing tiles: a visitor's suggestion first, a long title, nine rows so the tile caps at eight; and the last publishes. */
 const pubAt = (h: number) => `2026-10-20T${String(h).padStart(2, '0')}:19:00.000Z`;
@@ -107,23 +114,24 @@ const prevTail = dashPrev.slice(-5);
 const dashPartial = { ...dashFull, totals: { ...dashFull.totals, target: 0 }, previous: { series: dashPrev, totals: { views: prevTail.reduce((a, d) => a + d.views, 0), visits: prevTail.reduce((a, d) => a + d.visits, 0), target: 2 } }, previousCovered: 5, countingSince: '2026-09-12', sources: [{ source: 'LinkedIn', visits: 0, hosts: [] }, { source: 'Direct or app', visits: 185, hosts: [] }], countries: [{ country: 'SA', visits: 0 }, { country: 'AE', visits: 0 }, { country: 'IN', visits: 120 }, { country: 'GB', visits: 65 }], publishes: [], patternDays: 20, lastVisit: undefined };
 const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countingSince: dashDays[2].day, previousCovered: 0, series: dashSeries.slice(0, 7).map(d => ({ ...d, views: 0, visits: 0 })), totals: { views: 0, visits: 0, target: 0 }, previous: null, pages: [], sections: [], sources: [], countries: [{ country: 'SA', visits: 0 }, { country: 'AE', visits: 0 }], devices: [], hours: Array(24).fill(0), weekdays: Array(7).fill(0), patternDays: 0, publishes: [] };
 ---
-<BaseLayout title="Component states · AIUXAleem" description="Development page listing components in their states, in both themes, with stress content. Excluded from production and the sitemap." noindex>
+<BaseLayout title={part === 'admin' ? 'Admin component states · AIUXAleem' : 'Component states · AIUXAleem'} description="Development page listing components in their states, in both themes, with stress content. Excluded from production and the sitemap." noindex>
   <main id="main" style="display: grid;">
     <div class="cory-container" style="padding-block: var(--space-12) var(--space-6); display: grid; gap: var(--space-3);">
       <p class="cory-overline" style="margin: 0;">Development</p>
-      <h1 style="margin: 0; font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter);">Component states</h1>
+      <h1 style="margin: 0; font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter);">{part === 'admin' ? 'Admin component states' : 'Component states'}</h1>
       <p style={note}>Every block below is shown twice: light theme, then dark. Hover, press and keyboard focus are live states: move the pointer over a control or press Tab.</p>
     </div>
     {(['light', 'dark'] as const).map(theme => (
       <section data-theme={theme} aria-label={`${theme} theme`} style="background: var(--surface-page); color: var(--text-body); border-block-start: 1px solid var(--border-subtle);">
-        <div class="cory-container" style="padding-block: var(--space-12); display: grid; gap: var(--space-10);">
+        {part === 'site' && (<div class="cory-container" style="padding-block: var(--space-12); display: grid; gap: var(--space-10);">
           <p class="cory-overline" style="margin: 0;">{theme} theme</p>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Button</h2>
             <p style={note}>Default state, medium and large.</p>
             <div style={row}>{variants.map(v => <Button variant={v} href="#main">{v}</Button>)}</div>
             <div style={row}>{variants.map(v => <Button variant={v} size="lg" href="#main">{v} large</Button>)}</div>
+            <div style={row}><Button variant="primary" size="sm" href="#main">primary small</Button><Button variant="secondary" size="sm" href="#main">secondary small</Button><Button variant="ghost" size="sm" href="#main">ghost small</Button><Button variant="primary" disabled>primary disabled</Button><Button variant="secondary" disabled>secondary disabled</Button><Button variant="ink" disabled>ink disabled</Button></div>
             <div style="padding: var(--space-6); border-radius: var(--radius-xl); background: var(--gradient-ink);"><div style={row}>{inkVariants.map(v => <Button variant={v} href="#main">{v}</Button>)}</div></div>
             <p style={note}>Stress: one-word label, a 60-character unbroken label, and a 120-character label. The label must wrap, never clip.</p>
             <div style="display: grid; gap: var(--space-3); max-inline-size: 320px;">
@@ -131,10 +139,9 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
               <Button variant="secondary" href="#main" class="ui-button ui-button-secondary ui-button-md states-wrap">{stress.unbroken}</Button>
               <Button variant="ink" href="#main" class="ui-button ui-button-ink ui-button-md states-wrap">{stress.longTitle}</Button>
             </div>
-            <p style={note}>Not implemented yet: disabled and loading (no button on the site uses them today).</p>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Icon button</h2>
             <div style={row}>
               <IconButton variant="ghost" label="Ghost icon button"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg></IconButton>
@@ -142,14 +149,14 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             </div>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Badge and tags</h2>
             <p style={note}>Default, a 60-character unbroken string, a missing value (renders nothing), and nine tags.</p>
-            <div style={row}><span data-badge style={badge}>Design systems</span><span data-badge style={badge}>{stress.unbroken}</span>{stress.missing && <span data-badge style={badge}>{stress.missing}</span>}</div>
-            <ul style="display: flex; flex-wrap: wrap; gap: var(--space-2); max-inline-size: 320px;">{stress.tags.map(t => <li><span data-badge style={badge}>{t}</span></li>)}</ul>
+            <div style={row}><span data-badge class="ui-badge">Design systems</span><span data-badge class="ui-badge">{stress.unbroken}</span>{stress.missing && <span data-badge class="ui-badge">{stress.missing}</span>}</div>
+            <ul style="display: flex; flex-wrap: wrap; gap: var(--space-2); max-inline-size: 320px;">{stress.tags.map(t => <li><span data-badge class="ui-badge">{t}</span></li>)}</ul>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Email copy</h2>
             <p style={note}>Idle, success (copied), and failure (clipboard blocked: the address is selected and a hint is shown).</p>
             <div style="display: grid; gap: var(--space-2); color: var(--text-link);">
@@ -159,13 +166,13 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             </div>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Media: image missing (partial state)</h2>
             <p style={note}>When a cover image is absent the box shows a typographic fallback at the same size, so nothing shifts.</p>
             <div style="position: relative; inline-size: min(100%, 420px); aspect-ratio: var(--aspect-case); border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-sunken);"><div data-cover-fallback aria-hidden="true"><span>{stress.longTitle}</span><bdi>01</bdi></div></div>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Empty state</h2>
             <p style={note}>Used on /videos: says why it is empty and offers the next action.</p>
             <div style="display: grid; gap: var(--space-4); padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); max-inline-size: var(--measure-body);">
@@ -175,20 +182,23 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             </div>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Project card</h2>
             <p style={note}>Default with a cover; and the stress fixture: no cover (typographic fallback at the same size), a 120-character title, a 60-character unbroken string and nine tags. Cards in a row stay the same height.</p>
             <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{projects.map(p => <li><ProjectCard project={p} level={3} /></li>)}</ul></div>
+            <h2 style={h2}>Case cards</h2>
+            <p style={note}>The card on /case-studies: the full fixture and the stress fixture (a 120-character title, an unbroken address, 8+ tags, a missing cover).</p>
+            <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{caseCards.map(c => <li><CaseCard entry={c} level={3} /></li>)}</ul></div>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Project filters</h2>
             <p style={note}>Toggle buttons with a live result count. Shown here in the empty-result state with the "Clear filters" action. Selected chips carry a check mark as well as the fill.</p>
             <ProjectFilters tags={['AI', 'Design systems', stress.unbroken]} total={projects.length} showEmpty />
-            <div style="display: flex; flex-wrap: wrap; gap: var(--space-2);"><button type="button" class="ui-chip" aria-pressed="true">Selected</button><button type="button" class="ui-chip" aria-pressed="false">Not selected</button></div>
+            <div style="display: flex; flex-wrap: wrap; gap: var(--space-2);"><button type="button" class="ui-chip" aria-pressed="true">Selected</button><a class="ui-chip" href="#main" aria-current="page">Current topic</a><a class="ui-chip" href="#main">Topic link</a><button type="button" class="ui-chip" aria-pressed="false">Not selected</button></div>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Project updates log</h2>
             <p style={note}>Empty (a project with no updates yet), then with an entry from the stress fixture.</p>
             <div class="project-empty"><p class="project-empty-title">No updates yet.</p><p class="project-empty-body">Dated notes are added here as the project moves.</p></div>
@@ -196,7 +206,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <p style={note}>Missing cover and missing optional meta fields are shown on the fixture's own page: <a data-link href="/work/stress-fixture" style="color: var(--text-link);">/work/stress-fixture</a>.</p>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Case study pieces</h2>
             <p style={note}>NDA notice, the 30-second summary block, and the before/after comparison (range input and two buttons, so it works from the keyboard; without JavaScript the two images sit side by side). The whole template with every section is at <a data-link href="/case-studies/full-fixture" style="color: var(--text-link);">/case-studies/full-fixture</a>; with every optional section missing at <a data-link href="/case-studies/stress-fixture" style="color: var(--text-link);">/case-studies/stress-fixture</a>.</p>
             <p class="case-nda"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg><span><strong>Under NDA.</strong> Some details are changed or left out to respect a confidentiality agreement.</span></p>
@@ -204,7 +214,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             {fullCase?.data.process.beforeAfter && <BeforeAfter before={fullCase.data.process.beforeAfter.before} after={fullCase.data.process.beforeAfter.after} caption={fullCase.data.process.beforeAfter.caption} />}
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Embed: YouTube</h2>
             <p style={note}>Facade (nothing is requested from YouTube until play is pressed), loading, failed, and a video with no id yet. The first one is live; the others are fixed in their state. The box is 16:9 in every state.</p>
             <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
@@ -215,7 +225,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             </ul></div>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Embed: LinkedIn post</h2>
             <p style={note}>Facade card, loading, and failed (the card stays as the fallback with the link). The first one is live.</p>
             <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
@@ -230,7 +240,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             </ul></div>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Embed: LinkedIn article</h2>
             <p style={note}>A link card. Nothing is loaded from LinkedIn. With a cover, without one, and with stress content.</p>
             <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
@@ -240,7 +250,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             </ul></div>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Blog: post card and content blocks</h2>
             <p style={note}>Post cards (sample, rich fixture, stress fixture), callouts, a quote, a code block and a table that scroll inside their own box. The full post template is at <a data-link href="/blog/rich-content-fixture" style="color: var(--text-link);">/blog/rich-content-fixture</a>; the stress post at <a data-link href="/blog/stress-fixture" style="color: var(--text-link);">/blog/stress-fixture</a>; the empty tag page at <a data-link href="/blog/tag/unpublished-topic" style="color: var(--text-link);">/blog/tag/unpublished-topic</a>; pagination at <a data-link href="/blog/page/2" style="color: var(--text-link);">/blog/page/2</a>.</p>
             <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{posts.map(p => <li><PostCard post={p} level={3} /></li>)}</ul></div>
@@ -253,7 +263,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             </div>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>List shown a page at a time</h2>
             <p style={note}>Five items, two to a page: the first page, with the links to the others. The items past the first page are in the page and hidden. One page or fewer renders no links. Live on <a data-link href="/read" style="color: var(--text-link);">/read</a>.</p>
             <p class="project-filter-count" role="status">5 posts<span data-paged-range={`states-paged-${theme}`}> · showing 1 to 2, page 1 of 3</span></p>
@@ -262,14 +272,14 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <ListPager id={`states-paged-one-${theme}`} total={2} size={2} nouns="fixture posts" />
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Feed card and filters</h2>
             <p style={note}>Feed cards for a blog post, a LinkedIn article and a LinkedIn post (two real items, then the stress fixtures), and the filter bar with its empty-result state shown open. The cards are used on the home page and at <a data-link href="/read" style="color: var(--text-link);">/read</a>.</p>
             <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{feedSample.map(i => <li><FeedCard item={i} level={3} /></li>)}</ul></div>
             <ProjectFilters tags={feedTags(feed)} total={feed.length} options={feedTypes} optionsLabel="Type" noun="item" id={`feed-${theme}`} showEmpty />
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Resource card, filters and the suggestion form</h2>
             <p style={note}>Cards for a UX resource: two real ones, the partial fixture (one-word title, no description, no tags) and the stress fixture (long title, unbroken address, nine tags). Then the category bento grid (the fullest four take two columns), the filter and sort bar with its empty-result state shown open, and every state of the suggest-a-resource form. Used at <a data-link href="/resources" style="color: var(--text-link);">/resources</a>.</p>
             <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{resourceSample.map(r => <li><ResourceCard resource={r} level={3} /></li>)}</ul></div>
@@ -280,13 +290,13 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             </ul></div>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Video card</h2>
             <p style={note}>Facade, then title, date, description and tags. The stress fixture has no id yet, no date and a long title. With no published video, <a data-link href="/videos" style="color: var(--text-link);">/videos</a> shows its empty state.</p>
             <div data-cq><ul data-cq-grid style="display: grid; gap: var(--space-10) var(--grid-gap);">{videos.map(v => <li><VideoCard video={v} level={3} /></li>)}</ul></div>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Home hero: case study deck</h2>
             <p style={note}>The deck from the Home hero, still, with the stress fixture on the front card (a 120-character title, a long subtitle, no cover image). On Home it holds the featured case studies and the arrows bring the next card forward.</p>
             <div style="max-inline-size: min(100%, 440px); overflow: clip;"><CaseDeck fixtures /></div>
@@ -300,7 +310,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <WorkedWith id={`states-teams-${theme}`} landmark={false} teams={[{ name: stress.longTitle, sector: 'Fixture sector' }, { name: stress.unbroken, sector: stress.unbroken }, { name: 'Work', sector: 'One' }, ...[1, 2, 3, 4, 5, 6].map(n => ({ name: `Fixture team ${n}`, sector: 'Fixture sector' }))]} />
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Home page sections (with fixtures)</h2>
             <p style={note}>The four collection-fed home sections, shown here with fixture content so all four appear. On the home page a section with no content is not rendered.</p>
           </div>
@@ -308,7 +318,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
         <HomeFeeds fixtures landmark={false} idPrefix={`states-${theme}`} />
         <div class="cory-container" style="padding-block: var(--space-12); display: grid; gap: var(--space-10);">
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Contact form</h2>
             <p style={note}>Every form state. The first form is live; the others are fixed in their state.</p>
             <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
@@ -316,73 +326,134 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             </ul></div>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Career timeline and certifications</h2>
             <p style={note}>The timeline from the profile data file (roles grouped by company; dates, location and highlights are optional), and certification rows in each status, including the stress fixture.</p>
             <Career level={3} />
             <Certifications fixtures />
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Testimonials (placeholders only)</h2>
             <p style={note}>No testimonial exists yet. These are the draft placeholder and the stress fixture; neither can be published. On the site the section is not rendered until an entry has the person's permission.</p>
           </div>
-        </div>
-        <div data-states-testimonials><Testimonials placeholders id={`testimonials-${theme}`} /></div>
-        <div class="cory-container" style="padding-block: var(--space-12); display: grid; gap: var(--space-10);">
+          <div style="display: grid; gap: var(--space-2);">
+            <h2 style={h2}>Not covered yet</h2>
+            <p style={note}>Loading skeletons and error states (no component loads data in the browser any more). Service link card, reel card, section nav and the certificate dialog are still rendered from legacy snapshots; each gets its fixtures here when it becomes a real component.</p>
+          </div>
+        </div>)}
+        {part === 'site' && <div data-states-testimonials><Testimonials placeholders id={`testimonials-${theme}`} /></div>}
+        {part === 'admin' && (<div class="cory-container" style="padding-block: var(--space-12); display: grid; gap: var(--space-10);">
+          <p class="cory-overline" style="margin: 0;">{theme} theme</p>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Facts to check before launch</h2>
             <p style={note}>Notes kept in the profile data file. They are never shown on a public page.</p>
             <ul class="verify-list">{verifyNotes().map(n => <li><strong>{n.where}</strong><span>{n.note}</span></li>)}</ul>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Admin: dashboard</h2>
             <p style={note}>Shown on /admin after signing in (Vercel only). The publishing row: with work (a suggestion first, a long title, nine rows so the tile caps at eight), empty, and a fault. The visitor numbers: with numbers (four tiles with the change against the previous period, the chart with the previous period as a dashed line, publish markers and tick labels, what was published with the views since, what they read with the top pages folded, where they are and what they use, where they came from, when they visit), partial (an earlier period only partly in the log, so no change rows; no visits from LinkedIn or the target markets; nothing published; hours drawn but not yet weekdays), empty, and error. Hover a column for its figures; Escape hides the note.</p>
-            <Publishing plain uid={`${theme}-pub`} waiting={pubFull.waiting} recent={pubFull.recent} />
+            <div data-lazy-block style="content-visibility: auto; contain-intrinsic-size: auto 900px;"><Publishing plain uid={`${theme}-pub`} waiting={pubFull.waiting} recent={pubFull.recent} /></div>
             <p style={note}>Publishing: nothing waiting and nothing published yet.</p>
-            <Publishing plain uid={`${theme}-pub-empty`} waiting={[]} recent={[]} />
+            <div data-lazy-block style="content-visibility: auto; contain-intrinsic-size: auto 900px;"><Publishing plain uid={`${theme}-pub-empty`} waiting={[]} recent={[]} /></div>
             <p style={note}>Publishing: the drafts could not be read.</p>
-            <Publishing plain uid={`${theme}-pub-fault`} waiting={[]} recent={[]} fault />
+            <div data-lazy-block style="content-visibility: auto; contain-intrinsic-size: auto 900px;"><Publishing plain uid={`${theme}-pub-fault`} waiting={[]} recent={[]} fault /></div>
             <p style={note}>Visitor numbers, with numbers.</p>
-            <DashboardView plain uid={`${theme}-full`} data={dashFull} range={30} ranges={[7, 30, 90]} base="#main" />
+            <div data-lazy-block style="content-visibility: auto; contain-intrinsic-size: auto 900px;"><DashboardView plain uid={`${theme}-full`} data={dashFull} range={30} ranges={[7, 30, 90]} base="#main" /></div>
             <p style={note}>Partial: the earlier period only partly in the log, so no change rows; no visits from LinkedIn or the target markets; nothing published; under four weeks with visits, so hours are drawn but weekdays are not yet; in the dark theme the log is younger than a week, so hours are withheld too.</p>
-            <DashboardView plain uid={`${theme}-partial`} data={theme === 'dark' ? { ...dashPartial, patternDays: 5 } : dashPartial} range={30} ranges={[7, 30, 90]} base="#main" />
+            <div data-lazy-block style="content-visibility: auto; contain-intrinsic-size: auto 900px;"><DashboardView plain uid={`${theme}-partial`} data={theme === 'dark' ? { ...dashPartial, patternDays: 5 } : dashPartial} range={30} ranges={[7, 30, 90]} base="#main" /></div>
             <p style={note}>Empty: no visits in the period.</p>
-            <DashboardView plain uid={`${theme}-empty`} data={dashEmpty} range={7} ranges={[7, 30, 90]} base="#main" />
+            <div data-lazy-block style="content-visibility: auto; contain-intrinsic-size: auto 900px;"><DashboardView plain uid={`${theme}-empty`} data={dashEmpty} range={7} ranges={[7, 30, 90]} base="#main" /></div>
+
+          <div class="states-static" style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Admin: editor pieces</h2>
+            <p style={note}>The parts of the admin editors and lists that are not whole pages: a required field, a field error, a repeating group with its Add button, a picture field's preview (shown, then hidden for a value that is not a listed picture), the Markdown help fold, the remove card, the save bar, the sign-in panel, the list's Removed status and a picture card. The admin pages themselves are checked by scripts/quality/check-admin-ui.mjs.</p>
+            <div class="admin-form">
+              <div class="admin-row">
+                <div class="form-field"><label for={`${theme}-st-req`}>Title<span class="admin-needed" aria-hidden="true"> *</span><span class="cory-visually-hidden"> (required)</span></label><input id={`${theme}-st-req`} aria-required="true" value="Colaberry Design System" /></div>
+                <div class="form-field"><label for={`${theme}-st-err`}>Summary<span class="admin-needed" aria-hidden="true"> *</span><span class="cory-visually-hidden"> (required)</span></label><input id={`${theme}-st-err`} aria-required="true" aria-invalid="true" aria-describedby={`${theme}-st-err-msg`} value="" /><p class="form-error" id={`${theme}-st-err-msg`}><AdminIcon name="alert" size={16} /><span>This is needed.</span></p></div>
+              </div>
+              <div class="admin-repeats" data-repeat>
+                <div class="admin-repeat" role="group" aria-label="Gallery image 1">
+                  <p class="admin-repeat-name">Gallery image 1</p>
+                  <div class="form-field"><label for={`${theme}-st-g1`}>Image file<span class="cory-visually-hidden"> 1</span></label><input id={`${theme}-st-g1`} value="../../assets/projects/colaberry-ds-whatsapp.jpg" /><div class="admin-preview" data-preview={`${theme}-st-g1`}><div class="admin-thumb"><img src="/assets/author-avatar.jpg" alt="" width="320" height="200" loading="lazy" decoding="async" /></div></div><p class="form-hint admin-pictures-link"><a href="/admin/images" target="_blank" rel="noopener">Pictures in the repository<span class="cory-visually-hidden"> (opens in a new tab)</span><AdminIcon name="view" size={14} /></a></p></div>
+                  <div class="form-field"><label for={`${theme}-st-g1-alt`}>Description<span class="cory-visually-hidden"> 1</span></label><input id={`${theme}-st-g1-alt`} value="WhatsApp batch kit template with three cards" /></div>
+                </div>
+                <div class="admin-repeat" role="group" aria-label="Gallery image 2">
+                  <p class="admin-repeat-name">Gallery image 2</p>
+                  <div class="form-field"><label for={`${theme}-st-g2`}>Image file<span class="cory-visually-hidden"> 2</span></label><input id={`${theme}-st-g2`} value="nope" /><div class="admin-preview" data-preview={`${theme}-st-g2`} hidden><div class="admin-thumb"></div></div><p class="form-hint admin-pictures-link"><a href="/admin/images" target="_blank" rel="noopener">Pictures in the repository<span class="cory-visually-hidden"> (opens in a new tab)</span><AdminIcon name="view" size={14} /></a></p></div>
+                  <div class="form-field"><label for={`${theme}-st-g2-alt`}>Description<span class="cory-visually-hidden"> 2</span></label><input id={`${theme}-st-g2-alt`} value="" /></div>
+                </div>
+                <div class="admin-repeat" role="group" aria-label="Gallery image 3" hidden><p class="admin-repeat-name">Gallery image 3</p></div>
+                <div class="admin-repeat-actions"><Button variant="secondary" type="button" data-repeat-add><AdminIcon name="add" size={18} slot="icon-left" />Add another gallery image</Button></div>
+              </div>
+              <div class="admin-repeats" data-repeat>
+                <details class="resource-disclosure admin-repeat-fold" aria-label="Role 1">
+                  <summary><span data-disclosure-state><span class="admin-fold-name">Role 1</span><span class="admin-fold-facts"> · Colaberry · Lead AI Product Designer · Jan 2025 to present</span></span><AdminIcon name="chevron" size={16} data-chevron /></summary>
+                  <div class="admin-repeat"><div class="form-field"><label for={`${theme}-st-fold-company`}>Company<span class="cory-visually-hidden"> 1</span></label><input id={`${theme}-st-fold-company`} value="Colaberry" /></div></div>
+                </details>
+                <details class="resource-disclosure admin-repeat-fold" aria-label="Role 2" open>
+                  <summary><span data-disclosure-state><span class="admin-fold-name">Role 2</span><span class="admin-fold-facts"> · NTT DATA · Senior Product Designer</span></span><AdminIcon name="chevron" size={16} data-chevron /></summary>
+                  <div class="admin-repeat"><div class="form-field"><label for={`${theme}-st-fold-role`}>Role<span class="cory-visually-hidden"> 2</span></label><input id={`${theme}-st-fold-role`} aria-invalid="true" aria-describedby={`${theme}-st-fold-role-error`} value="" /><p class="form-error" id={`${theme}-st-fold-role-error`}><AdminIcon name="alert" size={16} /><span>This is needed.</span></p></div></div>
+                </details>
+                <div class="admin-repeat" role="group" aria-label="New role"><p class="admin-repeat-name">New role</p><div class="form-field"><label for={`${theme}-st-new-company`}>Company<span class="cory-visually-hidden"> 3</span></label><input id={`${theme}-st-new-company`} value="" /></div></div>
+                <div class="admin-repeat-actions"><Button variant="secondary" type="button" data-repeat-add><AdminIcon name="add" size={18} slot="icon-left" />Add another role</Button></div>
+              </div>
+              <div class="form-field"><label for={`${theme}-st-grow`}>Text</label><textarea id={`${theme}-st-grow`} class="admin-body" rows="24">{Array.from({ length: 40 }, (_, i) => `Line ${i + 1} of a body that is longer than the box, so the box grows with it up to most of the screen.`).join('\n')}</textarea><p class="form-hint">Markdown. The box grows with the text, to most of the screen at most.</p></div>
+              <div class="form-field"><label for={`${theme}-st-body`}>Text</label><textarea id={`${theme}-st-body`} rows="3">## What it is</textarea><p class="form-hint">Markdown. Headings with ##, lists with -, links as [words](address).</p><details class="resource-disclosure"><summary><AdminIcon name="info" size={18} /><span data-disclosure-state>Markdown help</span><AdminIcon name="chevron" size={16} data-chevron /></summary><div class="admin-help"><p>Bold with <code>**two stars**</code>. A picture: <code>![what it shows](../../assets/posts/name.jpg)</code>.</p></div></details></div>
+              <section class="admin-card admin-remove" aria-labelledby={`${theme}-st-remove`}>
+                <div><h2 id={`${theme}-st-remove`} class="admin-card-title"><AdminIcon name="discard" />Remove this project<span class="cory-visually-hidden"> ({theme} theme fixture)</span></h2><p class="form-note">It disappears from the site and from this list: its file is deleted from the repository in one commit, and any draft with it. The site rebuilds in about two minutes.</p></div>
+                <div><Button variant="secondary" type="button"><AdminIcon name="discard" size={18} slot="icon-left" />Delete…</Button></div>
+              </section>
+              <div class="admin-savebar"><p class="admin-savebar-note"><span data-unsaved><AdminIcon name="draft" size={14} /><strong>Changes not saved yet.</strong> </span><span>Publish writes this project to the site; it is live in about two minutes.</span></p><div class="admin-actions"><Button variant="secondary" type="button"><AdminIcon name="draft" size={18} slot="icon-left" />Save draft</Button><Button variant="primary" type="button"><AdminIcon name="publish" size={18} slot="icon-left" />Publish</Button></div></div>
+            </div>
+            <p style={note}>The sign-in page's panel beside the card (hidden under 1024px on the real page; shown here at every width), and the list's Removed status.</p>
+            <div class="admin-signin-panel cory-ink" style="display: grid;">
+              <span class="admin-brand"><span class="admin-brand-mark" aria-hidden="true"></span><span>AIUXAleem</span></span>
+              <div class="admin-signin-intro"><p class="cory-overline">Admin</p><p class="admin-signin-line">Everything on the site, edited in one place.</p><ul class="admin-signin-points"><li><span aria-hidden="true">01</span><span><strong>Drafts save here</strong><span>An edit is kept in the admin until you publish it. The site does not change.</span></span></li><li><span aria-hidden="true">02</span><span><strong>Publish writes to the site</strong><span>Publishing writes the entry into the site's files as one commit. It is live in about two minutes.</span></span></li><li><span aria-hidden="true">03</span><span><strong>Visitor numbers count without cookies</strong><span>Page views by day and the pages people read most, counted by the site itself.</span></span></li></ul></div>
+              <p class="admin-signin-caption">Visitors never see this area. It is not linked from the public site.</p>
+            </div>
+            <div class="form-panel admin-note" role="note" data-tone="info" data-test-branch><AdminIcon name="info" /><div><p>This admin is reading and publishing the branch <bdi>admin-test</bdi>, not the live site.</p></div></div>
+            <div class="form-panel admin-note" role="note" data-tone="info"><AdminIcon name="info" /><div><p>The text of this post is a page carried over from the old site and is not edited here.</p></div></div>
+            <p class="form-note">Channel: <a class="admin-out-link" href="https://www.youtube.com/@aiuxaleem" target="_blank" rel="noopener"><bdi>https://www.youtube.com/@aiuxaleem</bdi><span class="cory-visually-hidden"> (opens in a new tab)</span><AdminIcon name="view" size={14} /></a></p>
+            <div data-lazy-block style="content-visibility: auto; contain-intrinsic-size: auto 900px;"><Publishing plain uid={`${theme}-pub-more`} waiting={[]} recent={pubFull.recent.slice(0, 3)} more={5} /></div>
+            <div class="form-panel admin-note" role="note" data-tone="success"><AdminIcon name="ok" /><div><p><strong>Removed.</strong> The project <bdi>check-remove-x1</bdi> is gone from this list; the site is rebuilding and it leaves the site in about two minutes.</p></div></div>
+            <p style={note}>A picture card from the Images page, with the small Copy button (44px tall, narrower).</p>
+            <ul class="admin-images" style="list-style: none; margin: 0; padding: 0; max-inline-size: 32rem;">
+              <li><div class="admin-thumb"><img src="/assets/author-avatar.jpg" alt="" width="320" height="200" loading="lazy" decoding="async" /></div><p class="admin-path"><bdi>a-very-long-file-name-that-wraps-in-its-card<wbr />.jpg</bdi><span class="cory-visually-hidden"> at ../../assets/projects/a-very-long-file-name-that-wraps-in-its-card.jpg</span></p><div><Button variant="secondary" size="sm" type="button"><AdminIcon name="copy" size={16} slot="icon-left" />Copy</Button></div></li>
+              <li><div class="admin-thumb"><img src="/assets/author-avatar.jpg" alt="" width="320" height="200" loading="lazy" decoding="async" /></div><p class="admin-path"><bdi>{stress.unbroken.slice(0, 40)}.jpg</bdi><span class="cory-visually-hidden"> at ../../assets/projects/{stress.unbroken.slice(0, 40)}.jpg</span></p><div><Button variant="secondary" size="sm" type="button"><AdminIcon name="copy" size={16} slot="icon-left" />Copy</Button></div></li>
+            </ul>
+          </div>
             <p style={note}>Error: the numbers could not be read.</p>
-            <DashboardView plain uid={`${theme}-error`} error="The database did not answer. Nothing is lost: visits are still being recorded if the site itself is up." range={30} ranges={[7, 30, 90]} base="#main" />
+            <div data-lazy-block style="content-visibility: auto; contain-intrinsic-size: auto 900px;"><DashboardView plain uid={`${theme}-error`} error="The database did not answer. Nothing is lost: visits are still being recorded if the site itself is up." range={30} ranges={[7, 30, 90]} base="#main" /></div>
           </div>
 
-          <div style="display: grid; gap: var(--space-4);">
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Content entries</h2>
             <p style={note}>One sample and one stress fixture per collection. Drafts and fixtures never reach a production build. Optional fields that are missing render nothing.</p>
             {content.map(group => (
               <div style="display: grid; gap: var(--space-3);">
                 <p class="cory-overline" style="margin: 0;">{group.name} ({group.entries.length})</p>
-                <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
+                <ul style="display: grid; gap: var(--grid-gap); grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));">
                   {group.entries.map(entry => { const d: any = entry.data; const img = imageOf(d); return (
                     <li style="display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
                       {img && <div style="aspect-ratio: var(--aspect-case); border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-sunken);"><Image src={img.src} alt={img.alt} width={640} style="inline-size: 100%; block-size: 100%; object-fit: cover; object-position: top center;" /></div>}
-                      <div><span data-badge style={badge}>{kind(d)}</span></div>
+                      <div><span data-badge class="ui-badge">{kind(d)}</span></div>
                       <p style="margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong);">{titleOf(d)}</p>
                       {(d.summary || d.lead || d.description || d.excerpt || d.issuer) && <p style="margin: 0; font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-muted);">{d.summary || d.lead || d.description || d.excerpt || d.issuer}</p>}
-                      {d.tags?.length > 0 && <ul style="display: flex; flex-wrap: wrap; gap: var(--space-2);">{d.tags.map((t: string) => <li><span data-badge style={badge}>{t}</span></li>)}</ul>}
+                      {d.tags?.length > 0 && <ul style="display: flex; flex-wrap: wrap; gap: var(--space-2);">{d.tags.map((t: string) => <li><span data-badge class="ui-badge">{t}</span></li>)}</ul>}
                       {d.updates?.length > 0 && <ol style="display: grid; gap: var(--space-2);">{d.updates.map((u: any) => <li style="font-size: var(--text-body-sm); color: var(--text-body);"><span style="font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--text-subtle);">{u.date.toISOString().slice(0, 10)}</span> {u.title}</li>)}</ol>}
                       {Object.values(d).some(isPlaceholder) && <p style="margin: 0; font-size: var(--text-caption); color: var(--text-warning);">Contains a placeholder that must be resolved before this can be published.</p>}
                     </li>
                   ); })}
-                </ul></div>
+                </ul>
               </div>
             ))}
           </div>
 
-          <div style="display: grid; gap: var(--space-2);">
-            <h2 style={h2}>Not covered yet</h2>
-            <p style={note}>Loading skeletons and error states (no component loads data in the browser any more). Case card, metric tile, step row, pull quote, service link card, reel card, section nav, certificate dialog and the hero deck are still rendered from legacy snapshots; each gets its fixtures here when it becomes a real component.</p>
-          </div>
-        </div>
+        </div>)}
       </section>
     ))}
   </main>
@@ -392,6 +463,8 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
 </BaseLayout>
 
 <style is:global>
+  /* On this page the admin save bar is shown in place, not stuck to the viewport. */
+  .states-static .admin-savebar { position: static; }
   /* Buttons wrap their label when it cannot fit (CLAUDE.md 2.3: buttons grow with their content and never clip). */
   .states-wrap, .states-wrap .ui-button-label { white-space: normal; overflow-wrap: anywhere; text-align: center; line-height: 1.25; }
 </style>

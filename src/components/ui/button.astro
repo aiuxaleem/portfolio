@@ -1,9 +1,11 @@
 ---
 /* Button. Same rest-state values as the legacy design-system Button; hover, press and focus are CSS (not JavaScript),
-   so hover only applies on devices that hover and keyboard focus always shows the outline (findings M-01, M-16). */
+   so hover only applies on devices that hover and keyboard focus always shows the outline (findings M-01, M-16).
+   Sizes: md (44px), lg (52px) and sm (the design's Button size="sm", used by row actions such as Copy: its label and padding, held at the 44px target).
+   A disabled button keeps its shape, steps back to the disabled opacity, shows a not-allowed cursor and never lifts. */
 interface Props {
   variant?: 'primary' | 'ink' | 'secondary' | 'ghost' | 'on-ink' | 'on-ink-solid';
-  size?: 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg';
   href?: string;
   fullWidth?: boolean;
   target?: string;
@@ -17,10 +19,13 @@ const attrs = href ? { href } : { type: 'button' };
 <Tag class:list={['ui-button', `ui-button-${variant}`, `ui-button-${size}`, fullWidth && 'ui-button-full']} {...attrs} {...rest}><span class="ui-button-label"><slot name="icon-left" /><slot /><slot name="icon-right" /></span></Tag>
 
 <style is:global>
-  .ui-button { position: relative; display: inline-flex; width: auto; align-items: center; justify-content: center; gap: 8px; padding: 11px 22px; min-height: 44px; font-size: var(--text-ui); font-family: var(--font-sans); font-weight: var(--weight-semibold); line-height: 1; letter-spacing: var(--tracking-ui); border-radius: var(--radius-pill); text-decoration: none; cursor: pointer; white-space: nowrap; border: 1px solid transparent; transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-base) var(--ease-out), background var(--duration-base) var(--ease-out), filter var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out); }
+  .ui-button { position: relative; display: inline-flex; width: auto; align-items: center; justify-content: center; gap: 8px; padding: 11px 22px; min-height: 44px; font-size: var(--text-ui); font-family: var(--font-sans); font-weight: var(--weight-semibold); line-height: 1.2; letter-spacing: var(--tracking-ui); color: inherit; text-decoration: none; border-radius: var(--radius-pill); border: 1px solid transparent; cursor: pointer; white-space: normal; overflow-wrap: anywhere; transition: background var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out), filter var(--duration-base) var(--ease-out), transform var(--duration-fast) var(--ease-spring); }
+  /* The small size is narrower, not shorter: every target on the site keeps 44px (CLAUDE.md 2.4). */
+  .ui-button-sm { gap: 6px; padding: 8px 16px; min-height: 44px; font-size: var(--text-ui-sm); }
   .ui-button-lg { gap: 10px; padding: 15px 30px; min-height: 52px; font-size: var(--text-ui-lg); }
   .ui-button-full { display: flex; width: 100%; }
   .ui-button-label { display: inline-flex; align-items: center; gap: 8px; }
+  .ui-button-sm .ui-button-label { gap: 6px; }
   .ui-button-lg .ui-button-label { gap: 10px; }
   .ui-button-primary { background: var(--gradient-brand-deep); color: var(--text-on-brand); box-shadow: var(--shadow-brand); }
   .ui-button-ink { background: var(--action-ink); color: var(--surface-card); box-shadow: var(--shadow-sm); }
@@ -28,15 +33,25 @@ const attrs = href ? { href } : { type: 'button' };
   .ui-button-ghost { background: transparent; color: var(--text-link); }
   .ui-button-on-ink { background: var(--on-ink-fill); color: var(--on-ink-strong); border-color: var(--on-ink-border-strong); }
   .ui-button-on-ink-solid { background: var(--on-ink-strong); color: var(--navy-800); box-shadow: var(--shadow-md); }
-  .ui-button:active { transform: scale(var(--press-scale)); }
+  .ui-button:not(:disabled):not([aria-disabled="true"]):active { transform: scale(var(--press-scale)); }
   @media (hover: hover) {
-    .ui-button:hover { transform: translateY(-1px); }
-    .ui-button-primary:hover { color: var(--text-on-brand); filter: brightness(1.08) saturate(1.05); box-shadow: var(--shadow-brand-hover); }
-    .ui-button-ink:hover { color: var(--surface-card); background: var(--action-ink-hover); box-shadow: var(--shadow-md); }
-    .ui-button-secondary:hover { color: var(--text-strong); background: var(--action-secondary-hover); box-shadow: var(--shadow-sm); }
-    .ui-button-ghost:hover { background: var(--action-ghost-hover); color: var(--text-link-hover); }
-    .ui-button-on-ink:hover { color: var(--on-ink-strong); background: var(--on-ink-fill-hover); }
-    .ui-button-on-ink-solid:hover { color: var(--navy-800); box-shadow: var(--shadow-lg), var(--shadow-glow); }
+    .ui-button:not(:disabled):not([aria-disabled="true"]):hover { transform: translateY(-1px); }
+    /* No brightness filter on hover: it took the white label to about 4.0:1 at the cyan end (docs/AUDIT_FINDINGS.md L-05). */
+    .ui-button-primary:not(:disabled):hover { color: var(--text-on-brand); box-shadow: var(--shadow-brand-hover); }
+    .ui-button-ink:not(:disabled):hover { color: var(--surface-card); background: var(--action-ink-hover); box-shadow: var(--shadow-md); }
+    .ui-button-secondary:not(:disabled):hover { color: var(--text-strong); background: var(--action-secondary-hover); box-shadow: var(--shadow-sm); }
+    .ui-button-ghost:not(:disabled):hover { background: var(--action-ghost-hover); color: var(--text-link-hover); }
+    .ui-button-on-ink:not(:disabled):hover { color: var(--on-ink-strong); background: var(--on-ink-fill-hover); }
+    .ui-button-on-ink-solid:not(:disabled):hover { color: var(--navy-800); box-shadow: var(--shadow-lg), var(--shadow-glow); }
   }
+  /* Focus twins of the hover tints and shadows (CLAUDE.md 2.7). */
+  .ui-button-primary:not(:disabled):focus-visible { box-shadow: var(--shadow-brand-hover); }
+  .ui-button-ink:not(:disabled):focus-visible { background: var(--action-ink-hover); box-shadow: var(--shadow-md); }
+  .ui-button-secondary:not(:disabled):focus-visible { background: var(--action-secondary-hover); box-shadow: var(--shadow-sm); }
+  .ui-button-ghost:not(:disabled):focus-visible { background: var(--action-ghost-hover); color: var(--text-link-hover); }
+  .ui-button-on-ink:not(:disabled):focus-visible { background: var(--on-ink-fill-hover); }
+  .ui-button-on-ink-solid:not(:disabled):focus-visible { box-shadow: var(--shadow-lg), var(--shadow-glow); }
+  /* Disabled: the shape stays, the colour steps back, nothing lifts or presses. */
+  .ui-button:disabled, .ui-button[aria-disabled="true"] { opacity: var(--opacity-disabled); cursor: not-allowed; box-shadow: none; filter: none; }
   .ui-button:focus-visible, .ui-icon-button:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
 </style>

@@ -35,6 +35,13 @@
 
   /* ---------- Chips and the questions on Services: a small pop on press, the chevron turning as the answer opens ---------- */
   .ui-chip:active { transform: scale(var(--press-scale)); }
+  /* A chip that is not pressed or current rises 1px on focus, as it does under the pointer (the design's Chip). */
+  .ui-chip:not([aria-pressed="true"]):not([aria-current="page"]):not(:active):focus-visible { transform: translateY(-1px); }
+  .ui-button:not(:disabled):not([aria-disabled="true"]):not(:active):focus-visible { transform: translateY(-1px); }
+  .project-card:has(.project-card-link:focus-visible) .project-card-title a { color: var(--text-link); }
+  /* Focus twins of two hovers that live in other stylesheets: the case-study link card and the video play button. */
+  .project-related:focus-visible { transform: translateY(var(--lift-hover)); box-shadow: var(--shadow-lg); }
+  .embed-play:focus-visible .embed-play-disc { transform: scale(1.06); }
   [data-chevron] { transition: transform var(--duration-spring-pop) var(--ease-spring-pop); }
 
   /* ---------- Admin dashboard: the numbers step back while the next period loads ---------- */
@@ -45,6 +52,7 @@
   [data-theme-toggle]:focus-visible svg { transform: rotate(18deg); }
 
   @media (hover: hover) {
+    .ui-chip:not([aria-pressed="true"]):not([aria-current="page"]):not(:active):hover { transform: translateY(-1px); }
     :is(.ui-button, [data-ds-button]):hover svg[data-dir-icon], :is(.ui-button, [data-ds-button]):hover [data-dir-icon] > svg { transform: translateX(calc(3px * var(--dir-x))) scaleX(var(--dir-x)); }
     .project-card:hover .project-card-media img { transform: scale(1.04); }
     .project-card:hover .project-card-title a { color: var(--text-link); }

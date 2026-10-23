@@ -186,3 +186,60 @@ Fixed along the way, each found by a judge with evidence: the previous-period li
 - Announce "Loading the N-day figures" on a period press for screen readers.
 - Add a round y-reference under the max hairline; draw a short first week gray like the last; explain the ratio tile's 20-visit floor in the definitions fold; name the measure in the "Previous period" column; drop the visible word Period on phones from the landmark name; keep a dismissed hover note away until the pointer leaves the column.
 - `lh` has no fallback: in a browser without it, a row link's hit area is one line of text.
+
+
+## Part 6: The whole site against the owner's bar of 8, 22 October 2026
+
+The owner asked for an honest rating of the whole site, public and admin ("a lot of issues with primary and secondary buttons, filters, search"), with everything below 8 fixed within the locked design language. Method: full-page screenshots of every public page (from the built copy, served statically, every section laid out) and every admin page (from the dev server, signed in), at 1280 in both themes and at 390; three independent judges, each given the screenshots, the code and the design export, each citing a screenshot or a file and line for every finding, each rating out of ten with only musts and shoulds counted: a product design lead reading the public site as a hiring manager, an internal-tools designer reading the admin as the owner, and a design-systems and accessibility reviewer reading both against `legacy/` and `design/claude-design/`. The musts and shoulds were fixed between rounds and the panel ran again on new captures.
+
+Final readings: public 8.3, admin 8.2, fidelity of the whole 8.3, each with nothing left at must or should level in the code. Rounds today (public, admin, fidelity of the whole):
+
+| Round | Public | Admin | Fidelity | What the round found |
+| --- | --- | --- | --- | --- |
+| 1 | 7.8 | 7.5 | 7.8 | One must each: a video entry whose poster showed another talk; a hidden entry's editor offering a View link to a page the build never makes. Shoulds: wording and count-line grammar, chip and button fidelity, placeholder colour, the primary hover's contrast, admin title and card values, list columns, one clock. |
+| 2 | 7.9 | 7.8 | (cut off by a restart) | No musts. Shoulds: the project page's column rhythm, the phone video facade, the play disc, the Blog paging line, the phone footer, the list columns, editors without an index, the Career Add button, fold dates, the YouTube page width, blur validation. |
+| 3 | 8.0 | 7.6 | 8.0 | One must: the editor form's first submit button was Delete, so Enter in a field would have asked to remove the entry. Shoulds: pager wording, the Topic label, the Read heads, the resume page's footer band, states coverage, list columns again, side-panel totals, "Published on", the Images action, announced errors; the Read jumps back to the design's chips, admin heading weights. |
+| 4 | [R4-PUBLIC] | 7.5 | 7.8 | One must, found by both: the Remove form, moved out of the editor, had fallen into the section-index column at 1280px. Shoulds: a failed Delete redrawing the editor empty, orphaned time stamps, two Upload buttons, side-panel totals built on a missing folder, the editor sections and stat tiles still at the old radius, certification badges without the dot. |
+| 5 | | 7.9 | 8.0 | No musts. Shoulds: the Last edited column's width, totals that survive one missing folder, one Upload; focus tints for the side panel's foot links and the section index; L-07 (larger field messages) restored to the design's values as a proposal. |
+| 6 | 8.3 (re-read after the header fixes) | 8.2 (re-read after the fixes) | 8.3 (re-read after the fixes) | No musts. Public: the header's nav shifted on the three pages that hide the Get in touch button (fixed: the slot stays in the flow). Admin: the Remove card's layout rule missed the live markup, two hints pointed where the control is not, the upload form had no sending state (all fixed). Fidelity: focus twins for the buttons' tints, the invalid state at the design's border colour and weight (fixed). |
+
+### What changed
+
+Public:
+- Buttons: the primary's hover keeps its rise and brand shadow and drops the brightness filter that took the white label to about 4.0:1 at the cyan end of the gradient (4.6:1 at rest); a small size that is narrower, not shorter; a disabled state; the design's tracking token on every button and chip.
+- Filters, search and counts: one chip anatomy everywhere (a 40px pill inside a 44px target, a check mark as well as the fill when pressed, a 1px rise under the pointer and on focus unless pressed or current); counts on every topic and status chip on Work, Blog and Resources, with chips that would lead to an empty list left out; one count grammar on Work, Blog, Read and Resources ("N projects", "Showing 12 of 51 resources", "Showing 1 to 6 of 13 LinkedIn posts · Page 1 of 3") with the count under the chips; a Clear filters action beside the count once a filter is on; the Resources search first, with a visible label, and paging by twelve; Read's "On this page" row as links, not chips; placeholder text from a token.
+- Pages: the header's primary steps aside where a hero already carries one (Case Studies, Services, Contact, project, case-study and post pages); the About page's article follows the headline's first letter; the career grid and the suggest form rows align at the top; the resume's certifications as rows and its primary saying where the file is; the project page's Updates section only when there are updates and its Gallery heading on the reading column; case-study process figures at their own ratio; the Case Studies heading counting the published case studies; the legacy post's back link, reading time and date the same as its card's; a video's duration as 4:30; the first video's mismatched poster removed; the status badge carrying a tone dot beside its word and no outline, as the design's Badge.
+- Tokens: `--tap-target` and `--blue-800` moved into `tokens.css`, the one source of truth.
+- Behaviour: the aurora island (`src/components/islands/ink-aurora.ts`) reads every dark card's size before it writes anything, so a page with dozens of such cards lays out once instead of once per card; the fixtures page, which had grown to 13,000 nodes with this round's admin fixtures, loads in 26 s instead of 45 (measured on the built copy), inside the quality suite's limit.
+- The fixtures page itself: with this round's admin fixtures it had grown to 13,000 nodes and a layout pass took seconds (a browser interaction between the dashboard fixtures' container queries and their tables; with container queries switched off it laid out in under a second), so the admin's pieces now sit on their own page, /_states-admin, and every fixture block on both pages is laid out only when near the viewport (content-visibility: auto, revealed by the capture helper and in print). Both pages load in under a second (623 ms and 337 ms on the built copy, from 45 to 100 s before), and the quality suite checks both.
+
+Admin:
+- Frame: the side panel scrolls instead of clipping its last entries; the title at the design's `--text-h1` and cards at `--radius-xl` with `--shadow-sm`, as Admin.dc.html draws them; a notice on every page when the admin reads a branch other than main; the brand mark at the design's radius.
+- Lists: the search box first with a live count under it; the title column two fifths of the table; "Publishing" as the column's name; one chip for a published entry kept off the site ("Published, hidden from the site"); a "Last edited" that falls back to the last publish; an empty list that says what to press.
+- Editors: required marks; the title field wide and the Markdown help folded; filled repeat rows as named folds with one open spare row headed like them, a cut fold line ending with an ellipsis; a Body box that grows with its text; the legacy-post notice before the sections; a hidden entry's editor saying so and offering no View link to a page the build never makes; a new entry's chip with the "new" icon; Delete with its icon and a confirmation; picture previews and the Images page asking for 640px WebP thumbnails instead of the originals; the YouTube page with one action.
+- Time: every publish and edit time in Gulf time (GMT+3), the clock the dashboard's hour chart keeps, said once in the definitions fold.
+
+### Deviations from the design recorded today
+
+`docs/AUDIT_FINDINGS.md` L-05 (no hover brightness filter on the primary button), L-06 (placeholder colour from `--text-subtle`), L-07 (field messages kept at 14px and the invalid border at 2px, recorded, not changed) and L-08 (admin title, cards and badges restored to the design's values).
+
+### Evidence
+
+- `npm run check`: 0 errors, 0 warnings.
+- `npm run quality`: PASSED, 0 failures in the checks that are wired: 840 views of 42 routes (including /_states and /_states-admin) at ten sizes in both themes, plus budgets, SEO and structured data, and owner facts.
+- `node scripts/quality/check-admin-ui.mjs`: 540 views of 27 admin pages; the full run ended with three page-load timeouts on the posts and videos lists under load (each page loads in about 2 s when measured alone), and the rerun of those lists passed: 60 views, 0 findings.
+- `node scripts/quality/check-admin.mjs`: PASSED (sign-in, sign-out, refusals, the attempt limit, visitor counting and the dashboard).
+- `npm run unused`: no unused files, CSS rules or packages.
+- The editor form's default submit verified in the browser: Enter in a field submits Save draft; the Delete button is in its own form after the editor.
+- Screenshots the judges read: `reports/audit3/` to `reports/audit10/` (public from the built copy, admin from the dev server, 1280 and 390 in light, 1280 in dark). The judges' reports are in the session transcript.
+
+### Left for the owner (content or decisions, not code defects)
+
+- Video posters: every video card uses the typographic fallback. Proposal: fetch each video's own YouTube thumbnail at build time into `src/assets/media/posters/` (self-hosted, so nothing loads from YouTube before a click) and set it as the poster with an alt the owner writes.
+- The cover fallback repeats the title in display type above the title in the card body (blog and video cards). Proposal: show the category or index and the brand gradient instead; a design change.
+- The Now page's status words ("In production", "Ongoing") differ from Work's ("Shipped", "In progress") and carry no tone dot; content words in `profile.json`.
+- The Multi-brand token system cover is cropped at the card ratio; re-export at `--aspect-case`.
+- The case-study process figures are small exports; re-export at 1440×900.
+- Read and Videos hero primaries: the follow/subscribe action is the primary today; swapping it with the on-site action is a design change.
+- Blog topics stay links to tag pages (the list is paginated, so filtering in place would hide posts on other pages); the pager uses the chip look for page numbers. Recorded as a decision, not a defect.
+- The Work grid at four entries (three and one), the Home page's length at phone width, character counters on limited admin fields, a Remove button per repeat row, a "Last edited" that falls back to the entry's own date, the side-panel counts in the sans face.

@@ -31,7 +31,7 @@ const verified = d.outcomes.metrics.filter(m => m.verified);
 const jsonLd = [caseStudyLd(entry, await ogImageFor(`/case-studies/${entry.id}`)), breadcrumbLd([['Case studies', '/case-studies'], [d.title, `/case-studies/${entry.id}`]])];
 const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
 ---
-<PageLayout title={`${d.seo.title || d.title} · Case study · AIUXAleem`} description={(d.seo.description || d.lead).slice(0, 165)} page="case" ogType="article" jsonLd={jsonLd} noindex={d.fixture} bg="grid" mainStyle="outline: none; overflow: clip;">
+<PageLayout hideCta title={`${d.seo.title || d.title} · Case study · AIUXAleem`} description={(d.seo.description || d.lead).slice(0, 165)} page="case" ogType="article" jsonLd={jsonLd} noindex={d.fixture} bg="grid" mainStyle="outline: none; overflow: clip;">
   <ReadProgress />
   <article>
     <header class="cory-container" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--space-12) var(--space-10);">
@@ -90,7 +90,7 @@ const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
               {paras(d.process.summary).map(p => <p>{p}</p>)}
               {d.process.steps.length > 0 && <ol class="case-steps">{d.process.steps.map((s, i) => <li><span class="case-step-num" aria-hidden="true"><bdi>{String(i + 1).padStart(2, '0')}</bdi></span><div><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol>}
               {d.process.beforeAfter && <BeforeAfter before={d.process.beforeAfter.before} after={d.process.beforeAfter.after} caption={d.process.beforeAfter.caption} />}
-              {d.process.images.map(g => <figure class="case-figure"><div class="project-cover" style="aspect-ratio: var(--aspect-case);"><Image src={g.src} alt={g.alt} widths={[640, 960, 1280]} sizes="(min-width: 1024px) 760px, 100vw" loading="lazy" decoding="async" /></div>{g.caption && <figcaption>{g.caption}</figcaption>}</figure>)}
+              {d.process.images.map(g => <figure class="case-figure"><div class="project-cover" style={`aspect-ratio: ${g.src.width} / ${g.src.height};`}><Image src={g.src} alt={g.alt} widths={[640, 960, 1280]} sizes="(min-width: 1024px) 760px, 100vw" loading="lazy" decoding="async" /></div>{g.caption && <figcaption>{g.caption}</figcaption>}</figure>)}
             </section>
           )}
           {shown.has('ai') && (

@@ -1,5 +1,6 @@
 /* Blog helpers shared by /blog, tag pages, post pages, the RSS feed and /_states. */
 import { getCollection, type CollectionEntry } from 'astro:content';
+import guide from '../snapshots/guide.json';
 
 export type Post = CollectionEntry<'posts'>;
 const showFixtures = import.meta.env.DEV || process.env.QUALITY_BUILD === '1';
@@ -21,18 +22,24 @@ export async function allTags(): Promise<string[]> {
 }
 
 /** Tags that have at least one listed post: the tag links shown on the blog. */
-export async function usedTags(): Promise<string[]> {
-  return [...new Set((await listedPosts()).filter(p => !p.data.fixture).flatMap(p => p.data.tags))].sort((a, b) => a.localeCompare(b));
+/** The topics of the published posts with how many posts carry each, A to Z: the chips on the blog and their counts. */
+export async function usedTags(): Promise<{ tag: string; n: number }[]> {
+  const counts = new Map<string, number>();
+  for (const p of (await listedPosts()).filter(p => !p.data.fixture)) for (const t of p.data.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
+  return [...counts].map(([tag, n]) => ({ tag, n })).sort((a, b) => a.tag.localeCompare(b.tag));
 }
 
 export const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 export const postUrl = (p: Post) => `/blog/${p.id}`;
 export const formatDate = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
-/** 200 words a minute, never less than one minute. Legacy pages have no body here, so no figure is shown for them. */
+/** The bodies of the posts still served from a legacy snapshot, so their reading time is counted like any other. */
+const LEGACY_BODIES: Record<string, string> = { 'component-spec-files': guide.main };
+/** 200 words a minute, never less than one minute. */
 export function readingTime(p: Post): string | undefined {
-  if (p.data.legacyPage) return undefined;
-  const words = (p.body || '').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+  const html = p.data.legacyPage ? LEGACY_BODIES[p.id] : p.body;
+  if (!html) return undefined;
+  const words = html.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
   return `${Math.max(1, Math.round(words / 200))} min read`;
 }
 

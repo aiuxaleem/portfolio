@@ -10,7 +10,7 @@
 /* The current period is not shown by colour alone: a check mark is added, as on the filter chips. */
 .dash-range .ui-chip[aria-current="page"]::before { content: "✓" / ""; font-weight: var(--weight-bold); }
 .dash-tiles .dash-number { font-family: var(--font-display); font-size: var(--text-metric-sm); font-weight: var(--weight-extrabold); line-height: var(--leading-snug); }
-.dash-h2 { margin: 0; font-family: var(--font-display); font-size: var(--text-h3); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
+.dash-h2 { margin: 0; font-family: var(--font-display); font-size: var(--text-h3); font-weight: var(--weight-extrabold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
 .dash-table table { min-inline-size: 0; table-layout: auto; }
 /* A day or week in the series table keeps to one line; its part ("today so far") sits under it. */
 .dash-table .dash-day { white-space: nowrap; overflow-wrap: normal; }
@@ -67,8 +67,8 @@
 /* Admin frame and editors. */
 .admin-note { margin: 0; }
 .admin-form { display: grid; gap: var(--space-8); min-inline-size: 0; }
-.admin-group { display: grid; gap: var(--space-5); min-inline-size: 0; margin: 0; padding: var(--space-6); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); background: var(--surface-card); }
-.admin-group > legend { padding-inline: var(--space-2); font-family: var(--font-display); font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong); }
+.admin-group { display: grid; gap: var(--space-5); min-inline-size: 0; margin: 0; padding: var(--space-6); border-radius: var(--radius-xl); border: 1px solid var(--border-subtle); background: var(--surface-card); }
+.admin-group > legend { padding-inline: var(--space-2); font-family: var(--font-display); font-size: var(--text-h4); font-weight: var(--weight-extrabold); color: var(--text-strong); }
 .admin-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--space-5); align-items: start; }
 .admin-repeat { display: grid; gap: var(--space-4); padding: var(--space-4); border-radius: var(--radius-md); background: var(--surface-sunken); border: 1px solid var(--border-subtle); min-inline-size: 0; }
 .admin-form select { inline-size: 100%; min-block-size: 44px; padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font: inherit; }
@@ -84,81 +84,111 @@
 .admin-check { gap: 0; }
 .admin-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
 .admin-problems { display: grid; gap: var(--space-1); padding-inline-start: var(--space-5); list-style: disc; }
-.admin-problems a, .admin-list th a, .admin-form .form-note a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); min-inline-size: var(--tap-target); overflow-wrap: anywhere; }
+.admin-problems a, .admin-list th a, .admin-form .form-note a, .admin-form .form-hint a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); min-inline-size: var(--tap-target); overflow-wrap: anywhere; }
+/* The title is what the owner scans for: two fifths of the table, so long titles do not wrap into a tall column. */
+.admin-list thead th:first-child { inline-size: 40%; } /* the table is laid out fixed, so the first row sets the columns */
+.admin-list thead th:nth-child(2) { inline-size: 14rem; } /* room for the longest state chip on one line, inside the cell padding */
 .admin-list th[scope="row"] { font-weight: var(--weight-semibold); background: transparent; }
 .admin-list td .ui-badge { margin-inline-end: var(--space-2); }
+/* From 1280px the Last edited column is sized for its stamp and the stamp stays on one line; narrower, it wraps after the comma. */
+@media (min-width: 1280px) { .admin-list thead th[data-col="edited"] { inline-size: 11rem; } .admin-list td[data-label="Last edited"] { white-space: nowrap; } }
 .admin-repeats, .admin-image { display: grid; gap: var(--space-4); min-inline-size: 0; }
 .admin-checkline { display: grid; gap: var(--space-1); }
 
 /* Images page. */
-.admin-form input[type="file"] { padding: 9px 12px; font: inherit; color: var(--text-body); }
+/* The file field: a card surface with the browser's button drawn as a small secondary button (tokens only). */
+.admin-form .form-field input[type='file'] { padding: var(--space-2); background: var(--surface-card); font: inherit; color: var(--text-body); cursor: pointer; }
+.admin-form input[type='file']::file-selector-button { min-block-size: var(--tap-target); margin-inline-end: var(--space-3); padding: 7px 14px; gap: 6px; border-radius: var(--radius-pill); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font-family: var(--font-sans); font-size: var(--text-ui); font-weight: var(--weight-semibold); line-height: 1; cursor: pointer; transition: background var(--duration-base) var(--ease-out); }
+@media (hover: hover) { .admin-form input[type='file']:hover::file-selector-button { background: var(--action-secondary-hover); } }
+.admin-form input[type='file']:focus-visible::file-selector-button { background: var(--action-secondary-hover); } /* the pointer's tint, for the keyboard too */
 .admin-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr)); gap: var(--space-5) var(--grid-gap); }
-.admin-images li { display: grid; gap: var(--space-2); min-inline-size: 0; align-content: start; }
+.admin-images li { display: grid; grid-template-rows: auto 1fr auto; gap: var(--space-2); min-inline-size: 0; padding: var(--space-3); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); }
 .admin-thumb { aspect-ratio: 16 / 10; overflow: hidden; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); background: var(--surface-sunken); }
 .admin-thumb img { inline-size: 100%; block-size: 100%; object-fit: cover; object-position: top; }
+.admin-thumb[data-failed] { display: grid; place-items: center; padding: var(--space-2); font-size: var(--text-caption); color: var(--text-subtle); text-align: center; }
 .admin-path { margin: 0; font-family: var(--font-mono); font-size: var(--text-mono-sm); line-height: var(--leading-mono); color: var(--text-body); overflow-wrap: anywhere; user-select: all; }
 
 /* ---------- The admin frame (admin-shell.astro): a side panel and a work area. Tokens only. ---------- */
 .admin-skip { position: fixed; inset-block-start: var(--space-4); inset-inline-start: var(--space-4); z-index: var(--z-toast); padding: var(--space-3) var(--space-5); border-radius: var(--radius-pill); background: var(--surface-ink); color: var(--on-ink-strong); font-weight: var(--weight-semibold); text-decoration: none; transform: translateY(-200%); }
 .admin-skip:focus { transform: none; }
-.admin-app { display: grid; grid-template-columns: minmax(0, 1fr); min-block-size: 100vh; min-block-size: 100dvh; background: var(--surface-page); }
+/* Two rows: the bar takes its own height and the work area the rest, so a short page has no blank band between them. */
+.admin-app { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; min-block-size: 100vh; min-block-size: 100dvh; background: var(--surface-page); }
 .admin-side { position: sticky; inset-block-start: 0; z-index: var(--z-sticky); background: var(--surface-card); border-block-end: 1px solid var(--border-subtle); min-inline-size: 0; }
 .admin-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--gutter); min-block-size: var(--header-height-compact); }
 .admin-brand { display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-body-lg); letter-spacing: var(--tracking-tight); color: var(--text-strong); text-decoration: none; }
-.admin-brand-mark { inline-size: 20px; block-size: 20px; border-radius: var(--radius-sm); background: var(--gradient-brand); flex-shrink: 0; }
+.admin-brand-mark { inline-size: var(--space-5); block-size: var(--space-5); border-radius: var(--radius-tile); background: var(--gradient-brand); flex-shrink: 0; }
 .admin-panel { display: grid; gap: var(--space-6); padding: var(--space-4) var(--gutter) var(--space-6); border-block-start: 1px solid var(--border-subtle); max-block-size: calc(100dvh - var(--header-height-compact)); overflow-y: auto; }
 /* With JavaScript the sections sit behind the Menu button on small screens; without it they are simply listed. */
 [data-admin-js] .admin-panel:not([data-open]) { display: none; }
 html:not([data-admin-js]) .admin-menu-button { display: none; }
-.admin-nav { display: grid; gap: var(--space-5); }
-.admin-nav-group { display: grid; gap: var(--space-2); }
+.admin-nav { display: grid; gap: var(--space-2); }
+.admin-nav-group { display: grid; gap: var(--space-1); }
 .admin-nav-group > p { margin: 0; padding-inline: var(--space-3); color: var(--text-subtle); }
-.admin-nav ul { display: grid; gap: var(--space-1); }
-.admin-nav a, .admin-side-link { display: flex; align-items: center; gap: var(--space-3); inline-size: 100%; min-block-size: var(--tap-target); padding: var(--space-2) var(--space-3); border: 0; border-radius: var(--radius-md); background: transparent; color: var(--text-body); font: inherit; font-size: var(--text-body-md); font-weight: var(--weight-medium); text-align: start; text-decoration: none; cursor: pointer; overflow-wrap: anywhere; transition: background var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out); }
+.admin-nav ul { display: grid; gap: 0; }
+.admin-nav a, .admin-side-link { display: flex; align-items: center; gap: var(--space-3); inline-size: 100%; min-block-size: var(--tap-target); padding: var(--space-2) var(--space-3); border: 0; border-radius: var(--radius-md); background: transparent; color: var(--text-body); font: inherit; font-size: var(--text-body-sm); font-weight: var(--weight-medium); text-align: start; text-decoration: none; cursor: pointer; overflow-wrap: anywhere; transition: background var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out); }
 .admin-nav a svg, .admin-side-link svg { flex-shrink: 0; color: var(--text-muted); }
 /* The current section: a filled row, heavier text and a bar at its start, so it is not shown by colour alone. */
 .admin-nav a[aria-current="page"] { background: var(--surface-sunken); color: var(--text-strong); font-weight: var(--weight-bold); box-shadow: inset 3px 0 0 var(--action-primary); }
 [dir="rtl"] .admin-nav a[aria-current="page"] { box-shadow: inset -3px 0 0 var(--action-primary); }
 .admin-nav a[aria-current="page"] svg { color: var(--text-link); }
 .admin-nav a:focus-visible, .admin-side-link:focus-visible, .admin-brand:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
+.admin-nav a:not([aria-current="page"]):focus-visible, .admin-side-link:focus-visible, .admin-index-list a:focus-visible { background: var(--action-ghost-hover); color: var(--text-strong); } /* the pointer's tint, for the keyboard too */
 @media (hover: hover) { .admin-nav a:not([aria-current="page"]):hover, .admin-side-link:hover { background: var(--action-ghost-hover); color: var(--text-strong); } }
-.admin-side-foot { display: grid; gap: var(--space-1); padding-block-start: var(--space-4); border-block-start: 1px solid var(--border-subtle); }
-.admin-side-foot form { padding: var(--space-2) var(--space-3) 0; }
-.admin-side-who { margin: 0; padding: var(--space-2) var(--space-3); font-size: var(--text-body-sm); color: var(--text-muted); overflow-wrap: anywhere; }
+.admin-side-foot { display: grid; gap: 0; padding-block-start: var(--space-2); border-block-start: 1px solid var(--border-subtle); }
+.admin-side-foot form { padding: 0 var(--space-3); }
 .admin-main { display: grid; align-content: start; gap: var(--space-8); inline-size: 100%; max-inline-size: 76rem; margin-inline: auto; padding: var(--space-8) var(--gutter) var(--space-16); min-inline-size: 0; outline: none; }
-.admin-main-narrow { max-inline-size: 58rem; }
 .admin-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-4) var(--space-6); padding-block-end: var(--space-6); border-block-end: 1px solid var(--border-subtle); }
 .admin-head-text { display: grid; gap: var(--space-2); min-inline-size: 0; flex: 1 1 20rem; }
 .admin-head-text > p { margin: 0; }
-.admin-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; }
+.admin-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h1); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; }
 .admin-head-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
 @media (min-width: 1024px) {
   .admin-app { grid-template-columns: 17rem minmax(0, 1fr); }
-  .admin-side { block-size: 100vh; block-size: 100dvh; display: flex; flex-direction: column; border-block-end: 0; border-inline-end: 1px solid var(--border-subtle); }
-  .admin-bar { padding: var(--space-5) var(--space-5) var(--space-3); }
+  /* The whole panel scrolls as one on a short screen (the design's aside has overflow auto); the foot sits at the bottom when there is room. At 1280x800 everything fits without scrolling. */
+  .admin-side { block-size: 100vh; block-size: 100dvh; display: flex; flex-direction: column; border-block-end: 0; border-inline-end: 1px solid var(--border-subtle); overflow-y: auto; }
+  .admin-bar { padding: var(--space-2) var(--space-5); flex-shrink: 0; }
   .admin-menu-button { display: none; }
-  .admin-panel, [data-admin-js] .admin-panel:not([data-open]) { display: flex; flex-direction: column; justify-content: space-between; flex: 1 1 auto; min-block-size: 0; max-block-size: none; padding: var(--space-3) var(--space-3) var(--space-5); border-block-start: 0; overflow-y: auto; }
+  .admin-panel, [data-admin-js] .admin-panel:not([data-open]) { display: flex; flex-direction: column; gap: var(--space-2); flex: 1 0 auto; min-block-size: 0; max-block-size: none; padding: var(--space-2) var(--space-3); border-block-start: 0; overflow: visible; }
+  .admin-side-foot { margin-block-start: auto; }
   .admin-main { padding-block-start: var(--space-10); }
 }
 
 /* Sign-in: one card in the middle of the page, with no site menu around it. */
-.admin-signin { display: grid; place-content: center; justify-items: center; gap: var(--space-5); min-block-size: 100vh; min-block-size: 100dvh; padding: var(--space-8) var(--gutter); background: var(--surface-page); }
-.admin-signin-card { display: grid; gap: var(--space-6); inline-size: min(100%, 26rem); padding: var(--space-8); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-md); min-inline-size: 0; }
+.admin-signin { display: grid; grid-template-columns: minmax(0, 1fr); min-block-size: 100vh; min-block-size: 100dvh; background: var(--surface-page); }
+/* The card and the link under it, in the middle of their column. */
+.admin-signin-side { display: grid; align-content: center; justify-items: center; gap: var(--space-5); padding: var(--space-8) var(--gutter); min-inline-size: 0; }
+.admin-signin-card { display: grid; gap: var(--space-6); inline-size: min(100%, 26rem); padding: var(--space-8); border-radius: var(--radius-2xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-xl); min-inline-size: 0; }
+/* The ink panel beside the card (design: Admin.dc.html): shown from 1024px; the aurora attaches to it by itself (.cory-ink). */
+.admin-signin-panel { display: none; }
+@media (min-width: 1024px) {
+  .admin-signin { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
+  .admin-signin > :not(.admin-signin-panel) .admin-brand { display: none; } /* the ink panel carries the brand from here up */
+  .admin-signin-panel { display: flex; flex-direction: column; justify-content: space-between; gap: var(--space-10); padding: var(--space-12) var(--space-10); border-radius: 0; min-inline-size: 0; }
+}
+.admin-signin-panel .admin-brand { color: var(--on-ink-strong); }
+.admin-signin-intro { display: grid; gap: var(--space-6); max-inline-size: 28rem; }
+.admin-signin-intro > .cory-overline { margin: 0; color: var(--on-ink-link); }
+.admin-signin-line { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-snug); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); text-wrap: balance; overflow-wrap: anywhere; }
+.admin-signin-points { display: grid; gap: var(--space-4); }
+.admin-signin-points li { display: grid; grid-template-columns: var(--tap-target) minmax(0, 1fr); gap: var(--space-4); align-items: center; }
+.admin-signin-points li > span:first-child { display: grid; place-items: center; inline-size: var(--tap-target); block-size: var(--tap-target); border-radius: var(--radius-md); background: var(--surface-ink); border: 1px solid var(--on-ink-border); color: var(--on-ink-strong); font-family: var(--font-mono); font-size: var(--text-body-sm); }
+.admin-signin-points li > span:last-child { display: grid; gap: 2px; min-inline-size: 0; }
+.admin-signin-points strong { font-size: var(--text-body-md); color: var(--on-ink-strong); }
+.admin-signin-points span span { font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--on-ink-body); }
+.admin-signin-caption { margin: 0; font-size: var(--text-caption); color: var(--on-ink-muted); }
 .admin-signin-card .ui-button { inline-size: 100%; }
 .admin-signin-foot { margin: 0; font-size: var(--text-body-sm); }
 .admin-signin-foot a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); color: var(--text-link); }
 
 /* ---------- Pages inside the frame ---------- */
-.admin-signin { grid-template-columns: minmax(0, 26rem); }
-.admin-signin-card { inline-size: 100%; }
 /* A card: the surface every block of an admin page sits on. */
-.admin-card { display: grid; gap: var(--space-5); padding: var(--space-6); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-xs); min-inline-size: 0; }
+.admin-card { display: grid; gap: var(--space-5); padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); min-inline-size: 0; }
 .admin-toolbar { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--space-3) var(--space-5); }
 .admin-card .post-table { border-radius: var(--radius-md); }
 .admin-state { display: inline-flex; align-items: center; gap: var(--space-1); }
 .admin-state svg { flex-shrink: 0; }
 /* The state that needs the owner's attention is heavier, and has its own icon. */
-.admin-state[data-state="changes"], .admin-state[data-state="new"] { font-weight: var(--weight-bold); color: var(--text-strong); border-color: var(--border-interactive); }
+.admin-state[data-state="changes"], .admin-state[data-state="new"] { font-weight: var(--weight-bold); color: var(--text-strong); }
 .admin-list tbody tr[hidden] { display: none; }
 /* Under 640px a list row is a small card: the title, then each fact with its name in front. */
 @media (max-width: 639px) {
@@ -169,7 +199,7 @@ html:not([data-admin-js]) .admin-menu-button { display: none; }
   .admin-list thead { display: none; }
   .admin-list tbody tr { padding-block: var(--space-3); border-block-end: 1px solid var(--border-subtle); }
   .admin-list tbody tr:last-child { border-block-end: 0; }
-  .admin-list th[scope="row"], .admin-list td { padding: var(--space-1) var(--space-4) !important; border: 0 !important; }
+  .admin-list th[scope="row"], .admin-list td { inline-size: 100%; padding: var(--space-1) var(--space-4) !important; border: 0 !important; }
   .admin-list td[data-label]::before { content: attr(data-label) ": "; font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
   .admin-list td[data-empty] { display: none; }
 }
@@ -178,14 +208,14 @@ html:not([data-admin-js]) .admin-menu-button { display: none; }
 .admin-editor { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-6) var(--space-8); align-items: start; min-inline-size: 0; }
 .admin-index { display: none; }
 .admin-form { gap: var(--space-6); }
-.admin-group { grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); align-items: start; scroll-margin-block-start: var(--space-6); box-shadow: var(--shadow-xs); }
+.admin-group { grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); align-items: start; scroll-margin-block-start: var(--space-6); box-shadow: var(--shadow-sm); }
 .admin-group > legend { float: inline-start; inline-size: 100%; padding: 0; margin-block-end: var(--space-1); grid-column: 1 / -1; }
 .admin-group > .form-note, .admin-wide, .admin-repeats, .admin-image, .admin-checkline { grid-column: 1 / -1; }
 .admin-image { grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); align-items: start; }
 .admin-repeat { grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); align-items: start; }
 .admin-form textarea { resize: vertical; }
 /* The buttons stay at the foot of the screen while the form is scrolled. Room is kept so a field that takes focus is never under them. */
-.admin-savebar { position: sticky; inset-block-end: 0; z-index: var(--z-raised); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3) var(--space-5); padding: var(--space-4) var(--space-5); border-radius: var(--radius-lg) var(--radius-lg) 0 0; background: var(--surface-card); border: 1px solid var(--border-default); border-block-end: 0; box-shadow: var(--shadow-lg); }
+.admin-savebar { position: sticky; inset-block-end: calc(var(--space-4) + env(safe-area-inset-bottom, 0px)); z-index: var(--z-raised); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-3) var(--space-3) var(--space-5); border-radius: var(--radius-pill); background: var(--surface-card); border: 1px solid var(--border-default); box-shadow: var(--shadow-xl); }
 .admin-savebar-note { margin: 0; flex: 1 1 16rem; font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-muted); }
 .admin-savebar-note strong { color: var(--text-strong); }
 .admin-savebar .admin-actions { justify-content: flex-end; }
@@ -193,6 +223,7 @@ html:has(.admin-savebar) { scroll-padding-block-end: 9rem; }
 .post-back svg { transform: scaleX(var(--dir-x)); }
 @media (min-width: 1280px) {
   .admin-editor:has(.admin-index) { grid-template-columns: 13rem minmax(0, 1fr); }
+  .admin-editor:has(.admin-index) > .admin-remove { grid-column: 2; } /* the Remove form sits under the editor, not in the index column */
   .admin-index { position: sticky; inset-block-start: var(--space-6); display: grid; gap: var(--space-3); max-block-size: calc(100dvh - var(--space-12)); overflow-y: auto; }
   .admin-index > p { margin: 0; color: var(--text-subtle); }
 }
@@ -203,12 +234,12 @@ html:has(.admin-savebar) { scroll-padding-block-end: 9rem; }
 /* Two tiles a row from a 600px work area, four from 880px (the bento breakpoints), so a label never wraps beside its icon. */
 @container (min-width: 600px) { .dash-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @container (min-width: 880px) { .dash-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.dash-tiles > div { display: grid; align-content: start; gap: var(--space-1); padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-xs); min-inline-size: 0; }
+.dash-tiles > div { display: grid; align-content: start; gap: var(--space-1); padding: var(--space-5); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); min-inline-size: 0; }
 .admin-waiting { display: grid; }
 .admin-waiting a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); font-weight: var(--weight-semibold); color: var(--text-link); overflow-wrap: anywhere; }
 .admin-waiting-meta { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font-size: var(--text-body-sm); color: var(--text-muted); }
 /* On a phone the save bar is only the buttons, and the note that there are unsaved changes: the standing explanation would cover a fifth of the screen. */
-@media (max-width: 639px) { .admin-savebar { padding: var(--space-3) var(--space-4); } .admin-savebar-note > span:not([data-unsaved]) { display: none; } .admin-savebar-note:has([data-unsaved][hidden]) { display: none; } .admin-savebar .admin-actions { flex: 1 1 auto; } }
+@media (max-width: 639px) { .admin-savebar { padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); } .admin-savebar-note > span:not([data-unsaved]) { display: none; } .admin-savebar-note:has([data-unsaved][hidden]) { display: none; } .admin-savebar .admin-actions { flex: 1 1 auto; } }
 
 /* ---------- Icons (admin-icon.astro): never shrink beside their word; inside running text they sit on the line (base.css draws an svg as a block) ---------- */
 .admin-icon { flex-shrink: 0; }
@@ -245,7 +276,7 @@ html:has(.admin-savebar) { scroll-padding-block-end: 9rem; }
 
 /* ---------- Headings with their icon, and a head row that keeps a heading with what belongs beside it ---------- */
 .dash-h2, .admin-card-title { display: flex; align-items: start; gap: var(--space-2); min-inline-size: 0; }
-.admin-card-title { margin: 0; font-family: var(--font-display); font-size: var(--text-h4); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
+.admin-card-title { margin: 0; font-family: var(--font-display); font-size: var(--text-h4); font-weight: var(--weight-extrabold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
 .dash-h2 > svg, .admin-card-title > svg { flex-shrink: 0; margin-block-start: calc((1lh - 1em) / 2); color: var(--text-link); inline-size: 1em; block-size: 1em; }
 .admin-card-head, .admin-section-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-4); min-inline-size: 0; }
 
@@ -264,6 +295,7 @@ html:has(.admin-savebar) { scroll-padding-block-end: 9rem; }
 
 /* ---------- Lists: label, box and count as one stack, so the count reads as the search's result ---------- */
 .admin-search { display: grid; gap: var(--space-2); max-inline-size: 26rem; }
+.admin-toolbar > .admin-search { flex: 1 1 20rem; }
 .admin-search label { display: inline-flex; align-items: center; gap: var(--space-2); }
 .admin-search .project-filter-count { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); }
 .project-empty > svg { color: var(--text-muted); }
@@ -284,13 +316,12 @@ html:has(.admin-savebar) { scroll-padding-block-end: 9rem; }
 form[aria-busy="true"] .ui-button { opacity: var(--opacity-disabled); pointer-events: none; }
 
 /* ---------- Images: the upload button at the foot of its own card, pictures grouped under their folder's name and count ---------- */
-.admin-upload-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; }
 [data-copy] .ui-button-label > span { display: inline-flex; align-items: center; gap: var(--space-2); }
 [data-copy] .ui-button-label > span[hidden] { display: none; }
-/* A pictures group folds (open to start), and its pictures sit two to a row on a phone. */
+/* A pictures group folds (open to start). The 12rem columns above give four a row in the work area; on a phone the columns are narrower so two fit. */
 .admin-images-fold > summary { gap: var(--space-2); }
 .admin-images-fold > .admin-images { padding: 0 var(--space-5) var(--space-5); }
-.admin-images { grid-template-columns: repeat(auto-fill, minmax(min(100%, 7.5rem), 1fr)); }
+@media (max-width: 639px) { .admin-images { grid-template-columns: repeat(auto-fill, minmax(min(100%, 7.5rem), 1fr)); } }
 /* The sign-in page's checkbox inherits the text field's box from .form-field input; only its own 20px box is drawn. */
 .admin-check input { border: 0; padding: 0; min-block-size: 0; }
 
@@ -351,3 +382,38 @@ html:not([data-admin-js]) [data-needs-js] { display: none; }
 .bar-list td { padding: var(--space-2) 0 var(--space-2) var(--space-3); vertical-align: top; font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-strong); white-space: nowrap; }
 .bar-list td.bar-list-share { font-weight: var(--weight-regular); color: var(--text-muted); }
 .bar-list tr + tr th, .bar-list tr + tr td { border-block-start: 1px solid var(--border-subtle); }
+
+/* ---------- Editor: required marker, repeating groups with a heading and an Add button, the Markdown fold, a picture preview, the remove card ---------- */
+/* A needed field: an asterisk in the danger red beside its label (the word "required" is read out from hidden text). */
+.admin-needed { color: var(--text-danger); font-weight: var(--weight-bold); }
+/* A row of a repeating group is headed by its name ("Gallery image 1"), across every column of the row. */
+/* The open spare row is headed like the folds beside it (name in semibold body-sm), so the rows read as one sequence. */
+.admin-repeat > .admin-repeat-name { grid-column: 1 / -1; margin: 0; font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-strong); }
+.admin-repeat-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+/* The Markdown help under the Body field: a closed fold; its text sits inside the fold's padding. */
+.admin-help { display: grid; gap: var(--space-2); padding: 0 var(--space-5) var(--space-5); font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-body); }
+.admin-help p { margin: 0; }
+.admin-help code { font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--text-strong); }
+/* A picture named in a path field is shown small under it; the box is hidden until the path names a picture in the repository. */
+.admin-preview { max-inline-size: 14rem; }
+.admin-preview[hidden] { display: none; }
+/* In a field the hint (2) and the error (3) come first; then the preview, the pictures link and the Markdown fold. */
+.form-field > .admin-preview { order: 4; }
+.form-field > .admin-pictures-link, .form-field > .resource-disclosure { order: 5; }
+/* The remove card at the foot of an editor: the words beside the button, each on its own line on a phone. */
+.admin-remove { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-4); }
+.admin-remove > div:first-of-type { display: grid; gap: var(--space-1); min-inline-size: 0; flex: 1 1 20rem; } /* first-of-type: hidden inputs come before it in the live form */
+/* A row or an Add button the island has hidden: the attribute wins over the display the rules above give them. */
+.admin-repeat[hidden], .admin-repeat-actions > [hidden] { display: none; }
+/* The Body box is as tall as its text, between 16 lines and most of the screen; it can still be dragged taller. */
+.admin-form textarea.admin-body { field-sizing: content; min-block-size: 16lh; max-block-size: 80dvh; }
+/* A filled row of a repeating group is a closed fold named by what it holds; its fields sit on the sunken surface inside the fold. */
+.admin-repeat-fold > .admin-repeat { border: 0; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+.admin-repeat-fold > summary [data-disclosure-state] { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-2); }
+.admin-fold-name { color: var(--text-strong); font-weight: var(--weight-semibold); }
+.admin-fold-facts { color: var(--text-muted); font-weight: var(--weight-regular); }
+/* The Delete button: its words and icon in the danger red, on the secondary button, at rest and on hover. */
+.admin-remove .ui-button { color: var(--text-danger); }
+@media (hover: hover) { .admin-remove .ui-button:hover { color: var(--text-danger); } }
+/* A link in a card that leaves the admin (the YouTube channel): 44px tall, with the leave icon, like View the site. */
+.admin-out-link { display: inline-flex; align-items: center; gap: var(--space-1); min-block-size: var(--tap-target); color: var(--text-link); font-weight: var(--weight-semibold); overflow-wrap: anywhere; }
