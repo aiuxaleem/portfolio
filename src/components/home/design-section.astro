@@ -14,10 +14,29 @@ import aboutDirection from '../../snapshots/about-direction.json';
 import { rewriteLinks } from '../../lib/routes';
 import { tuneSnapshot, HOME_BELOW_FOLD } from '../../lib/snapshot-tune';
 import { chrome } from '../../i18n/chrome';
+import { getImage } from 'astro:assets';
+import { listedVideos } from '../../lib/videos';
 
 interface Props { name: 'about' | 'content' | 'now' | 'about-hero' | 'about-direction' }
 const snap = { about, content, now, 'about-hero': aboutHero, 'about-direction': aboutDirection }[Astro.props.name];
-const html = tuneSnapshot(rewriteLinks(snap.html), HOME_BELOW_FOLD, chrome.en.newTab);
+let html = tuneSnapshot(rewriteLinks(snap.html), HOME_BELOW_FOLD, chrome.en.newTab);
+/* "In public": the design's video tile was a placeholder ("New video coming soon"). It shows the latest published video:
+   its title as a link to /videos, its poster when it has one, and "Latest video" in place of the placeholder badge. */
+if (Astro.props.name === 'content') {
+  const latest = (await listedVideos()).find(v => !v.data.fixture);
+  if (latest) {
+    const title = latest.data.title.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    const placeholder = 'Designing AI products people trust';
+    /* The placeholder badge goes; the overline already says what the tile is. */
+    html = html.replace(/<span style="[^"]*"><div class="sc-host-x" style="display: contents;"><span [^>]*data-badge=""><span [^>]*><\/span><span class="sc-interp">New video coming soon<\/span><\/span><\/div><\/span>/, '');
+    html = html.replace(`<div data-cover-fallback="" aria-hidden="true"><span><span class="sc-interp">${placeholder}</span></span></div>`, '<div data-cover-fallback="label" aria-hidden="true"><span>Video on YouTube</span></div>');
+    html = html.replace(/(<div role="heading" aria-level="4"[^>]*>)<span class="sc-interp">Designing AI products people trust<\/span>(<\/div>)/, `$1<a href="/videos" data-link class="home-video-link" style="display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); color: var(--text-link); text-decoration: none;">${title}<svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>$2`);
+    if (latest.data.poster) {
+      const poster = (await getImage({ src: latest.data.poster.src, width: 960 })).src;
+      html = html.replace(/<span data-image-box="video-thumb"[^>]*><\/span>/, `<img src="${poster}" alt="" width="960" height="540" loading="lazy" decoding="async" style="position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover;" />`);
+    }
+  }
+}
 ---
 <Fragment set:html={html} />
 {snap.css && <style is:inline set:html={snap.css}></style>}

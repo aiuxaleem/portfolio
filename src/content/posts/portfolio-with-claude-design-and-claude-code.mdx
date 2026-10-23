@@ -1,0 +1,144 @@
+---
+title: How I built my portfolio with Claude Design, Claude Code and the laws of UX
+subtitle: A four-stage workflow from first idea to a live site with its own backend
+excerpt: How I used Claude Design, Claude Code and the laws of UX to design, fix and ship my portfolio, plus the four-part prompt formula I used for every design fix.
+category: AI-assisted design
+tags:
+  - AI-assisted design
+  - Claude Design
+  - Claude Code
+  - Design systems
+  - UX laws
+  - Portfolio
+published: 2026-10-23
+updated: 2026-10-23
+cover:
+  src: ../../assets/posts/ai-portfolio.png
+  alt: "Diagram of the four-stage workflow: Claude Design, local drive, Claude Code, then GitHub Pages and Vercel with a WordPress backend."
+seo:
+  title: Building a portfolio with Claude Design and Claude Code
+  description: The workflow and the four-part, UX-law-based prompt formula I used to design, fix and ship my portfolio with Claude Design and Claude Code.
+---
+
+I rebuilt my portfolio with Claude Design and Claude Code. What made it work was writing every prompt the way I run a design review, grounded in the same UX laws I use on client work. This post is for designers who use AI tools and keep getting results that look fine but generic. By the end you will have a four-stage workflow and a prompt formula you can use on your next build.
+
+## The problem
+
+My first prompt for my own portfolio produced a page I would never ship. It was clean and responsive, and it looked like a template.
+
+The prompt itself looked thorough. It listed colour values, fonts, a 12-column grid, ten homepage tiles in order, accessibility rules and a testing checklist. That was the problem. It was a specification sheet, and a model handed a specification sheet builds to the sheet. Every item on the list showed up, and the page had no point of view.
+
+It mattered because a portfolio has a hard job. Mine has to win two audiences who want different things:
+
+- **A recruiter** asks: can he lead a design team, how senior is he, where is the resume?
+- **A client** asks: can he solve my problem, how does he work, what does it cost, how do I book a call?
+
+A generic page convinces neither. My brief also asked for case study pages, guides and blog posts I write myself, a bento layout, light and dark mode, and no text overflowing anywhere on mobile. Each of those got a little worse every time the model guessed instead of being told.
+
+## What I did
+
+The work ran in four stages, each in the tool best suited to it:
+
+1. **Claude Design:** explore ideas and set up my design system, the Aleem Design System.
+2. **Local drive:** copy the project from Claude Design to my own machine.
+3. **Claude Code:** fix design issues one at a time with iterative prompting, each prompt grounded in a UX law.
+4. **Ship:** GitHub repo, GitHub Pages and Vercel, with a WordPress backend so the site is dynamic.
+
+### 1. Explored the ideas in Claude Design
+
+I used Claude Design for the early thinking: who the site is for, how it is organised, and what it should feel like.
+
+**Two audiences, one site.** The hero has an intent switch with two chips, "I'm hiring" and "I need a designer". Choosing "I'm hiring" makes the main button "Download resume" and puts proof and case studies first. Choosing "I need a designer" makes it "Book a 20-minute call" and puts services first. With nothing selected, both buttons show. This is Hick's Law on a homepage: each visitor sees fewer choices that don't apply to them.
+
+**Information architecture before visuals.** I publish reels, long-form video, LinkedIn posts and articles. A nav item for each would have meant eight items. Everything lives in one Content hub with tabs instead, and the main nav stays at five: Work, Content, Guides, Services, About. Videos load only when someone presses play, and LinkedIn posts are rebuilt as native cards, because LinkedIn's own embed ignores dark mode and fixes its own width.
+
+**One creative concept instead of a checklist.** The prompt now opens with an idea, "Order from intelligence". A Three.js field of loosely connected nodes stands for raw AI. As you scroll, the nodes settle into a clear structure, which stands for design bringing order. The constraints are all still there, but they come after the idea, as a short contract.
+
+### 2. Set up the Aleem Design System and made the model prove it had read it
+
+My first prompt invented its own colours and fonts. A portfolio built on generic tokens says "I can make a nice page". One built on my own system says "I build systems that hold up in real products". So I set up the Aleem Design System in Claude Design and changed the prompt from defining tokens to obeying them:
+
+```
+Use only Aleem Design System tokens and components. Never introduce a
+new hex value, font, spacing value or radius. Compose new patterns
+(bento tiles, intent switch, video facade) from existing primitives.
+```
+
+That still wasn't enough. "Use the design system" told the model what to do but never made it show that it had done it, so wherever it was unsure, it filled the gap with defaults. The fix was a step before any design work:
+
+```
+Before we build anything, read the Aleem Design System in full and
+write a System Brief. Do not design or code any pages in this step.
+List, using the exact token names: colour tokens for light and dark by
+role, the type scale, spacing, radii, motion, grid and breakpoints,
+every component with its states, and every gap a portfolio will need.
+Stop after the brief so I can review it.
+```
+
+It is much harder for a model to drift from rules it has already written back in its own words, and I could correct any misreading before a single page existed.
+
+### 3. Copied the project to my local drive
+
+Claude Design was the right place to explore. A production website needs code I can open file by file, keep under version control and deploy wherever I want. Once the direction was settled, I copied the project to my local drive, and the design system tokens became the single source of truth for every change after that.
+
+### 4. Fixed it one issue at a time in Claude Code
+
+This is where a strong first draft became a fully working website. I opened the project in Claude Code and worked through it like a design review: one issue per prompt, checked before moving on. Bundled requests produce bundled mistakes. Single requests produce changes you can verify.
+
+<Callout title="The fix-prompt formula">
+Every fix prompt had four parts. The problem, located precisely: page, component, screen width and theme. The UX law that defines what fixed means. The constraint: design system tokens only. The check: which widths and themes to verify before calling it done.
+</Callout>
+
+Here is the shape of one:
+
+```
+On mobile at 375px, the four proof tiles stack into one long column and
+the numbers lose their impact. Apply Miller's Law and the Law of Common
+Region: group them as a 2x2 grid from 360px up, one number and one
+label per tile, using only Aleem Design System tokens. Check at 320,
+375 and 414px in light and dark mode and confirm nothing overflows.
+```
+
+Naming the law is what makes the prompt precise. "Make it better" leaves the model to guess. "Apply Fitts's Law" gives it a target it can test: tap targets of at least 44 by 44 pixels, with space between them.
+
+The laws I leaned on most:
+
+- **Hick's Law:** five nav items, three services, and the intent switch.
+- **Fitts's Law:** large tap targets and a call to action that stays reachable on mobile.
+- **Jakob's Law:** a conventional nav, and a reel carousel that behaves like the ones people already know.
+- **Von Restorff effect:** one accent element per section, so the eye knows where to land.
+- **Miller's Law:** one number per proof tile, grouped for a quick scan.
+- **Doherty threshold:** interactions respond in under 400 milliseconds, and video players load only on demand.
+- **Peak-end rule:** every page ends on its strongest outcome and a clear next step.
+
+The same approach handled the harder layout work. I'm targeting roles and clients in Saudi Arabia and the UAE, so the site was planned for Arabic and right-to-left layouts. Layout rules use start and end instead of left and right, so a single dir="rtl" attribute mirrors the page, and animations read the page direction so nothing slides in from the wrong side. Theme and direction are two attributes on the root html element, and no component checks either one, so light, dark, left-to-right and right-to-left all come from the same components.
+
+### 5. Shipped it with a real backend
+
+The code lives in a GitHub repo, and the site is published on GitHub Pages and deployed on Vercel. The last step made it dynamic: a WordPress database as the backend, and an admin area for the site. Projects, case studies, blog posts, videos, LinkedIn posts and articles, UX resources, the about page and images are all managed from there, without touching code.
+
+## What happened
+
+The site is live at [aiuxaleem-portfolio-app.vercel.app](https://aiuxaleem-portfolio-app.vercel.app/), and it runs as a working product with its own admin.
+
+The admin dashboard currently holds:
+
+- 5 projects and 4 case studies
+- 2 blog posts before this one
+- 3 videos
+- 12 LinkedIn posts and 3 LinkedIn articles
+- 49 UX resources
+
+Publishing now happens through a form. After I press Publish, a new post is live on the site in about two minutes, and this post went up the same way.
+
+## What I would do differently
+
+I would run the System Brief step before any design prompt. Most of my early rework came from the model guessing at a design system it had never been asked to read back.
+
+I would also decide the target markets before the first prompt. Arabic and right-to-left support came in halfway through, and building it into the foundation at that point meant rewriting prompts I had already run.
+
+## Try it yourself
+
+Take the next design fix you would ask an AI tool for and rewrite it with the four parts: where the problem is, which UX law defines fixed, which tokens it must use, and how to check it. Compare the result with what your usual prompt gives you.
+
+You can see the finished site at [aiuxaleem-portfolio-app.vercel.app](https://aiuxaleem-portfolio-app.vercel.app/).

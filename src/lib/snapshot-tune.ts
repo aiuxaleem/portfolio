@@ -20,6 +20,9 @@ const TITLES: [string, string][] = [
   ['AI-first Senior Product Designer', profile.headline],
   ['Lead product designer with 13+ years', `${profile.headline} with 13+ years`],
   ['Lead product designer', profile.headline],
+  /* Services spoke of hiring a senior product designer; it names the job title from the profile instead. */
+  ['hiring a senior product designer', `hiring a ${profile.headline}`],
+  ['Hiring a senior product designer?', `Hiring a ${profile.headline}?`],
   /* One place on the Arabic Home said "senior"; it takes the "lead" wording the Arabic case study already uses. */
   ['مصمّم منتجات أول', 'مصمّم منتجات رئيسي'],
 ];

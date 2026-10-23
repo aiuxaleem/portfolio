@@ -12,7 +12,25 @@ import skillsAr from '../../snapshots/home-skills-ar.json';
 interface Props { lang?: 'en' | 'ar'; /** On /_states the section is shown once per theme, inside another section: its ids get this ending and it is not a landmark. */ fixture?: string }
 const { lang = 'en', fixture } = Astro.props;
 const snap = lang === 'ar' ? skillsAr : skills;
-const html = fixture ? snap.html.replace(/^<section /, '<div ').replace(/<\/section>\s*$/, '</div>').replace(' id="skills"', ` id="skills-${fixture}"`).replace(' aria-labelledby="skills-title"', '').replace(' id="skills-title"', ` id="skills-title-${fixture}"`) : snap.html;
+/* The tools list (the bento's last tile, the one holding group headings) folds into a closed disclosure with its count:
+   about thirty chips are reference material, not the first thing to read (Hick's law). */
+const foldTools = (src: string) => {
+  const at = src.indexOf('<h4'); if (at < 0) return src;
+  const liStart = src.lastIndexOf('<li', src.lastIndexOf('<h3', at)); if (liStart < 0) return src;
+  let depth = 0, i = liStart, liEnd = -1;
+  const re = /<li\b|<\/li>/g; re.lastIndex = liStart;
+  for (let m; (m = re.exec(src));) { depth += m[0] === '</li>' ? -1 : 1; if (depth === 0) { liEnd = m.index; break; } }
+  if (liEnd < 0) return src;
+  const open = src.indexOf('>', liStart) + 1, inner = src.slice(open, liEnd);
+  const h3 = inner.match(/<h3[^>]*>([\s\S]*?)<\/h3>/); if (!h3) return src;
+  const count = (inner.match(/<li\b/g) || []).length;
+  const body = inner.replace(h3[0], '');
+  const chevron = '<svg data-chevron width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>';
+  const folded = `${h3[0]}<details class="home-tools"><summary><span data-closed-label>Show all ${count}</span><span data-open-label>Show fewer</span>${chevron}</summary>${body}</details>`;
+  return src.slice(0, open) + folded + src.slice(liEnd);
+};
+const html0 = fixture ? snap.html.replace(/^<section /, '<div ').replace(/<\/section>\s*$/, '</div>').replace(' id="skills"', ` id="skills-${fixture}"`).replace(' aria-labelledby="skills-title"', '').replace(' id="skills-title"', ` id="skills-title-${fixture}"`) : snap.html;
+const html = foldTools(html0);
 ---
 <Fragment set:html={html} />
 <style is:inline set:html={snap.css}></style>

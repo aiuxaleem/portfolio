@@ -36,6 +36,7 @@
 .project-cta { background: var(--gradient-ink); color: var(--on-ink-body); border-radius: var(--radius-2xl); }
 /* The decorative title on a missing-cover fallback is clamped; the full title is the heading next to it. */
 .project-cover [data-cover-fallback] > span, .project-card-media [data-cover-fallback] > span, .embed-frame [data-cover-fallback] > span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; max-inline-size: 100%; }
+.project-card-media [data-cover-fallback="label"] { padding: var(--space-6); } /* the label shares the card body's left edge */
 /* On a phone the video facade's fallback title is smaller and two lines, clear of the play disc in the middle of the frame. */
 @media (max-width: 639px) { .embed-frame [data-cover-fallback] > span { font-size: var(--text-h4); line-height: var(--leading-heading); -webkit-line-clamp: 2; line-clamp: 2; } }
 /* Case study deck (Home hero): the text on a card is a teaser, clamped so a long title cannot push the screenshot out of
@@ -98,6 +99,18 @@ html [data-deck-kicker], html [data-deck-kicker] span { overflow-wrap: anywhere;
 /* The category chips of the resource filters sit in a closed disclosure (the Services FAQ recipe), so the open bar
    offers few choices at once. The summary line says what is chosen; the chevron turns when open. */
 .resource-disclosure { background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); }
+/* Home skills: the tools tile folds; its summary reads as the tile's heading with a count and a chevron. */
+.home-tools > summary { display: flex; align-items: center; gap: var(--space-3); min-block-size: var(--tap-target); cursor: pointer; list-style: none; border-radius: var(--radius-md); }
+.home-tools > summary::-webkit-details-marker { display: none; }
+.home-tools > summary { font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); }
+.home-tools > summary [data-open-label], .home-tools[open] > summary [data-closed-label] { display: none; }
+.home-tools[open] > summary [data-open-label] { display: inline; }
+/* Home Now: the button that opens the rest of the learning grid. */
+.now-more { margin: var(--space-6) 0 0; }
+#now ul.cory-bento > li[hidden] { display: none !important; } /* beats the snapshot cards' inline display */
+.home-tools > summary [data-chevron] { flex-shrink: 0; }
+.home-tools[open] > summary [data-chevron] { transform: rotate(180deg); }
+.home-tools[open] > summary { margin-block-end: var(--space-5); }
 .resource-disclosure > summary { display: flex; align-items: center; gap: var(--space-3); min-block-size: var(--tap-target); padding: var(--space-3) var(--space-5); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-strong); }
 .resource-disclosure > summary [data-disclosure-state] { flex: 1 1 auto; min-inline-size: 0; font-weight: var(--weight-medium); color: var(--text-muted); overflow-wrap: anywhere; }
 .resource-disclosure > summary [data-chevron] { flex-shrink: 0; }

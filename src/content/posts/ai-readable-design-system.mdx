@@ -1,0 +1,152 @@
+---
+title: Your Design System Was Built for Humans. Now AI Has to Read It.
+subtitle: How spec files, a closed token layer and automated audits keep AI-generated UI consistent.
+excerpt: AI coding agents can build a screen in minutes, but by the tenth screen the radii, blues and spacing have drifted. Here is how I made the Colaberry design system something agents can read and a pipeline can enforce.
+category: Design Systems
+tags:
+  - Design Systems
+  - AI UX
+  - Design Tokens
+  - Accessibility
+  - AI-Assisted Development
+published: 2026-10-23
+updated: 2026-10-23
+cover:
+  src: ../../assets/posts/your-design-system.png
+  alt: Infographic contrasting unconstrained AI that invents CSS values across sessions with an LLM-readable architecture of spec files, closed tokens, CI audits, a CLAUDE.md instruction file and an llms.txt index.
+seo:
+  title: How to Make Your Design System AI-Readable
+  description: Stop AI UI drift. How spec files, a closed three-layer token system, CI audits and agent instructions keep AI-generated screens consistent and accessible.
+---
+
+Getting an AI coding assistant to build one working screen takes minutes. Getting it to build the tenth screen in the same visual language is the harder problem, and it is the one I work on every day. This post is for designers and design-system owners whose teams generate UI with coding agents. It covers the four pieces that keep that tenth screen consistent, and a rollout order you can start this week.
+
+## The problem
+
+By the tenth iteration, a button has a slightly different radius, a card has picked up a new shade of blue, and the spacing between sections has shifted. None of those choices is bad on its own. Together, they turn one product into several.
+
+At Colaberry, coding agents generate UI from a design system I built: 245 tokens, 20 accessible React components in light and dark, and brand systems for five products. Longer prompts did not fix drift. Three things kept going wrong.
+
+**Plausible values replaced approved ones.** Asked to pad a card, the AI writes `padding: 12px`. Asked for a link colour, it writes `#2563EB`. Both look fine. If the system says cards use `--spacing-300` and links use `--color-link`, the AI has quietly made a new design decision instead of applying an existing one.
+
+**Every session started over.** Project instructions help, but conversation context is not a dependable place to hold consistency across a long project. The same link can come out `#2563EB` in one session, `#1D4ED8` in the next and `#3B82F6` after that. Repeat that across buttons, type, shadows and spacing, and one decision ends up with three implementations.
+
+**Code did not carry intent.** A component library tells an AI which components exist and what props they take. It does not say when to use a modal instead of a drawer, when a form should validate inline, or what happens when content runs longer than expected. That knowledge lives in docs, team conversations and designers' heads, and an AI cannot use what it cannot read.
+
+The cost lands on users. Jakob's Law says people expect a product to work the way the rest of it already works, and every drifted radius or second blue spends some of that expectation. Von Restorff only works when the accent is rare: once links come in three blues, the colour meant to stand out stops standing out.
+
+## What I did
+
+Engineering teams stopped configuring servers by hand and started defining infrastructure as code: versioned, repeatable, checkable. I treated the design system the same way. A prompt that says "follow our design system" states an intention. Specs, tokens and automated checks give the agent something concrete to follow, and a way to catch it when it does not.
+
+Much of the approach comes from Hardik Pandya's guide, How to Make Your Design System AI-Ready, which is worth reading in full. The four pieces build on each other in this order:
+
+1. Spec files in the repo
+2. A closed token layer
+3. Automated audits
+4. A sync routine that keeps specs current
+
+### 1. Put spec files next to the code
+
+Design knowledge goes in a specs folder in the repository, where the agent reads it before it touches UI:
+
+```text
+your-project/
+  specs/
+    foundations/   color.md, typography.md, spacing.md,
+                   accessibility.md, motion.md
+    tokens/        token-reference.md
+    components/    button.md, input.md, modal.md, dropdown.md
+    patterns/      forms.md, navigation.md
+```
+
+Keep each file practical. A button spec covers its variants and when to use each, the approved tokens, its loading, disabled, hover and focus states, the accessibility requirements, and when a link is the better choice. Markdown works because designers and developers can both edit, review and version it, and AI tools read it easily.
+
+### 2. Close the token layer
+
+Give the agent a fixed vocabulary of values:
+
+```css
+--color-text: #292A2E;
+--color-link: #2563EB;
+--spacing-200: 8px;
+--spacing-300: 12px;
+--radius-md: 8px;
+```
+
+Then, instead of writing `padding: 12px` and `border-radius: 8px` on a card, it writes `padding: var(--spacing-300)` and `border-radius: var(--radius-md)`. The agent now chooses from decisions the team already made, and a change to the spacing scale happens in one place instead of in every component.
+
+Hick's Law applies to the agent as much as to the user. An open palette is an unlimited set of choices, and over enough sessions the agent will use a lot of them. A short list of named tokens makes the approved choice the easy one.
+
+I structure the tokens in three layers:
+
+- **Upstream:** the source library's tokens, such as `--ds-text`.
+- **Local aliases:** the product's own names mapped to upstream, such as `--color-text` pointing at `--ds-text`.
+- **Components:** buttons, cards and forms use only the local aliases.
+
+When upstream renames a token, I update one mapping instead of dozens of component files. It also draws a clear boundary: agents work in the component layer, and the token layer controls which values they can use. It is worth doing even without AI.
+
+### 3. Automate the audit
+
+Documentation alone will not hold, and human developers hardcode values too. A token-audit script flags a card with `padding: 13px`, `border-radius: 7px` and a raw hex colour, and suggests the nearest tokens: `--spacing-300`, `--radius-md` and `--color-text`.
+
+Run it in CI and fail the build before a violation merges. Scope the rules with care, since third-party embeds, dynamic calculations and deliberately unique components need exceptions. It is still far more reliable than a designer eyeballing every generated screen.
+
+Colour contrast gets the same treatment. My contrast script checks 12 colour pairings in each mode and exits with an error when a required pairing fails, so it can run as a pre-commit hook.
+
+### 4. Keep the specs in sync
+
+Tokens change, components get deprecated and accessibility guidance improves. Version the specs alongside the app, track upstream changes, flag deprecated tokens, and review the affected docs whenever the system updates. Otherwise the agent will faithfully implement a spec that is six months out of date.
+
+Repository instructions tell the agent to read the specs first: CLAUDE.md for Claude Code, rules in the .cursor/rules folder for Cursor, and .github/copilot-instructions.md for GitHub Copilot. A starting instruction:
+
+```text
+Before creating or modifying UI components:
+
+1. Read the relevant files in /specs.
+2. Reuse existing components and design tokens.
+3. Do not introduce hardcoded visual values
+   when an approved token exists.
+4. Follow documented accessibility and
+   responsive behavior guidelines.
+5. Run the token audit after making changes.
+6. Report any missing specifications or
+   required exceptions before proceeding.
+```
+
+The last line does the most work. An agent that reports a missing spec hands you a design decision to make. An agent that fills the gap on its own hands you drift.
+
+One convention worth watching is llms.txt, a proposed file that gives language models a structured index of a site's documentation. Adaptavant's Earth Design System publishes one at [earth.anywhere.co/llms.txt](https://earth.anywhere.co/llms.txt). It is a convention rather than a guarantee, and whether a tool reads it depends on how the assistant is set up.
+
+<Callout title="The working formula">
+Specs tell the agent what to build and why, tokens limit which values it can use, audits catch what slips through, and a sync routine keeps all three current.
+</Callout>
+
+## What happened
+
+The Colaberry design system now runs on this model: 245 tokens and 20 accessible React components in light and dark, with a WCAG 2.2 audit, used by coding agents to generate on-brand UI. Across the five brand systems, 50 WCAG AA contrast pairs are documented and live on GitHub Pages.
+
+The bigger change is where design time goes. Less of it goes to correcting the same spacing and colour mistakes one screen at a time. More of it goes to writing down why a component exists and when to use it, which rules can be automated and which need judgment, and how accessibility and responsive behaviour get enforced. The design system stops being a library of buttons and becomes the written record of a product's decisions.
+
+## What I would do differently
+
+I would start narrower. A button, a form and one complex dashboard component surface very different problems, and writing rules against those three first produces better rules than trying to spec the whole library at once.
+
+I would also plan the audit's exceptions on day one. Embeds, calculated values and one-off components will trip a strict audit, and an exception list written up front keeps the team trusting the check instead of working around it.
+
+## Try it yourself
+
+Pick one component today and search its styles for raw hex codes and pixel values. Count them and write the number down. That is your baseline. From there, the rollout order that works:
+
+1. Audit the codebase for hardcoded colours, spacing, radii and type, and record a baseline.
+2. Set up the three token layers and document who can change which.
+3. Write spec files for foundations, tokens, components, accessibility and recurring patterns.
+4. Build the audit script and run it in CI.
+5. Move components onto tokens, checking visually with regression tests and human review.
+6. Add repository instructions that make the agent read the specs before it touches UI.
+
+An AI agent can do much of this groundwork, as long as its scope is clear and someone reviews what it produces. AI can generate the interface. Someone still has to define the system and keep it true six months from now.
+
+How is your team handling this? Are you still leaning on better prompts, or building specs, token enforcement and audits into the pipeline?
+
+**Further reading:** Hardik Pandya, How to Make Your Design System AI-Ready. For documentation approaches worth studying, look at the Atlassian Design System, IBM Carbon, the CMS Design System and Nordhealth.

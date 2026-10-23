@@ -15,7 +15,9 @@ const c = chrome.en;
 const endpoint = formEndpoint || (process.env.QUALITY_BUILD === '1' ? 'https://formspree.io/f/fixture' : undefined);
 ---
 <PageLayout hideHeaderCta title="Contact · AIUXAleem" description="Contact Mohammad Abdul Aleem: book a one-to-one 15-minute call or send an email. Based in Hyderabad, working GCC hours." page="contact" hideCta bg="grid" mainStyle="outline: none; overflow: clip;">
-  <section data-contact class="cory-container" aria-labelledby="contact-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y);">
+  <section data-contact class="cory-container" aria-labelledby="contact-title" style="position: relative; padding-block: var(--section-y);">
+   <div class={endpoint ? 'cory-split' : undefined} style="align-items: start;">
+    <div style="display: grid; gap: var(--space-6); align-content: start;">
     <p class="cory-overline" style="margin: 0px;">Contact</p>
     <h1 id="contact-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">Get in touch.</h1>
     <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">I reply within 48 hours. A 15-minute call is the fastest way to start.</p>
@@ -28,6 +30,8 @@ const endpoint = formEndpoint || (process.env.QUALITY_BUILD === '1' ? 'https://f
       <div><dt>Based in</dt><dd>{site.location}</dd></div>
       <div><dt>Availability</dt><dd>{site.availability.label}</dd></div>
     </dl>
-    {endpoint && <ContactForm endpoint={endpoint} email={site.email} />}
+    </div>
+    {endpoint && <div><ContactForm endpoint={endpoint} email={site.email} submit="secondary" /></div>}
+   </div>
   </section>
 </PageLayout>

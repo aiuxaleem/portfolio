@@ -9,7 +9,7 @@ const watch = `https://www.youtube.com/watch?v=${id}`;
 ---
 <figure class="embed embed-video" data-embed="youtube" data-embed-src={valid ? `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0` : undefined} data-embed-title={title} data-embed-loading="Loading video" data-state={state} data-static={Astro.props.state ? '' : undefined}>
   <div class="embed-frame">
-    {poster ? <img class="embed-poster" src={poster} alt="" loading="lazy" decoding="async" /> : <div data-cover-fallback aria-hidden="true"><span>{title}</span></div>}
+    {poster ? <img class="embed-poster" src={poster} alt="" loading="lazy" decoding="async" /> : <div data-cover-fallback="label" aria-hidden="true"></div>}
     {valid
       ? <button type="button" class="embed-play" data-embed-load><span class="embed-play-disc" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></span><span class="cory-visually-hidden">Play video: {title}</span></button>
       : <p class="embed-soon"><span class="ui-badge">Video coming soon</span></p>}

@@ -22,7 +22,7 @@ const linkStyle = 'display: inline-flex; align-items: center; justify-content: c
 <a href="#main" class="skip-link" style="position: fixed; inset-block-start: var(--space-4); inset-inline-start: var(--space-4); z-index: var(--z-toast); padding: var(--space-3) var(--space-5); border-radius: var(--radius-pill); background: var(--action-ink); color: var(--surface-card); font-weight: var(--weight-semibold); font-size: var(--text-body-sm); text-decoration: none; transform: translateY(-200%); transition: transform var(--duration-fast) var(--ease-out);">{t.skip}</a>
 <div aria-hidden="true" style="block-size: var(--header-height);"></div>
 <header data-site-header data-shared data-fixed="true" style="position: fixed; inset-block-start: 0px; inset-inline: 0px; inline-size: 100%; z-index: var(--z-sticky); background: var(--surface-header); -webkit-backdrop-filter: blur(var(--blur-header)); backdrop-filter: blur(var(--blur-header)); border-block-end: 1px solid var(--border-subtle);">
-  <div class="cory-container" style="block-size: var(--header-height); display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);">
+  <div class="cory-container" data-hdr-row style="block-size: var(--header-height); display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);">
     <a href={home} aria-label={t.homeAria} style="display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); text-decoration: none; color: var(--text-strong); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h4); letter-spacing: var(--tracking-tight); flex-shrink: 0;">
       <span aria-hidden="true" style="inline-size: var(--space-5); block-size: var(--space-5); border-radius: var(--radius-tile); background: var(--gradient-brand); flex-shrink: 0;"></span>
       <span lang="en" dir="ltr" style="white-space: nowrap;">{site.brand}</span>
@@ -32,7 +32,10 @@ const linkStyle = 'display: inline-flex; align-items: center; justify-content: c
         {nav.map(n => <li><a data-nav-link href={n.href} aria-current={n.key === current ? 'page' : undefined} class="header-nav-link" style={linkStyle}>{n.label}</a></li>)}
       </ul>
     </nav>
-    <div style="display: flex; align-items: center; gap: var(--space-2); flex-shrink: 0;">
+    <div data-hdr-end style="display: flex; align-items: center; gap: var(--space-4); flex-shrink: 0;">
+      {/* On a page without the button its invisible twin keeps the width, placed before the controls: the nav keeps its
+         place from page to page and the controls stay flush with the right edge. */}
+      {hideCta && <span data-hdr-talk aria-hidden="true" style="visibility: hidden;"><Button variant="secondary" size="md" href={cta.href} tabindex="-1">{cta.label}</Button></span>}
       <div role="group" aria-label={t.display} style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-1); border-radius: var(--radius-pill); border: 1px solid var(--border-subtle); background: var(--surface-card);">
         <IconButton variant="ghost" label={t.toDark} data-theme-toggle data-label-dark={t.toDark} data-label-light={t.toLight} data-tip-dark={t.darkTip} data-tip-light={t.lightTip} aria-pressed="false">
           <svg data-icon-moon width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
@@ -40,10 +43,7 @@ const linkStyle = 'display: inline-flex; align-items: center; justify-content: c
         </IconButton>
         <a href={langHref} hreflang={t.langLabelLang} title={t.langTip} class="header-lang" style="min-inline-size: var(--tap-target); min-block-size: var(--tap-target); display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1); padding-inline: var(--space-3); border-radius: var(--radius-pill); border: 0px; background: transparent; color: var(--text-link); font-weight: var(--weight-semibold); font-size: var(--text-ui-sm); cursor: pointer; text-decoration: none; transition: background var(--duration-base) var(--ease-out);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path></svg><span lang={t.langLabelLang}>{t.langLabel}</span><span class="cory-visually-hidden"> ({t.langHint})</span></a>
       </div>
-      {/* The slot stays in the flow when the button is hidden, so the centred nav keeps its place from page to page. */}
-      {hideCta
-        ? <span data-hdr-talk aria-hidden="true" style="visibility: hidden;"><Button variant="primary" size="md" href={cta.href} tabindex="-1">{cta.label}</Button></span>
-        : <span data-hdr-talk><Button variant="primary" size="md" href={cta.href}>{cta.label}</Button></span>}
+      {!hideCta && <span data-hdr-talk><Button variant="secondary" size="md" href={cta.href}>{cta.label}</Button></span>}
       <span data-hdr-mobile><IconButton variant="secondary" label={t.openMenu} data-menu-open aria-expanded="false" aria-controls="site-menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></IconButton></span>
     </div>
   </div>

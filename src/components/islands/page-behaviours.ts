@@ -25,6 +25,22 @@ if (stack) {
   }
 }
 
+/* ---------- Now: the learning grid shows the studying-now card and four certificates; the rest open with one button ----------
+   Without JavaScript everything is shown. The button says how many it adds and, once open, offers to show fewer. */
+const learning = document.querySelector<HTMLElement>('#now ul.cory-bento:has(> li.hero)');
+if (learning) {
+  const extra = [...learning.children].slice(5) as HTMLElement[];
+  if (extra.length > 1) {
+    const wrap = document.createElement('p'); wrap.className = 'now-more';
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'ui-button ui-button-secondary ui-button-md';
+    const label = document.createElement('span'); label.className = 'ui-button-label'; button.append(label); wrap.append(button);
+    (learning.closest('[data-bento-cq]') || learning).after(wrap);
+    const set = (open: boolean) => { extra.forEach(li => { li.hidden = !open; }); button.setAttribute('aria-expanded', String(open)); label.textContent = open ? 'Show fewer' : `Show ${extra.length} more`; };
+    button.addEventListener('click', () => { const open = button.getAttribute('aria-expanded') !== 'true'; set(open); if (open) (extra[0].querySelector('a, button') as HTMLElement | null)?.focus(); });
+    set(false);
+  }
+}
+
 /* ---------- Certificate dialog: native <dialog>; focus moves in, Escape closes, focus returns to the opener ---------- */
 const dialog = document.querySelector<HTMLDialogElement>('dialog[aria-labelledby="cert-dlg-title"]');
 if (dialog) {

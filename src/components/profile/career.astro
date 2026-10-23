@@ -6,8 +6,10 @@ import { careerByCompany, period } from '../../content/profile';
 interface Props { level?: 2 | 3; highlights?: boolean }
 const { level = 3, highlights = true } = Astro.props;
 const Company = `h${level}` as any, RoleTag = `h${level + 1}` as any;
+/* Two columns read down then across: the first holds the newer half of the companies. */
+const rows = Math.ceil(careerByCompany().length / 2);
 ---
-<ol class="career" data-compact={highlights ? undefined : ''}>
+<ol class="career" data-compact={highlights ? undefined : ''} style={`--career-rows: ${rows};`}>
   {careerByCompany().map(group => (
     <li class="career-company">
       <Company>{group.company}</Company>

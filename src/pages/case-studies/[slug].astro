@@ -46,7 +46,7 @@ const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
       <div class="project-cover">
         {d.cover
           ? <Image src={d.cover.src} alt={d.cover.alt} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1280px) 1144px, 100vw" loading="eager" fetchpriority="high" />
-          : <div data-cover-fallback aria-hidden="true"><span>{d.title}</span></div>}
+          : <div data-cover-fallback="label" aria-hidden="true"><span>{['Case study', d.category].filter(Boolean).join(' · ')}</span></div>}
       </div>
     </header>
 

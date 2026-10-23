@@ -15,7 +15,7 @@ const Heading = `h${level}` as any;
   <div class="project-card-media">
     {d.cover
       ? <Image src={d.cover.src} alt={d.cover.alt} widths={[400, 640, 960]} sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" loading={first ? 'eager' : 'lazy'} fetchpriority={first ? 'high' : undefined} decoding="async" />
-      : <div data-cover-fallback aria-hidden="true"><span>{d.title}</span></div>}
+      : <div data-cover-fallback="label" aria-hidden="true"><span>{['Project', d.tags[0]].filter(Boolean).join(' · ')}</span></div>}
   </div>
   <div class="project-card-body">
     <p class="project-card-meta"><span class="ui-badge" data-tone={statusTone[d.status]}>{statusLabel[d.status]}</span></p>

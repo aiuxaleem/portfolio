@@ -148,8 +148,9 @@ main[tabindex] { padding-block-start: 0 !important; }
 @container (max-width: 959px) { [data-hdr-desktop] { display: none !important; } }
 @container (min-width: 960px) { [data-hdr-mobile] { display: none !important; } }
 @container (max-width: 419px) { [data-hdr-talk] { display: none !important; } }
-/* The slot kept only to hold the nav still: where the desktop nav is not drawn, it takes no space. */
 @container (max-width: 959px) { [data-hdr-talk][aria-hidden="true"] { display: none !important; } }
+/* Header labels never wrap: the contact button and the language name stay on one line. */
+[data-site-header] [data-hdr-talk] .ui-button, [data-site-header] .header-lang { white-space: nowrap; }
 
 /* Viewport rules (mobile is designed, not shrunk) */
 @media (max-width: 767px) {
@@ -171,8 +172,15 @@ main[tabindex] { padding-block-start: 0 !important; }
 [data-atmosphere-dots] { background-image: radial-gradient(circle, var(--border-strong) 1px, transparent 1.3px); background-size: 28px 28px; -webkit-mask-image: radial-gradient(ellipse 90% 70% at 60% 0%, #000 0%, transparent 100%); mask-image: radial-gradient(ellipse 90% 70% at 60% 0%, #000 0%, transparent 100%); opacity: 0.75; }
 [data-theme="dark"] [data-atmosphere-dots] { opacity: 0.45; }
 
+/* A fallback that names what the item is (Blog post · Design systems) in the design's mono caption, so a card never shows
+   its title twice. Placed after the display rule below so it wins. */
 /* Case cover fallback: typographic cover in display type (until a real cover is dropped in) */
 [data-cover-fallback] > span { font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-snug); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); max-inline-size: 14ch; text-wrap: balance; }
+[data-cover-fallback="label"] > span { font-family: var(--font-mono); font-weight: var(--weight-medium); font-size: var(--text-mono); line-height: var(--leading-mono); letter-spacing: var(--tracking-wide); color: var(--on-ink-body); max-inline-size: 28ch; -webkit-line-clamp: 2; line-clamp: 2; }
+[data-theme="dark"] .project-card-media:has([data-cover-fallback]) { border-block-end: 1px solid var(--border-subtle); }
+/* Home "In public": the latest video tile opens /videos from anywhere on it (one link, stretched over the tile). */
+[data-card-fill]:has(.home-video-link) { position: relative; }
+.home-video-link::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
 
 /* Hero demo tile follows the split: beside the headline on desktop, full width underneath when stacked */
 

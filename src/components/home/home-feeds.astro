@@ -19,9 +19,13 @@ const Tag: any = landmark ? 'section' : 'div';
 const real = <T extends { data?: { fixture: boolean }; fixture?: boolean }>(list: T[]) => (fixtures ? list : list.filter(x => !(x.data?.fixture ?? x.fixture)));
 
 const cases = real(await listedCaseStudies()).filter(c => fixtures || c.data.featured).slice(0, 3);
-/* Work in progress first, then the rest in their set order; three at most. */
+/* Shipped work first, work in progress last; three at most. On Home the project behind the hero deck's first case study is
+   left out, since that card is already on the first screen. */
 const listed = real(await listedProjects());
-const projects = [...listed.filter(p => p.data.status === 'in-progress'), ...listed.filter(p => p.data.status !== 'in-progress')].slice(0, 3);
+const deckFirst = idPrefix === 'home' && !fixtures ? real(await listedCaseStudies()).find(c => c.data.featured)?.id : undefined;
+const repeat = deckFirst ? (listed.find(p => p.id === deckFirst) ?? listed.find(p => p.data.caseStudy === deckFirst)) : undefined;
+const shown = listed.filter(p => p !== repeat);
+const projects = [...shown.filter(p => p.data.status !== 'in-progress'), ...shown.filter(p => p.data.status === 'in-progress')].slice(0, 3);
 const writing = real(await feedItems()).slice(0, 3);
 const video = real(await listedVideos())[0];
 

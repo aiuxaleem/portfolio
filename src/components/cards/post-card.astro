@@ -15,7 +15,7 @@ const time = readingTime(post);
   <div class="project-card-media">
     {d.cover
       ? <Image src={d.cover.src} alt={d.cover.alt} widths={[400, 640, 960]} sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" loading="lazy" decoding="async" />
-      : <div data-cover-fallback aria-hidden="true"><span>{d.title}</span></div>}
+      : <div data-cover-fallback="label" aria-hidden="true"><span>{['Blog post', d.category].filter(Boolean).join(' · ')}</span></div>}
   </div>
   <div class="project-card-body">
     {(date || time) && <p class="case-kicker">{date && <>{!d.published && 'Updated '}<time datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time></>}{date && time && ' · '}{time}</p>}
