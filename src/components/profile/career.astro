@@ -2,6 +2,8 @@
 /* Career timeline from src/content/site/profile.json: one block per company, its roles inside, newest first.
    Dates, location and highlights are optional. `level` is the heading level of the company name. */
 import { careerByCompany, period } from '../../content/profile';
+/* A company with more than one role shows its whole tenure under its name, so a run of titles reads as one stay. */
+const tenure = (roles: { start: string; end: string }[]) => { const starts = roles.map(r => r.start).filter(Boolean).sort(); const ends = roles.map(r => r.end); return starts.length ? period({ start: starts[0], end: ends.includes('') ? '' : [...ends].sort().at(-1)! }) : ''; };
 
 interface Props { level?: 2 | 3; highlights?: boolean; /** About: from 1024px each company sits beside its roles, so the timeline uses the page's width. */ wide?: boolean }
 const { level = 3, highlights = true, wide = false } = Astro.props;
@@ -13,6 +15,7 @@ const rows = Math.ceil(careerByCompany().length / 2);
   {careerByCompany().map(group => (
     <li class="career-company">
       <Company>{group.company}</Company>
+      {group.roles.length > 1 && tenure(group.roles) && <p class="case-kicker career-tenure">{tenure(group.roles)} · {group.roles.length} roles</p>}
       <div class="career-roles">
       {group.roles.map(r => (
         <div class="career-role">

@@ -15,7 +15,7 @@ import { rewriteLinks } from '../../lib/routes';
 import { tuneSnapshot, HOME_BELOW_FOLD } from '../../lib/snapshot-tune';
 import { chrome } from '../../i18n/chrome';
 import { getImage } from 'astro:assets';
-import { listedVideos } from '../../lib/videos';
+import { listedVideos, posterOf } from '../../lib/videos';
 
 interface Props { name: 'about' | 'content' | 'now' | 'about-hero' | 'about-direction' }
 const snap = { about, content, now, 'about-hero': aboutHero, 'about-direction': aboutDirection }[Astro.props.name];
@@ -31,8 +31,9 @@ if (Astro.props.name === 'content') {
     html = html.replace(/<span style="[^"]*"><div class="sc-host-x" style="display: contents;"><span [^>]*data-badge=""><span [^>]*><\/span><span class="sc-interp">New video coming soon<\/span><\/span><\/div><\/span>/, '');
     html = html.replace(`<div data-cover-fallback="" aria-hidden="true"><span><span class="sc-interp">${placeholder}</span></span></div>`, '<div data-cover-fallback="label" aria-hidden="true"><span>Video on YouTube</span></div>');
     html = html.replace(/(<div role="heading" aria-level="4"[^>]*>)<span class="sc-interp">Designing AI products people trust<\/span>(<\/div>)/, `$1<a href="/videos" data-link class="home-video-link" style="display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); color: var(--text-link); text-decoration: none;">${title}<svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>$2`);
-    if (latest.data.poster) {
-      const poster = (await getImage({ src: latest.data.poster.src, width: 960 })).src;
+    const latestPoster = posterOf(latest);
+    if (latestPoster) {
+      const poster = (await getImage({ src: latestPoster, width: 960 })).src;
       html = html.replace(/<span data-image-box="video-thumb"[^>]*><\/span>/, `<img src="${poster}" alt="" width="960" height="540" loading="lazy" decoding="async" style="position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover;" />`);
     }
   }

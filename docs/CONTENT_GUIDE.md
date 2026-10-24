@@ -131,6 +131,10 @@ The video appears on `/videos`, and the newest one on the home page. Nothing loa
 
 By file: `src/content/videos/your-title.yaml`.
 
+### Video posters
+
+You don't need to add a poster. Before every build, `scripts/content/youtube-posters.mjs` saves the YouTube thumbnail of any video that has no poster of its own as `src/assets/media/youtube/<id>.jpg`, so a video published from the admin gets its picture on the next Vercel build. A poster set in the entry always wins. Run `node scripts/content/youtube-posters.mjs` yourself to fetch them locally (commit the files so every build has them), or with `--check` to list what is missing.
+
 ## Add a LinkedIn post
 
 In the editor: **LinkedIn posts → Create**. Fill in the title (the first line of the post works well), the link to the post, the date, and optionally the series it belongs to and tags. It appears on the Posts page (`/posts`, under **My Resources** in the menu), newest first. A visitor can narrow the list to one series.

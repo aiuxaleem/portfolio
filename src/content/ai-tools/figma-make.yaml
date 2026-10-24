@@ -5,4 +5,4 @@ cost: freemium
 description: "Figma’s prompt-to-app tool: turns a design or a description into a working, interactive prototype inside Figma."
 added: 2026-10-24
 tags: ["Figma", "Prototyping"]
-pick: false
+pick: true

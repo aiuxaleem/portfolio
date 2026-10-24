@@ -7,7 +7,9 @@
     "node": ">=20"
   },
   "scripts": {
+    "predev": "node scripts/content/youtube-posters.mjs",
     "dev": "astro dev",
+    "prebuild": "node scripts/content/youtube-posters.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",

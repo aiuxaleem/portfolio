@@ -26,7 +26,7 @@ const alertIcon = 'M12 8v4M12 16h.01';
 
   <form action={endpoint} method="post" hidden={state === 'success'} aria-labelledby={landmark ? `${id}-form-title` : undefined}>
     <h2 id={`${id}-form-title`} class="form-title">Send a message</h2>
-    <p class="form-note">All three fields are needed.</p>
+    <p class="form-note">Name, email and message are needed.</p>
 
     <div class="form-panel form-summary" data-form-summary tabindex="-1" role="alert" hidden={!invalid}>
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={alertIcon}></path></svg>
@@ -38,7 +38,18 @@ const alertIcon = 'M12 8v4M12 16h.01';
       <div><p class="form-panel-title">Your message was not sent.</p><p>The form service did not answer. What you typed is still in the form. Try again, or <a data-form-mailto href={`mailto:${email}`}>send it by email instead</a>.</p></div>
     </div>
 
-    {fields.map(f => (
+    {fields.map((f, i) => (<Fragment>
+      {i === 2 && (
+        <div class="form-field">
+          <label for={`${id}-topic`}>What is it about? (optional)</label>
+          <select id={`${id}-topic`} name="topic" disabled={busy}>
+            <option value="">Choose one</option>
+            <option value="A full-time role" selected={sample || undefined}>A full-time role</option>
+            <option value="A project or contract">A project or contract</option>
+            <option value="Something else">Something else</option>
+          </select>
+        </div>
+      )}
       <div class="form-field" data-field data-error-text={f.error}>
         <label for={`${id}-${f.name}`}>{f.label}</label>
         {f.hint && <p class="form-hint" id={`${id}-${f.name}-hint`}>{f.hint}</p>}
@@ -47,7 +58,7 @@ const alertIcon = 'M12 8v4M12 16h.01';
           : <input id={`${id}-${f.name}`} name={f.name} type={f.type as 'text' | 'email'} required autocomplete={f.autocomplete} value={f.value} aria-invalid={invalid ? 'true' : undefined} aria-describedby={[f.hint && `${id}-${f.name}-hint`, invalid && `${id}-${f.name}-error`].filter(Boolean).join(' ') || undefined} disabled={busy} />}
         <p class="form-error" id={`${id}-${f.name}-error`} data-field-error hidden={!invalid}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={alertIcon}></path></svg><span>{invalid ? f.error : ''}</span></p>
       </div>
-    ))}
+    </Fragment>))}
     <!-- Spam trap: people never see or reach this field. -->
     <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" hidden />
 

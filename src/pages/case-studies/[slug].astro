@@ -28,6 +28,9 @@ const shown = new Set(toc.map(s => s.id));
 const num = (id: string) => String(toc.findIndex(s => s.id === id) + 1).padStart(2, '0');
 const meta = [['Role', d.role], ['Company', d.confidential ? 'Confidential' : d.company], ['Timeline', d.timeline], ['Team', d.team], ['Tools', d.stack.join(' · ') || undefined], ['Platform', d.platform]].filter(([, v]) => v) as [string, string][];
 const verified = d.outcomes.metrics.filter(m => m.verified);
+/* Counts of what was built are not outcomes. Until a measured outcome is verified, the section says what shipped and
+   leads with who uses it, then the counts. */
+const measured = verified.some(m => m.kind === 'outcome');
 const jsonLd = [caseStudyLd(entry, await ogImageFor(`/case-studies/${entry.id}`)), breadcrumbLd([['Case studies', '/case-studies'], [d.title, `/case-studies/${entry.id}`]])];
 const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
 ---
@@ -115,10 +118,11 @@ const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
           )}
           {shown.has('outcomes') && (
             <section id="outcomes" class="case-section" aria-labelledby="outcomes-title">
-              <p class="cory-overline">{num('outcomes')} · Outcomes</p>
-              <h2 id="outcomes-title" class="project-h2">Outcomes and impact</h2>
+              <p class="cory-overline">{num('outcomes')} · {measured ? 'Outcomes' : 'Results'}</p>
+              <h2 id="outcomes-title" class="project-h2">{measured ? 'Outcomes and impact' : 'What shipped, and who uses it'}</h2>
+              {!measured && paras(d.outcomes.summary).map(p => <p>{p}</p>)}
               {verified.length > 0 && <ul class="case-metrics">{verified.map(m => <li><bdi class="cory-metric">{m.value}</bdi><span>{m.label}</span>{m.source && <small>{m.source}</small>}</li>)}</ul>}
-              {paras(d.outcomes.summary).map(p => <p>{p}</p>)}
+              {measured && paras(d.outcomes.summary).map(p => <p>{p}</p>)}
               {d.quote && <blockquote class="case-quote">{d.quote}</blockquote>}
             </section>
           )}
@@ -147,11 +151,11 @@ const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
     <div class="project-cta" style="padding: var(--space-8); display: flex; flex-wrap: wrap; gap: var(--space-6); align-items: center; justify-content: space-between; box-shadow: var(--shadow-md);">
       <div style="display: grid; gap: var(--space-2); max-inline-size: var(--measure-lead);">
         <p class="cory-overline" style="margin: 0; color: var(--on-ink-link);">Next step</p>
-        <h2 id="case-cta" style="margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong);">Want this kind of result for your product?</h2>
+        <h2 id="case-cta" style="margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong);">Want this kind of work on your team, or in your product?</h2>
         <p style="margin: 0; color: var(--on-ink-body);">Tell me what you're building. I reply within 48 hours.</p>
       </div>
       <div style="display: grid; gap: var(--space-2); justify-items: start;">
-        <Button variant="on-ink-solid" size="lg" href={`mailto:${site.email}`}>Email me</Button>
+        <span style="display: flex; flex-wrap: wrap; gap: var(--space-3);"><Button variant="on-ink-solid" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button><Button variant="on-ink" size="lg" href={`mailto:${site.email}`}>Email me</Button></span>
         <span style="color: var(--on-ink-body); font-size: var(--text-body-sm);"><EmailCopy copyLabel={c.copyEmail} copiedLabel={c.copied} fallbackLabel={c.pressCopy} /></span>
       </div>
     </div>

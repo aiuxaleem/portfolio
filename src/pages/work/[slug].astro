@@ -87,7 +87,7 @@ const arrowOut = 'M7 7h10v10M7 17 17 7';
         <p style="margin: 0; color: var(--on-ink-body);">Tell me what you're building. I reply within 48 hours.</p>
       </div>
       <div style="display: grid; gap: var(--space-2); justify-items: start;">
-        <Button variant="on-ink-solid" size="lg" href={`mailto:${site.email}`}>Email me</Button>
+        <span style="display: flex; flex-wrap: wrap; gap: var(--space-3);"><Button variant="on-ink-solid" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button><Button variant="on-ink" size="lg" href={`mailto:${site.email}`}>Email me</Button></span>
         <span style="color: var(--on-ink-body); font-size: var(--text-body-sm);"><EmailCopy copyLabel={c.copyEmail} copiedLabel={c.copied} fallbackLabel={c.pressCopy} /></span>
       </div>
     </div>

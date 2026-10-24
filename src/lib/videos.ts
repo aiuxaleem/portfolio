@@ -1,5 +1,14 @@
 /* Videos shown on the site, newest first. Drafts never show; fixtures show only in dev and quality builds. */
 import { getCollection, type CollectionEntry } from 'astro:content';
+import type { ImageMetadata } from 'astro';
+
+/* Posters saved from YouTube by scripts/content/youtube-posters.mjs (run before every build), by video id. */
+const youtubePosters = import.meta.glob<ImageMetadata>('/src/assets/media/youtube/*.jpg', { eager: true, import: 'default' });
+
+/** A video's poster: the one set in its entry, else the YouTube thumbnail saved for its id, else none. */
+export function posterOf(v: { data: { youtubeId: string; poster?: { src: ImageMetadata } } }): ImageMetadata | undefined {
+  return v.data.poster?.src ?? youtubePosters[`/src/assets/media/youtube/${v.data.youtubeId}.jpg`];
+}
 
 export type Video = CollectionEntry<'videos'>;
 
