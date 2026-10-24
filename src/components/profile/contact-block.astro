@@ -18,8 +18,10 @@ interface Props {
   title: string;
   lead: string;
   /** Off on /_states, where several forms share the page and landmark names must be unique. */ landmark?: boolean;
+  /** Version 2 (docs/AB_TEST.md): links to the page for hiring teams and the page for clients, under the lead. */ doors?: boolean;
+  /** The form's subject, chosen before the visitor arrives. */ topic?: 'role' | 'project';
 }
-const { level = 2, id, overline, title, lead, landmark = true } = Astro.props;
+const { level = 2, id, overline, title, lead, landmark = true, doors = false, topic } = Astro.props;
 const c = chrome.en;
 const Heading = `h${level}` as any;
 const endpoint = formEndpoint || (process.env.QUALITY_BUILD === '1' ? 'https://formspree.io/f/fixture' : undefined);
@@ -40,6 +42,7 @@ const elsewhere = [
       <p class="cory-overline" style="margin: 0;">{overline}</p>
       <Heading id={`${id}-title`} class:list={['contact-block-title', level === 1 && 'contact-block-title-page']}>{title}</Heading>
       <p class="contact-block-lead">{lead}</p>
+      {doors && <p class="contact-block-doors"><a data-link href="/v2/hiring">Hiring? The page for hiring teams</a><a data-link href="/v2/services">Building? How I work with clients</a></p>}
       <div data-hero-ctas class="contact-block-ctas">
         <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
         <Button variant="secondary" size="lg" href={`mailto:${site.email}`}>Email me</Button>
@@ -57,7 +60,7 @@ const elsewhere = [
         {elsewhere.length > 0 && <div><dt>Elsewhere</dt><dd class="contact-block-links">{elsewhere.map(l => <a data-link href={l.href} target="_blank" rel="noopener">{l.label}<span class="cory-visually-hidden"> (opens in a new tab)</span></a>)}</dd></div>}
       </dl>
     </div>
-    {endpoint && <div class="contact-block-form"><ContactForm endpoint={endpoint} email={site.email} id={id} submit="secondary" landmark={landmark} /></div>}
+    {endpoint && <div class="contact-block-form"><ContactForm endpoint={endpoint} email={site.email} id={id} submit="secondary" landmark={landmark} topic={topic} /></div>}
   </div>
 </section>
 
@@ -69,6 +72,8 @@ const elsewhere = [
   .contact-block-title { margin: 0; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
   .contact-block-title-page { max-inline-size: 16ch; font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); }
   .contact-block-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted); }
+  .contact-block-doors { display: flex; flex-wrap: wrap; gap: 0 var(--space-6); margin: 0; }
+  .contact-block-doors a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); font-weight: var(--weight-semibold); }
   .contact-block-ctas { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; }
   .contact-block-email { color: var(--text-link); font-size: var(--text-body-md); }
   .contact-block-steps { display: grid; gap: var(--space-3); }

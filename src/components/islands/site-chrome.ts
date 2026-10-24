@@ -28,6 +28,13 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
 });
 paintTheme();
 
+/* ---------- A/B test (docs/AB_TEST.md): a visitor in version 2 stays in it. The shared header and footer link to Home,
+   Services and Contact; for them those links lead to version 2's pages. ---------- */
+if (root.getAttribute('data-ab') === '2' || location.pathname.startsWith('/v2')) {
+  const v2: Record<string, string> = { '/': '/v2', '/services': '/v2/services', '/contact': '/v2/contact' };
+  document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach(a => { const to = v2[a.getAttribute('href') || '']; if (to) a.setAttribute('href', to); });
+}
+
 /* ---------- Header menus: a group's button opens its pages (click, Enter or Space); Escape, a click outside or focus
    leaving the group closes it. Hover opening is CSS only, on pointer devices. One menu is open at a time. ---------- */
 const groups = [...document.querySelectorAll<HTMLElement>('[data-nav-group]')];

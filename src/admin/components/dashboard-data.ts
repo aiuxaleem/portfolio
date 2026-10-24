@@ -30,4 +30,6 @@ export interface Dashboard {
   publishes: { day: string; kind: string; slug: string; /** The entry's title, when the page has looked it up. */ title?: string; /** The page it is read on. */ path?: string; /** That page's name in words, when shared and looked up. */ pathName?: string; /** The page is shared with other entries (Read, Videos, Resources). */ shared?: boolean; views?: number }[];
   /** The latest view in the log: when, from where, which page. */
   lastVisit?: { at: string; country: string; path: string; name?: string };
+  /** The A/B test (docs/AB_TEST.md): visits in each version and how many of them reached Contact or the hiring page. */
+  ab?: { v1: { visits: number; contact: number }; v2: { visits: number; contact: number; hiring: number } };
 }

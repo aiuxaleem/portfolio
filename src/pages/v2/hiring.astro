@@ -1,0 +1,100 @@
+---
+/* Version 2 (the A/B test, docs/AB_TEST.md): the page for hiring teams. Everything a recruiter or a hiring manager
+   screens for, in the order they screen: who, what level, where and what for (the hero and the facts panel), the work
+   (three case studies), what he brings, the experience, the certifications, then the call. No client offer here: the
+   band before the call is the way across to the page for clients. Every fact comes from the profile and site settings.
+   Kept out of search while the test runs. */
+import PageLayout from '../../layouts/page-layout.astro';
+import Button from '../../components/ui/button.astro';
+import CaseCard from '../../components/cards/case-card.astro';
+import Career from '../../components/profile/career.astro';
+import Certifications from '../../components/profile/certifications.astro';
+import ContactBlock from '../../components/profile/contact-block.astro';
+import DoorSwitch from '../../components/v2/door-switch.astro';
+import { site, resumeAttrs, resumeExternal } from '../../content/site';
+import { profile, period } from '../../content/profile';
+import { listedCaseStudies } from '../../lib/case-studies';
+import { personLd } from '../../lib/seo';
+import { chrome } from '../../i18n/chrome';
+
+const c = chrome.en;
+const now = profile.career[0];
+const cases = (await listedCaseStudies()).filter(x => !x.data.fixture).slice(0, 3);
+const facts: [string, string][] = [
+  ['Now', `${now.role}, ${now.company} (${period(now)})`],
+  ['Experience', '13+ years, from enterprise UX to AI products'],
+  ['Open to', 'Lead and Principal design or product roles in KSA and the UAE, on-site or remote'],
+  ['Based in', `${site.location}, on GCC hours`],
+  ['Relocation', site.availability.label],
+  ['Education', profile.education[0]?.qualification ?? ''],
+].filter(([, v]) => v) as [string, string][];
+const inkText = 'margin: 0; color: var(--on-ink-strong); font-weight: var(--weight-semibold); overflow-wrap: anywhere;';
+---
+<PageLayout ab title="For hiring teams · AIUXAleem" description={`For recruiters and hiring managers: ${site.name}, ${profile.headline}. Experience, case studies, certifications and the resume in one place.`} page="hiring" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
+  <section class="cory-container hiring-hero" aria-labelledby="hiring-title">
+    <div class="cory-split" style="align-items: start;">
+      <div style="display: grid; gap: var(--space-6); align-content: start;">
+        <p class="cory-overline" style="margin: 0px;">For hiring teams</p>
+        <h1 id="hiring-title" class="hiring-h1">A {profile.headline} for your team.</h1>
+        <p class="hiring-lead">I'm {site.name}. {profile.positioning} Thirteen-plus years in enterprise UX, fintech and AI products, now leading AI product design at {now.company}.</p>
+        <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+          <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
+          <Button variant="secondary" size="lg" href={site.resumeUrl} {...resumeAttrs}>{resumeExternal ? 'View resume' : 'Download resume'}{resumeExternal && <span class="cory-visually-hidden"> (opens in a new tab)</span>}</Button>
+        </div>
+      </div>
+      <div class="project-cta hiring-facts" role="region" aria-labelledby="hiring-facts-title">
+        <p class="cory-overline" style="margin: 0; color: var(--on-ink-link);">At a glance</p>
+        <h2 id="hiring-facts-title" class="hiring-facts-title">What you'll want to know first</h2>
+        <dl class="hiring-facts-list">
+          {facts.map(([k, v]) => <div><dt>{k}</dt><dd style={inkText}>{v}</dd></div>)}
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  {cases.length > 0 && (
+    <section class="page-section" data-surface="card" aria-labelledby="hiring-work-title">
+      <div class="cory-container">
+        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">The work</p><h2 id="hiring-work-title" class="page-h2">Case studies to start with</h2><p class="project-filter-count" style="max-inline-size: var(--measure-lead);">Each one gives the problem, the constraints, the decisions with their trade-offs, and what shipped.</p></div>
+        <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{cases.map(entry => <li><CaseCard entry={entry} level={3} /></li>)}</ul></div>
+        <a data-link class="post-back" href="/case-studies"><span>All case studies</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
+      </div>
+    </section>
+  )}
+
+  <section class="page-section" aria-labelledby="hiring-bring-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Expertise</p><h2 id="hiring-bring-title" class="page-h2">What I bring to a product team</h2></div>
+      <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.expertise.map(e => <li><div class="tile"><h3>{e.title}</h3><p>{e.body}</p></div></li>)}</ul></div>
+    </div>
+  </section>
+
+  <section class="page-section" data-surface="card" aria-labelledby="hiring-career-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Work experience</p><h2 id="hiring-career-title" class="page-h2">Enterprise UX to AI product design</h2><p class="project-filter-count">Newest first, with what each role shipped.</p></div>
+      <Career wide />
+    </div>
+  </section>
+
+  <section class="page-section" aria-labelledby="hiring-certs-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="hiring-certs-title" class="page-h2">Certifications</h2><p class="project-filter-count">Verified certificates and the ones in progress. The full list is on the About page.</p></div>
+      <Certifications only={['in-progress', 'verified']} />
+    </div>
+  </section>
+
+  <DoorSwitch to="clients" id="hiring-switch" />
+
+  <ContactBlock id="contact" overline="Next step" title="Hiring for a design lead? Let's talk." lead="Book a 15-minute call, or send the role and the team. I reply within 48 hours." topic="role" />
+</PageLayout>
+
+<style>
+  .hiring-hero { padding-block: var(--section-y) var(--space-12); }
+  .hiring-h1 { margin: 0; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
+  .hiring-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted); }
+  .hiring-facts { display: grid; gap: var(--space-4); padding: var(--space-8); box-shadow: var(--shadow-md); }
+  .hiring-facts-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); }
+  .hiring-facts-list { display: grid; gap: 0; margin: 0; }
+  .hiring-facts-list > div { display: grid; gap: var(--space-1); padding-block: var(--space-3); border-block-start: 1px solid var(--on-ink-border); }
+  .hiring-facts-list dt { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--on-ink-muted); }
+</style>

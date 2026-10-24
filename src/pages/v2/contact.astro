@@ -1,0 +1,9 @@
+---
+/* Version 2 of Contact (the A/B test, docs/AB_TEST.md): version 1's contact block, with the two doors under its lead
+   and the subject taken from the address (?topic=role or ?topic=project). Kept out of search (canonical: /contact). */
+import PageLayout from '../../layouts/page-layout.astro';
+import ContactBlock from '../../components/profile/contact-block.astro';
+---
+<PageLayout ab canonical={new URL('/contact', Astro.site).href} hideHeaderCta title="Contact · AIUXAleem" description="Contact Mohammad Abdul Aleem: book a one-to-one 15-minute call or send an email. Based in Hyderabad, working GCC hours." page="contact" hideCta bg="grid" mainStyle="outline: none; overflow: clip;">
+  <ContactBlock level={1} id="contact" overline="Contact" title="Let's talk." lead="Hiring for a design lead, or building a product? A 15-minute call is the fastest way to start. I reply within 48 hours." doors />
+</PageLayout>

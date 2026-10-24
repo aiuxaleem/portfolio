@@ -5,8 +5,8 @@
    is --border-interactive (3:1) and an error carries an icon as well as words.
    Without JavaScript the form posts to the form service directly and the browser's own validation applies.
    Behaviour: islands/contact-form.ts */
-interface Props { endpoint: string; email: string; id?: string; /** Off on /_states, where several forms share the page: a named form is a landmark and landmark names must be unique. */ landmark?: boolean; /** Fix a state, for /_states. */ /** The submit's weight: secondary where the page's primary call is in the same view (Contact, two columns). */ submit?: 'ink' | 'secondary'; state?: 'idle' | 'invalid' | 'submitting' | 'success' | 'failure' }
-const { endpoint, email, id = 'contact', landmark = true, state = 'idle', submit = 'ink' } = Astro.props;
+interface Props { /** The topic chosen before the visitor arrives (version 2's doors). */ topic?: 'role' | 'project'; endpoint: string; email: string; id?: string; /** Off on /_states, where several forms share the page: a named form is a landmark and landmark names must be unique. */ landmark?: boolean; /** Fix a state, for /_states. */ /** The submit's weight: secondary where the page's primary call is in the same view (Contact, two columns). */ submit?: 'ink' | 'secondary'; state?: 'idle' | 'invalid' | 'submitting' | 'success' | 'failure' }
+const { endpoint, email, id = 'contact', landmark = true, state = 'idle', submit = 'ink', topic } = Astro.props;
 const fixed = !!Astro.props.state;
 const invalid = state === 'invalid';
 const busy = state === 'submitting';
@@ -44,8 +44,8 @@ const alertIcon = 'M12 8v4M12 16h.01';
           <label for={`${id}-topic`}>What is it about? (optional)</label>
           <select id={`${id}-topic`} name="topic" disabled={busy}>
             <option value="">Choose one</option>
-            <option value="A full-time role" selected={sample || undefined}>A full-time role</option>
-            <option value="A project or contract">A project or contract</option>
+            <option value="A full-time role" selected={sample || topic === 'role' || undefined}>A full-time role</option>
+            <option value="A project or contract" selected={topic === 'project' || undefined}>A project or contract</option>
             <option value="Something else">Something else</option>
           </select>
         </div>

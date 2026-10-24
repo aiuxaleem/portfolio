@@ -21,8 +21,11 @@ interface Props {
   ogImage?: string;
   /** JSON-LD objects for this page. Empty entries are skipped. */
   jsonLd?: (Record<string, unknown> | undefined)[];
+  /** A page of version 2 of the site (the A/B test, docs/AB_TEST.md): kept out of search, its visits still counted. */
+  ab?: boolean;
 }
-const { title, description, page = '', langs = 'en', lang = 'en', dir = 'ltr', noindex = false } = Astro.props;
+const { title, description, page = '', langs = 'en', lang = 'en', dir = 'ltr', ab = false } = Astro.props;
+const noindex = Astro.props.noindex || ab;
 /* Fonts are self-hosted (src/styles/fonts.css). Only the faces used above the fold are preloaded. */
 const preload = [...fonts.preload.latin, ...(lang === 'ar' ? fonts.preload.arabic : [])];
 const { ogType = 'website', jsonLd = [] } = Astro.props;
@@ -32,7 +35,11 @@ const shareTitle = title.replace(/ · AIUXAleem$/, '');
 /* Page view count: first-party, no cookie, sent after the page has loaded. Present only where the /api/hit route exists
    (the Vercel build and dev), never on pages marked noindex. Skipped in the owner's browser and for visitors who ask not
    to be tracked. */
-const countVisits = import.meta.env.COUNT_VISITS === '1' && !noindex;
+const countVisits = import.meta.env.COUNT_VISITS === '1' && (!noindex || ab);
+/* The A/B test (docs/AB_TEST.md) runs where visits are counted, so its result can be read in the admin: the Vercel site
+   and dev. Static copies (GitHub Pages) always show version 1. */
+const abSplit = import.meta.env.COUNT_VISITS === '1';
+const abScript = "(function(){try{var n=navigator,u=n.userAgent||'';if(n.webdriver||/bot|crawl|spider|slurp|preview|lighthouse|headless|pagespeed|google|bing|yandex|baidu|duckduck|facebookexternalhit|embedly|whatsapp|telegram|discord|linkedin|slack|twitter/i.test(u))return;var K='aiuxaleem-ab',q=location.search.match(/[?&]ab=([12])/),p=location.pathname.replace(/\\.html$/,'').replace(/\\/$/,'')||'/',m={'/':'/v2','/services':'/v2/services','/contact':'/v2/contact'},v=q?q[1]:localStorage.getItem(K);if(v!=='1'&&v!=='2'){v=p.indexOf('/v2')===0?'2':m[p]?(Math.random()<0.5?'1':'2'):'';}if(!v)return;localStorage.setItem(K,v);document.documentElement.setAttribute('data-ab',v);var s=location.search.replace(/([?&])ab=[12]&?/,'$1').replace(/[?&]$/,'');if(v==='2'&&m[p])location.replace(m[p]+s+location.hash);else if(v==='1'&&q&&p.indexOf('/v2')===0){var b={'/v2':'/','/v2/services':'/services','/v2/contact':'/contact'}[p];if(b)location.replace(b+s+location.hash);}}catch(e){}})();";
 const countScript = "(function(){try{if(navigator.doNotTrack==='1'||navigator.globalPrivacyControl||localStorage.getItem('aiuxaleem-owner')==='1')return;var s=function(){navigator.sendBeacon('/api/hit',JSON.stringify({p:location.pathname,r:document.referrer}))};if(document.readyState==='complete')s();else addEventListener('load',s,{once:true})}catch(e){}})();";
 const canonical = Astro.props.canonical || new URL(Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/'), Astro.site);
 ---
@@ -41,6 +48,7 @@ const canonical = Astro.props.canonical || new URL(Astro.url.pathname.replace(/\
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {abSplit && <script is:inline set:html={abScript} />}
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />

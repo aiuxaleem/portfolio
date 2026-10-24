@@ -4,6 +4,9 @@ const SEND_TIMEOUT = 15000;
 
 document.querySelectorAll<HTMLElement>('[data-contact-form]:not([data-static])').forEach(root => {
   const form = root.querySelector('form'); if (!form) return;
+  /* ?topic=role or ?topic=project picks the subject, so a visitor sent from a door does not have to. */
+  const topicWanted = new URLSearchParams(location.search).get('topic'); const topicField = form.querySelector<HTMLSelectElement>('select[name="topic"]');
+  if (topicField && (topicWanted === 'role' || topicWanted === 'project')) topicField.value = topicWanted === 'role' ? 'A full-time role' : 'A project or contract';
   form.noValidate = true; // our messages replace the browser's bubbles; without JavaScript the browser's own apply
   const fields = [...form.querySelectorAll<HTMLElement>('[data-field]')].map(wrap => {
     const input = wrap.querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea')!;

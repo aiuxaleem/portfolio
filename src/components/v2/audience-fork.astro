@@ -1,0 +1,45 @@
+---
+/* Version 2 (docs/AB_TEST.md): the two doors. One card for hiring teams and one for clients, each saying what is behind
+   it, each a whole-card link (CLAUDE.md 2.7). Equal weight: neither is the primary action, so both use the card's own
+   call line, not a filled button. Used on version 2's Home under the hero and on its Contact page.
+   States: default; `compact` (Contact: the words only, no list). */
+interface Props {
+  id: string;
+  hiringHref?: string;
+  clientsHref?: string;
+  /** Heading level of the two card titles. */ level?: 2 | 3;
+  /** The words only, no list of what is behind each door. */ compact?: boolean;
+}
+const { id, hiringHref = '/v2/hiring', clientsHref = '/v2/services', level = 3, compact = false } = Astro.props;
+const Heading = `h${level}` as any;
+const doors = [
+  { key: 'hiring', overline: 'For hiring teams', title: 'Hiring for a design lead?', body: 'The experience, the case studies and the resume in one place, for a Lead or Principal role in KSA or the UAE.', items: ['13+ years, from enterprise UX to AI products', 'Case studies with the decisions behind them', 'Resume, certifications and a call to talk it through'], cta: 'See the page for hiring teams', href: hiringHref },
+  { key: 'clients', overline: 'For clients', title: 'Building a product?', body: 'What I do on a project, what you get, and the work that proves it, for teams with an AI or design system problem.', items: ['AI product design, design systems, UX audits', 'Handed off as code and spec files', 'A 15-minute call to scope it'], cta: 'See how I work with clients', href: clientsHref },
+];
+const arrow = 'M5 12h14M12 5l7 7-7 7';
+---
+<ul class:list={['audience-fork', compact && 'audience-fork-compact']} aria-label="Two ways in">
+  {doors.map(d => (
+    <li>
+      <article class="project-card audience-door" data-door={d.key}>
+        <div class="project-card-body">
+          <p class="cory-overline" style="margin: 0;">{d.overline}</p>
+          <Heading class="project-card-title" id={`${id}-${d.key}`}><a class="project-card-link" href={d.href}>{d.title}</a></Heading>
+          <p class="project-card-summary">{d.body}</p>
+          {!compact && <ul class="audience-door-list">{d.items.map(i => <li>{i}</li>)}</ul>}
+          <span class="project-card-cta" aria-hidden="true">{d.cta} <svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d={arrow}></path></svg></span>
+        </div>
+      </article>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .audience-fork { display: grid; gap: var(--grid-gap); margin: 0; padding: 0; list-style: none; }
+  @media (min-width: 768px) { .audience-fork { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .audience-fork > li { display: grid; min-inline-size: 0; }
+  .audience-door > .project-card-body { gap: var(--space-3); padding: var(--space-8); }
+  .audience-door-list { display: grid; gap: var(--space-2); margin: 0; padding-inline-start: var(--space-5); list-style: revert; color: var(--text-body); }
+  .audience-door-list li { font-size: var(--text-body-md); line-height: var(--leading-relaxed); }
+  .audience-fork-compact .audience-door > .project-card-body { padding: var(--space-6); }
+</style>

@@ -2,5 +2,5 @@
 export const TEMPLATES = [
   ['home', '/'], ['work', '/work'], ['project', '/work/colaberry-design-system'], ['case-studies', '/case-studies'], ['case-study', '/case-studies/colaberry-design-system'],
   ['posts', '/posts'], ['articles', '/articles'], ['resources', '/resources'], ['ai-tools', '/ai-tools'], ['sitemap', '/sitemap'], ['blog', '/blog'], ['guide', '/blog/component-spec-files'], ['videos', '/videos'], ['about', '/about'], ['resume', '/resume'], ['now', '/now'],
-  ['contact', '/contact'], ['services', '/services'], ['home-ar', '/ar'], ['404', '/404'],
+  ['contact', '/contact'], ['services', '/services'], ['v2-home', '/v2'], ['v2-hiring', '/v2/hiring'], ['v2-services', '/v2/services'], ['v2-contact', '/v2/contact'], ['home-ar', '/ar'], ['404', '/404'],
 ];
