@@ -207,12 +207,12 @@ main[tabindex] { padding-block-start: 0 !important; }
 
 /* ---- Accessibility guarantees (see CLAUDE.md) ---- */
 /* Current page in the header: weight + a brand underline, never colour alone (1.4.1). !important beats the link's inline colour. */
-[data-nav-link][aria-current="page"] { color: var(--text-strong) !important; font-weight: var(--weight-bold) !important; background: var(--gradient-brand) no-repeat center bottom 6px / calc(100% - var(--space-4)) 2px; }
+[data-nav-link][aria-current="page"], [data-nav-link][aria-current="true"] { color: var(--text-strong) !important; font-weight: var(--weight-bold) !important; background: var(--gradient-brand) no-repeat center bottom 6px / calc(100% - var(--space-4)) 2px; }
 /* Windows high contrast / forced colours: gradient-clipped text falls back to the system text colour, focus uses Highlight */
 @media (forced-colors: active) {
   [style*="background-clip:text"], [style*="background-clip: text"], .cory-gradient-text, .cory-metric { background: none !important; color: CanvasText !important; -webkit-text-fill-color: CanvasText !important; }
   :focus-visible { outline: 2px solid Highlight !important; }
-  [data-nav-link][aria-current="page"] { text-decoration: underline 2px; }
+  [data-nav-link][aria-current="page"], [data-nav-link][aria-current="true"] { text-decoration: underline 2px; }
 }
 
 /* Visually hidden text: the full, engine-proof pattern (kept in the a11y tree, never in layout or overflow) */

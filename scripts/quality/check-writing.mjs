@@ -1,4 +1,4 @@
-// Behaviour test for the Read page at /read (sections, pages, posts loaded on request), /videos and the home page sections, with screenshots. Run after a build.
+// Behaviour test for the LinkedIn pages (/posts: filters, posts loaded on request; /articles), /videos and the home page sections, with screenshots. Run after a build.
 // node scripts/quality/check-writing.mjs [--dir=dist]
 import fs from 'node:fs';
 import { serve, launch, arg } from '../lib.mjs';
@@ -7,35 +7,32 @@ const dir = arg('dir', 'dist'); const tag = dir === 'dist' ? '' : '-production';
 const server = await serve(dir, 4491); const browser = await launch(); const O = 'http://127.0.0.1:4491'; const out = { build: dir };
 const open = async (path, { width = 1280, height = 720, js = true } = {}) => { const ctx = await browser.newContext({ viewport: { width, height }, reducedMotion: 'reduce', javaScriptEnabled: js }); const seen = []; await ctx.route(u => /youtube|ytimg|linkedin|licdn/.test(u.hostname), r => { seen.push(r.request().url()); r.abort(); }); const p = await ctx.newPage(); await p.goto(O + path, { waitUntil: 'load' }); await p.waitForTimeout(500); return { ctx, p, seen }; };
 
-{ const { ctx, p, seen } = await open('/read?theme=light'); const w = {};
-  const shown = id => p.evaluate(i => [...document.querySelector(`[data-paged="${i}"]`).children].filter(li => !li.hidden).length, id);
-  const status = () => p.evaluate(() => document.querySelector('#linkedin-posts [role="status"]').textContent.trim());
+{ const { ctx, p, seen } = await open('/posts?theme=light'); const w = {};
   w.h1 = await p.evaluate(() => document.querySelector('h1').textContent); w.title = await p.title();
-  w.menu = await p.evaluate(() => document.querySelector('header nav a[aria-current="page"]')?.textContent.trim());
-  w.sections = await p.evaluate(() => [...document.querySelectorAll('main section[id] > .page-section-head h2')].map(h => h.textContent));
-  w.onThisPage = await p.evaluate(() => [...document.querySelectorAll('nav[aria-label="On this page"] a')].map(a => `${a.getAttribute('href')} ${a.textContent.trim()}`));
-  w.linksLand = await p.evaluate(() => [...document.querySelectorAll('nav[aria-label="On this page"] a')].every(a => document.querySelector(a.getAttribute('href'))));
-  w.blogCards = await p.evaluate(() => document.querySelectorAll('#blog-posts .project-card').length);
-  w.linkedin = { total: await p.evaluate(() => document.querySelector('[data-paged="linkedin-posts"]').children.length), shown: await shown('linkedin-posts'), status: await status(), loadButtons: await p.evaluate(() => document.querySelectorAll('#linkedin-posts [data-embed-load]').length) };
-  w.order = await p.evaluate(() => [...document.querySelectorAll('[data-paged="linkedin-posts"] time')].map(t => t.dateTime));
-  w.newestFirst = w.order.slice(0, -1).every((d, i) => i === 0 || w.order[i - 1] >= d);
-  w.externalLinks = await p.evaluate(() => [...document.querySelectorAll('main section[id] a[target=_blank]')].every(a => a.rel.includes('noopener') && /new tab/.test(a.textContent)));
-  w.uniqueNames = await p.evaluate(() => { const n = [...document.querySelectorAll('#linkedin-posts [data-embed-load], #linkedin-posts .embed-card-link')].map(e => e.textContent.trim()); return new Set(n).size === n.length; });
-  // keyboard: go to the next page with Enter; focus moves to the section heading, under the sticky header
-  await p.locator('[data-pager="linkedin-posts"] [data-pager-next]').focus(); await p.keyboard.press('Enter'); await p.waitForTimeout(300);
-  w.page2 = { shown: await shown('linkedin-posts'), status: await status(), address: await p.evaluate(() => location.search), focusOn: await p.evaluate(() => document.activeElement.id), headingBelowHeader: await p.evaluate(() => document.getElementById('linkedin-posts-title').getBoundingClientRect().top >= document.querySelector('header').getBoundingClientRect().bottom - 1),
-    current: await p.evaluate(() => document.querySelector('[data-pager="linkedin-posts"] [aria-current="page"]').textContent.trim()), olderHidden: await p.evaluate(() => getComputedStyle(document.querySelector('[data-pager="linkedin-posts"] [data-pager-next]')).visibility) };
-  await p.screenshot({ path: `reports/writing/writing-page2-1280-light${tag}.png` });
-  await p.locator('[data-pager="linkedin-posts"] [data-pager-prev]').click(); await p.waitForTimeout(300);
-  w.backToPage1 = { shown: await shown('linkedin-posts'), status: await status(), address: await p.evaluate(() => location.search) };
+  w.menu = await p.evaluate(() => document.querySelector('header [data-nav-link][aria-current]')?.textContent.trim());
+  w.headings = await p.evaluate(() => [...document.querySelectorAll('main h1, main h2, main h3')].map(h => h.tagName[1]).join(''));
+  w.headingSkips = await p.evaluate(() => { const l = [...document.querySelectorAll('main h1, main h2, main h3, main h4')].map(h => +h.tagName[1]); return l.some((n, i) => i > 0 && n > l[i - 1] + 1); });
+  w.cards = await p.evaluate(() => document.querySelectorAll('[data-project-list] figure.embed-linkedin').length);
+  w.order = await p.evaluate(() => [...document.querySelectorAll('[data-project-list] time')].map(t => t.dateTime));
+  w.newestFirst = w.order.every((d, i) => i === 0 || w.order[i - 1] >= d);
+  w.externalLinks = await p.evaluate(() => [...document.querySelectorAll('main a[target=_blank]')].every(a => a.rel.includes('noopener') && /new tab/.test(a.textContent)));
+  w.uniqueNames = await p.evaluate(() => { const n = [...document.querySelectorAll('[data-embed-load], .embed-card-link')].map(e => e.textContent.trim()); return new Set(n).size === n.length; });
+  // filters: the first chip narrows the list and the live count says so; "Clear filters" brings every post back
+  const chip = p.locator('[data-project-filters] button[aria-pressed]').first();
+  if (await chip.count()) { await chip.click(); await p.waitForTimeout(200);
+    w.filtered = await p.evaluate(() => ({ shown: [...document.querySelectorAll('[data-project-list] > li')].filter(li => !li.hidden).length, count: document.querySelector('[data-project-filters] [role="status"]')?.textContent.trim() }));
+    const clear = p.locator('[data-project-filters] [data-clear-filters]:visible').first(); if (await clear.count()) { await clear.click(); await p.waitForTimeout(200); }
+    w.cleared = await p.evaluate(() => [...document.querySelectorAll('[data-project-list] > li')].filter(li => !li.hidden).length); }
   // a post loads only when asked for: the request is blocked here, so the card must end in its failed state with the link still there
   w.thirdPartyBeforeAsking = seen.length;
-  const first = p.locator('[data-paged="linkedin-posts"] > li:not([hidden]) figure').first(); await first.locator('[data-embed-load]').click();
+  const first = p.locator('[data-project-list] > li:not([hidden]) figure').first(); await first.locator('[data-embed-load]').click(); await p.waitForTimeout(500);
   w.embed = { asked: await first.getAttribute('data-embed-src'), stateAfterPress: await first.getAttribute('data-state'), requests: seen.filter(u => /linkedin\.com\/embed/.test(u)).length, linkKept: await first.locator('.embed-card-link').isVisible() };
-  await p.screenshot({ path: `reports/writing/writing-1280-light${tag}.png`, fullPage: true });
-  out.writing = w; await ctx.close(); }
-{ const { ctx, p } = await open('/read?linkedin-posts=2&theme=dark', { width: 390, height: 844 }); out.writing390 = await p.evaluate(() => ({ pageScrolls: document.documentElement.scrollWidth > innerWidth, linkedToPage2: document.querySelector('#linkedin-posts [role="status"]').textContent.trim() })); await p.screenshot({ path: `reports/writing/writing-390-dark${tag}.png`, fullPage: true }); await ctx.close(); }
-{ const { ctx, p } = await open('/read', { js: false }); out.writingNoJs = await p.evaluate(() => ({ pagesHidden: [...document.querySelectorAll('[data-pager]')].every(n => n.getBoundingClientRect().height === 0), everyItemListed: [...document.querySelectorAll('[data-paged] > li')].every(li => li.getBoundingClientRect().height > 0), items: document.querySelectorAll('[data-paged] > li').length })); await ctx.close(); }
+  await p.screenshot({ path: `reports/writing/posts-1280-light${tag}.png`, fullPage: true });
+  out.posts = w; await ctx.close(); }
+{ const { ctx, p } = await open('/posts?theme=dark', { width: 390, height: 844 }); out.posts390 = await p.evaluate(() => ({ pageScrolls: document.documentElement.scrollWidth > innerWidth })); await p.screenshot({ path: `reports/writing/posts-390-dark${tag}.png`, fullPage: true }); await ctx.close(); }
+{ const { ctx, p } = await open('/posts', { js: false }); out.postsNoJs = await p.evaluate(() => ({ filtersHidden: [...document.querySelectorAll('[data-project-filters]')].every(n => n.getBoundingClientRect().height === 0), everyItemListed: [...document.querySelectorAll('[data-project-list] > li')].every(li => li.getBoundingClientRect().height > 0), items: document.querySelectorAll('[data-project-list] > li').length })); await ctx.close(); }
+{ const { ctx, p } = await open('/articles?theme=light'); out.articles = await p.evaluate(() => ({ h1: document.querySelector('h1').textContent, cards: document.querySelectorAll('main .project-card').length, menu: document.querySelector('header [data-nav-link][aria-current]')?.textContent.trim(), headings: [...document.querySelectorAll('main h1, main h2, main h3')].map(h => h.tagName[1]).join(''), externalLinks: [...document.querySelectorAll('main a[target=_blank]')].every(a => a.rel.includes('noopener') && /new tab/.test(a.textContent)) })); await p.screenshot({ path: `reports/writing/articles-1280-light${tag}.png`, fullPage: true }); await ctx.close(); }
+{ const { ctx, p } = await open('/read'); out.readRedirect = await p.evaluate(() => location.pathname); await ctx.close(); }
 
 { const { ctx, p, seen } = await open('/videos?theme=light'); out.videos = await p.evaluate(() => ({ h1: document.querySelector('h1').textContent, cards: document.querySelectorAll('.video-card').length, facades: document.querySelectorAll('.embed-video').length, iframes: document.querySelectorAll('iframe').length, primaryAction: document.querySelector('[data-hero-ctas] a').textContent.trim(), headings: [...document.querySelectorAll('main h1, main h2, main h3')].map(h => h.tagName[1]).join('') })); out.videos.thirdPartyRequests = seen.length; await p.screenshot({ path: `reports/writing/videos-1280-light${tag}.png`, fullPage: true }); await ctx.close(); }
 

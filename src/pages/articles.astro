@@ -1,0 +1,34 @@
+---
+/* /articles: LinkedIn articles, newest first, as one list of rows (title and "Read on LinkedIn" on one line from 768px);
+   each opens on LinkedIn in a new tab. Part of "My Resources" in the header. */
+import PageLayout from '../layouts/page-layout.astro';
+import FeedCard from '../components/cards/feed-card.astro';
+import Button from '../components/ui/button.astro';
+import { feedItems } from '../lib/writing';
+import { site } from '../content/site';
+
+const articles = (await feedItems()).filter(i => i.type === 'article');
+---
+<PageLayout title="LinkedIn articles · AIUXAleem" description="Longer articles by Mohammad Abdul Aleem on LinkedIn about AI product design, design systems and building a career in AI design." page="articles" bg="grid" mainStyle="outline: none; overflow: clip;">
+  <section class="cory-container" aria-labelledby="articles-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <p class="cory-overline" style="margin: 0px;">My resources · Articles</p>
+    <h1 id="articles-title" style="margin: 0px; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">Longer pieces, published on LinkedIn.</h1>
+    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">Articles on AI product design, design systems and the craft behind them. Each one opens on LinkedIn, in a new tab.</p>
+    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+      <Button variant="primary" size="lg" href={site.socials.linkedin} target="_blank" rel="noopener">Follow on LinkedIn<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
+      <Button variant="secondary" size="lg" href="/blog">Read the blog</Button>
+    </div>
+    {articles.length > 0 && <p class="project-filter-count">{articles.length === 1 ? '1 article' : `${articles.length} articles`}</p>}
+  </section>
+  <section class="cory-container" aria-label="Articles" style="display: grid; gap: var(--grid-gap); padding-block-end: var(--section-y);">
+    {articles.length === 0
+      ? <div class="project-empty"><p class="project-empty-title">No articles are listed here yet.</p><p class="project-empty-body">New LinkedIn articles appear here once they are added. Until then, the blog has the longer pieces.</p><div><Button variant="secondary" href="/blog">Read the blog</Button></div></div>
+      : <ul class="articles-rest">{articles.map(a => <li><FeedCard item={a} level={2} row /></li>)}</ul>}
+  </section>
+</PageLayout>
+
+<style>
+  /* One column, each row as tall as its own words (most articles have a title only). */
+  .articles-rest { display: grid; gap: var(--space-4); margin: 0; padding: 0; list-style: none; }
+  .articles-rest > li { min-inline-size: 0; }
+</style>

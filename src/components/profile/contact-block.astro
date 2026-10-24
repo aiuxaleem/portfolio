@@ -1,0 +1,85 @@
+---
+/* The contact block: the target of "Let's talk" (/contact, as the page's h1) and the end of About (as an h2).
+   Left: who to talk to and how (a 15-minute call first, email second), what happens after you write, and where else to
+   find me. Right: the contact form, rendered only when a Formspree form id is set in src/content/site/profile.json, so no
+   visitor meets a form that cannot send (quality builds use a fixture address so its layout is checked). Without the
+   form the block is one column. Every form state is on /_states. */
+import Button from '../ui/button.astro';
+import EmailCopy from '../layout/email-copy.astro';
+import ContactForm from '../forms/contact-form.astro';
+import { site } from '../../content/site';
+import { formEndpoint } from '../../content/profile';
+import { chrome } from '../../i18n/chrome';
+
+interface Props {
+  /** 1 on /contact, 2 at the end of another page. */ level?: 1 | 2;
+  id: string;
+  overline: string;
+  title: string;
+  lead: string;
+  /** Off on /_states, where several forms share the page and landmark names must be unique. */ landmark?: boolean;
+}
+const { level = 2, id, overline, title, lead, landmark = true } = Astro.props;
+const c = chrome.en;
+const Heading = `h${level}` as any;
+const endpoint = formEndpoint || (process.env.QUALITY_BUILD === '1' ? 'https://formspree.io/f/fixture' : undefined);
+const steps = [
+  { title: 'Write or book', body: 'Send a message here, email me, or book a 15-minute call at a time that suits you.' },
+  { title: 'I reply within 48 hours', body: 'To the address you gave, on GCC working hours.' },
+  { title: 'A short first call', body: 'Fifteen minutes to see whether the role or the project fits, before anyone commits more time.' },
+];
+const elsewhere = [
+  { label: 'LinkedIn', href: site.socials.linkedin },
+  { label: 'Behance', href: site.socials.behance },
+  { label: 'YouTube', href: site.socials.youtube },
+].filter(l => l.href);
+---
+<section data-contact id={id} class:list={['contact-block', level === 1 || landmark ? 'cory-container' : undefined]} aria-labelledby={landmark ? `${id}-title` : undefined}>
+  <div class:list={['contact-block-grid', endpoint && 'contact-block-split']}>
+    <div class="contact-block-intro">
+      <p class="cory-overline" style="margin: 0;">{overline}</p>
+      <Heading id={`${id}-title`} class:list={['contact-block-title', level === 1 && 'contact-block-title-page']}>{title}</Heading>
+      <p class="contact-block-lead">{lead}</p>
+      <div data-hero-ctas class="contact-block-ctas">
+        <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
+        <Button variant="secondary" size="lg" href={`mailto:${site.email}`}>Email me</Button>
+      </div>
+      <div class="contact-block-email"><EmailCopy copyLabel={c.copyEmail} copiedLabel={c.copied} fallbackLabel={c.pressCopy} /></div>
+      <div class="contact-block-steps">
+        <p class="contact-block-label" id={`${id}-next`}>What happens next</p>
+        <ol aria-labelledby={`${id}-next`}>
+          {steps.map((s, i) => <li><bdi class="tile-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</bdi><div><p class="contact-block-step">{s.title}</p><p class="contact-block-step-body">{s.body}</p></div></li>)}
+        </ol>
+      </div>
+      <dl class="facts">
+        <div><dt>Based in</dt><dd>{site.location}</dd></div>
+        <div><dt>Availability</dt><dd>{site.availability.label}</dd></div>
+        {elsewhere.length > 0 && <div><dt>Elsewhere</dt><dd class="contact-block-links">{elsewhere.map(l => <a data-link href={l.href} target="_blank" rel="noopener">{l.label}<span class="cory-visually-hidden"> (opens in a new tab)</span></a>)}</dd></div>}
+      </dl>
+    </div>
+    {endpoint && <div class="contact-block-form"><ContactForm endpoint={endpoint} email={site.email} id={id} submit="secondary" landmark={landmark} /></div>}
+  </div>
+</section>
+
+<style>
+  .contact-block { padding-block: var(--section-y); }
+  .contact-block-grid { display: grid; gap: var(--space-10); align-items: start; }
+  .contact-block-intro { display: grid; gap: var(--space-6); align-content: start; min-inline-size: 0; }
+  @media (min-width: 1024px) { .contact-block-split { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: var(--space-16); } }
+  .contact-block-title { margin: 0; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
+  .contact-block-title-page { max-inline-size: 16ch; font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); }
+  .contact-block-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted); }
+  .contact-block-ctas { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; }
+  .contact-block-email { color: var(--text-link); font-size: var(--text-body-md); }
+  .contact-block-steps { display: grid; gap: var(--space-3); }
+  .contact-block-label { margin: 0; font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
+  .contact-block-steps ol { display: grid; gap: var(--space-4); margin: 0; padding: 0; list-style: none; }
+  .contact-block-steps li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-4); align-items: baseline; }
+  .contact-block-step { margin: 0; font-weight: var(--weight-semibold); color: var(--text-strong); }
+  .contact-block-step-body { margin: 0; max-inline-size: var(--measure-body); color: var(--text-muted); }
+  .contact-block-links { display: flex; flex-wrap: wrap; gap: 0 var(--space-4); }
+  .contact-block-links a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); }
+  .contact-block-form { min-inline-size: 0; }
+  .contact-block-form :global(.contact-form) { max-inline-size: none; }
+  .contact-block-form :global(.contact-form form) { box-shadow: var(--shadow-md); }
+</style>

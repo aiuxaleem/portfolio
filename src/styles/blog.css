@@ -7,6 +7,7 @@
 .post-origin a { color: var(--text-link); text-decoration: underline; text-underline-offset: 0.22em; }
 .post-tags { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 .post-tags ul, .post-pagination ol { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.post-topics-body { padding: 0 var(--space-5) var(--space-5); }
 a.ui-chip { text-decoration: none; overflow-wrap: anywhere; }
 /* Current tag or page: filled, with a check mark or weight, never colour alone. */
 /* A current topic or page: filled, bold; a topic also carries the check mark the pressed filter chips use. */

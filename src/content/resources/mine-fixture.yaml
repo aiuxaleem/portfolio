@@ -1,0 +1,10 @@
+title: Design critique workflow for Claude, with a checklist the model runs before it answers
+url: https://example.com/claude-skills/design-critique-skill-with-a-very-long-unbroken-address-for-testing
+category: prompting-and-evaluation
+type: skill
+cost: free
+description: A stress fixture for my own work. A Claude skill file that turns a screenshot into a structured critique.
+added: 2026-10-23
+tags: [claude, critique, skills]
+mine: true
+fixture: true

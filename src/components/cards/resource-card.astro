@@ -2,7 +2,8 @@
 /* Card for one UX resource (CLAUDE.md 2.7): the same card recipe as the feed card, without media. One link, the whole
    card clickable; the resource opens on its own site in a new tab and the card says so. The data attributes are what
    the filter and sort island reads (islands/resource-list.ts).
-   States: full; partial (no description, no tags); the stress fixture (long title, unbroken address, nine tags). */
+   States: full; partial (no description, no tags); made by me (the badge leads); the stress fixture (long title, unbroken
+   address, nine tags). */
 import type { Resource } from '../../lib/resources';
 import { categoryLabel, costLabel, hostOf, typeLabel } from '../../lib/resources';
 import { day } from '../../lib/projects';
@@ -14,9 +15,9 @@ const d = resource.data;
 const Heading = `h${level}` as any;
 const host = hostOf(d.url);
 ---
-<article class="project-card" data-resource data-category={d.category} data-type={d.type} data-cost={d.cost} data-added={d.added.toISOString().slice(0, 10)} data-title={d.title} data-host={host} data-tags={d.tags.join('|')}>
+<article class="project-card" data-resource data-category={d.category} data-type={d.type} data-cost={d.cost} data-added={d.added.toISOString().slice(0, 10)} data-title={d.title} data-host={host} data-tags={d.tags.join('|')} data-mine={d.mine ? '' : undefined}>
   <div class="project-card-body">
-    <p class="project-card-meta"><span class="ui-badge" style="gap: 6px;"><CategoryIcon category={d.category} size={14} />{categoryLabel[d.category]}</span><span class="ui-badge">{typeLabel[d.type]}</span><span class="ui-badge">{costLabel[d.cost]}</span></p>
+    <p class="project-card-meta">{d.mine && <span class="ui-badge" data-tone="brand">Made by me</span>}<span class="ui-badge" style="gap: 6px;"><CategoryIcon category={d.category} size={14} />{categoryLabel[d.category]}</span><span class="ui-badge">{typeLabel[d.type]}</span><span class="ui-badge">{costLabel[d.cost]}</span></p>
     <Heading class="project-card-title"><a class="project-card-link" href={d.url} target="_blank" rel="noopener">{d.title}<span class="cory-visually-hidden"> (opens {host} in a new tab)</span></a></Heading>
     <p class="case-kicker"><bdi>{host}</bdi> · Added <time datetime={d.added.toISOString().slice(0, 10)}>{day(d.added)}</time></p>
     {d.description && <p class="project-card-summary">{d.description}</p>}

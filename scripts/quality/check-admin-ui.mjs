@@ -22,7 +22,7 @@ const AXE = fs.readFileSync(createRequire(import.meta.url).resolve('axe-core/axe
 const ROUTES = [
   { name: 'sign-in', path: '/admin/login', signedOut: true },
   { name: 'dashboard', path: '/admin' },
-  ...['projects', 'case-studies', 'posts', 'videos', 'linkedin-posts', 'linkedin-articles', 'resources'].flatMap(k => [{ name: `${k} list`, path: `/admin/${k}` }, { name: `${k} editor`, path: `/admin/${k}`, first: true }, { name: `${k} new`, path: `/admin/${k}/new` }]),
+  ...['projects', 'case-studies', 'posts', 'videos', 'linkedin-posts', 'linkedin-articles', 'resources', 'ai-tools'].flatMap(k => [{ name: `${k} list`, path: `/admin/${k}` }, { name: `${k} editor`, path: `/admin/${k}`, first: true }, { name: `${k} new`, path: `/admin/${k}/new` }]),
   { name: 'site details', path: '/admin/site/config' }, { name: 'about and career', path: '/admin/profile/profile' },
   { name: 'images', path: '/admin/images' }, { name: 'youtube', path: '/admin/youtube' },
 ];

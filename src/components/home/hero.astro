@@ -12,8 +12,8 @@ const now = profile.career[0];
 const facts: [string, string][] = [
   ['Now', `${now.company}, since ${now.start.slice(0, 4)}`],
   ['Based in', `${site.location.split(',')[0]}, on GCC hours`],
-  ['Open to', 'Roles in KSA and the UAE'],
-  ['Focus', 'AI products and design systems'],
+  ['Open to', site.hero.openTo],
+  ['Focus', site.hero.focus],
 ];
 const externalTile = "<span data-arrow-tile=\"\" aria-hidden=\"true\" style=\"display: inline-grid; place-items: center; inline-size: 28px; block-size: 28px; border-radius: var(--radius-pill); background: var(--surface-sunken); color: inherit; flex-shrink: 0; margin-inline-end: calc(-1 * var(--space-2));\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 7h10v10\"></path><path d=\"M7 17 17 7\"></path></svg></span>";
 const downloadTile = "<span data-arrow-tile=\"\" aria-hidden=\"true\" style=\"display: inline-grid; place-items: center; inline-size: 28px; block-size: 28px; border-radius: var(--radius-pill); background: var(--surface-sunken); color: inherit; flex-shrink: 0; margin-inline-end: calc(-1 * var(--space-2));\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"></path><path d=\"m7 10 5 5 5-5\"></path><path d=\"M12 15V3\"></path></svg></span>";

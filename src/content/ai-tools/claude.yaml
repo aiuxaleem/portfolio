@@ -1,0 +1,8 @@
+title: "Claude"
+url: https://claude.ai/
+category: assistants
+cost: freemium
+description: "Anthropic’s assistant. Good for drafting and testing prompts, critiquing copy and talking through a design problem before you commit to it."
+added: 2026-10-24
+tags: ["Writing", "Prompting"]
+pick: true

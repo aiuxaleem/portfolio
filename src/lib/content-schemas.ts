@@ -180,7 +180,7 @@ export const RESOURCE_CATEGORIES = {
   utilities: 'Utilities',
   communities: 'Communities',
 } as const;
-export const RESOURCE_TYPES = { tool: 'Tool', ai: 'AI tool', article: 'Article', library: 'Library', template: 'Template', course: 'Course', book: 'Book', plugin: 'Plugin', video: 'Video', community: 'Community' } as const;
+export const RESOURCE_TYPES = { tool: 'Tool', ai: 'AI tool', workflow: 'AI workflow', skill: 'Claude skill', artifact: 'Claude artifact', article: 'Article', library: 'Library', template: 'Template', course: 'Course', book: 'Book', plugin: 'Plugin', video: 'Video', community: 'Community' } as const;
 export const RESOURCE_COSTS = { free: 'Free', freemium: 'Free tier', paid: 'Paid' } as const;
 export type ResourceCategory = keyof typeof RESOURCE_CATEGORIES;
 export type ResourceType = keyof typeof RESOURCE_TYPES;
@@ -197,6 +197,39 @@ export const resourceSchema = S({
     description: z.string().max(220).optional(),
     added: z.coerce.date(),
     tags: z.array(z.string()).default([]),
+    /* Made by me: my own AI workflows, Claude skills and artifacts. Listed first, in their own section, and marked on the card. */
+    mine: z.boolean().default(false),
+    ...flags,
+  });
+
+/* AI tools (src/content/ai-tools/*.yaml): the directory at /ai-tools. One small YAML file per tool; every entry links out to
+   the tool's own site. Categories are by what the tool helps a designer do. */
+export const AI_TOOL_CATEGORIES = {
+  assistants: 'Assistants and models',
+  'ui-generation': 'UI generation and prototyping',
+  code: 'Design to code',
+  images: 'Images and illustration',
+  'video-and-motion': 'Video, motion and 3D',
+  'audio-and-voice': 'Audio and voice',
+  research: 'User research',
+  testing: 'Testing and attention',
+  'diagrams-and-slides': 'Diagrams, whiteboards and slides',
+  'colour-and-type': 'Colour and type',
+  patterns: 'AI UX patterns',
+  accessibility: 'Accessibility',
+} as const;
+export type AiToolCategory = keyof typeof AI_TOOL_CATEGORIES;
+export const aiToolSchema = S({
+    title: z.string().max(80),
+    url: z.string().url().max(300).refine(u => /^https?:\/\//.test(u), 'Use a full address starting with https://'),
+    category: z.enum(keys(AI_TOOL_CATEGORIES)),
+    cost: z.enum(keys(RESOURCE_COSTS)).default('freemium'),
+    /* What it does for a designer, in one or two sentences. Shown whole on the card. */
+    description: z.string().max(220).optional(),
+    added: z.coerce.date(),
+    tags: z.array(z.string()).default([]),
+    /* Tools I use myself are marked on the card. */
+    pick: z.boolean().default(false),
     ...flags,
   });
 
@@ -208,6 +241,8 @@ export const siteSchema = z.object({
   positioning: z.string(),
   location: z.string(),
   availability: z.object({ open: z.boolean(), label: z.string() }),
+  /* Two of the four facts under the Home hero's buttons (the other two come from the profile and the location). */
+  hero: z.object({ openTo: z.string().max(60), focus: z.string().max(60) }),
   email: z.string().email(),
   calendarUrl: z.string().url(),
   resume: z.object({ path: z.string(), fallbackUrl: z.string().url().optional() }),

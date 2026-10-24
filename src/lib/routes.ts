@@ -4,7 +4,7 @@ export const legacyToRoute: Record<string, string> = {
   'Work.dc.html': '/case-studies',
   'Services.dc.html': '/services',
   'About.dc.html': '/about',
-  'Content.dc.html': '/read',
+  'Content.dc.html': '/posts',
   'Guides.dc.html': '/blog',
   'Guide.dc.html': '/blog/component-spec-files',
   '404.dc.html': '/404',

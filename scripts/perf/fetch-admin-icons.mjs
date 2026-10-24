@@ -11,7 +11,7 @@ const VERSION = '0.544.0';
 /* One icon per use, by the key the admin pages ask for. */
 export const ICONS = {
   // sections (also used for image folders and the empty list)
-  visitors: 'layout-dashboard', projects: 'folder-kanban', 'case-studies': 'book-open', posts: 'file-pen', videos: 'video', 'linkedin-posts': 'message-square', 'linkedin-articles': 'newspaper', resources: 'library', site: 'settings', profile: 'user', images: 'image',
+  visitors: 'layout-dashboard', projects: 'folder-kanban', 'case-studies': 'book-open', posts: 'file-pen', videos: 'video', 'linkedin-posts': 'message-square', 'ai-tools': 'sparkles', 'linkedin-articles': 'newspaper', resources: 'library', site: 'settings', profile: 'user', images: 'image',
   // the frame
   view: 'external-link', dark: 'moon', light: 'sun', signout: 'log-out', menu: 'menu', close: 'x', back: 'arrow-left', chevron: 'chevron-down', sections: 'list-ordered',
   // states of an entry

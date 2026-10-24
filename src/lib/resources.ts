@@ -41,6 +41,9 @@ export function categoryCounts(resources: Resource[]): { slug: ResourceCategory;
   return (Object.keys(RESOURCE_CATEGORIES) as ResourceCategory[]).map(slug => ({ slug, label: RESOURCE_CATEGORIES[slug], blurb: categoryBlurb[slug], count: real.filter(r => r.data.category === slug).length }));
 }
 
+/** My own work (AI workflows, Claude skills, artifacts), newest first: the section that leads the page. */
+export const madeByMe = (resources: Resource[]) => resources.filter(r => r.data.mine);
+
 /** The site a resource lives on, as a visitor would say it: "figma.com". */
 export function hostOf(url: string): string {
   try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url; }

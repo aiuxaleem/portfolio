@@ -20,14 +20,24 @@ const description = tag
   <section class="cory-container" aria-labelledby="blog-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
     {tag
       ? <a data-link href="/blog" class="post-back"><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All posts</span></a>
-      : <p class="cory-overline" style="margin: 0;">Read</p>}
+      : <p class="cory-overline" style="margin: 0;">My resources · Blogs</p>}
     <h1 id="blog-title" style="margin: 0; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); overflow-wrap: anywhere;">{heading}</h1>
     {!tag && <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">Guides and articles on design systems and designing AI products.</p>}
-    {tags.length > 0 && (
+    {tags.length > 0 && tags.length <= 6 && (
       <nav class="post-tags" aria-label="Topics">
         <span class="project-filter-label">Topic</span>
-        <ul>{tags.map(t => <li><a class="ui-chip" href={`/blog/tag/${tagSlug(t.tag)}`} aria-current={t.tag === tag ? 'page' : undefined}>{t.tag}<span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{t.n}</a></li>)}</ul>
+        <ul>{tags.map(t => <li><a class="ui-chip" href={`/blog/tag/${tagSlug(t.tag)}`} aria-current={tag && tagSlug(t.tag) === tagSlug(tag) ? 'page' : undefined}>{t.tag}<span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{t.n}</a></li>)}</ul>
       </nav>
+    )}
+    {/* More than six topics fold into the closed disclosure the UX Glossary uses, so the first post stays near the top on a
+        phone; on a topic's own page it is open, with that topic marked. */}
+    {tags.length > 6 && (
+      <details class="resource-disclosure post-topics" open={!!tag}>
+        <summary><span class="project-filter-label" style="flex-basis: auto; margin: 0;">Topic</span><span data-disclosure-state>{tag ? `Showing: ${tag}` : `${tags.length} to choose from`}</span><svg data-chevron width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></summary>
+        <nav class="post-tags post-topics-body" aria-label="Topics">
+          <ul>{tags.map(t => <li><a class="ui-chip" href={`/blog/tag/${tagSlug(t.tag)}`} aria-current={tag && tagSlug(t.tag) === tagSlug(tag) ? 'page' : undefined}>{t.tag}<span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{t.n}</a></li>)}</ul>
+        </nav>
+      </details>
     )}
     <p class="project-filter-count">{pages > 1 ? `Showing ${first} to ${last} of ${total} posts · Page ${page} of ${pages}` : total === 1 ? '1 post' : `${total} posts`}</p>
   </section>
@@ -36,7 +46,10 @@ const description = tag
       ? (tag
         ? <div class="project-empty"><p class="project-empty-title">No posts with this tag are published yet.</p><p class="project-empty-body">Posts on this topic are still being written. The other posts are on the blog.</p><div><Button variant="secondary" href="/blog">See all posts</Button></div></div>
         : <div class="project-empty"><p class="project-empty-title">No posts are published yet.</p><p class="project-empty-body">The case studies cover the work in depth.</p><div><Button variant="secondary" href="/case-studies">Read the case studies</Button></div></div>)
-      : <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{posts.map(p => <li><PostCard post={p} /></li>)}</ul></div>}
+      : <Fragment>
+          {page === 1 && !tag && posts.length > 2 && <PostCard post={posts[0]} wide />}
+          <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{(page === 1 && !tag && posts.length > 2 ? posts.slice(1) : posts).map(p => <li><PostCard post={p} /></li>)}</ul></div>
+        </Fragment>}
     {pages > 1 && (
       <nav class="post-pagination" aria-label="Pages">
         {page > 1 ? <a class="ui-chip" href={href(page - 1)} rel="prev">Newer<span class="cory-visually-hidden"> posts</span></a> : <span></span>}

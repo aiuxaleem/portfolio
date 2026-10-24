@@ -3,7 +3,7 @@
    location, availability, email and social links. Markup and inline token styles match the legacy footer. */
 import Button from '../ui/button.astro';
 import EmailCopy from './email-copy.astro';
-import { site, resumeAttrs, resumeExternal, legacyChrome, parity } from '../../content/site';
+import { site, resumeAttrs, resumeExternal, legacyChrome, parity, type NavItem } from '../../content/site';
 import { chrome, arNav } from '../../i18n/chrome';
 
 interface Props { lang?: string; hideCta?: boolean }
@@ -38,13 +38,13 @@ const socialStyle = 'display: inline-flex; align-items: center; min-block-size: 
         {!legacy && <p style="margin: 0px; font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--on-ink-muted);">{site.location} · {site.availability.label}</p>}
       </div>
       <nav aria-label={c.footerNav}>
-        <ul style="display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5);">
-          {nav.map(n => <li><a href={n.href} class="footer-link" style={linkStyle}>{n.label}</a></li>)}
-        </ul>
+        {legacy
+          ? <ul style="display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5);">{(nav as NavItem[]).map(n => <li><a href={n.href} class="footer-link" style={linkStyle}>{n.label}</a></li>)}</ul>
+          : <div class="footer-columns">{site.footer.map(col => <div class="footer-column"><p class="footer-column-label">{col.label}</p><ul>{col.links.map(l => <li><a href={l.href} class="footer-link" style={linkStyle}>{l.label}</a></li>)}</ul></div>)}</div>}
       </nav>
     </div>
     <div style="display: flex; justify-content: space-between; gap: var(--space-3) var(--space-6); flex-wrap: wrap; padding-block-start: var(--space-5); border-block-start: 1px solid var(--on-ink-border); font-size: var(--text-caption); color: var(--on-ink-muted);">
-      <span>{legacy ? c.rights : site.copyright}{countsVisits && <span> · {c.privacy}</span>}</span>
+      <span>{legacy ? c.rights : site.copyright}{countsVisits && <span> · {c.privacy}</span>}{!legacy && <Fragment> · <a href="/sitemap" class="footer-link" style={socialStyle + ' display: inline-flex;'}>{c.sitemap}</a></Fragment>}</span>
       <span style="display: inline-flex; gap: var(--space-4); flex-wrap: wrap; align-items: center;"><span data-footer-email style="color: var(--on-ink-body); font-size: var(--text-body-sm);"><EmailCopy copyLabel={c.copyEmail} copiedLabel={c.copied} fallbackLabel={c.pressCopy} /></span><a href={site.socials.linkedin} target="_blank" rel="noopener" class="footer-link" style={socialStyle}>LinkedIn<span class="cory-visually-hidden"> {c.newTab}</span></a>{!legacy && <a href={site.socials.behance} target="_blank" rel="noopener" class="footer-link" style={socialStyle}>Behance<span class="cory-visually-hidden"> {c.newTab}</span></a>}<a href={site.socials.youtube} target="_blank" rel="noopener" class="footer-link" style={socialStyle}>YouTube<span class="cory-visually-hidden"> {c.newTab}</span></a>{!legacy && <a href={site.rss} class="footer-link" style={socialStyle + ' min-inline-size: var(--tap-target); justify-content: center;'}>RSS</a>}</span>
     </div>
   </div>
@@ -52,4 +52,10 @@ const socialStyle = 'display: inline-flex; align-items: center; min-block-size: 
 
 <style is:global>
   @media (hover: hover) { .footer-link:hover { color: var(--on-ink-strong) !important; } }
+  /* Footer columns: one per header group, side by side from 640px, the brand block beside them from 1024px. */
+  .footer-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6) var(--space-8); }
+  @media (min-width: 640px) { .footer-columns { grid-template-columns: repeat(4, minmax(0, max-content)); } }
+  .footer-column { display: grid; align-content: start; gap: var(--space-1); }
+  .footer-column ul { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+  .footer-column-label { margin: 0 0 var(--space-1); font-size: var(--text-overline); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-overline); text-transform: uppercase; color: var(--on-ink-link); }
 </style>

@@ -18,15 +18,31 @@ export async function listedPosts(): Promise<Post[]> {
 /** Every tag used by any post, drafts included, so a tag page exists (with an empty state) even when its posts are drafts. */
 export async function allTags(): Promise<string[]> {
   const all = await getCollection('posts', ({ data }) => showFixtures || !data.fixture);
-  return [...new Set(all.flatMap(p => p.data.tags))].sort((a, b) => a.localeCompare(b));
+  return merged(all.flatMap(p => p.data.tags)).map(t => t.tag);
 }
+
+/* Tags that differ only in capitals or punctuation ("Design systems", "Design Systems") share one page address, so they
+   are one topic: counted together and shown in the spelling most posts use (A to Z on a tie). */
+function merged(tags: string[]): { tag: string; n: number }[] {
+  const bySlug = new Map<string, Map<string, number>>();
+  for (const t of tags) { const m = bySlug.get(tagSlug(t)) ?? new Map(); m.set(t, (m.get(t) ?? 0) + 1); bySlug.set(tagSlug(t), m); }
+  return [...bySlug.values()].map(m => { const spellings = [...m].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])); return { tag: spellings[0][0], n: spellings.reduce((s, [, n]) => s + n, 0) }; })
+    .sort((a, b) => a.tag.localeCompare(b.tag));
+}
+/** A post's topics in the spelling the blog's topic list uses, each topic once. */
+export async function topicsOf(p: Post): Promise<string[]> {
+  const all = await getCollection('posts', ({ data }) => showFixtures || !data.fixture);
+  const canon = new Map(merged(all.flatMap(x => x.data.tags)).map(t => [tagSlug(t.tag), t.tag]));
+  return [...new Map(p.data.tags.map(t => [tagSlug(t), canon.get(tagSlug(t)) ?? t])).values()];
+}
+/** True when a post carries the topic, in any of its spellings. */
+export const hasTag = (p: Post, tag: string) => p.data.tags.some(t => tagSlug(t) === tagSlug(tag));
 
 /** Tags that have at least one listed post: the tag links shown on the blog. */
 /** The topics of the published posts with how many posts carry each, A to Z: the chips on the blog and their counts. */
 export async function usedTags(): Promise<{ tag: string; n: number }[]> {
-  const counts = new Map<string, number>();
-  for (const p of (await listedPosts()).filter(p => !p.data.fixture)) for (const t of p.data.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
-  return [...counts].map(([tag, n]) => ({ tag, n })).sort((a, b) => a.tag.localeCompare(b.tag));
+  /* A post that carries two spellings of one topic counts once. */
+  return merged((await listedPosts()).filter(p => !p.data.fixture).flatMap(p => [...new Map(p.data.tags.map(t => [tagSlug(t), t])).values()]));
 }
 
 export const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');

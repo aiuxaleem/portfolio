@@ -9,7 +9,7 @@ import Button from '../../components/ui/button.astro';
 import EmailCopy from '../../components/layout/email-copy.astro';
 import PostCard from '../../components/cards/post-card.astro';
 import { mdxComponents } from '../../components/content/mdx-components';
-import { listedPosts, related, readingTime, formatDate, postUrl, tagSlug } from '../../lib/posts';
+import { listedPosts, related, readingTime, formatDate, postUrl, tagSlug, topicsOf } from '../../lib/posts';
 import { site } from '../../content/site';
 import { blogPostingLd, breadcrumbLd, ogImageFor } from '../../lib/seo';
 import { chrome } from '../../i18n/chrome';
@@ -26,6 +26,7 @@ const { Content } = await render(post);
 const iso = (x: Date) => x.toISOString().slice(0, 10);
 const o = d.originallyPublished;
 const jsonLd = [blogPostingLd(post, await ogImageFor(postUrl(post))), breadcrumbLd([['Blog', '/blog'], [d.title, postUrl(post)]])];
+const topics = await topicsOf(post);
 ---
 <PageLayout hideCta title={`${d.seo.title || d.title} · Blog · AIUXAleem`} description={(d.seo.description || d.excerpt).slice(0, 165)} page="blog" ogType="article" jsonLd={jsonLd} noindex={d.fixture} canonical={d.canonical || o?.url} bg="grid" mainStyle="outline: none; overflow: clip;">
   <ReadProgress />
@@ -42,7 +43,7 @@ const jsonLd = [blogPostingLd(post, await ogImageFor(postUrl(post))), breadcrumb
         </p>
       )}
       {o && <p class="post-origin">Originally published on <a href={o.url} target="_blank" rel="noopener">{o.on}<span class="cory-visually-hidden"> (opens in a new tab)</span></a>{o.date && <>, <time datetime={iso(o.date)}>{formatDate(o.date)}</time></>}.</p>}
-      {d.tags.length > 0 && <nav class="post-tags" aria-label="Topics of this post"><ul>{d.tags.map(t => <li><a class="ui-chip" href={`/blog/tag/${tagSlug(t)}`}>{t}</a></li>)}</ul></nav>}
+      {topics.length > 0 && <nav class="post-tags" aria-label="Topics of this post"><ul>{topics.map(t => <li><a class="ui-chip" href={`/blog/tag/${tagSlug(t)}`}>{t}</a></li>)}</ul></nav>}
       {d.cover && <div class="project-cover"><Image src={d.cover.src} alt={d.cover.alt} widths={[640, 960, 1280]} sizes="(min-width: 860px) 780px, 100vw" loading="eager" fetchpriority="high" /></div>}
     </header>
 

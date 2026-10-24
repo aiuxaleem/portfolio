@@ -1,11 +1,11 @@
 ---
 /* /blog/tag/<tag>. A tag whose posts are all drafts still has a page, with an empty state. */
 import PostList from '../../../components/blog/post-list.astro';
-import { listedPosts, allTags, usedTags, tagSlug } from '../../../lib/posts';
+import { listedPosts, allTags, usedTags, tagSlug, hasTag } from '../../../lib/posts';
 
 export async function getStaticPaths() {
   const all = await listedPosts();
-  return (await allTags()).map(tag => ({ params: { tag: tagSlug(tag) }, props: { tag, posts: all.filter(p => p.data.tags.includes(tag)) } }));
+  return (await allTags()).map(tag => ({ params: { tag: tagSlug(tag) }, props: { tag, posts: all.filter(p => hasTag(p, tag)) } }));
 }
 const { tag, posts } = Astro.props;
 ---

@@ -4,13 +4,13 @@
 import { type FeedItem, feedTypes } from '../../lib/writing';
 import { formatDate } from '../../lib/posts';
 
-interface Props { item: FeedItem; level?: 2 | 3 }
-const { item, level = 2 } = Astro.props;
+interface Props { item: FeedItem; level?: 2 | 3; /** A compact row (the Articles page): no type badge, the title and its call on one line from 768px. */ row?: boolean }
+const { item, level = 2, row = false } = Astro.props;
 const Heading = `h${level}` as any;
 ---
-<article class="project-card" data-project data-status={item.type} data-tags={item.tags.join('|')}>
+<article class:list={['project-card', row && 'feed-card-row']} data-project data-status={item.type} data-tags={item.tags.join('|')}>
   <div class="project-card-body">
-    <p class="project-card-meta"><span class="ui-badge">{feedTypes[item.type]}</span></p>
+    {!row && <p class="project-card-meta"><span class="ui-badge">{feedTypes[item.type]}</span></p>}
     <Heading class="project-card-title">
       {item.external
         ? <a class="project-card-link" href={item.href} target="_blank" rel="noopener">{item.title}<span class="cory-visually-hidden"> (opens LinkedIn in a new tab)</span></a>

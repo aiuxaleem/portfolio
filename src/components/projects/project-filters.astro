@@ -9,20 +9,39 @@
 import Button from '../ui/button.astro';
 import { statusLabel } from '../../lib/projects';
 
-interface Props { tags: string[]; total: number; /** The listed items, for the counts beside each chip. */ items?: { tags: string[]; status: string }[]; /** Render the empty state open, for /_states. */ showEmpty?: boolean; /** The second filter group. Default: project status. */ options?: Record<string, string>; optionsLabel?: string; /** What is counted, singular. */ noun?: string; id?: string }
-const { tags, total, items, showEmpty = false, options = statusLabel, optionsLabel = 'Status', noun = 'project', id = 'filter' } = Astro.props;
+interface Props { tags: string[]; total: number; /** The listed items, for the counts beside each chip. */ items?: { tags: string[]; status: string }[]; /** The first group's name. Default: Topic. */ tagsLabel?: string; /** Labels for the first group's values, when they are keys. */ tagLabels?: Record<string, string>; /** A search field over each item's data-text. */ search?: { label: string; placeholder: string }; /** Render the empty state open, for /_states. */ showEmpty?: boolean; /** The second filter group. Default: project status. */ options?: Record<string, string>; optionsLabel?: string; /** What is counted, singular. */ noun?: string; id?: string }
+const { tags, total, items, showEmpty = false, options = statusLabel, optionsLabel = 'Status', noun = 'project', id = 'filter', tagsLabel = 'Topic', tagLabels, search } = Astro.props;
 const countOf = (f: (item: { tags: string[]; status: string }) => boolean) => (items ? items.filter(f).length : undefined);
-const tagChips = tags.map(t => ({ value: t, label: t, n: countOf(i => i.tags.includes(t)) })).filter(c => c.n === undefined || c.n > 0);
+const tagChips = tags.map(t => ({ value: t, label: tagLabels?.[t] ?? t, n: countOf(i => i.tags.includes(t)) })).filter(c => c.n === undefined || c.n > 0);
 const statusChips = Object.entries(options).map(([value, label]) => ({ value, label, n: countOf(i => i.status === value) })).filter(c => c.n === undefined || c.n > 0);
 const nouns = total === 1 ? noun : `${noun}s`;
 ---
 <noscript><style>[data-project-filters] { display: none; }</style></noscript>
 <div class="project-filters" data-project-filters data-noun={noun}>
-  {tagChips.length > 0 && (
-    <div role="group" aria-labelledby={`${id}-tags`} class="project-filter-group">
-      <span id={`${id}-tags`} class="project-filter-label">Topic</span>
-      {tagChips.map(c => <button type="button" class="ui-chip" aria-pressed="false" data-filter-tag={c.value}>{c.label}{c.n !== undefined && <Fragment><span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{c.n}</Fragment>}</button>)}
+  {search && (
+    <div class="form-field project-filter-search">
+      <label for={`${id}-search`} style="display: inline-flex; align-items: center; gap: var(--space-2);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>{search.label}</label>
+      <input id={`${id}-search`} type="search" data-filter-search placeholder={search.placeholder} autocomplete="off" />
     </div>
+  )}
+  {tagChips.length > 0 && tagChips.length <= 6 && (
+    <div role="group" aria-labelledby={`${id}-tags`} class="project-filter-group">
+      <span id={`${id}-tags`} class="project-filter-label">{tagsLabel}</span>
+      {tagChips.map(c => <button type="button" class="ui-chip" aria-pressed="false" data-filter-tag={c.value} data-filter-label={c.label}>{c.label}{c.n !== undefined && <Fragment><span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{c.n}</Fragment>}</button>)}
+    </div>
+  )}
+  {tagChips.length > 6 && (
+    <details class="resource-disclosure" data-filter-disclosure>
+      <summary>
+        <span class="project-filter-label" style="flex-basis: auto; margin: 0;">{tagsLabel}</span>
+        <span data-disclosure-state data-default={`${tagChips.length} to choose from`}>{tagChips.length} to choose from</span>
+        <svg data-chevron width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+      </summary>
+      <div role="group" aria-labelledby={`${id}-tags`} class="project-filter-group">
+        <span id={`${id}-tags`} class="cory-visually-hidden">{tagsLabel}</span>
+        {tagChips.map(c => <button type="button" class="ui-chip" aria-pressed="false" data-filter-tag={c.value} data-filter-label={c.label}>{c.label}{c.n !== undefined && <Fragment><span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{c.n}</Fragment>}</button>)}
+      </div>
+    </details>
   )}
   {statusChips.length > 0 && (
     <div role="group" aria-labelledby={`${id}-status`} class="project-filter-group">

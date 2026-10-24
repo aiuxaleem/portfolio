@@ -1,0 +1,62 @@
+---
+/* /ai-tools: AI tools for product designers, by what they help with. Search, a category and a cost filter (the Work
+   page's filter bar: chips with counts, a live count, "Clear filters"), then the tools grouped under their category with
+   a line on what the group is for. Tools I use are marked. Added and edited in the admin (AI tools). Without JavaScript the
+   filter bar is hidden and every tool is listed. Part of "Resources" in the header. */
+import PageLayout from '../layouts/page-layout.astro';
+import AiToolCard from '../components/cards/ai-tool-card.astro';
+import ProjectFilters from '../components/projects/project-filters.astro';
+import Button from '../components/ui/button.astro';
+import { listedAiTools, aiCategoryCounts, aiCategoryLabel, aiCostLabel } from '../lib/ai-tools';
+
+const tools = await listedAiTools();
+const groups = aiCategoryCounts(tools).filter(g => g.count > 0 || tools.some(t => t.data.category === g.slug));
+const picks = tools.filter(t => t.data.pick && !t.data.fixture).length;
+const items = tools.map(t => ({ tags: [t.data.category], status: t.data.cost }));
+const stat = 'margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); color: var(--text-strong); font-variant-numeric: tabular-nums;';
+---
+<PageLayout title="AI tools for product designers · AIUXAleem" description="AI tools for product designers, grouped by what they help with: UI generation, research, testing, images, video and voice. Kept by Mohammad Abdul Aleem." page="ai-tools" bg="grid" mainStyle="outline: none; overflow: clip;">
+  <section class="cory-container" aria-labelledby="ai-tools-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <p class="cory-overline" style="margin: 0px;">Resources · AI Tools</p>
+    <h1 id="ai-tools-title" style="margin: 0px; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">AI tools for product designers.</h1>
+    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">The AI tools worth knowing, grouped by what they help you do, from a prompt to screens, interviews to insight, and a sketch to a clip. Each opens on its own site. Prices change, so check before you rely on one.</p>
+    <dl class="ai-tools-stats">
+      <div><dt>Tools</dt><dd style={stat}>{tools.length}</dd></div>
+      <div><dt>Categories</dt><dd style={stat}>{groups.filter(g => g.count > 0).length}</dd></div>
+      {picks > 0 && <div><dt>I use</dt><dd style={stat}>{picks}</dd></div>}
+    </dl>
+    {tools.length > 0 && <ProjectFilters tags={groups.map(g => g.slug)} tagLabels={aiCategoryLabel} tagsLabel="Category" total={tools.length} items={items} options={aiCostLabel} optionsLabel="Cost" noun="tool" id="ai-filter" search={{ label: 'Find a tool', placeholder: 'Name, site or use' }} />}
+  </section>
+
+  <section class="cory-container" aria-label="Tools" style="display: grid; gap: var(--space-12); padding-block-end: var(--section-y);">
+    {tools.length === 0
+      ? <div class="project-empty"><p class="project-empty-title">No tools are listed yet.</p><p class="project-empty-body">Tools appear here as they are added. Until then, the UX Glossary has the wider list of tools and references.</p><div><Button variant="secondary" href="/resources">Open the UX Glossary</Button></div></div>
+      : <div data-project-list class="ai-tools-groups">
+          {groups.map(g => (
+            <section class="ai-tools-group" aria-labelledby={`ai-${g.slug}`} data-filter-group>
+              <div class="page-section-head">
+                <h2 id={`ai-${g.slug}`} class="project-h2">{g.label} <span class="ai-tools-count">{g.count}</span></h2>
+                <p class="project-filter-count">{g.blurb}</p>
+              </div>
+              <div data-cq><ul data-cq-grid data-cq-3 style="display: grid; gap: var(--grid-gap);">{tools.filter(t => t.data.category === g.slug).sort((a, b) => Number(b.data.pick) - Number(a.data.pick)).map(t => <li><AiToolCard tool={t} level={3} /></li>)}</ul></div>
+            </section>
+          ))}
+        </div>}
+  </section>
+</PageLayout>
+
+<style>
+  .ai-tools-stats { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-10); margin: 0; }
+  .ai-tools-stats > div { display: grid; gap: var(--space-1); }
+  .ai-tools-stats dt { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
+  .ai-tools-stats dd { margin: 0; }
+  .ai-tools-groups { display: grid; gap: var(--space-12); }
+  .ai-tools-group { display: grid; gap: var(--space-5); }
+  .ai-tools-count { font-family: var(--font-mono); font-size: var(--text-mono); font-weight: var(--weight-medium); color: var(--text-subtle); vertical-align: middle; }
+  /* A group with no tool left after filtering is hidden with its heading (islands/project-filters.ts hides the rows). */
+  .ai-tools-group:not(:has(li:not([hidden]))) { display: none; }
+</style>
+
+<script>
+  import '../components/islands/project-filters.ts';
+</script>

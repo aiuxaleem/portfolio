@@ -1,0 +1,7 @@
+title: "GitHub Copilot"
+url: https://github.com/features/copilot
+category: code
+cost: freemium
+description: "AI pair programming in the editor, from line completions to multi-file changes."
+added: 2026-10-24
+tags: ["Code editor"]

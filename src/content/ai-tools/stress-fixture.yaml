@@ -1,0 +1,9 @@
+title: An AI tool with a very long name that keeps going to test how the card wraps
+url: https://example.com/averyveryveryveryverylongunbrokenaddressthatnevergivesupwrapping
+category: ui-generation
+cost: paid
+description: A stress fixture. A long description that fills the card to its limit so the layout can be checked at every width, in both themes, with nine tags.
+added: 2026-10-23
+tags: [one, two, three, four, five, six, seven, eight, nine]
+pick: true
+fixture: true

@@ -3,14 +3,15 @@
    Markup and inline token styles match the legacy header; behaviour lives in islands/site-chrome.ts. */
 import Button from '../ui/button.astro';
 import IconButton from '../ui/icon-button.astro';
-import { site, resumeAttrs, resumeExternal, legacyChrome, parity, currentKey } from '../../content/site';
+import { site, resumeAttrs, resumeExternal, legacyChrome, parity, currentKey, isGroup, type NavEntry } from '../../content/site';
 import { chrome, arNav } from '../../i18n/chrome';
 
-interface Props { lang?: string; langs?: string; altLangHref?: string; /** No "Get in touch" button: the page is Contact itself. */ hideCta?: boolean }
+interface Props { lang?: string; langs?: string; altLangHref?: string; /** No "Let's talk" button: the page is Contact itself. */ hideCta?: boolean }
 const { lang = 'en', langs = 'en', altLangHref, hideCta = false } = Astro.props;
 const ar = lang === 'ar';
 const c = chrome[ar ? 'ar' : 'en'];
-const nav = ar ? arNav : parity ? legacyChrome.nav : site.nav;
+const nav: NavEntry[] = ar ? arNav : parity ? legacyChrome.nav : site.nav;
+const chevron = '<svg data-chevron width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>';
 const cta = ar ? { label: c.talk, href: '/ar#contact' } : parity ? legacyChrome.cta : site.cta;
 const current = ar ? (Astro.url.pathname.includes('/case-studies') ? 'work' : 'home') : currentKey(Astro.url.pathname);
 const home = ar ? '/ar' : '/';
@@ -28,8 +29,17 @@ const linkStyle = 'display: inline-flex; align-items: center; justify-content: c
       <span lang="en" dir="ltr" style="white-space: nowrap;">{site.brand}</span>
     </a>
     <nav data-hdr-desktop aria-label="Primary">
-      <ul style="display: flex; gap: var(--space-3); align-items: center;">
-        {nav.map(n => <li><a data-nav-link href={n.href} aria-current={n.key === current ? 'page' : undefined} class="header-nav-link" style={linkStyle}>{n.label}</a></li>)}
+      <ul data-nav-list style="display: flex; gap: var(--space-1); align-items: center;">
+        {nav.map(n => isGroup(n) ? (
+          <li class="nav-group" data-nav-group>
+            <button type="button" data-nav-link class="header-nav-link nav-group-button" aria-expanded="false" aria-controls={`nav-${n.key}`} aria-current={n.children.some(c => c.key === current) ? 'true' : undefined} style={linkStyle}>{n.label}<Fragment set:html={chevron} /></button>
+            <div id={`nav-${n.key}`} class="nav-panel" data-nav-panel>
+              <ul class="nav-panel-list">
+                {n.children.map(c => <li><a href={c.href} class="nav-panel-link" aria-current={c.key === current ? 'page' : undefined}><span class="nav-panel-label">{c.label}</span>{c.blurb && <span class="nav-panel-blurb">{c.blurb}</span>}</a></li>)}
+              </ul>
+            </div>
+          </li>
+        ) : <li><a data-nav-link href={n.href} aria-current={n.key === current ? 'page' : undefined} class="header-nav-link" style={linkStyle}>{n.label}</a></li>)}
       </ul>
     </nav>
     <div data-hdr-end style="display: flex; align-items: center; gap: var(--space-4); flex-shrink: 0;">
@@ -54,11 +64,16 @@ const linkStyle = 'display: inline-flex; align-items: center; justify-content: c
     <span style="font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h4); color: var(--text-strong);">{t.menu}</span>
     <IconButton variant="secondary" label={t.closeMenu} data-menu-close><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></IconButton>
   </div>
-  <nav aria-label="Primary" style="margin-block-start: var(--space-8); display: flex; flex-direction: column; gap: var(--space-2);">
-    {nav.map(n => <a data-nav-link href={n.href} aria-current={n.key === current ? 'page' : undefined} class="menu-nav-link" style="display: flex; align-items: center; min-block-size: var(--tap-target); padding-block: var(--space-2); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-decoration: none; inline-size: fit-content;">{n.label}</a>)}
+  <nav aria-label="Primary" class="menu-nav" style="margin-block-start: var(--space-6); display: flex; flex-direction: column; gap: var(--space-2);">
+    {nav.map(n => isGroup(n) ? (
+      <div class="menu-group">
+        <p class="menu-group-label">{n.label}</p>
+        <ul class="menu-group-list">{n.children.map(c => <li><a data-nav-link href={c.href} aria-current={c.key === current ? 'page' : undefined} class="menu-nav-link menu-nav-child">{c.label}</a></li>)}</ul>
+      </div>
+    ) : <a data-nav-link href={n.href} aria-current={n.key === current ? 'page' : undefined} class="menu-nav-link" style="display: flex; align-items: center; min-block-size: var(--tap-target); padding-block: var(--space-2); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-decoration: none; inline-size: fit-content;">{n.label}</a>)}
     <a data-link href={site.resumeUrl} {...resumeAttrs} style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); margin-block-start: var(--space-4); font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;">{t.resume}{resumeExternal && <span class="cory-visually-hidden"> {t.newTab}</span>}</a>
   </nav>
-  <div style="margin-block-start: auto; padding-block-start: var(--space-8); display: grid; gap: var(--space-4);">
+  <div class="menu-foot" style="margin-block-start: auto; padding-block-start: var(--space-8); display: grid; gap: var(--space-4);">
     <div role="group" aria-label={t.display} style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3);">
       <button type="button" data-theme-toggle data-menu-theme data-label-dark={t.darkTip} data-label-light={t.lightTip} aria-pressed="false" class="menu-setting" style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-block-size: var(--tap-target); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font-weight: var(--weight-semibold); font-size: var(--text-body-sm); cursor: pointer; text-align: start;"><span data-theme-text>{t.darkTip}</span><svg data-icon-moon width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg><svg data-icon-sun width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg></button>
       <a href={langHref} hreflang={t.langLabelLang} class="menu-setting" style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-block-size: var(--tap-target); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font-weight: var(--weight-semibold); font-size: var(--text-body-sm); cursor: pointer; text-align: start; text-decoration: none;"><span><span lang={t.langLabelLang}>{t.langLabel}</span><span class="cory-visually-hidden"> ({t.langHint})</span></span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path></svg></a>
@@ -73,6 +88,35 @@ const linkStyle = 'display: inline-flex; align-items: center; justify-content: c
   /* Seven links fit the bar from 960px up; between 960 and 1023px they sit a step closer so no label is squeezed. */
   @container (max-width: 1023px) { [data-hdr-desktop] ul { gap: var(--space-2) !important; } }
   [data-menu]:not([hidden]) { display: flex; }
+  /* Header menus: a group's button opens a card of its pages under it. Hover opens it on a pointer device (with a bridge, so
+     the pointer can travel down); click, Enter or Space opens it anywhere; Escape and a click outside close it. */
+  .nav-group { position: relative; }
+  .nav-group-button { gap: var(--space-1); border: 0; background: transparent; cursor: pointer; font-family: inherit; }
+  .nav-group-button [data-chevron] { transition: transform var(--duration-base) var(--ease-out); }
+  .nav-group-button[aria-expanded="true"] [data-chevron] { transform: rotate(180deg); }
+  .nav-panel { display: none; position: absolute; inset-block-start: 100%; inset-inline-start: 50%; transform: translateX(-50%); padding-block-start: var(--space-2); z-index: var(--z-raised); }
+  [dir="rtl"] .nav-panel { transform: translateX(50%); }
+  .nav-group-button[aria-expanded="true"] + .nav-panel { display: block; }
+  @media (hover: hover) { .nav-group:hover > .nav-panel { display: block; } .nav-group:hover > .nav-group-button [data-chevron] { transform: rotate(180deg); } }
+  .nav-panel-list { display: grid; gap: var(--space-1); inline-size: max-content; min-inline-size: 16rem; max-inline-size: 22rem; margin: 0; padding: var(--space-2); list-style: none; border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-lg); }
+  .nav-panel-link { display: grid; gap: 2px; min-block-size: var(--tap-target); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); text-decoration: none; color: var(--text-strong); }
+  .nav-panel-label { font-size: var(--text-body-sm); font-weight: var(--weight-semibold); }
+  .nav-panel-blurb { font-size: var(--text-caption); line-height: var(--leading-normal); color: var(--text-muted); white-space: normal; }
+  .nav-panel-link[aria-current="page"] { background: var(--surface-sunken); }
+  .nav-panel-link[aria-current="page"] .nav-panel-label { color: var(--text-link); }
+  .nav-panel-link:focus-visible { background: var(--action-ghost-hover); }
+  @media (hover: hover) { .nav-panel-link:hover { background: var(--action-ghost-hover); } }
+  /* Mobile menu: a group's name, then its pages, one step in. */
+  [data-menu] { overflow-y: auto; }
+  /* The menu is longer than a phone screen since the groups; the foot (settings, "Let's talk") stays in view where the
+     screen is tall enough, so the main action is never below the fold. Short landscape screens scroll it as before. */
+  @media (min-height: 600px) { .menu-foot { position: sticky; inset-block-end: calc(-1 * var(--space-4)); padding-block: var(--space-4) max(var(--space-4), env(safe-area-inset-bottom)) !important; background: var(--surface-page); border-block-start: 1px solid var(--border-subtle); } }
+  .menu-group { display: grid; gap: var(--space-1); padding-block: var(--space-2); }
+  .menu-group-label { margin: 0; font-size: var(--text-overline); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-overline); text-transform: uppercase; color: var(--text-subtle); }
+  .menu-group-list { display: grid; gap: var(--space-1); margin: 0; padding: 0 0 0 var(--space-4); list-style: none; border-inline-start: 2px solid var(--border-subtle); }
+  /* Every page link in the phone menu is one size, whether it sits in a group or not. */
+  .menu-nav > .menu-nav-link { font-size: var(--text-h3) !important; font-weight: var(--weight-bold) !important; letter-spacing: normal !important; }
+  .menu-nav-child { display: flex; align-items: center; min-block-size: var(--tap-target); font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-h3); color: var(--text-strong); text-decoration: none; inline-size: fit-content; }
   /* Theme icons: the moon shows in light theme (switch to dark), the sun in dark. */
   [data-theme="dark"] [data-icon-moon], :root:not([data-theme="dark"]) [data-icon-sun] { display: none; }
   @media (hover: hover) {

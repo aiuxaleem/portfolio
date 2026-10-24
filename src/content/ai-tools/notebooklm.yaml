@@ -1,0 +1,8 @@
+title: "NotebookLM"
+url: https://notebooklm.google.com/
+category: assistants
+cost: free
+description: "Google’s notebook that answers only from the sources you upload: interview notes, research reports, specs."
+added: 2026-10-24
+tags: ["Research", "Synthesis"]
+pick: true

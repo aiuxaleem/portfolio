@@ -1,0 +1,37 @@
+---
+/* /posts: LinkedIn posts, newest first. A series can be picked (the Work page's filter: chips with counts, a live count and
+   "Clear filters"), and every post can be loaded on the page when the visitor asks; until then nothing is fetched from
+   LinkedIn. Without JavaScript the filter bar is hidden and every post is listed. Part of "My Resources" in the header. */
+import PageLayout from '../layouts/page-layout.astro';
+import LinkedInPost from '../components/embeds/linkedin-post.astro';
+import ProjectFilters from '../components/projects/project-filters.astro';
+import Button from '../components/ui/button.astro';
+import { linkedinEntries } from '../lib/writing';
+import { site } from '../content/site';
+
+const posts = await linkedinEntries();
+const series = [...new Set(posts.map(p => p.series).filter(Boolean))] as string[];
+const kinds = { series: 'Part of a series', single: 'Single post' };
+const items = posts.map(p => ({ tags: p.series ? [p.series] : [], status: p.series ? 'series' : 'single' }));
+---
+<PageLayout title="LinkedIn posts · AIUXAleem" description="LinkedIn posts by Mohammad Abdul Aleem on AI product design, UX and design systems: short posts and running series, newest first." page="posts" bg="grid" mainStyle="outline: none; overflow: clip;">
+  <section class="cory-container" aria-labelledby="posts-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <p class="cory-overline" style="margin: 0px;">My resources · Posts</p>
+    <h1 id="posts-title" style="margin: 0px; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">Short posts and running series.</h1>
+    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">What I post on LinkedIn about AI product design, UX and design systems, newest first. A post loads from LinkedIn only when you ask for it.</p>
+    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+      <Button variant="primary" size="lg" href={site.socials.linkedin} target="_blank" rel="noopener">Follow on LinkedIn<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
+      <Button variant="secondary" size="lg" href="/articles">Read the articles</Button>
+    </div>
+    {posts.length > 0 && <ProjectFilters tags={series} total={posts.length} items={items} options={kinds} optionsLabel="Kind" tagsLabel="Series" noun="post" id="posts-filter" />}
+  </section>
+  <section class="cory-container" aria-label="Posts" style="display: grid; gap: var(--space-8); padding-block-end: var(--section-y);">
+    {posts.length === 0
+      ? <div class="project-empty"><p class="project-empty-title">No posts are listed here yet.</p><p class="project-empty-body">New LinkedIn posts appear here once they are added. Until then, the latest are on LinkedIn.</p><div><Button variant="secondary" href={site.socials.linkedin} target="_blank" rel="noopener">Open LinkedIn<span class="cory-visually-hidden"> (opens in a new tab)</span></Button></div></div>
+      : <div data-cq><ul data-project-list data-cq-grid style="display: grid; gap: var(--grid-gap);">{posts.map(p => <li><div data-project data-status={p.series ? 'series' : 'single'} data-tags={p.series || ''} style="block-size: 100%;"><LinkedInPost urn={p.urn} url={p.url} title={p.title} excerpt={p.excerpt} date={p.date} series={p.series} level={2} kicker={false} /></div></li>)}</ul></div>}
+  </section>
+</PageLayout>
+
+<script>
+  import '../components/islands/project-filters.ts';
+</script>

@@ -36,7 +36,12 @@ import ResourceFilters from '../components/resources/resource-filters.astro';
 import SuggestForm from '../components/resources/suggest-form.astro';
 import CategoryBento from '../components/resources/category-bento.astro';
 import { listedResources, categoryCounts } from '../lib/resources';
+import AiToolCard from '../components/cards/ai-tool-card.astro';
+import { listedAiTools, aiCategoryLabel, aiCostLabel } from '../lib/ai-tools';
+import ContactBlock from '../components/profile/contact-block.astro';
 const resourcesAll = await listedResources();
+const aiToolsAll = await listedAiTools();
+const aiToolSample = [...aiToolsAll.filter(t => !t.data.fixture && t.data.pick).slice(0, 1), ...aiToolsAll.filter(t => !t.data.fixture && !t.data.pick).slice(0, 1), ...aiToolsAll.filter(t => t.data.fixture).sort((a, b) => a.id.localeCompare(b.id))];
 const resourceSample = [...resourcesAll.filter(r => !r.data.fixture).slice(0, 2), ...resourcesAll.filter(r => r.data.fixture).sort((a, b) => a.id.localeCompare(b.id))];
 import HomeFeeds from '../components/home/home-feeds.astro';
 import CaseDeck from '../components/home/case-deck.astro';
@@ -102,12 +107,12 @@ const dashPrev = dayViews.map((v, i) => ({ day: dayOf('2026-08-18', i), views: v
 const dashSeries = dashDays.map(d => ({ day: d.day, views: d.views, visits: d.visitors }));
 const dashFull = { days: 30, from: dashDays[0].day, to: dashDays[dashDays.length - 1].day, countingSince: '2026-08-01', previousCovered: 30, series: dashSeries, totals: { views: dashSeries.reduce((a, d) => a + d.views, 0), visits: dashSeries.reduce((a, d) => a + d.visits, 0), target: 93 },
   previous: { series: dashPrev, totals: { views: dashPrev.reduce((a, d) => a + d.views, 0), visits: dashPrev.reduce((a, d) => a + d.visits, 0), target: 12 } },
-  pages: [{ path: '/', name: 'Home', views: 117, visits: 85 }, { path: '/case-studies/colaberry-design-system', name: 'Colaberry design system', views: 66, visits: 48 }, { path: '/work/an-unbroken-string-of-sixty-characters-in-a-page-address-x1', name: 'A project whose title runs to one hundred and twenty characters so that a wrapped name in this table keeps its path under it', views: 26, visits: 23 }, { path: '/resources', name: 'UX resources', views: 20, visits: 17 }, { path: '/read', name: 'Read', views: 14, visits: 11 }, { path: '/about', name: 'About', views: 11, visits: 11 }, { path: '/contact', name: 'Contact', views: 9, visits: 9 }],
-  sections: [{ section: 'Home', views: 117 }, { section: 'Case studies', views: 83 }, { section: 'Projects', views: 34 }, { section: 'Resources', views: 20 }, { section: 'Read', views: 14 }, { section: 'About', views: 11 }, { section: 'Contact and resume', views: 9 }],
+  pages: [{ path: '/', name: 'Home', views: 117, visits: 85 }, { path: '/case-studies/colaberry-design-system', name: 'Colaberry design system', views: 66, visits: 48 }, { path: '/work/an-unbroken-string-of-sixty-characters-in-a-page-address-x1', name: 'A project whose title runs to one hundred and twenty characters so that a wrapped name in this table keeps its path under it', views: 26, visits: 23 }, { path: '/resources', name: 'UX Glossary', views: 20, visits: 17 }, { path: '/posts', name: 'LinkedIn posts', views: 14, visits: 11 }, { path: '/about', name: 'About', views: 11, visits: 11 }, { path: '/contact', name: 'Contact', views: 9, visits: 9 }],
+  sections: [{ section: 'Home', views: 117 }, { section: 'Case studies', views: 83 }, { section: 'Projects', views: 34 }, { section: 'UX Glossary and AI Tools', views: 20 }, { section: 'LinkedIn posts and articles', views: 14 }, { section: 'About', views: 11 }, { section: 'Contact and resume', views: 9 }],
   sources: [{ source: 'LinkedIn', visits: 95, hosts: [{ host: 'linkedin.com', visits: 76 }, { host: 'lnkd.in', visits: 19 }] }, { source: 'Direct or app', visits: 78, hosts: [] }, { source: 'Other sites', visits: 12, hosts: [{ host: 'an-unbroken-string-of-sixty-characters-as-a-host-name-x1.example', visits: 12 }] }],
   countries: [{ country: 'SA', visits: 62 }, { country: 'AE', visits: 31 }, { country: 'IN', visits: 55 }, { country: 'GB', visits: 27 }, { country: '', visits: 10 }], devices: [{ device: 'desktop', visits: 120 }, { device: 'phone', visits: 55 }, { device: 'tablet', visits: 10 }],
   hours: [0, 0, 0, 4, 8, 16, 24, 36, 44, 32, 28, 24, 20, 28, 36, 32, 24, 16, 20, 24, 16, 8, 4, 0], weekdays: [72, 88, 60, 76, 56, 32, 60], patternDays: 61,
-  publishes: [{ day: '2026-09-28', kind: 'linkedinPosts', slug: 'ux-is-what-you-see-and-touch', title: 'UX is what you see and touch', path: '/read', pathName: 'Read', shared: true, views: 40 }, { day: '2026-09-28', kind: 'videos', slug: 'the-state-of-designer-2026', title: 'The state of the designer in 2026', path: '/videos', pathName: 'Videos', shared: true, views: 25 }, { day: '2026-09-23', kind: 'posts', slug: 'component-spec-files', title: 'Component spec files: six tiers deep, eight sections wide, and the one hundred and twenty character title fixture', path: '/blog/component-spec-files', views: 14 }],
+  publishes: [{ day: '2026-09-28', kind: 'linkedinPosts', slug: 'ux-is-what-you-see-and-touch', title: 'UX is what you see and touch', path: '/posts', pathName: 'LinkedIn posts', shared: true, views: 40 }, { day: '2026-09-28', kind: 'videos', slug: 'the-state-of-designer-2026', title: 'The state of the designer in 2026', path: '/videos', pathName: 'Videos', shared: true, views: 25 }, { day: '2026-09-23', kind: 'posts', slug: 'component-spec-files', title: 'Component spec files: six tiers deep, eight sections wide, and the one hundred and twenty character title fixture', path: '/blog/component-spec-files', views: 14 }],
   lastVisit: { at: '2026-09-30T08:12:00.000Z', country: 'SA', path: '/case-studies/colaberry-design-system', name: 'Colaberry design system' } };
 /* The earlier period only partly in the log: its totals are the five covered days, as the query would return them. */
 const prevTail = dashPrev.slice(-5);
@@ -265,7 +270,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>List shown a page at a time</h2>
-            <p style={note}>Five items, two to a page: the first page, with the links to the others. The items past the first page are in the page and hidden. One page or fewer renders no links. Live on <a data-link href="/read" style="color: var(--text-link);">/read</a>.</p>
+            <p style={note}>Five items, two to a page: the first page, with the links to the others. The items past the first page are in the page and hidden. One page or fewer renders no links. Used by the blog's tag pages.</p>
             <p class="project-filter-count" role="status">5 posts<span data-paged-range={`states-paged-${theme}`}> · showing 1 to 2, page 1 of 3</span></p>
             <div data-cq><ul data-paged={`states-paged-${theme}`} data-cq-grid style="display: grid; gap: var(--grid-gap);">{[1, 2, 3, 4, 5].map(n => <li hidden={n > 2}><LinkedInPost url={li.url} title={n === 2 ? stress.longTitle : `Fixture item ${n}`} date={new Date('2026-01-15')} level={3} /></li>)}</ul></div>
             <ListPager id={`states-paged-${theme}`} total={5} size={2} nouns={`fixture posts, ${theme} theme`} />
@@ -274,7 +279,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Feed card and filters</h2>
-            <p style={note}>Feed cards for a blog post, a LinkedIn article and a LinkedIn post (two real items, then the stress fixtures), and the filter bar with its empty-result state shown open. The cards are used on the home page and at <a data-link href="/read" style="color: var(--text-link);">/read</a>.</p>
+            <p style={note}>Feed cards for a blog post, a LinkedIn article and a LinkedIn post (two real items, then the stress fixtures), and the filter bar with its empty-result state shown open. The cards are used on the home page and at <a data-link href="/articles" style="color: var(--text-link);">/articles</a>.</p>
             <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{feedSample.map(i => <li><FeedCard item={i} level={3} /></li>)}</ul></div>
             <ProjectFilters tags={feedTags(feed)} total={feed.length} options={feedTypes} optionsLabel="Type" noun="item" id={`feed-${theme}`} showEmpty />
           </div>
@@ -288,6 +293,13 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
               {formStates.map(([state, label], i) => <li style="display: grid; gap: var(--space-3); align-content: start;"><p style={note}>{label.replace('it posts to a fixture address, so sending ends in the failure state', 'it posts to /api/resources and saves a draft for review')}</p><SuggestForm email={site.email} id={`suggest-${theme}-${state}`} landmark={false} state={i === 0 ? undefined : state} /></li>)}
             </ul></div>
+          </div>
+
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
+            <h2 style={h2}>AI tool card and the AI Tools filter bar</h2>
+            <p style={note}>Cards on <a data-link href="/ai-tools" style="color: var(--text-link);">/ai-tools</a>: one I use (marked), one I do not, the partial fixture (one-word name, no description, no tags) and the stress fixture (long name, unbroken address, nine tags). Then the filter bar with its search field and its twelve categories folded (more than six chips fold), in the empty-result state with "Clear filters".</p>
+            <div data-cq><ul data-cq-grid="3" style="display: grid; gap: var(--grid-gap);">{aiToolSample.map(t => <li><AiToolCard tool={t} level={3} /></li>)}</ul></div>
+            <ProjectFilters tags={Object.keys(aiCategoryLabel)} tagLabels={aiCategoryLabel} tagsLabel="Category" total={aiToolsAll.length} options={aiCostLabel} optionsLabel="Cost" noun="tool" id={`ai-filter-${theme}`} search={{ label: 'Find a tool', placeholder: 'Name, site or use' }} showEmpty />
           </div>
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
@@ -324,6 +336,12 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
               {formStates.map(([state, label], i) => <li style="display: grid; gap: var(--space-3); align-content: start;"><p style={note}>{label}</p><ContactForm endpoint="https://formspree.io/f/fixture" email={site.email} id={`${theme}-${state}`} landmark={false} state={i === 0 ? undefined : state} /></li>)}
             </ul></div>
+          </div>
+
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
+            <h2 style={h2}>Contact block</h2>
+            <p style={note}>The target of "Let's talk" (/contact, with an h1) and the end of About (an h2): call and email, what happens next, where else to find me, and the form beside them from 1024px.</p>
+            <ContactBlock id={`states-contact-${theme}`} overline="Contact" title="Hiring, or building something that needs to feel trustworthy?" lead="Send a message, or book a 15-minute call. I reply within 48 hours." landmark={false} />
           </div>
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">

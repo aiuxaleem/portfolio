@@ -6,16 +6,18 @@ import YouTube from '../embeds/youtube.astro';
 import { formatDuration, type Video } from '../../lib/videos';
 import { formatDate } from '../../lib/posts';
 
-interface Props { video: Video; level?: 2 | 3 }
-const { video, level = 2 } = Astro.props;
+interface Props { video: Video; level?: 2 | 3; /** The lead video of the page: the player beside the words where there is room. */ wide?: boolean }
+const { video, level = 2, wide = false } = Astro.props;
 const d = video.data;
 const Heading = `h${level}` as any;
 const poster = d.poster ? (await getImage({ src: d.poster.src, width: 960 })).src : undefined;
 const valid = /^[\w-]{11}$/.test(d.youtubeId);
 ---
-<article class="video-card">
+<article class:list={['video-card', wide && 'video-card-wide']}>
   <YouTube id={d.youtubeId} title={d.title} poster={poster} caption={false} />
   <div class="video-card-body">
+    {/* Without a date the line keeps its height, so titles in a row of cards line up. */}
+    {!(d.published || d.duration) && <p class="case-kicker" aria-hidden="true">&nbsp;</p>}
     {(d.published || d.duration) && <p class="case-kicker">{d.published && <time datetime={d.published.toISOString().slice(0, 10)}>{formatDate(d.published)}</time>}{d.published && d.duration && ' · '}{formatDuration(d.duration)}</p>}
     <Heading class="project-card-title">{d.title}</Heading>
     {d.description && d.description.trim() !== d.title.trim() && <p class="project-card-summary">{d.description}</p>}

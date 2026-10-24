@@ -1,0 +1,35 @@
+---
+/* Card for one AI tool (CLAUDE.md 2.7): the resource card's recipe. One link, the whole card clickable; the tool opens on
+   its own site in a new tab. A letter tile stands in for a logo, so nothing is loaded from another site. The data
+   attributes are what the filter island reads (islands/project-filters.ts). */
+import type { AiTool } from '../../lib/ai-tools';
+import { aiCategoryLabel, aiCostLabel } from '../../lib/ai-tools';
+import { hostOf } from '../../lib/resources';
+
+interface Props { tool: AiTool; level?: 2 | 3 }
+const { tool, level = 3 } = Astro.props;
+const d = tool.data;
+const Heading = `h${level}` as any;
+const host = hostOf(d.url);
+const letter = d.title.trim().charAt(0).toUpperCase();
+---
+<article class="project-card ai-tool" data-project data-status={d.cost} data-tags={d.category} data-text={[d.title, host, d.description, ...d.tags].filter(Boolean).join(' ')}>
+  <div class="project-card-body">
+    <div class="ai-tool-head">
+      <span class="ai-tool-mark" aria-hidden="true">{letter}</span>
+      <div class="ai-tool-name">
+        <Heading class="project-card-title"><a class="project-card-link" href={d.url} target="_blank" rel="noopener">{d.title}<span class="cory-visually-hidden"> (opens {host} in a new tab)</span></a></Heading>
+        <p class="case-kicker"><bdi>{host}</bdi></p>
+      </div>
+    </div>
+    {d.description && <p class="project-card-summary">{d.description}</p>}
+    <p class="project-card-meta"><span class="ui-badge">{aiCategoryLabel[d.category]}</span><span class="ui-badge">{aiCostLabel[d.cost]}</span>{d.pick && <span class="ui-badge" data-tone="brand">I use this</span>}</p>
+    <span class="project-card-cta" aria-hidden="true">Visit {d.title} <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10M7 17 17 7"></path></svg></span>
+  </div>
+</article>
+
+<style>
+  .ai-tool-head { display: flex; align-items: center; gap: var(--space-3); min-inline-size: 0; }
+  .ai-tool-name { display: grid; gap: 2px; min-inline-size: 0; }
+  .ai-tool-mark { flex-shrink: 0; display: grid; place-items: center; inline-size: var(--tap-target); block-size: var(--tap-target); border-radius: var(--radius-md); background: var(--gradient-ink); color: var(--on-ink-strong); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h4); }
+</style>

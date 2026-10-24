@@ -55,6 +55,21 @@ const inSitemap = page => {
   return !(file && /<meta name="robots" content="noindex/.test(fs.readFileSync(file, 'utf8')));
 };
 
+/* The sitemap's last-changed dates: a blog post's own date (updated, else published), read from its file, so a search
+   engine can tell which posts changed. Other pages carry no date rather than a guessed one. */
+const postDates = (() => {
+  const dir = 'src/content/posts', out = {};
+  if (!fs.existsSync(dir)) return out;
+  for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.mdx'))) {
+    const head = fs.readFileSync(`${dir}/${f}`, 'utf8').split(/^---$/m)[1] || '';
+    const pick = k => head.match(new RegExp(`^${k}:\\s*['"]?(\\d{4}-\\d{2}-\\d{2})`, 'm'))?.[1];
+    const d = pick('updated') || pick('published');
+    if (d) out[`/blog/${f.replace(/\.mdx$/, '')}`] = d;
+  }
+  return out;
+})();
+const withDates = item => { const d = postDates[new URL(item.url).pathname.replace(/\/$/, '')]; return d ? { ...item, lastmod: new Date(`${d}T00:00:00Z`).toISOString() } : item; };
+
 export default defineConfig({
   site: siteUrl,
   /* Astro's own cross-site check compares the full address of the request with the Origin header. Behind Vercel's proxy
@@ -72,6 +87,6 @@ export default defineConfig({
   /* COUNT_VISITS tells the page head whether to send a page view: only where the /api/hit route exists. */
   vite: { optimizeDeps: { exclude: ['@keystatic/astro'] }, define: { 'import.meta.env.COUNT_VISITS': JSON.stringify(withAdmin || isDev ? '1' : '') } },
   /* The Read page was at /writing until Phase 24. Old links keep working. */
-  redirects: { '/writing': '/read' },
-  integrations: [mdx(), sitemap({ filter: inSitemap }), devOnly, ...(isDev ? [react(), keystatic()] : [])],
+  redirects: { '/writing': '/posts', '/read': '/posts' },
+  integrations: [mdx(), sitemap({ filter: inSitemap, serialize: withDates }), devOnly, ...(isDev ? [react(), keystatic()] : [])],
 });

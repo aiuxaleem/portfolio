@@ -1,5 +1,6 @@
 ---
-/* /work: projects from the content collection, with filters by topic and status. */
+/* /work: projects from the content collection, grouped by status (shipped, in progress, concepts), with filters by topic
+   and status. A status group with nothing left after filtering is hidden with its heading. */
 import PageLayout from '../../layouts/page-layout.astro';
 import ProjectCard from '../../components/cards/project-card.astro';
 import ProjectFilters from '../../components/projects/project-filters.astro';
@@ -7,11 +8,19 @@ import Button from '../../components/ui/button.astro';
 import { listedProjects } from '../../lib/projects';
 
 const projects = await listedProjects();
+/* The order a visitor reads the work in: what has shipped, what is being built, ideas. */
+const groups = [
+  { status: 'shipped', title: 'Shipped', blurb: 'Live, in use, and linked to where you can see it.' },
+  { status: 'in-progress', title: 'In progress', blurb: 'Being designed and built now, with updates as it moves.' },
+  { status: 'concept', title: 'Concepts', blurb: 'Ideas explored far enough to show the thinking.' },
+] as const;
+const ordered = groups.map(g => ({ ...g, list: projects.filter(p => p.data.status === g.status) })).filter(g => g.list.length > 0);
+const firstCard = ordered[0]?.list[0];
 const tags = [...new Set(projects.filter(p => !p.data.fixture).flatMap(p => p.data.tags))].sort();
 ---
 <PageLayout title="Work · AIUXAleem" description="Projects by Mohammad Abdul Aleem: design systems and AI product work, with status, tools and links to the full case studies." page="work" bg="grid" mainStyle="outline: none; overflow: clip;">
   <section class="cory-container" aria-labelledby="work-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
-    <p class="cory-overline" style="margin: 0px;">Work</p>
+    <p class="cory-overline" style="margin: 0px;">My recent work · Projects</p>
     <h1 id="work-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">Projects</h1>
     <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">What I am building and what has shipped. Each project links to its live site, its repository and, where there is one, the full case study.</p>
     <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
@@ -22,8 +31,25 @@ const tags = [...new Set(projects.filter(p => !p.data.fixture).flatMap(p => p.da
     <ProjectFilters tags={tags} total={projects.length} items={projects.map(p => ({ tags: p.data.tags, status: p.data.status }))} />
     {projects.length === 0
       ? <div class="project-empty"><p class="project-empty-title">No projects are published yet.</p><p class="project-empty-body">The case studies cover the work in depth.</p><div><Button variant="secondary" href="/case-studies">Read the case studies</Button></div></div>
-      : <div data-cq><ul data-project-list data-cq-balance style="display: grid; gap: var(--grid-gap);">{projects.map((p, i) => <li><ProjectCard project={p} first={i === 0} /></li>)}</ul></div>}
+      : <div data-project-list class="work-groups">
+          {ordered.map(g => (
+            <section class="work-group" aria-labelledby={`work-${g.status}`}>
+              <div class="page-section-head">
+                <h2 id={`work-${g.status}`} class="project-h2">{g.title} <span class="work-group-count">{g.list.length}</span></h2>
+                <p class="project-filter-count">{g.blurb}</p>
+              </div>
+              <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{g.list.map(p => <li><ProjectCard project={p} first={p === firstCard} /></li>)}</ul></div>
+            </section>
+          ))}
+        </div>}
   </section>
+  <style>
+    .work-groups { display: grid; gap: var(--space-12); }
+    .work-group { display: grid; gap: var(--space-5); }
+    .work-group-count { font-family: var(--font-mono); font-size: var(--text-mono); font-weight: var(--weight-medium); color: var(--text-subtle); vertical-align: middle; }
+    /* A status group with no project left after filtering is hidden with its heading. */
+    .work-group:not(:has(li:not([hidden]))) { display: none; }
+  </style>
   <script>
     import '../../components/islands/project-filters.ts';
   </script>

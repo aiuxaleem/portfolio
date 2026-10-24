@@ -28,6 +28,19 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
 });
 paintTheme();
 
+/* ---------- Header menus: a group's button opens its pages (click, Enter or Space); Escape, a click outside or focus
+   leaving the group closes it. Hover opening is CSS only, on pointer devices. One menu is open at a time. ---------- */
+const groups = [...document.querySelectorAll<HTMLElement>('[data-nav-group]')];
+const shut = (except?: HTMLElement) => groups.forEach(g => { if (g !== except) g.querySelector('.nav-group-button')?.setAttribute('aria-expanded', 'false'); });
+groups.forEach(group => {
+  const button = group.querySelector<HTMLButtonElement>('.nav-group-button');
+  if (!button) return;
+  button.addEventListener('click', () => { const open = button.getAttribute('aria-expanded') !== 'true'; shut(group); button.setAttribute('aria-expanded', String(open)); });
+  group.addEventListener('keydown', e => { if (e.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') { button.setAttribute('aria-expanded', 'false'); button.focus(); } });
+  group.addEventListener('focusout', e => { if (!group.contains(e.relatedTarget as Node | null)) button.setAttribute('aria-expanded', 'false'); });
+});
+document.addEventListener('click', e => { if (!(e.target as HTMLElement).closest?.('[data-nav-group]')) shut(); });
+
 /* ---------- Mobile menu: focus moves in, Tab stays inside, Escape closes, focus returns, page behind is inert ---------- */
 const menu = document.querySelector<HTMLElement>('[data-menu]');
 const menuOpener = document.querySelector<HTMLElement>('[data-menu-open]');

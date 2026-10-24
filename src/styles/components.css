@@ -59,6 +59,33 @@ html [data-deck-kicker], html [data-deck-kicker] span { overflow-wrap: anywhere;
 .project-card { position: relative; display: flex; flex-direction: column; block-size: 100%; border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); overflow: hidden; transition: transform var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out); }
 .project-card-media { position: relative; aspect-ratio: var(--aspect-case); background: var(--surface-sunken); overflow: hidden; }
 .project-card-media img { inline-size: 100%; block-size: 100%; object-fit: cover; object-position: top center; }
+/* A picture in a card sits in a tinted frame with rounded top corners and a soft shadow: a screenshot reads as a screen,
+   not a photo cropped at its edges. The frame's padding is the card body's 24px edge. */
+.project-card-media:has(> img), .project-card-media:has(> picture) { padding: var(--space-6) var(--space-6) 0; background: linear-gradient(180deg, var(--surface-sunken), var(--surface-card)); }
+.project-card-media > img, .project-card-media > picture img { border-radius: var(--radius-md) var(--radius-md) 0 0; box-shadow: var(--shadow-md); }
+/* The lead card of a case bento: picture beside words where the card is wide enough. */
+/* A container query cannot restyle its own container, so the wide card asks its parent how much room there is. */
+:has(> .case-card-wide), :has(> .video-card-wide) { container-type: inline-size; }
+@container (min-width: 720px) {
+  .project-card.case-card-wide { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+  .case-card-wide > .project-card-media { aspect-ratio: auto; min-block-size: max(100%, 360px); }
+  .case-card-wide > .project-card-body { align-content: center; padding: var(--space-8); }
+  .case-card-wide .project-card-title { font-size: var(--text-h2); }
+}
+/* A feed card as a compact row (Articles): from 768px the title and its call share one line. */
+.feed-card-row > .project-card-body { padding-block: var(--space-5); }
+@media (min-width: 768px) {
+  .feed-card-row > .project-card-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--space-6); row-gap: var(--space-2); align-items: center; }
+  .feed-card-row > .project-card-body > * { grid-column: 1; }
+  .feed-card-row > .project-card-body > .project-card-cta { grid-column: 2; grid-row: 1; margin: 0; }
+}
+/* A lead card set straight above its list (Blog, Videos) keeps the list's gap below it. */
+.video-card-wide, :not(li) > .case-card-wide { margin-block-end: var(--space-10); }
+/* The lead video: the player beside its words where the card is wide enough. */
+@container (min-width: 720px) {
+  .video-card.video-card-wide { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--space-8); align-items: center; }
+  .video-card-wide .project-card-title { font-size: var(--text-h2); }
+}
 .project-card-body { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-6); flex: 1 1 auto; }
 .project-card-meta { margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .project-card-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; }

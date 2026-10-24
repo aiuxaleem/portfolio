@@ -3,16 +3,17 @@
    Dates, location and highlights are optional. `level` is the heading level of the company name. */
 import { careerByCompany, period } from '../../content/profile';
 
-interface Props { level?: 2 | 3; highlights?: boolean }
-const { level = 3, highlights = true } = Astro.props;
+interface Props { level?: 2 | 3; highlights?: boolean; /** About: from 1024px each company sits beside its roles, so the timeline uses the page's width. */ wide?: boolean }
+const { level = 3, highlights = true, wide = false } = Astro.props;
 const Company = `h${level}` as any, RoleTag = `h${level + 1}` as any;
 /* Two columns read down then across: the first holds the newer half of the companies. */
 const rows = Math.ceil(careerByCompany().length / 2);
 ---
-<ol class="career" data-compact={highlights ? undefined : ''} style={`--career-rows: ${rows};`}>
+<ol class:list={['career', wide && 'career-wide']} data-compact={highlights ? undefined : ''} style={`--career-rows: ${rows};`}>
   {careerByCompany().map(group => (
     <li class="career-company">
       <Company>{group.company}</Company>
+      <div class="career-roles">
       {group.roles.map(r => (
         <div class="career-role">
           <RoleTag>{r.role}</RoleTag>
@@ -21,6 +22,7 @@ const rows = Math.ceil(careerByCompany().length / 2);
           {highlights && r.highlights.length > 0 && <ul>{r.highlights.map(h => <li>{h}</li>)}</ul>}
         </div>
       ))}
+      </div>
     </li>
   ))}
 </ol>

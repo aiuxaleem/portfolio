@@ -133,7 +133,7 @@ By file: `src/content/videos/your-title.yaml`.
 
 ## Add a LinkedIn post
 
-In the editor: **LinkedIn posts → Create**. Fill in the title (the first line of the post works well), the link to the post, the date, and optionally the series it belongs to and tags. It appears under **LinkedIn posts** on the Read page (`/read`), newest first, six to a page.
+In the editor: **LinkedIn posts → Create**. Fill in the title (the first line of the post works well), the link to the post, the date, and optionally the series it belongs to and tags. It appears on the Posts page (`/posts`, under **My Resources** in the menu), newest first. A visitor can narrow the list to one series.
 
 **Let visitors load this post on the page** is ticked for a new post. The card then has a button that shows the post itself, from LinkedIn, without leaving the site. Nothing is loaded from LinkedIn until a visitor presses it. It needs the link LinkedIn gives you under the post's menu, **Copy link to post**, because that link carries the post's number. Untick the box and the card is a title and a link only.
 
@@ -149,7 +149,7 @@ embed: true
 
 ## Add a LinkedIn article
 
-In the editor: **LinkedIn articles → Create**. Title, link, and if you have them the date and an excerpt. It appears under **LinkedIn articles** on the Read page (`/read`) and opens on LinkedIn.
+In the editor: **LinkedIn articles → Create**. Title, link, and if you have them the date and an excerpt. It appears on the Articles page (`/articles`, under **My Resources** in the menu), newest first, and opens on LinkedIn. The newest article is shown wide at the top.
 
 By file: `src/content/linkedin-articles/your-title.yaml`.
 
@@ -159,7 +159,7 @@ Create a blog post with the full text, then fill in **Originally published elsew
 
 ## Add a UX resource
 
-The Resources page (`/resources`) lists tools, references and reading you recommend, each linking out to its own site. In the admin area: **UX resources → Add a resource**. By file: `src/content/resources/your-resource.yaml`.
+The UX Glossary (`/resources`, under **Resources** in the menu) lists tools, references and reading you recommend, each linking out to its own site. In the admin area: **UX Glossary → Add a resource**. By file: `src/content/resources/your-resource.yaml`.
 
 | Field | What to write |
 | --- | --- |
@@ -169,8 +169,33 @@ The Resources page (`/resources`) lists tools, references and reading you recomm
 | Why it is useful | One or two sentences in your own words, 220 characters at most. Optional, but a card without it says less. |
 | Added on | The list is newest first. |
 | Topics | Short tags shown on the card. |
+| Made by me | Tick it for your own work: an AI workflow, a Claude skill (.md file) or a Claude artifact. Choose the matching Type. These lead the page in a section of their own, marked "Made by me". The link can be a GitHub file or gist, a Claude artifact link, or any page where it lives. |
 
-Visitors can suggest a resource from the page. A suggestion arrives in **UX resources** as a draft with a note saying when it came and who sent it; nothing is published until you publish it. The full field rules, the categories and the API that takes a resource from outside the site are in `docs/RESOURCES_API.md`.
+Visitors can suggest a resource from the page. A suggestion arrives in **UX Glossary** as a draft with a note saying when it came and who sent it; nothing is published until you publish it. The full field rules, the categories and the API that takes a resource from outside the site are in `docs/RESOURCES_API.md`.
+
+## Add an AI tool
+
+The AI Tools page (`/ai-tools`, under **Resources** in the menu) lists AI tools for product designers, grouped by what they help with. Visitors can search by name, pick a category and filter by cost. In the admin area: **AI tools → Add**. By file: `src/content/ai-tools/your-tool.yaml`.
+
+| Field | What to write |
+| --- | --- |
+| Name | The tool's own name, for example "Figma Make". |
+| Link | Its address, starting with https://. |
+| Category | What it helps a designer do. This groups the page. |
+| Cost | Free, Free tier or Paid. Prices change, so the page tells visitors to check. |
+| What it does for a designer | One or two sentences in your own words, 220 characters at most. Never paste the tool's own marketing copy. |
+| I use this | Marks the card "I use this". Tick it only for tools you really use. |
+| Added on, Topics | The date it was added, and short tags. |
+
+```yaml
+title: Figma Make
+url: https://www.figma.com/make/
+category: ui-generation
+cost: freemium
+description: Turns a prompt or a Figma frame into a working prototype inside Figma.
+added: 2026-10-24
+pick: false
+```
 
 ## Embeds inside a post, case study or project
 
@@ -196,11 +221,11 @@ In the editor: **Profile (About, Resume, Now, contact form)**. One file feeds al
 - **Career:** one entry per role, newest first. Roles at the same company are grouped on the page.
 - **Note to self** fields hold things you still need to check. They are never shown on the site. `/_states` lists them all.
 - **Now page:** set "Last updated" when you change the list.
-- **Contact form:** paste your Formspree form id (the part after `formspree.io/f/`). The form appears on `/contact` once the id is set.
+- **Contact form:** paste your Formspree form id (the part after `formspree.io/f/`). The form appears on `/contact` (where "Let's talk" in the header goes) and at the end of About once the id is set.
 
-Certifications are their own collection: **Certifications → Create**. Status "In progress" puts one on the Now page.
+Certifications are their own collection: **Certifications → Create**. Status "In progress" puts one on the Now page and in the "In progress now" panel that leads the Certifications section on About.
 
-Site-wide settings (availability line, email, calendar link, social links, resume PDF path) are under **Site settings**.
+Site-wide settings (availability line, email, calendar link, social links, resume PDF path) are under **Site settings**. The two short facts under the Home page buttons, **Open to** and **Focus**, are there too, under **Home page facts**.
 
 ### Resume PDF
 
