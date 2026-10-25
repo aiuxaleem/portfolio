@@ -42,7 +42,10 @@ const CLIENTS = 'https://aiuxaleem-clients.vercel.app'; // SUB_SITES.clients.liv
   if (!/noindex/.test(out.v2Noindex || '')) fail('the version 2 fork is not kept out of search');
   await ctx.close(); }
 { const { ctx, p } = await visitor(0.9); await p.goto(origin + '/job', { waitUntil: 'load' }); out.websiteNotSplit = { at: path(p), stored: await p.evaluate(() => localStorage.getItem('aiuxaleem-ab')) };
-  if (out.websiteNotSplit.at !== '/job' || out.websiteNotSplit.stored) fail('an audience website was put in the split');
+  /* In dev /job is served where it is; on the live site it redirects to the website's own address, where it is the Home. */
+  out.websiteNotSplit.host = new URL(p.url()).host;
+  const onJob = out.websiteNotSplit.at === '/job' || (/aiuxaleem-job|job\.aiuxaleem/.test(out.websiteNotSplit.host) && out.websiteNotSplit.at === '/');
+  if (!onJob || out.websiteNotSplit.stored) fail('an audience website was put in the split: ' + JSON.stringify(out.websiteNotSplit));
   await ctx.close(); }
 await browser.close();
 console.log(JSON.stringify(out, null, 1));
