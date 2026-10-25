@@ -184,6 +184,17 @@
   --shadow-glow: 0 0 0 1px rgba(255,255,255,0.08), 0 0 48px rgba(41, 190, 221, 0.18);
 }
 
+/* Glass and the page's field (owner request, 25 October 2026; layout/ai-field.astro). Mixed from the theme's own surfaces
+   and borders, so the dark theme follows without values of its own. Declared on every element that sets a theme as well
+   as on the root: a custom property built from others is worked out where it is declared, so a section drawn in the other
+   theme (as on /_states) gets its own glass. */
+:root, [data-theme] {
+  --surface-glass: color-mix(in srgb, var(--surface-card) 66%, transparent); /* @kind color */
+  --surface-glass-strong: color-mix(in srgb, var(--surface-card) 86%, transparent); /* @kind color */
+  --field-dot: color-mix(in srgb, var(--border-strong) 80%, transparent); /* @kind color */
+  --field-line: var(--border-default); /* @kind color */
+}
+
 /* OS preference: CSS can't alias a media query onto [data-theme], so set the
    attribute once at load (ThemeToggle does this automatically):
    <script>document.documentElement.dataset.theme ||= matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script> */

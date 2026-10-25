@@ -1,0 +1,42 @@
+---
+/* The bar of websites at the top of every public page (owner request, 25 October 2026: "incorporate all three Full
+   portfolio, For Hiring Managers, For Clients interconnected have a top double nav bar"). The first row of the fixed
+   header: it shows at the top of the page, slides up with the header's first scroll and comes back while one of its
+   links has focus (islands/site-chrome.ts, site.css). The current website is marked in words for screen readers
+   (aria-current) and by its pill. On a phone the labels shorten so the three fit at 320px. The small star before them
+   is the North Star (the owner's word for where his career is going), decorative. */
+import { MAIN_LIVE, SUB_SITES, type SubSite } from '../../lib/sites';
+
+interface Props { current: SubSite | 'main'; ar?: boolean }
+const { current, ar = false } = Astro.props;
+const sites = [
+  { key: 'main', href: current === 'main' ? (ar ? '/ar' : '/') : MAIN_LIVE, long: ar ? 'الملف الكامل' : 'Full portfolio', short: ar ? 'الملف' : 'Portfolio' },
+  { key: 'job', href: SUB_SITES.job.live, long: ar ? 'لمديري التوظيف' : 'For hiring managers', short: ar ? 'التوظيف' : 'Hiring' },
+  { key: 'clients', href: SUB_SITES.clients.live, long: ar ? 'للعملاء' : 'For clients', short: ar ? 'العملاء' : 'Clients' },
+];
+---
+<nav class="site-switch" data-site-switch aria-label={ar ? 'المواقع' : 'Websites'}>
+  <div class="cory-container site-switch-row">
+    <svg class="site-switch-star" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M12 1 L14.6 9.4 L23 12 L14.6 14.6 L12 23 L9.4 14.6 L1 12 L9.4 9.4 Z" /></svg>
+    <ul role="list">
+      {sites.map(s => <li><a href={s.href} aria-current={s.key === current ? 'true' : undefined}><span class="site-switch-long">{s.long}</span><span class="site-switch-short">{s.short}</span></a></li>)}
+    </ul>
+  </div>
+</nav>
+
+<style>
+  /* The theme's sunken surface with a hairline inside its foot: quiet in light, deep in dark, and exactly one target tall,
+     so nothing of it shows once the header slides up. */
+  .site-switch { background: var(--surface-sunken); box-shadow: inset 0 -1px 0 var(--border-subtle); }
+  .site-switch-row { display: flex; align-items: center; gap: var(--space-3); }
+  .site-switch-star { flex: none; fill: var(--text-link); filter: drop-shadow(0 0 6px var(--text-link)); }
+  .site-switch ul { display: flex; align-items: center; gap: var(--space-2); block-size: var(--tap-target); margin: 0; padding: 0; list-style: none; }
+  .site-switch li { display: flex; }
+  /* Each link is a full 44px target; the current one shows a pill inside it. */
+  .site-switch a { position: relative; isolation: isolate; display: inline-flex; align-items: center; min-block-size: var(--tap-target); padding-inline: var(--space-3); border-radius: var(--radius-pill); font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-muted); text-decoration: none; white-space: nowrap; transition: color var(--duration-base) var(--ease-out), background var(--duration-base) var(--ease-out); }
+  .site-switch a[aria-current="true"] { color: var(--text-strong); }
+  .site-switch a[aria-current="true"]::before { content: ""; position: absolute; inset: 6px 0; z-index: -1; border-radius: var(--radius-pill); background: var(--surface-card); box-shadow: var(--shadow-xs); }
+  @media (hover: hover) { .site-switch a:hover { color: var(--text-strong); } }
+  .site-switch-short { display: none; }
+  @media (max-width: 639.98px) { .site-switch-long { display: none; } .site-switch-short { display: inline; } }
+</style>

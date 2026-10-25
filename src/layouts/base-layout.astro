@@ -1,4 +1,5 @@
 ---
+import AiField from '../components/layout/ai-field.astro';
 import { siteOf, sitePath, SUB_SITES } from '../lib/sites';
 import '../styles/global.css';
 import { site } from '../content/site';
@@ -22,11 +23,9 @@ interface Props {
   ogImage?: string;
   /** JSON-LD objects for this page. Empty entries are skipped. */
   jsonLd?: (Record<string, unknown> | undefined)[];
-  /** A page of version 2 of the site (the A/B test, docs/AB_TEST.md): kept out of search, its visits still counted. */
-  ab?: boolean;
 }
-const { title, description, page = '', langs = 'en', lang = 'en', dir = 'ltr', ab = false } = Astro.props;
-const noindex = Astro.props.noindex || ab;
+const { title, description, page = '', langs = 'en', lang = 'en', dir = 'ltr' } = Astro.props;
+const noindex = Astro.props.noindex;
 /* An audience website (docs/SITES.md): its pages are built under /job or /clients and served at the root of their own host.
    The canonical address is on that host, and a page view is counted under the prefix so the dashboard can tell the
    websites apart. */
@@ -40,20 +39,17 @@ const shareTitle = title.replace(/ · AIUXAleem$/, '');
 /* Page view count: first-party, no cookie, sent after the page has loaded. Present only where the /api/hit route exists
    (the Vercel build and dev), never on pages marked noindex. Skipped in the owner's browser and for visitors who ask not
    to be tracked. */
-const countVisits = import.meta.env.COUNT_VISITS === '1' && (!noindex || ab);
-/* The A/B test (docs/AB_TEST.md) runs where visits are counted, so its result can be read in the admin: the Vercel site
-   and dev. Static copies (GitHub Pages) always show version 1. */
-const abSplit = import.meta.env.COUNT_VISITS === '1' && !sub;
-const abScript = "(function(){try{var n=navigator,u=n.userAgent||'';if(n.webdriver||/bot|crawl|spider|slurp|preview|lighthouse|headless|pagespeed|google|bing|yandex|baidu|duckduck|facebookexternalhit|embedly|whatsapp|telegram|discord|linkedin|slack|twitter/i.test(u))return;var K='aiuxaleem-ab',q=location.search.match(/[?&]ab=([12])/),p=location.pathname.replace(/\\.html$/,'').replace(/\\/$/,'')||'/',m={'/':'/v2','/services':'" + SUB_SITES.clients.live + "'},v=q?q[1]:localStorage.getItem(K);if(v!=='1'&&v!=='2'){v=p.indexOf('/v2')===0?'2':m[p]?(Math.random()<0.5?'1':'2'):'';}if(!v)return;localStorage.setItem(K,v);document.documentElement.setAttribute('data-ab',v);var s=location.search.replace(/([?&])ab=[12]&?/,'$1').replace(/[?&]$/,'');if(v==='2'&&m[p])location.replace(m[p]+s+location.hash);else if(v==='1'&&q&&p.indexOf('/v2')===0){var b={'/v2':'/'}[p];if(b)location.replace(b+s+location.hash);}}catch(e){}})();";
+const countVisits = import.meta.env.COUNT_VISITS === '1' && !noindex;
 const countScript = "(function(){try{if(navigator.doNotTrack==='1'||navigator.globalPrivacyControl||localStorage.getItem('aiuxaleem-owner')==='1')return;var s=function(){navigator.sendBeacon('/api/hit',JSON.stringify({p:(document.documentElement.dataset.site&&location.pathname.indexOf('/'+document.documentElement.dataset.site)!==0?'/'+document.documentElement.dataset.site+(location.pathname==='/'?'':location.pathname):location.pathname),r:document.referrer}))};if(document.readyState==='complete')s();else addEventListener('load',s,{once:true})}catch(e){}})();";
 const canonical = Astro.props.canonical || (sub ? SUB_SITES[sub].origin + sitePath(Astro.url.pathname) : new URL(Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/'), Astro.site));
+/* The page's field (layout/ai-field.astro) is behind every public page; the admin and its sign-in keep a plain surface. */
+const field = !Astro.url.pathname.startsWith('/admin');
 ---
 <!doctype html>
 <html lang={lang} dir={dir} data-langs={langs} data-page={page} data-site={sub}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {abSplit && <script is:inline set:html={abScript} />}
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -92,6 +88,7 @@ const canonical = Astro.props.canonical || (sub ? SUB_SITES[sub].origin + sitePa
     {countVisits && <script is:inline set:html={countScript} />}
   </head>
   <body>
+    {field && <AiField />}
     <slot />
     <script>
       import '../components/islands/site-chrome.ts';

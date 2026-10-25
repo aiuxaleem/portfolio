@@ -28,12 +28,14 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
 });
 paintTheme();
 
-/* ---------- A/B test (docs/AB_TEST.md): a visitor in version 2 stays in it. The shared header and footer link to Home
-   and Services; for them Home is the fork between the two audience websites, and Services is the website for clients. ---------- */
-const CLIENTS_SITE = 'https://aiuxaleem-clients.vercel.app'; // SUB_SITES.clients.live in src/lib/sites.ts
-if (root.getAttribute('data-ab') === '2' || location.pathname.startsWith('/v2')) {
-  const v2: Record<string, string> = { '/': '/v2', '/services': CLIENTS_SITE };
-  document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach(a => { const to = v2[a.getAttribute('href') || '']; if (to) a.setAttribute('href', to); });
+/* ---------- The bar of the three websites (layout/site-switch.astro): the header carries it at the top of the page; from
+   the first scroll the header is marked, and site.css slides the bar up out of view. ---------- */
+const header = document.querySelector<HTMLElement>('[data-site-header]');
+if (header?.querySelector('[data-site-switch]')) {
+  let queued = false;
+  const mark = () => { header.toggleAttribute('data-scrolled', window.scrollY > 8); queued = false; };
+  addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(mark); } }, { passive: true });
+  mark();
 }
 
 /* ---------- Header menus: a group's button opens its pages (click, Enter or Space); Escape, a click outside or focus

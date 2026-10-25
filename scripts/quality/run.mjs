@@ -57,6 +57,13 @@ if (target === 'dist') {
   if (!run('node scripts/quality/check-owner-facts.mjs')) fail('owner-facts', '-', '-', 'see the list above');
 }
 
+// 2d. Text over the page's field (src/components/layout/ai-field.astro): every text colour at 4.5:1 or more where it can sit
+//     on a glow's peak.
+if (target === 'dist') {
+  console.log('\n[3d] text over the background field');
+  if (!run('node scripts/quality/check-field.mjs')) fail('field-contrast', '-', '-', 'see the list above');
+}
+
 // 3. Browser checks on every route x viewport x theme
 console.log(`\n[4/4] browser checks against ${target}/`);
 const server = await serve(target === 'legacy' ? 'legacy' : 'dist', PORT);

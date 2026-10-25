@@ -2,6 +2,8 @@
 
 Started 24 October 2026, on the owner's instruction: "create a version 2, don't make changes to the current one … make both of them live … then we can do the A/B testing".
 
+**Ended 25 October 2026.** The owner asked for all three websites to be connected by a bar at the top of every page (docs/SITES.md), with the same "Let's talk" everywhere, and for new backgrounds and image handling on every page. With the bar, every visitor chooses a website, so the split no longer measured anything: the split script and version 2's link rewriting were removed, `/v2` now leads Home (vercel.json), and `scripts/quality/check-ab.mjs` gave way to `scripts/quality/check-sites.mjs`. The admin dashboard keeps the A/B card, so the visits counted while the test ran stay readable. The rest of this page describes the test as it ran.
+
 ## What the two versions are
 
 **Version 1** is the main portfolio as it was: Home, Services and Contact speak to hiring teams and clients at once.

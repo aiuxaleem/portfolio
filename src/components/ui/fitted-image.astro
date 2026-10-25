@@ -1,0 +1,25 @@
+---
+/* A picture in a frame of a set shape (a card, a page's cover) without losing what matters in it. When the picture's
+   shape is close to the frame's, it fills the frame and the cut keeps its focus point (the image's `focus`, set in the
+   admin; by default its top centre). When the shapes differ by more than 15% (a portrait still in a landscape card, a
+   wide banner), the picture is shown whole over a soft, blurred copy of itself, so nothing is cut. The frame is the
+   parent's box (.project-card-media, .project-cover); styles in components.css. */
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { shownWhole } from '../../lib/images';
+
+interface Props {
+  image: { src: ImageMetadata; alt: string; focus?: string };
+  widths: number[];
+  sizes: string;
+  /** The frame's shape, width over height. Default: the cards' 16:10. */
+  frame?: number;
+  loading?: 'eager' | 'lazy';
+  fetchpriority?: 'high';
+}
+const { image, widths, sizes, frame = 16 / 10, loading = 'lazy', fetchpriority } = Astro.props;
+const whole = shownWhole(image.src, frame);
+const backdrop = whole ? await getImage({ src: image.src, width: 48, format: 'webp' }) : undefined;
+---
+{backdrop && <span class="fitted-backdrop" aria-hidden="true" style={`background-image: url("${backdrop.src}");`}></span>}
+<Image src={image.src} alt={image.alt} widths={widths} sizes={sizes} loading={loading} fetchpriority={fetchpriority} decoding="async" class={whole ? 'fitted-whole' : undefined} style={!whole && image.focus ? `object-position: ${image.focus};` : undefined} />

@@ -51,6 +51,7 @@ export const caseCard = (c: CaseStudy): StackCard => ({
   href: `/case-studies/${c.id}`,
   cta: 'Read the case study',
   image: c.data.cover?.src,
+  focus: c.data.cover?.focus,
 });
 
 /** The featured case studies, as on the main site's Home. */
@@ -72,7 +73,7 @@ export async function projectCards(): Promise<StackCard[]> {
     href: `/work/${p.id}`,
     cta: 'Open the project',
     image: p.data.cover?.src,
-    focus: 'center top', // project covers centre their headline
+    focus: p.data.cover?.focus ?? 'center top', // project covers centre their headline
     points: p.data.tags,
   }));
 }

@@ -8,7 +8,7 @@ import { projectCards } from '../../../lib/site-stacks';
 import ProjectDirectory from '../../../components/sites/project-directory.astro';
 const stack = await projectCards();
 ---
-<PageLayout title="Projects · AIUXAleem, for hiring teams" description="Projects by Mohammad Abdul Aleem: design systems and AI product work, with status, tools and links to the full case studies." page="work" bg="grid" mainStyle="outline: none; overflow: clip;">
+<PageLayout title="Projects · AIUXAleem, for hiring managers" description="Projects by Mohammad Abdul Aleem: design systems and AI product work, with status, tools and links to the full case studies." page="work" bg="grid" mainStyle="outline: none; overflow: clip;">
   <SiteHero id="job-work" overline="Projects" title="What is shipped, and what is being built." accent="shipped" lead="What I am building and what has shipped, grouped by status: each project links to its live site, its repository and, where there is one, the full case study." primary={{ label: 'Browse the projects', href: '#project-list' }} secondary={{ label: 'Read the case studies', href: '/case-studies' }}>
     <HeroStack slot="art" id="projects-stack" label="Projects" noun="project" cards={stack} />
   </SiteHero>

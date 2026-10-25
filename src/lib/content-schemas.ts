@@ -20,6 +20,9 @@ export const S = <T extends z.ZodRawShape>(shape: T) => z.preprocess(v => clean(
 
 export const flags = { draft: z.boolean().default(false), fixture: z.boolean().default(false) };
 export const alt = z.string().min(1, 'Alt text is required on every image');
+/** The point of a picture that stays in view wherever a frame cuts it: across then down, for example "50% 30%". Set in the
+    admin by clicking the preview. Without it a cut keeps the top centre. */
+export const focus = z.string().regex(/^(100|d{1,2})% (100|d{1,2})%$/, 'Write the focus point as two percentages, across then down, for example 50% 30%.').optional();
 export const seo = z.object({ title: z.string().max(70).optional(), description: z.string().max(170).optional() }).default({});
 export const link = z.object({ label: z.string(), href: z.string().url() });
 export const metric = z.object({
@@ -39,8 +42,8 @@ export const projectSchema = <I extends z.ZodTypeAny>(image: () => I) => S({
     stack: z.array(z.string()).default([]),
     started: z.coerce.date().optional(),
     ended: z.coerce.date().optional(),
-    cover: z.object({ src: image(), alt }).optional(),
-    gallery: z.array(z.object({ src: image(), alt, caption: z.string().optional() })).default([]),
+    cover: z.object({ src: image(), alt, focus }).optional(),
+    gallery: z.array(z.object({ src: image(), alt, focus, caption: z.string().optional() })).default([]),
     links: z.object({ live: z.string().url().optional(), repo: z.string().url().optional() }).default({}),
     tags: z.array(z.string()).default([]),
     /* Slug of the related case study page under /case-studies/. */
@@ -52,7 +55,7 @@ export const projectSchema = <I extends z.ZodTypeAny>(image: () => I) => S({
   });
 
 export const caseStudySchema = <I extends z.ZodTypeAny>(image: () => I) => {
-    const img = z.object({ src: image(), alt, caption: z.string().optional() });
+    const img = z.object({ src: image(), alt, focus, caption: z.string().optional() });
     const text = z.string().optional();
     const list = z.array(z.string()).default([]);
     return S({
@@ -61,7 +64,7 @@ export const caseStudySchema = <I extends z.ZodTypeAny>(image: () => I) => {
       category: z.string().optional(),
       /* Outcome-focused subtitle: what changed, not what was made. */
       lead: z.string(),
-      cover: z.object({ src: image(), alt }).optional(),
+      cover: z.object({ src: image(), alt, focus }).optional(),
       /* Meta strip */
       role: text, company: text, confidential: z.boolean().default(false), timeline: text, team: text, platform: text,
       stack: list,
@@ -69,13 +72,16 @@ export const caseStudySchema = <I extends z.ZodTypeAny>(image: () => I) => {
       nda: z.boolean().default(false), ndaNote: text,
       /* TL;DR for readers who skim: three to five short lines. */
       tldr: list,
+      /* My part: what I owned (a decision, a roadmap, an outcome), who I worked with, and what I said no to. Shown after
+         "In short" when any of it is filled, so a reader sees the level of the work before its detail. */
+      ownership: z.object({ owned: text, workedWith: list, declined: list }).default({}),
       context: z.object({ problem: text, business: text, constraints: list }).default({}),
       research: z.object({ summary: text, insights: list }).default({}),
       process: z.object({
         summary: text,
         steps: z.array(z.object({ title: z.string(), body: z.string() })).default([]),
         images: z.array(img).default([]),
-        beforeAfter: z.object({ before: z.object({ src: image(), alt }), after: z.object({ src: image(), alt }), caption: text }).optional(),
+        beforeAfter: z.object({ before: z.object({ src: image(), alt, focus }), after: z.object({ src: image(), alt, focus }), caption: text }).optional(),
       }).default({} as never), // every part is optional; the cast is only needed because the image rule is generic
       ai: z.object({ summary: text, behaviour: list, trust: list, humanInLoop: text, guardrails: list, failureStates: list, evaluation: text }).default({}),
       decisions: z.array(z.object({ decision: z.string(), tradeoff: z.string().optional() })).default([]),
@@ -100,7 +106,7 @@ export const postSchema = <I extends z.ZodTypeAny>(image: () => I) => S({
     published: z.coerce.date().optional(),
     updated: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
-    cover: z.object({ src: image(), alt }).optional(),
+    cover: z.object({ src: image(), alt, focus }).optional(),
     download: z.object({ label: z.string(), file: z.string() }).optional(),
     /* The post body is still served by a page migrated from the legacy site; this entry only lists it. */
     legacyPage: z.boolean().default(false),
@@ -117,7 +123,7 @@ export const videoSchema = <I extends z.ZodTypeAny>(image: () => I) => S({
     youtubeId: z.string().regex(/^([\w-]{11}|\[VERIFY\])$/, 'Use the 11-character YouTube id, or [VERIFY]'),
     published: z.coerce.date().optional(),
     duration: z.string().optional(),
-    poster: z.object({ src: image(), alt }).optional(),
+    poster: z.object({ src: image(), alt, focus }).optional(),
     description: z.string().optional(),
     kind: z.enum(['long-form', 'short']).default('long-form'),
     tags: z.array(z.string()).default([]),

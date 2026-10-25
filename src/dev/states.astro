@@ -39,7 +39,6 @@ import { listedResources, categoryCounts } from '../lib/resources';
 import AiToolCard from '../components/cards/ai-tool-card.astro';
 import { listedAiTools, aiCategoryLabel, aiCostLabel } from '../lib/ai-tools';
 import ContactBlock from '../components/profile/contact-block.astro';
-import AudienceFork from '../components/sites/audience-fork.astro';
 import DoorSwitch from '../components/sites/door-switch.astro';
 const resourcesAll = await listedResources();
 const aiToolsAll = await listedAiTools();
@@ -48,6 +47,12 @@ const resourceSample = [...resourcesAll.filter(r => !r.data.fixture).slice(0, 2)
 import HomeFeeds from '../components/home/home-feeds.astro';
 import CaseDeck from '../components/home/case-deck.astro';
 import HeroStack from '../components/sites/hero-stack.astro';
+import FittedImage from '../components/ui/fitted-image.astro';
+import type { ImageMetadata } from 'astro';
+import { verdict, VERDICT_ICON } from '../admin/lib/opportunities';
+import fitCover from '../assets/cases/colaberry-ds-components.jpg';
+import fitTall from '../assets/cases/reel-still.jpg';
+import fitWide from '../assets/cases/multi-brand-family.jpg';
 import { caseCard, type StackCard } from '../lib/site-stacks';
 import WorkedWith from '../components/home/worked-with.astro';
 import Skills from '../components/home/skills.astro';
@@ -65,6 +70,9 @@ import { site } from '../content/site';
 const formStates = [['idle', 'Idle (live: try it; it posts to a fixture address, so sending ends in the failure state)'], ['invalid', 'Inline errors and the error summary'], ['submitting', 'Submitting: fields locked, button disabled, status message'], ['success', 'Success'], ['failure', 'Failure: the input is kept and email is offered']] as const;
 const li = { urn: 'urn:li:share:0000000000000000000', url: 'https://www.linkedin.com/in/aiuxaleem' };
 const allCases = await listedCaseStudies();
+/* Samples for the admin's Opportunity check verdicts and for pictures in frames (casts stay out of the markup). */
+const verdictSamples: Record<string, unknown>[] = [{ scores: { northStar: '5', pay: '4', culture: '5', risks: '4' }, checklist: { writtenOffer: true, payBreakdown: true, terms: true } }, { scores: { northStar: '4', pay: '3', culture: '4', risks: '4' } }, { scores: { northStar: '5', pay: '2', culture: '4', risks: '1' } }, { scores: { northStar: '4' } }];
+const fitSamples: [{ src: ImageMetadata; alt: string; focus?: string }, string][] = [[{ src: fitCover, alt: 'The components page of a design system' }, '16:10, no focus point: cut at the top centre'], [{ src: fitTall, alt: 'A book launch poster with four people on a stage' }, 'Portrait: shown whole over a blurred copy'], [{ src: fitWide, alt: 'Five brand themes of one sign-in screen, side by side' }, 'Wide banner: shown whole over a blurred copy'], [{ src: fitCover, alt: 'The components page of a design system, cut at its lower right', focus: '90% 90%' }, '16:10 with its focus at 90% 90%']];
 /* The audience websites' first-screen stack with the stress content: a long title and line, an unbroken string with
    eight points, a one-word title with no optional field, and a real case study with its cover. */
 const coverCase = allCases.find(c => !c.data.fixture && c.data.cover);
@@ -326,6 +334,11 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <h2 style={h2}>Home hero: case study deck</h2>
             <p style={note}>The deck from the Home hero, still, with the stress fixture on the front card (a 120-character title, a long subtitle, no cover image). On Home it holds the featured case studies and the arrows bring the next card forward.</p>
             <div style="max-inline-size: min(100%, 440px); overflow: clip;"><CaseDeck fixtures /></div>
+            <h2 style={h2}>Pictures in frames</h2>
+            <p style={note}>How a card or a cover frame shows a picture (ui/fitted-image.astro). A 16:10 picture fills the frame, cut at the top centre by default or at its focus point; a picture whose shape is far from the frame's (a portrait still, a wide banner) is shown whole over a blurred copy of itself. The fourth has a focus point at its lower right.</p>
+            <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
+              {fitSamples.map(([image, state]) => <li><div class="project-card-media" style="border-radius: var(--radius-lg);"><FittedImage image={image} widths={[400]} sizes="400px" /></div><p style={note}>{state}</p></li>)}
+            </ul></div>
             <h2 style={h2}>Audience websites: first-screen stack</h2>
             <p style={note}>The stack beside the words on every first screen of the websites for hiring teams and for clients. Live: the arrows bring the next card forward. Front card: a 120-character title, a long line and an unbroken kicker over eight points (the sheet shows four). Then a one-word title with every optional field missing, and a case study with its cover. Below it, a stack of one card, which has no arrows.</p>
             <div style="display: grid; gap: var(--space-10); max-inline-size: min(100%, 440px); overflow-x: clip;"><HeroStack id={`states-stack-${theme}`} label="Stack" noun="card" cards={stackStress} /><HeroStack id={`states-stack-one-${theme}`} label="One card" noun="card" cards={[stackStress[1]]} /></div>
@@ -356,10 +369,8 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
           </div>
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
-            <h2 style={h2}>Version 2: the two doors and the way across</h2>
-            <p style={note}>The A/B test's version 2 (docs/AB_TEST.md). The two doors as on Home (with what is behind each) and as on Contact (compact), then the band that leads to the other door, both ways.</p>
-            <AudienceFork id={`states-doors-${theme}`} />
-            <AudienceFork id={`states-doors-compact-${theme}`} compact />
+            <h2 style={h2}>Audience websites: the way across</h2>
+            <p style={note}>The band near the foot of a website's Home that leads to the other audience website (docs/SITES.md), both ways.</p>
             <DoorSwitch to="clients" id={`states-switch-clients-${theme}`} landmark={false} />
             <DoorSwitch to="hiring" id={`states-switch-hiring-${theme}`} landmark={false} />
           </div>
@@ -410,6 +421,12 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <div data-lazy-block style="content-visibility: auto; contain-intrinsic-size: auto 900px;"><DashboardView plain uid={`${theme}-partial`} data={theme === 'dark' ? { ...dashPartial, patternDays: 5 } : dashPartial} range={30} ranges={[7, 30, 90]} base="#main" /></div>
             <p style={note}>Empty: no visits in the period.</p>
             <div data-lazy-block style="content-visibility: auto; contain-intrinsic-size: auto 900px;"><DashboardView plain uid={`${theme}-empty`} data={dashEmpty} range={7} ranges={[7, 30, 90]} base="#main" /></div>
+
+          <div class="states-static" style="display: grid; gap: var(--space-4);">
+            <h2 style={h2}>Admin: Opportunity check verdicts</h2>
+            <p style={note}>The verdict an opportunity's scores read as (src/admin/lib/opportunities.ts), each with its icon so it is never told by colour alone: all four at 4 or more with the offer in writing; scored but mixed; any area at 2 or below, named; not yet fully scored.</p>
+            <div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">{verdictSamples.map(d => { const v = verdict(d); return <span class="ui-badge admin-state" data-state={v.kind === 'look' ? 'changes' : undefined}><AdminIcon name={VERDICT_ICON[v.kind]} size={14} />{v.label}</span>; })}</div>
+          </div>
 
           <div class="states-static" style="display: grid; gap: var(--space-4);">
             <h2 style={h2}>Admin: editor pieces</h2>

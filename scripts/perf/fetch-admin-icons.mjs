@@ -19,7 +19,7 @@ export const ICONS = {
   // actions
   search: 'search', nomatch: 'search-x', add: 'plus', youtube: 'youtube', refresh: 'refresh-cw', upload: 'upload', publish: 'send', draft: 'save', discard: 'trash-2', copy: 'copy', copied: 'clipboard-check',
   // dashboard
-  waiting: 'inbox', recent: 'history', clock: 'clock', 'ab-test': 'split', numbers: 'activity', views: 'eye', people: 'users', pages: 'files', busiest: 'calendar-days', chart: 'chart-column', top: 'trending-up', referrers: 'link', countries: 'globe', devices: 'monitor-smartphone',
+  waiting: 'inbox', recent: 'history', clock: 'clock', 'ab-test': 'split', opportunities: 'compass', numbers: 'activity', views: 'eye', people: 'users', pages: 'files', busiest: 'calendar-days', chart: 'chart-column', top: 'trending-up', referrers: 'link', countries: 'globe', devices: 'monitor-smartphone',
   // deltas
   up: 'arrow-up-right', down: 'arrow-down-right', flat: 'minus', target: 'target',
   // messages

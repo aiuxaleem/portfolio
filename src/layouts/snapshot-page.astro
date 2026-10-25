@@ -11,7 +11,7 @@ import { site, parity } from '../content/site';
 import { chrome } from '../i18n/chrome';
 
 interface Snapshot { title: string; description: string; lang: string; dir: string; langs: string; page: string; css: string; fonts: string; header: string; extras: string; main: string; footer: string }
-interface Props { snapshot: Snapshot; /** A page of version 2 (docs/AB_TEST.md): kept out of search, still counted. */ ab?: boolean; canonical?: string; /** Version 2 rewrites its copy of the page: applied after the usual tuning. */ rewrite?: (html: string) => string; /** No footer CTA band: the page ends with its own. */ hideCta?: boolean; /** No "Get in touch" in the header: the hero already asks for contact. */ hideHeaderCta?: boolean; altLangHref?: string; title?: string; description?: string; /** The opening tag of the section before which the default slot is placed. */ slotBefore?: string; /** Image paths that are below the first view on this page at every screen size. */ lazyImages?: string[]; ogType?: string; ogImage?: string; jsonLd?: (Record<string, unknown> | undefined)[] }
+interface Props { snapshot: Snapshot; canonical?: string; /** Version 2 rewrites its copy of the page: applied after the usual tuning. */ rewrite?: (html: string) => string; /** No footer CTA band: the page ends with its own. */ hideCta?: boolean; /** No "Get in touch" in the header: the hero already asks for contact. */ hideHeaderCta?: boolean; altLangHref?: string; title?: string; description?: string; /** The opening tag of the section before which the default slot is placed. */ slotBefore?: string; /** Image paths that are below the first view on this page at every screen size. */ lazyImages?: string[]; ogType?: string; ogImage?: string; jsonLd?: (Record<string, unknown> | undefined)[] }
 const { snapshot: s, altLangHref } = Astro.props;
 const hideCta = Astro.props.hideCta ?? !s.footer.includes('data-cta-row');
 /* The availability line comes from site settings. The legacy English text is swapped for it; Arabic keeps its legacy text until a translation is supplied. */
@@ -22,7 +22,7 @@ const html = Astro.props.rewrite ? Astro.props.rewrite(tuned) : tuned;
 const at = Astro.props.slotBefore ? html.indexOf(Astro.props.slotBefore) : -1;
 if (Astro.props.slotBefore && at < 0) throw new Error(`snapshot-page: "${Astro.props.slotBefore}" was not found in the ${s.page} snapshot`);
 ---
-<BaseLayout ab={Astro.props.ab} canonical={Astro.props.canonical} title={Astro.props.title || s.title} description={Astro.props.description || s.description} page={s.page} langs={s.langs} lang={s.lang} dir={s.dir} ogType={Astro.props.ogType} ogImage={Astro.props.ogImage} jsonLd={Astro.props.jsonLd}>
+<BaseLayout canonical={Astro.props.canonical} title={Astro.props.title || s.title} description={Astro.props.description || s.description} page={s.page} langs={s.langs} lang={s.lang} dir={s.dir} ogType={Astro.props.ogType} ogImage={Astro.props.ogImage} jsonLd={Astro.props.jsonLd}>
   <style is:inline set:html={s.css}></style>
   <div id="dc-root">
     <div class="sc-host">

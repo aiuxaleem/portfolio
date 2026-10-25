@@ -2,7 +2,7 @@
 /* Project card (CLAUDE.md 2.7): one primary link, the whole card clickable through a stretched link, fixed media ratio,
    equal heights in a row, padding from the spacing scale. Built from the existing card recipe and tokens.
    States: with cover, without cover (typographic fallback at the same size), optional tags and status. */
-import { Image } from 'astro:assets';
+import FittedImage from '../ui/fitted-image.astro';
 import type { Project } from '../../lib/projects';
 import { statusLabel, statusTone } from '../../lib/projects';
 
@@ -14,7 +14,7 @@ const Heading = `h${level}` as any;
 <article class="project-card" data-project data-status={d.status} data-tags={d.tags.join('|')}>
   <div class="project-card-media">
     {d.cover
-      ? <Image src={d.cover.src} alt={d.cover.alt} widths={[400, 640, 960]} sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" loading={first ? 'eager' : 'lazy'} fetchpriority={first ? 'high' : undefined} decoding="async" />
+      ? <FittedImage image={d.cover} widths={[400, 640, 960]} sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" loading={first ? 'eager' : 'lazy'} fetchpriority={first ? 'high' : undefined} />
       : <div data-cover-fallback="label" aria-hidden="true"><span>{['Project', d.tags[0]].filter(Boolean).join(' · ')}</span></div>}
   </div>
   <div class="project-card-body">

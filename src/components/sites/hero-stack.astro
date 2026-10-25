@@ -9,6 +9,7 @@
    the arrows' hover and press come from audit-fixes.css. Without JavaScript the front card shows and links. */
 import { getImage } from 'astro:assets';
 import type { StackCard } from '../../lib/site-stacks';
+import { shownWhole } from '../../lib/images';
 
 interface Props {
   id: string;
@@ -19,7 +20,11 @@ interface Props {
   cards: StackCard[];
 }
 const { id, label, noun, cards: all } = Astro.props;
-const cards = await Promise.all(all.slice(0, 3).map(async c => ({ ...c, img: c.image ? await getImage({ src: c.image, widths: [400, 640, 960] }) : undefined })));
+/* A cover far from the window's 16:10 is shown whole over a blurred copy of itself (as ui/fitted-image.astro does). */
+const cards = await Promise.all(all.slice(0, 3).map(async c => {
+  const whole = c.image ? shownWhole(c.image, 16 / 10) : false;
+  return { ...c, whole, img: c.image ? await getImage({ src: c.image, widths: [400, 640, 960] }) : undefined, backdrop: whole && c.image ? await getImage({ src: c.image, width: 48, format: 'webp' }) : undefined };
+}));
 const pad = (n: number) => String(n).padStart(2, '0');
 const arrow = (d: string, size = 20) => `<svg data-dir-icon width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"></path></svg>`;
 ---
@@ -51,8 +56,9 @@ const arrow = (d: string, size = 20) => `<svg data-dir-icon width="${size}" heig
               <span class="hero-stack-stage" aria-hidden="true">
                 <span data-stack-frame class="hero-stack-frame">
                   <span class="hero-stack-bar"><span></span><span></span><span></span></span>
+                  {c.backdrop && <span class="fitted-backdrop" style={`background-image: url("${c.backdrop.src}");`}></span>}
                   {c.img
-                    ? <img src={c.img.src} srcset={c.img.srcSet.attribute} sizes="(min-width: 1024px) 400px, 90vw" alt="" width={c.img.attributes.width} height={c.img.attributes.height} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" style={c.focus ? `object-position: ${c.focus};` : undefined} />
+                    ? <img src={c.img.src} srcset={c.img.srcSet.attribute} sizes="(min-width: 1024px) 400px, 90vw" alt="" width={c.img.attributes.width} height={c.img.attributes.height} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" class={c.whole ? 'hero-stack-whole' : undefined} style={!c.whole && c.focus ? `object-position: ${c.focus};` : undefined} />
                     : <img src={c.picture!.src} alt="" width={c.picture!.width} height={c.picture!.height} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" class="hero-stack-picture" />}
                 </span>
               </span>
@@ -93,10 +99,14 @@ const arrow = (d: string, size = 20) => `<svg data-dir-icon width="${size}" heig
   .hero-stack-line { font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--on-ink-body); text-wrap: pretty; }
   .hero-stack-cta { display: inline-flex; align-items: center; gap: var(--space-1); align-self: flex-start; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--on-ink-link); }
   /* A picture sits in a tilted window that runs off the card's foot and end, as on the Home deck. */
-  .hero-stack-stage { position: relative; display: block; margin-block: auto calc(-1 * var(--space-6)); aspect-ratio: 16 / 10; }
+  /* 9:5 makes the window, which runs past the card's foot and end, 16:10: the shape of the covers. */
+  .hero-stack-stage { position: relative; display: block; margin-block: auto calc(-1 * var(--space-6)); aspect-ratio: 9 / 5; }
   .hero-stack-frame { position: absolute; inset-inline: 10% -6%; inset-block: 0 -8%; display: block; border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-card); border: 1px solid var(--on-ink-border-strong); box-shadow: var(--shadow-xl); transform: rotate(calc(-4deg * var(--dir-x))); transform-origin: 0 100%; }
   .hero-stack-frame img { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; object-position: left top; }
   .hero-stack-frame .hero-stack-picture { object-position: center 20%; }
+  .hero-stack-frame { isolation: isolate; }
+  .hero-stack-frame .fitted-backdrop { z-index: -1; }
+  .hero-stack-frame img.hero-stack-whole { position: relative; object-fit: contain; object-position: center; }
   /* A sheet of points sits upright inside the card, so every word reads and none is cut at an edge. The picture and the
      sheet sit at the card's foot, so a card shorter than its neighbours opens space under its words, not an empty band. */
   .hero-stack-sheet { display: block; margin: auto var(--space-6) 0; border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-card); border: 1px solid var(--on-ink-border-strong); box-shadow: var(--shadow-xl); }
@@ -105,5 +115,7 @@ const arrow = (d: string, size = 20) => `<svg data-dir-icon width="${size}" heig
   .hero-stack-points { display: grid; gap: var(--space-3); padding: var(--space-4) var(--space-5) var(--space-5); }
   .hero-stack-points span { position: relative; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; padding-inline-start: var(--space-4); font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-body); overflow-wrap: anywhere; }
   .hero-stack-points span::before { content: ""; position: absolute; inset-inline-start: 0; inset-block-start: 0.6em; inline-size: 6px; block-size: 6px; border-radius: 50%; background: var(--text-link); }
+  /* In dark the field is deep navy too: a stronger edge keeps the ink cards apart from it. */
+  :global([data-theme="dark"]) .hero-stack-card { border-color: var(--on-ink-border-strong); }
   @media (prefers-reduced-motion: reduce) { .hero-stack-arrow { transition: none; } }
 </style>

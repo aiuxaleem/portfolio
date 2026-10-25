@@ -100,7 +100,7 @@ a.ui-chip[aria-current="page"] { background: var(--action-ink); box-shadow: inse
 .video-card .project-card-summary { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
 .home-video { max-inline-size: min(100%, 760px); }
 /* On a card-surface section, cards sit on the page surface, as the existing home sections do. */
-[data-home-feed][data-surface="card"] .project-card { background: var(--surface-page); }
+[data-home-feed][data-surface="card"] .project-card { background: var(--surface-glass-strong); }
 /* In a list of posts every card fills its cell, so cards in a row are the same height; a loaded post adds its own row below. */
 .embed-linkedin[data-fill] { block-size: 100%; grid-template-rows: 1fr; }
 .embed-linkedin[data-fill] .embed-card { align-content: start; }

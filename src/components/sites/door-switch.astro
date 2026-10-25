@@ -1,5 +1,5 @@
 ---
-/* The way across to the other audience website (docs/SITES.md). A short band at the foot of the page for hiring teams
+/* The way across to the other audience website (docs/SITES.md). A short band at the foot of the page for hiring managers
    (to the client page) and on the client page (to the hiring page), so a visitor who came in by the wrong door is one
    click from the right one. One link, a secondary button: the page's own call to action stays the primary one. */
 import Button from '../ui/button.astro';
@@ -9,7 +9,7 @@ interface Props { to: 'hiring' | 'clients'; id: string; /** Off on /_states, whe
 const { to, id, landmark = true } = Astro.props;
 const Wrap: any = landmark ? 'section' : 'div';
 const copy = to === 'hiring'
-  ? { overline: 'Hiring instead?', title: 'There is a website written for hiring teams', body: 'The experience, the case studies, the resume and the certifications, for a Lead or Principal role in KSA or the UAE.', cta: 'Open the website for hiring teams', href: SUB_SITES.job.live }
+  ? { overline: 'Hiring instead?', title: 'There is a website written for hiring managers', body: 'The experience, the case studies, the resume and the certifications, for a Lead or Principal role in KSA or the UAE.', cta: 'Open the website for hiring managers', href: SUB_SITES.job.live }
   : { overline: 'Building a product instead?', title: 'There is a website written for clients', body: 'What I do on a project, what you get and how an engagement starts: AI product design, design systems and UX audits.', cta: 'Open the website for clients', href: SUB_SITES.clients.live };
 ---
 <Wrap class="cory-container door-switch-wrap" aria-labelledby={landmark ? `${id}-title` : undefined}>

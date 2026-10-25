@@ -3,14 +3,14 @@
 /* Section header used on these pages: overline + heading (same values as the home sections). */
 .page-h2 { margin: 0; max-inline-size: 24ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; }
 .page-section { padding-block: var(--section-y); }
-.page-section[data-surface="card"] { background: var(--surface-card); border-block: 1px solid var(--border-subtle); }
+.page-section[data-surface="card"] { background: var(--surface-glass); border-block: 1px solid var(--border-subtle); }
 .page-section > .cory-container { display: grid; gap: var(--space-10); }
 .page-section-head { display: grid; gap: var(--space-3); }
 .page-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-body-lg); line-height: var(--leading-relaxed); color: var(--text-body); }
 
 /* Tiles: principles, expertise, steps, "now" items. On a card-surface section they sit on the page surface. */
-.tile { display: flex; flex-direction: column; gap: var(--space-3); block-size: 100%; padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); min-inline-size: 0; }
-.page-section[data-surface="card"] .tile, .page-section[data-surface="card"] .project-card { background: var(--surface-page); }
+.tile { display: flex; flex-direction: column; gap: var(--space-3); block-size: 100%; padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-glass-strong); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); min-inline-size: 0; }
+.page-section[data-surface="card"] .tile, .page-section[data-surface="card"] .project-card { background: var(--surface-glass-strong); }
 .tile-num { font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--leading-mono); color: var(--text-subtle); }
 .tile h3 { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h4); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; }
 .tile p { margin: 0; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); }
@@ -43,7 +43,7 @@
 /* Certification rows. */
 .cert-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: var(--grid-gap); }
 .cert-list > li { display: grid; gap: var(--space-2); padding: var(--space-5) var(--space-6); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
-.page-section[data-surface="card"] .cert-list > li { background: var(--surface-page); }
+.page-section[data-surface="card"] .cert-list > li { background: var(--surface-glass-strong); }
 .cert-name { margin: 0; font-size: var(--text-body-lg); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
 .cert-meta { margin: 0; font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-muted); overflow-wrap: anywhere; }
 .cert-list .ui-badge { justify-self: start; }
@@ -71,7 +71,7 @@
 
 /* Testimonials. */
 .testimonial { display: flex; flex-direction: column; gap: var(--space-5); block-size: 100%; margin: 0; padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); min-inline-size: 0; }
-.page-section[data-surface="card"] .testimonial { background: var(--surface-page); }
+.page-section[data-surface="card"] .testimonial { background: var(--surface-glass-strong); }
 .testimonial blockquote { margin: 0; }
 .testimonial blockquote p { margin: 0; font-size: var(--text-body-lg); line-height: var(--leading-relaxed); color: var(--text-strong); overflow-wrap: anywhere; }
 .testimonial figcaption { margin-block-start: auto; display: flex; align-items: center; gap: var(--space-3); min-inline-size: 0; }

@@ -1,0 +1,24 @@
+---
+/* The background of every public page (owner request, 25 October 2026: "improve the backgrounds, try something new …
+   glassmorphism with AI reference grid … not boring"). One fixed layer behind the content, so sections glide over it as
+   the page scrolls, with no animation: a fine reference grid of dots that fades toward the middle of the screen, and two
+   soft brand glows. (The North Star, the owner's word for his direction, is the mark in the bar of websites,
+   site-switch.astro, where nothing scrolls under it.) Sections and cards over it are glass
+   (translucent token surfaces, site.css), not blurred, so scrolling stays smooth. Decorative: aria-hidden. Hidden when
+   the visitor asks for less transparency, in forced colours, and in print. */
+---
+<div class="ai-field" aria-hidden="true"></div>
+
+<style>
+  .ai-field { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; background: var(--glow-cyan) no-repeat right -18vw top -22vh / min(72vw, 860px) min(72vw, 860px), var(--glow-blue) no-repeat left -18vw bottom -26vh / min(80vw, 940px) min(80vw, 940px); }
+  :global([dir="rtl"]) .ai-field { background-position: left -18vw top -22vh, right -18vw bottom -26vh; }
+  /* A glass veil over the glows: text can sit on a glow's peak as the page scrolls, and the veil keeps every text colour
+     at 4.5:1 or more there (measured at the peak: links 4.63 in light, 5.29 in dark; without it 3.50 and 3.66). */
+  .ai-field::after { content: ""; position: absolute; inset: 0; background: var(--surface-glass); }
+  /* The reference grid: a dot every 28px, above the veil, strongest at the edges of the screen, gone in the middle where
+     text is read. */
+  .ai-field::before { content: ""; position: absolute; inset: 0; z-index: 1; background-image: radial-gradient(circle, var(--field-dot) 1px, transparent 1.5px); background-size: 28px 28px; -webkit-mask-image: radial-gradient(ellipse 70% 65% at 50% 45%, transparent 35%, #000 100%); mask-image: radial-gradient(ellipse 70% 65% at 50% 45%, transparent 35%, #000 100%); }
+  @media (prefers-reduced-transparency: reduce) { .ai-field { display: none; } }
+  @media (forced-colors: active) { .ai-field { display: none; } }
+  @media print { .ai-field { display: none; } }
+</style>

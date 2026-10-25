@@ -1,5 +1,5 @@
 ---
-/* Experience on the website for hiring teams (docs/SITES.md): the full timeline (each company beside its roles, with what
+/* Experience on the website for hiring managers (docs/SITES.md): the full timeline (each company beside its roles, with what
    each role shipped), certifications, education, the principles, and how I work with AI. The main site's About without
    the parts written for clients. */
 import PageLayout from '../../layouts/page-layout.astro';
@@ -18,7 +18,7 @@ import HeroStack from '../../components/sites/hero-stack.astro';
 import { careerCards } from '../../lib/site-stacks';
 const stack = careerCards('#experience-career-title');
 ---
-<PageLayout title="Experience · AIUXAleem, for hiring teams" description={`The experience of ${site.name}, ${profile.headline}: every role with what it shipped, certifications, education and how he works with AI.`} page="experience" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
+<PageLayout title="Experience · AIUXAleem, for hiring managers" description={`The experience of ${site.name}, ${profile.headline}: every role with what it shipped, certifications, education and how he works with AI.`} page="experience" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
   <SiteHero id="experience" overline="Experience" title="Thirteen-plus years, from enterprise UX to AI products." accent="AI products" lead={profile.positioning} primary={{ label: c.call, href: site.calendarUrl, newTab: true }} secondary={{ label: resumeExternal ? 'View resume' : 'Download resume', href: site.resumeUrl, newTab: resumeExternal }}>
     <HeroStack slot="art" id="career-stack" label="Where I have worked" noun="company" cards={stack} />
   </SiteHero>

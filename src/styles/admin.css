@@ -104,7 +104,10 @@
 .admin-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr)); gap: var(--space-5) var(--grid-gap); }
 .admin-images li { display: grid; grid-template-rows: auto 1fr auto; gap: var(--space-2); min-inline-size: 0; padding: var(--space-3); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); }
 .admin-thumb { aspect-ratio: 16 / 10; overflow: hidden; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); background: var(--surface-sunken); }
-.admin-thumb img { inline-size: 100%; block-size: 100%; object-fit: cover; object-position: top; }
+/* A thumbnail shows the whole picture, never a cut of it (owner request, 25 October 2026); the shape preview under an
+   image field shows the cut the site makes, with the focus point the field holds. */
+.admin-thumb img { inline-size: 100%; block-size: 100%; object-fit: contain; object-position: center; }
+.admin-thumb[data-shape] img { object-fit: cover; object-position: top center; }
 .admin-thumb[data-failed] { display: grid; place-items: center; padding: var(--space-2); font-size: var(--text-caption); color: var(--text-subtle); text-align: center; }
 .admin-path { margin: 0; font-family: var(--font-mono); font-size: var(--text-mono-sm); line-height: var(--leading-mono); color: var(--text-body); overflow-wrap: anywhere; user-select: all; }
 
@@ -397,6 +400,12 @@ html:not([data-admin-js]) [data-needs-js] { display: none; }
 /* A picture named in a path field is shown small under it; the box is hidden until the path names a picture in the repository. */
 .admin-preview { max-inline-size: 14rem; }
 .admin-preview[hidden] { display: none; }
+.admin-preview-fit { max-inline-size: 22rem; display: grid; gap: var(--space-3); }
+.admin-pick { position: relative; cursor: crosshair; }
+.admin-focus-mark { position: absolute; inline-size: 18px; block-size: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--text-link); border: 3px solid var(--surface-card); box-shadow: var(--shadow-md); pointer-events: none; }
+.admin-focus-mark[hidden] { display: none; }
+.admin-shape { display: grid; gap: var(--space-1); margin: 0; }
+.admin-shape figcaption { font-size: var(--text-caption); color: var(--text-subtle); }
 /* In a field the hint (2) and the error (3) come first; then the preview, the pictures link and the Markdown fold. */
 .form-field > .admin-preview { order: 4; }
 .form-field > .admin-pictures-link, .form-field > .resource-disclosure { order: 5; }

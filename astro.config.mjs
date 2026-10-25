@@ -37,6 +37,10 @@ const devOnly = {
         // Visitors suggest a UX resource here (saved as a draft for review); the owner can add or publish one with a key.
         injectRoute({ pattern: '/api/resources', entrypoint: './src/admin/pages/resources-api.ts' });
         // One list and one editor for every kind of entry: /admin/projects, /admin/case-studies, /admin/posts.
+        // The Opportunity check: private, in the database (src/admin/lib/opportunities.ts). Before the [kind] routes.
+        injectRoute({ pattern: '/admin/opportunities', entrypoint: './src/admin/pages/opportunities/index.astro' });
+        injectRoute({ pattern: '/admin/opportunities/new', entrypoint: './src/admin/pages/opportunities/edit.astro' });
+        injectRoute({ pattern: '/admin/opportunities/[id]', entrypoint: './src/admin/pages/opportunities/edit.astro' });
         injectRoute({ pattern: '/admin/[kind]', entrypoint: './src/admin/pages/entries/index.astro' });
         injectRoute({ pattern: '/admin/[kind]/new', entrypoint: './src/admin/pages/entries/edit.astro' });
         injectRoute({ pattern: '/admin/[kind]/[slug]', entrypoint: './src/admin/pages/entries/edit.astro' });

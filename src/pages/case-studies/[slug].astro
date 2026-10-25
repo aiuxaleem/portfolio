@@ -2,6 +2,8 @@
 /* /case-studies/[slug]. Every section is optional: only sections with content are rendered, and the table of contents
    lists exactly those. Figures in Outcomes appear only for metrics marked verified. */
 import { Image } from 'astro:assets';
+import FittedImage from '../../components/ui/fitted-image.astro';
+import { coverFrame } from '../../lib/images';
 import { render } from 'astro:content';
 import PageLayout from '../../layouts/page-layout.astro';
 import ReadProgress from '../../components/content/read-progress.astro';
@@ -46,9 +48,9 @@ const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
         <p class="case-nda"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg><span><strong>Under NDA.</strong> {d.ndaNote || 'Some details are changed or left out to respect a confidentiality agreement.'}</span></p>
       )}
       {meta.length > 0 && <dl class="project-meta">{meta.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>}
-      <div class="project-cover">
+      <div class="project-cover" style={d.cover ? `aspect-ratio: ${coverFrame(d.cover.src)};` : undefined}>
         {d.cover
-          ? <Image src={d.cover.src} alt={d.cover.alt} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1280px) 1144px, 100vw" loading="eager" fetchpriority="high" />
+          ? <FittedImage image={d.cover} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1280px) 1144px, 100vw" frame={coverFrame(d.cover.src)} loading="eager" fetchpriority="high" />
           : <div data-cover-fallback="label" aria-hidden="true"><span>{['Case study', d.category].filter(Boolean).join(' · ')}</span></div>}
       </div>
     </header>
@@ -67,6 +69,15 @@ const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
               <p class="cory-overline">{num('summary')} · 30-second read</p>
               <h2 id="summary-title" class="project-h2">In short</h2>
               <ul>{d.tldr.map(t => <li>{t}</li>)}</ul>
+            </section>
+          )}
+          {shown.has('part') && (
+            <section id="part" class="case-section" aria-labelledby="part-title">
+              <p class="cory-overline">{num('part')} · Ownership</p>
+              <h2 id="part-title" class="project-h2">My part</h2>
+              {paras(d.ownership.owned).map(p => <p>{p}</p>)}
+              {d.ownership.workedWith.length > 0 && <><h3>Who I worked with</h3><ul>{d.ownership.workedWith.map(x => <li>{x}</li>)}</ul></>}
+              {d.ownership.declined.length > 0 && <><h3>What I said no to</h3><ul>{d.ownership.declined.map(x => <li>{x}</li>)}</ul></>}
             </section>
           )}
           {shown.has('context') && (

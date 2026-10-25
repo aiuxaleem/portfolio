@@ -2,6 +2,8 @@
 /* /work/[slug]: one project. Every block except the title, summary and status is optional and is left out when its
    field is empty (CLAUDE.md 2.6, partial state). Updates are listed newest first. */
 import { Image } from 'astro:assets';
+import FittedImage from '../../components/ui/fitted-image.astro';
+import { coverFrame } from '../../lib/images';
 import { render } from 'astro:content';
 import PageLayout from '../../layouts/page-layout.astro';
 import Button from '../../components/ui/button.astro';
@@ -42,9 +44,9 @@ const arrowOut = 'M7 7h10v10M7 17 17 7';
       <dl class="project-meta">
         {meta.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
       </dl>
-      <div class="project-cover">
+      <div class="project-cover" style={d.cover ? `aspect-ratio: ${coverFrame(d.cover.src)};` : undefined}>
         {d.cover
-          ? <Image src={d.cover.src} alt={d.cover.alt} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1280px) 1144px, 100vw" loading="eager" fetchpriority="high" />
+          ? <FittedImage image={d.cover} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1280px) 1144px, 100vw" frame={coverFrame(d.cover.src)} loading="eager" fetchpriority="high" />
           : <div data-cover-fallback="label" aria-hidden="true"><span>{['Project', d.tags[0]].filter(Boolean).join(' · ')}</span></div>}
       </div>
     </header>

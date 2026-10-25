@@ -44,7 +44,7 @@ const elsewhere = [
       <p class="cory-overline" style="margin: 0;">{overline}</p>
       <Heading id={`${id}-title`} class:list={['contact-block-title', level === 1 && 'contact-block-title-page']}>{title}</Heading>
       <p class="contact-block-lead">{lead}</p>
-      {doors && <p class="contact-block-doors"><a data-link href={SUB_SITES.job.live}>Hiring? The website for hiring teams</a><a data-link href={SUB_SITES.clients.live}>Building? The website for clients</a></p>}
+      {doors && <p class="contact-block-doors"><a data-link href={SUB_SITES.job.live}>Hiring? The website for hiring managers</a><a data-link href={SUB_SITES.clients.live}>Building? The website for clients</a></p>}
       <div data-hero-ctas class="contact-block-ctas">
         <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
         {!formFirst && <Button variant="secondary" size="lg" href={`mailto:${site.email}`}>Email me</Button>}

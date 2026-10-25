@@ -11,6 +11,7 @@ const flags = {
 const img = (label: string, dir: string) => fields.object({
   src: fields.image({ label: `${label}: image`, directory: `src/assets/${dir}`, publicPath: `../../assets/${dir}/` }),
   alt: fields.text({ label: `${label}: alt text`, description: 'Required when an image is set: describe it for someone who cannot see it. The build fails if it is empty.' }),
+  focus: fields.text({ label: `${label}: focus point`, description: 'Optional. The point that stays in view where a frame cuts the picture: across then down, for example 50% 30%. Blank keeps the top centre.' }),
 }, { label });
 const long = (label: string) => fields.text({ label, multiline: true });
 const lines = (label: string) => fields.array(fields.text({ label: 'Line' }), { label, itemLabel: p => p.value });
@@ -105,7 +106,7 @@ export default config({
         stack: fields.array(fields.text({ label: 'Tool' }), { label: 'Stack', itemLabel: p => p.value }),
         started: fields.date({ label: 'Started' }), ended: fields.date({ label: 'Ended' }),
         cover: img('Cover', 'projects'),
-        gallery: fields.array(fields.object({ src: fields.image({ label: 'Image', directory: 'src/assets/projects', publicPath: '../../assets/projects/' }), alt: fields.text({ label: 'Alt text' }), caption: fields.text({ label: 'Caption' }) }), { label: 'Gallery', itemLabel: p => p.fields.alt.value }),
+        gallery: fields.array(fields.object({ src: fields.image({ label: 'Image', directory: 'src/assets/projects', publicPath: '../../assets/projects/' }), alt: fields.text({ label: 'Alt text' }), focus: fields.text({ label: 'Focus point', description: 'Optional, for example 50% 30%.' }), caption: fields.text({ label: 'Caption' }) }), { label: 'Gallery', itemLabel: p => p.fields.alt.value }),
         links: fields.object({ live: fields.url({ label: 'Live site' }), repo: fields.url({ label: 'Repository' }) }, { label: 'Links' }),
         tags,
         caseStudy: fields.text({ label: 'Related case study', description: 'The slug of the page under /case-studies/, for example colaberry-design-system' }),
@@ -125,12 +126,13 @@ export default config({
         timeline: fields.text({ label: 'Timeline' }), team: fields.text({ label: 'Team' }), platform: fields.text({ label: 'Platform' }), stack: lines('Tools'),
         nda: fields.checkbox({ label: 'Show the NDA notice' }), ndaNote: fields.text({ label: 'NDA note', multiline: true }),
         tldr: lines('In short (3 to 5 lines for readers who skim)'),
+        ownership: fields.object({ owned: long('My part: what I owned'), workedWith: lines('My part: who I worked with'), declined: lines('My part: what I said no to') }, { label: 'My part' }),
         context: fields.object({ problem: long('Problem'), business: long('Business context'), constraints: lines('Constraints') }, { label: 'Problem and context' }),
         research: fields.object({ summary: long('Summary'), insights: lines('Insights') }, { label: 'Research and insights' }),
         process: fields.object({
           summary: long('Summary'),
           steps: fields.array(fields.object({ title: fields.text({ label: 'Title' }), body: long('Body') }), { label: 'Steps', itemLabel: p => p.fields.title.value }),
-          images: fields.array(fields.object({ src: fields.image({ label: 'Image', directory: 'src/assets/cases', publicPath: '../../assets/cases/' }), alt: fields.text({ label: 'Alt text' }), caption: fields.text({ label: 'Caption' }) }), { label: 'Images (flows, wireframes, iterations)', itemLabel: p => p.fields.alt.value }),
+          images: fields.array(fields.object({ src: fields.image({ label: 'Image', directory: 'src/assets/cases', publicPath: '../../assets/cases/' }), alt: fields.text({ label: 'Alt text' }), focus: fields.text({ label: 'Focus point', description: 'Optional, for example 50% 30%.' }), caption: fields.text({ label: 'Caption' }) }), { label: 'Images (flows, wireframes, iterations)', itemLabel: p => p.fields.alt.value }),
           beforeAfter: fields.object({ before: img('Before', 'cases'), after: img('After', 'cases'), caption: fields.text({ label: 'Caption' }) }, { label: 'Before and after comparison' }),
         }, { label: 'Process' }),
         ai: fields.object({ summary: long('Summary'), behaviour: lines('Agent and model behaviour'), trust: lines('Trust and transparency patterns'), humanInLoop: long('Human in the loop'), guardrails: lines('Guardrails'), failureStates: lines('Failure and edge states'), evaluation: long('Evaluation') }, { label: 'AI section (optional)' }),

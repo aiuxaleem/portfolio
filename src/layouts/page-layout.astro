@@ -4,10 +4,10 @@ import BaseLayout from './base-layout.astro';
 import SiteHeader from '../components/layout/site-header.astro';
 import SiteFooter from '../components/layout/site-footer.astro';
 
-interface Props { /** A page of version 2 (docs/AB_TEST.md). */ ab?: boolean; title: string; description: string; page?: string; noindex?: boolean; hideCta?: boolean; /** No "Get in touch" in the header (the Contact page). */ hideHeaderCta?: boolean; mainStyle?: string; bg?: string; canonical?: string; ogType?: string; ogImage?: string; jsonLd?: (Record<string, unknown> | undefined)[] }
+interface Props { title: string; description: string; page?: string; noindex?: boolean; hideCta?: boolean; /** No "Get in touch" in the header (the Contact page). */ hideHeaderCta?: boolean; mainStyle?: string; bg?: string; canonical?: string; ogType?: string; ogImage?: string; jsonLd?: (Record<string, unknown> | undefined)[] }
 const { title, description, page = '', noindex = false, hideCta = false, hideHeaderCta = false, mainStyle = '', bg, canonical } = Astro.props;
 ---
-<BaseLayout title={title} description={description} page={page} noindex={noindex} ab={Astro.props.ab} canonical={canonical} ogType={Astro.props.ogType} ogImage={Astro.props.ogImage} jsonLd={Astro.props.jsonLd}>
+<BaseLayout title={title} description={description} page={page} noindex={noindex} canonical={canonical} ogType={Astro.props.ogType} ogImage={Astro.props.ogImage} jsonLd={Astro.props.jsonLd}>
   <SiteHeader hideCta={hideHeaderCta} />
   <main id="main" data-bg={bg} tabindex="-1" style={`position: relative; z-index: var(--z-raised); ${mainStyle}`}>
     <slot />

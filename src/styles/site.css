@@ -48,6 +48,13 @@
 
 /* Resets the system leaves to the page */
 html { scroll-padding-block-start: var(--header-height); }
+/* Glass falls back to solid surfaces when the visitor asks for less transparency (the field is then hidden too). */
+@media (prefers-reduced-transparency: reduce) { :root, [data-theme] { --surface-glass: var(--surface-card); --surface-glass-strong: var(--surface-card); } }
+/* The bar of the three websites is the header's first row (site-switch.astro): after the first scroll the header slides up
+   by its height, and comes back while anything in the header has focus, so a focused link is never off screen. */
+[data-site-header]:has([data-site-switch]) { transition: transform var(--duration-base) var(--ease-out); }
+[data-site-header][data-scrolled]:has([data-site-switch]):not(:focus-within) { transform: translateY(calc(-1 * var(--tap-target))); }
+@media (prefers-reduced-motion: reduce) { [data-site-header]:has([data-site-switch]) { transition: none; } }
 /* In-page links scroll smoothly when the visitor has not asked for reduced motion. */
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 /* Reading progress on articles and case studies: the bar fills with the page scroll. No script.
@@ -258,6 +265,7 @@ main[tabindex] { padding-block-start: 0 !important; }
 [data-bg~="grid"]::before { inset: 0; background-image: linear-gradient(var(--border-default) 1px, transparent 1px), linear-gradient(90deg, var(--border-default) 1px, transparent 1px); background-size: 56px 56px; background-position: -1px -1px;
   -webkit-mask-image: radial-gradient(ellipse 85% 100% at 100% 0%, #000 0%, transparent 72%); mask-image: radial-gradient(ellipse 85% 100% at 100% 0%, #000 0%, transparent 72%); }
 [data-bg~="grid"]::after { inline-size: min(56vw, 620px); aspect-ratio: 1; inset-inline-end: max(-18vw, -220px); inset-block-start: max(-20vw, -240px); background: var(--glow-cyan); }
+body:has(> .ai-field) [data-bg~="grid"]::before { display: none; }
 [dir="rtl"] [data-bg~="grid"]::before { -webkit-mask-image: radial-gradient(ellipse 85% 100% at 0% 0%, #000 0%, transparent 72%); mask-image: radial-gradient(ellipse 85% 100% at 0% 0%, #000 0%, transparent 72%); }
 [data-theme="dark"] [data-bg~="grid"]::before { opacity: 0.7; }
 [data-bg~="glow"]::after { inline-size: min(64vw, 720px); aspect-ratio: 1; inset-inline-start: max(-22vw, -260px); inset-block-end: max(-24vw, -280px); background: var(--glow-blue); opacity: 0.85; }

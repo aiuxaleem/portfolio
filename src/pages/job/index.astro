@@ -1,5 +1,5 @@
 ---
-/* The website for hiring teams (docs/SITES.md), its Home: job.aiuxaleem.com. Everything a recruiter or a hiring manager
+/* The website for hiring managers (docs/SITES.md), its Home: job.aiuxaleem.com. Everything a recruiter or a hiring manager
    screens for, in the order they screen: who, what level, where and what for (the hero, its four facts and the stack
    of featured case studies, as on the main site's Home), more work, what he brings, the experience in short, the certifications, then the call. No client offer: the
    band before the call leads to the website for clients. Every fact comes from the profile and site settings. */
@@ -24,16 +24,31 @@ const now = profile.career[0];
 const listed = (await listedCaseStudies()).filter(x => !x.data.fixture);
 const featured = listed.filter(x => x.data.featured).slice(0, 3);
 const cases = listed.filter(x => !featured.includes(x)).slice(0, 3);
+/* How I work best, and what I will ask (the owner's career framework of 25 October 2026, his own words made short): the
+   conditions he does his best work in, and the questions he brings to a first call. Hiring is a decision on both sides. */
+const conditions: [string, string][] = [
+  ['Ownership with authority', 'Clear responsibilities and decision rights, the freedom to choose how to deliver an agreed outcome, and accountability for the result.'],
+  ['Outcomes, not task counts', 'Success is measured in customer value, product quality and business impact.'],
+  ['One table', 'Design, engineering, product and the business work together, not in separate rooms.'],
+  ['Responsible AI', 'AI is built for usability, reliability and trust, and for value the business can name.'],
+];
+const questions = [
+  'What does success look like after 90 days, and after a year?',
+  'How much decision-making authority does this role have?',
+  'How are responsibilities split between product, design, engineering and operations?',
+  'How are disagreements resolved, and competing priorities settled?',
+  'Why is this role open, and how long has the team been together?',
+];
 /* Four facts under the buttons, as on the main site's Home: what a hiring manager checks in the first seconds. */
 const facts: [string, string][] = [
   ['Now', `${now.role}, ${now.company} (${period(now)})`],
   ['Experience', '13+ years, from enterprise UX to AI products'],
-  ['Open to', 'Lead and Principal roles in KSA and the UAE, on-site or remote'],
+  ['Open to', 'Product Design Lead or Principal roles, with AI product ownership. Saudi Arabia and the UAE, or remote'],
   ['Based in', `${site.location}, on GCC hours. ${site.availability.label}`],
 ];
 ---
-<PageLayout title={`${profile.headline} · For hiring teams · AIUXAleem`} description={`For recruiters and hiring managers: ${site.name}, ${profile.headline}. Experience, case studies, certifications and the resume in one place.`} page="hiring" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
-  <SiteHero id="hiring" overline="For hiring teams" title={`A ${profile.headline} for your team.`} accent="AI Product Designer" lead={`I'm ${site.name}. ${profile.positioning} Thirteen-plus years in enterprise UX, fintech and AI products, now leading AI product design at ${now.company}.`} primary={{ label: c.call, href: site.calendarUrl, newTab: true }} secondary={{ label: resumeExternal ? 'View resume' : 'Download resume', href: site.resumeUrl, newTab: resumeExternal, download: !resumeExternal }}>
+<PageLayout title={`${profile.headline} · For hiring managers · AIUXAleem`} description={`For recruiters and hiring managers: ${site.name}, ${profile.headline}. Experience, case studies, certifications and the resume in one place.`} page="hiring" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
+  <SiteHero id="hiring" overline="For hiring managers" title={`A ${profile.headline} for your team.`} accent="AI Product Designer" lead={`I'm ${site.name}. ${profile.positioning} Thirteen-plus years in enterprise UX, fintech and AI products, now leading AI product design at ${now.company}.`} primary={{ label: c.call, href: site.calendarUrl, newTab: true }} secondary={{ label: resumeExternal ? 'View resume' : 'Download resume', href: site.resumeUrl, newTab: resumeExternal, download: !resumeExternal }}>
     <div slot="after" data-cq><dl data-cq-grid class="hiring-facts">{facts.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl></div>
     {featured.length > 0 && <HeroStack slot="art" id="hiring-stack" label="Selected work" noun="case study" cards={featured.map(caseCard)} />}
   </SiteHero>
@@ -70,6 +85,20 @@ const facts: [string, string][] = [
     </div>
   </section>
 
+  <section class="page-section" data-surface="card" aria-labelledby="hiring-how-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">How I work</p><h2 id="hiring-how-title" class="page-h2">Where I do my best work, and what I'll ask you</h2><p class="project-filter-count" style="max-inline-size: var(--measure-lead);">Hiring is a decision on both sides. These are the conditions I do my best work in, and the questions I bring to a first call.</p></div>
+      <div class="hiring-how">
+        <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">{conditions.map(([t, b]) => <li><div class="tile"><h3>{t}</h3><p>{b}</p></div></li>)}</ul></div>
+        <div class="project-cta hiring-ask" role="region" aria-labelledby="hiring-ask-title">
+          <p class="cory-overline" style="margin: 0; color: var(--on-ink-link);">In a first call</p>
+          <h3 id="hiring-ask-title" class="hiring-ask-title">What I will ask you</h3>
+          <ol class="hiring-ask-list">{questions.map((q, i) => <li><bdi aria-hidden="true">{String(i + 1).padStart(2, '0')}</bdi><span>{q}</span></li>)}</ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <DoorSwitch to="clients" id="hiring-switch" />
 
   <ContactBlock id="contact" overline="Next step" title="Hiring for a design lead? Let's talk." lead="Book a 15-minute call, or send the role and the team. I reply within 48 hours." topic="role" />
@@ -81,4 +110,13 @@ const facts: [string, string][] = [
   .hiring-facts > div { display: grid; gap: var(--space-1); align-content: start; padding-block-start: var(--space-3); border-block-start: 1px solid var(--border-default); min-inline-size: 0; }
   .hiring-facts dt { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
   .hiring-facts dd { margin: 0; font-size: var(--text-body-md); font-weight: var(--weight-semibold); line-height: var(--leading-heading); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
+  /* How I work: the conditions beside the questions where there is room (the main site's split), stacked below that. */
+  .hiring-how { display: grid; gap: var(--space-10); align-items: start; }
+  @media (min-width: 1024px) { .hiring-how { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); } }
+  @media (max-width: 1023.98px) { .hiring-ask { order: -1; } }
+  .hiring-ask { display: grid; gap: var(--space-4); padding: var(--space-8); box-shadow: var(--shadow-md); }
+  .hiring-ask-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); }
+  .hiring-ask-list { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+  .hiring-ask-list li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-4); padding-block: var(--space-4); border-block-start: 1px solid var(--on-ink-border); color: var(--on-ink-body); line-height: var(--leading-relaxed); overflow-wrap: anywhere; }
+  .hiring-ask-list bdi { font-family: var(--font-mono); font-size: var(--text-mono); color: var(--on-ink-link); padding-block-start: 2px; }
 </style>

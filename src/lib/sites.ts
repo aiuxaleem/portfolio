@@ -1,4 +1,4 @@
-/* The two audience websites (version 2, docs/SITES.md): one for hiring teams and one for clients, served from this same
+/* The two audience websites (version 2, docs/SITES.md): one for hiring managers and one for clients, served from this same
    deployment and managed from the same admin. Their pages live under src/pages/job/ and src/pages/clients/; on their own
    host names (vercel.json) the prefix disappears, so /job/case-studies is job.aiuxaleem.com/case-studies.
    `origin` is the address search engines are told about (the planned domain); `live` is where the site answers today and
@@ -24,7 +24,7 @@ const CLIENTS_LIVE = 'https://aiuxaleem-clients.vercel.app';
 
 export const SUB_SITES: Record<SubSite, SubSiteConfig> = {
   job: {
-    key: 'job', prefix: '/job', label: 'For hiring teams',
+    key: 'job', prefix: '/job', label: 'For hiring managers',
     origin: 'https://job.aiuxaleem.com', live: JOB_LIVE,
     nav: [
       { key: 'home', label: 'Home', href: '/' },
@@ -58,7 +58,7 @@ export const SUB_SITES: Record<SubSite, SubSiteConfig> = {
       { label: 'The work', links: [{ key: 'case-studies', label: 'Case Studies', href: '/case-studies' }, { key: 'work', label: 'Projects', href: '/work' }] },
       { label: 'Resources', links: [{ key: 'resources', label: 'UX Glossary', href: '/resources' }, { key: 'ai-tools', label: 'AI Tools', href: '/ai-tools' }] },
       { label: 'About', links: [{ key: 'about', label: 'About', href: '/about' }, { key: 'contact', label: "Let's talk", href: '/contact' }] },
-      { label: 'Elsewhere', links: [{ key: 'job', label: 'For hiring teams', href: JOB_LIVE }, { key: 'main', label: 'Full portfolio', href: MAIN_LIVE }] },
+      { label: 'Elsewhere', links: [{ key: 'job', label: 'For hiring managers', href: JOB_LIVE }, { key: 'main', label: 'Full portfolio', href: MAIN_LIVE }] },
     ],
   },
 };

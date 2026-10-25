@@ -2,7 +2,7 @@
 /* The website for clients (docs/SITES.md), its Home: clients.aiuxaleem.com. The main site's Services page, rewritten in a
    few places so it speaks to teams with a product problem only. Its first screen is the audience websites' own (the
    words, and the stack of the three services with what each delivers, read from the snapshot below it), with one line
-   across to the website for hiring teams. The snapshot itself is not edited. */
+   across to the website for hiring managers. The snapshot itself is not edited. */
 import SnapshotPage from '../../layouts/snapshot-page.astro';
 import SiteHero from '../../components/sites/site-hero.astro';
 import HeroStack from '../../components/sites/hero-stack.astro';
@@ -35,14 +35,14 @@ const rewrite = (html: string) => {
   const end = s.indexOf('</section>', head) + '</section>'.length;
   if (head < 0 || end < '</section>'.length) throw new Error('clients: hero not found');
   s = s.slice(0, head) + s.slice(end);
-  s = swap(s, 'Both. Companies hiring a senior or lead product designer in KSA or UAE, on-site or remote, can start with the resume. Teams with a product problem can bring me in for a scoped project, with me doing the work.', 'Both. Companies hiring a Lead or Principal product designer in KSA or the UAE have a website of their own, for hiring teams. Teams with a product problem can bring me in for a scoped project, with me doing the work.');
+  s = swap(s, 'Both. Companies hiring a senior or lead product designer in KSA or UAE, on-site or remote, can start with the resume. Teams with a product problem can bring me in for a scoped project, with me doing the work.', 'Both. Companies hiring a Lead or Principal product designer in KSA or the UAE have a website of their own, for hiring managers. Teams with a product problem can bring me in for a scoped project, with me doing the work.');
   s = swap(s, "Tell me what you're building, or who you're hiring", "Tell me what you're building");
   return s;
 };
 ---
 <SnapshotPage snapshot={snapshot} title="Services for product teams · AIUXAleem" description="AI product design, design system builds and UX audits for product teams in the GCC and beyond: what you get, how it runs, and the proof." rewrite={rewrite} slotBefore={'<section aria-labelledby="offers-title"'} hideCta>
   <SiteHero id="services" overline="For clients · What I offer" title="Three things I can do for your team." accent="team" lead={`I'm ${site.name}, a ${profile.headline} with 13+ years in enterprise UX and AI products. For teams with a product problem: what I do on a project, what you get, and the work that proves it.`} primary={{ label: 'Book a 15-min call', href: site.calendarUrl, newTab: true }} secondary={{ label: 'How I work', href: '#process-title' }}>
-    <p slot="after" class="services-across"><a data-link href={SUB_SITES.job.live}>Hiring instead? Open the website for hiring teams</a></p>
+    <p slot="after" class="services-across"><a data-link href={SUB_SITES.job.live}>Hiring instead? Open the website for hiring managers</a></p>
     <HeroStack slot="art" id="services-stack" label="Services" noun="service" cards={services} />
   </SiteHero>
 </SnapshotPage>

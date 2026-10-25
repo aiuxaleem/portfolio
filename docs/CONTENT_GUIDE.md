@@ -86,6 +86,7 @@ In the editor: **Case studies → Create**. Every section is optional. The page 
 - **Meta:** role, company (or tick "Show the company as Confidential"), timeline, team, platform, tools.
 - **NDA notice:** tick it to show the notice at the top.
 - **In short:** three to five lines for a reader with thirty seconds.
+- **My part** (optional, shown after In short): what you owned (the decision, the roadmap, the outcome), who you worked with, and what you said no to. A hiring manager reads the level of the work here before the detail. Write only what is true; the section stays hidden until something is filled.
 - **Problem and context, Research, Process, AI section, Key decisions, Outcomes, Reflection:** fill in what applies.
 - **Before and after comparison:** two images of the same screen. Visitors compare them with a slider or two buttons.
 - **Outcomes → Metrics:** up to four. Each has a value, a label, a source, and a Verified box. Unverified metrics are not shown as figures.
@@ -235,7 +236,14 @@ Site-wide settings (availability line, email, calendar link, social links, resum
 
 Save the PDF as `public/resume.pdf`. The download button on `/resume` appears when the file exists and is hidden when it does not.
 
+## Opportunity check (private)
+
+Admin, Career, Opportunity check: each job you are weighing, scored 1 to 5 against the four questions of your framework (North Star, pay, culture, risks), with an offer checklist of what you have in writing and your notes. It lives in the database behind the sign-in and never reaches the site. The verdict reads the scores plainly: any area at 2 or below asks for a closer look, never a rejection.
+
 ## Image sizes
+
+Upload covers at 16:10, for example 3200 by 2000 pixels: they then fill every card. Under each image field the admin shows the whole picture (click it to set the focus point that stays in view where a frame cuts it) and the 16:10 cut; a picture far from 16:10 is shown whole on the site, over a soft copy of itself.
+
 
 Upload one good original. The build makes the smaller sizes and the WebP versions.
 

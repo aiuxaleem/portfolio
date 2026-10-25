@@ -12,7 +12,7 @@ const cases = await listedCaseStudies();
 const shown = cases.filter(c => !c.data.fixture).length;
 const word = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'][shown] ?? String(shown);
 ---
-<PageLayout hideHeaderCta title="Case studies · AIUXAleem" description="Case studies by Mohammad Abdul Aleem: the problem, the process, the decisions and what changed, for design systems and AI product work." page="case-studies" bg="grid" mainStyle="outline: none; overflow: clip;">
+<PageLayout title="Case studies · AIUXAleem" description="Case studies by Mohammad Abdul Aleem: the problem, the process, the decisions and what changed, for design systems and AI product work." page="case-studies" bg="grid" mainStyle="outline: none; overflow: clip;">
   <section id="intro" class="cory-container" aria-labelledby="cases-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
     <p class="cory-overline" style="margin: 0px;">My recent work · Case studies</p>
     <h1 id="cases-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">{word} {shown === 1 ? 'product' : 'products'}, one <span style="background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent;">method</span>.</h1>

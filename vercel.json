@@ -127,24 +127,10 @@
       }
     },
     {
-      "src": "^/v2/hiring/?$",
+      "src": "^/v2(?:/.*)?$",
       "status": 307,
       "headers": {
-        "Location": "https://aiuxaleem-job.vercel.app/"
-      }
-    },
-    {
-      "src": "^/v2/services/?$",
-      "status": 307,
-      "headers": {
-        "Location": "https://aiuxaleem-clients.vercel.app/"
-      }
-    },
-    {
-      "src": "^/v2/contact/?$",
-      "status": 307,
-      "headers": {
-        "Location": "/v2"
+        "Location": "/"
       }
     },
     {

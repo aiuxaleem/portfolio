@@ -17,6 +17,7 @@ export function sections(d: CaseStudy['data'], hasBody: boolean) {
   const verified = d.outcomes.metrics.filter(m => m.verified);
   return [
     { id: 'summary', label: 'In short', show: d.tldr.length > 0 },
+    { id: 'part', label: 'My part', show: has(d.ownership) },
     { id: 'context', label: 'Problem and context', show: has(d.context) },
     { id: 'research', label: 'Research and insights', show: has(d.research) },
     { id: 'process', label: 'Process', show: has(d.process) },

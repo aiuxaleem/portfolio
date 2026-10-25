@@ -1,5 +1,5 @@
 ---
-/* The resume on the website for hiring teams (docs/SITES.md): a first screen with the resume's first lines drawn as a sheet
+/* The resume on the website for hiring managers (docs/SITES.md): a first screen with the resume's first lines drawn as a sheet
    beside the words, then the same sections as the main site's /resume (summary, experience, expertise, tools, education,
    certifications). Every fact comes from the profile, site settings and the certifications collection. */
 import PageLayout from '../../layouts/page-layout.astro';
@@ -17,7 +17,7 @@ const open = resumePdf
   : { label: resumeExternal ? 'Open on Google Drive' : 'Download resume', href: site.resumeUrl, newTab: resumeExternal };
 const stack = await resumeCards();
 ---
-<PageLayout hideCta title="Resume · AIUXAleem, for hiring teams" description={`Resume of ${site.name}, ${profile.headline}: experience at Colaberry, NTT DATA and Teqsar, expertise, tools and certifications.`} page="resume" ogType="profile" jsonLd={[personLd()]} bg="grid" mainStyle="outline: none; overflow: clip;">
+<PageLayout hideCta title="Resume · AIUXAleem, for hiring managers" description={`Resume of ${site.name}, ${profile.headline}: experience at Colaberry, NTT DATA and Teqsar, expertise, tools and certifications.`} page="resume" ogType="profile" jsonLd={[personLd()]} bg="grid" mainStyle="outline: none; overflow: clip;">
   <SiteHero id="resume" overline="Resume" title={site.name} lead={`${profile.headline}. ${site.location}, on GCC hours. ${site.availability.label}.`} primary={open} secondary={{ label: 'Email me', href: `mailto:${site.email}` }}>
     <ul slot="after" class="resume-contact">
       <li><a href={`mailto:${site.email}`}><bdi>{site.email}</bdi></a></li>
