@@ -1,0 +1,20 @@
+---
+/* The case studies as a bento: the newest wide (picture beside words where there is room), the rest two to a row. Used by
+   both audience websites' Case Studies pages (docs/SITES.md). */
+import Button from '../ui/button.astro';
+import CaseCard from '../cards/case-card.astro';
+import { listedCaseStudies } from '../../lib/case-studies';
+
+const cases = await listedCaseStudies();
+---
+<section id="cases" class="cory-container" aria-label="Case studies" style="padding-block: var(--space-8) var(--section-y);">
+  {cases.length === 0
+    ? <div class="project-empty"><p class="project-empty-title">No case studies are published yet.</p><p class="project-empty-body">The projects show the work in the meantime.</p><div><Button variant="secondary" href="/work">See the projects</Button></div></div>
+    : <ul class="case-grid">{cases.map((entry, i) => <li class={i === 0 ? 'case-grid-lead' : undefined}><CaseCard entry={entry} wide={i === 0} /></li>)}</ul>}
+</section>
+
+<style>
+  .case-grid { display: grid; gap: var(--grid-gap); margin: 0; padding: 0; list-style: none; }
+  .case-grid > li { display: grid; min-inline-size: 0; }
+  @media (min-width: 768px) { .case-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .case-grid-lead { grid-column: 1 / -1; } }
+</style>

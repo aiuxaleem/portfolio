@@ -1,0 +1,109 @@
+---
+/* The stack beside the words on every first screen of the audience websites (docs/SITES.md): the main site's Home deck
+   (components/home/case-deck.astro), made general. Up to three ink cards of the page's own content, one in front; two
+   arrow buttons and a counter bring the next one forward (islands/hero-stack.ts). Each card is one link: its kicker,
+   title, a line, and below them either a picture in a window (a cover, the portrait) or a white sheet of up to five
+   short points (the deliverables of a service, the companies of a career). The cards share one grid cell, so the stack
+   is as tall as its tallest card and no card ends in an empty band. Card poses, the hover lift and the line clamps are
+   the deck's own global rules in site.css and components.css ([data-stack-card], [data-deck-title], [data-deck-line]);
+   the arrows' hover and press come from audit-fixes.css. Without JavaScript the front card shows and links. */
+import { getImage } from 'astro:assets';
+import type { StackCard } from '../../lib/site-stacks';
+
+interface Props {
+  id: string;
+  /** The overline above the stack ("Selected work"). Short, so the arrows stay on its row on a phone. */
+  label: string;
+  /** What one card is, for the arrows' names ("case study"). */
+  noun: string;
+  cards: StackCard[];
+}
+const { id, label, noun, cards: all } = Astro.props;
+const cards = await Promise.all(all.slice(0, 3).map(async c => ({ ...c, img: c.image ? await getImage({ src: c.image, widths: [400, 640, 960] }) : undefined })));
+const pad = (n: number) => String(n).padStart(2, '0');
+const arrow = (d: string, size = 20) => `<svg data-dir-icon width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"></path></svg>`;
+---
+{cards.length > 0 && (
+  <div class="hero-stack" id={id}>
+    <div class="hero-stack-glow" aria-hidden="true"></div>
+    <div class="hero-stack-head">
+      <p class="cory-overline" style="margin: 0;">{label}</p>
+      {cards.length > 1 && (
+        <div class="hero-stack-nav">
+          <button type="button" class="hero-stack-arrow" aria-label={`Previous ${noun}`} title={`Previous ${noun}`} aria-controls={`${id}-cards`} set:html={arrow('M19 12H5M12 19l-7-7 7-7')} />
+          <bdi class="hero-stack-count" aria-live="polite">{`01 / ${pad(cards.length)}`}</bdi>
+          <button type="button" class="hero-stack-arrow" aria-label={`Next ${noun}`} title={`Next ${noun}`} aria-controls={`${id}-cards`} set:html={arrow('M5 12h14M12 5l7 7-7 7')} />
+        </div>
+      )}
+    </div>
+    <ul id={`${id}-cards`} class="hero-stack-cards" data-hero-stack data-site-stack>
+      {cards.map((c, i) => (
+        <li data-stack-card data-pos={i} aria-hidden={i === 0 ? 'false' : 'true'} class="hero-stack-card">
+          <span class="hero-stack-card-glow" aria-hidden="true"></span>
+          <a href={c.href} tabindex={i === 0 ? 0 : -1} class="hero-stack-link" {...(c.newTab ? { target: '_blank', rel: 'noopener' } : {})}>
+            <span data-stack-caption class="hero-stack-caption">
+              <span class="hero-stack-kicker"><span data-deck-kicker>{c.kicker}</span>{c.meta && <bdi>{c.meta}</bdi>}</span>
+              <span data-deck-title class="hero-stack-title">{c.title}</span>
+              {c.line && <span data-deck-line class="hero-stack-line">{c.line}</span>}
+              <span class="hero-stack-cta"><span>{c.cta}</span>{c.newTab && <span class="cory-visually-hidden"> (opens in a new tab)</span>}<Fragment set:html={arrow('M5 12h14M12 5l7 7-7 7', 16)} /></span>
+            </span>
+            {(c.img || c.picture) ? (
+              <span class="hero-stack-stage" aria-hidden="true">
+                <span data-stack-frame class="hero-stack-frame">
+                  <span class="hero-stack-bar"><span></span><span></span><span></span></span>
+                  {c.img
+                    ? <img src={c.img.src} srcset={c.img.srcSet.attribute} sizes="(min-width: 1024px) 400px, 90vw" alt="" width={c.img.attributes.width} height={c.img.attributes.height} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" style={c.focus ? `object-position: ${c.focus};` : undefined} />
+                    : <img src={c.picture!.src} alt="" width={c.picture!.width} height={c.picture!.height} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" class="hero-stack-picture" />}
+                </span>
+              </span>
+            ) : c.points && c.points.length > 0 && (
+              <span data-stack-frame class="hero-stack-sheet" aria-hidden="true">
+                <span class="hero-stack-bar"><span></span><span></span><span></span></span>
+                <span class="hero-stack-points">{c.points.slice(0, 5).map(p => <span>{p}</span>)}</span>
+              </span>
+            )}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
+<script>
+  import '../islands/hero-stack.ts';
+</script>
+
+<style>
+  .hero-stack { position: relative; display: flex; flex-direction: column; gap: var(--space-4); inline-size: min(100%, 440px); margin-inline-start: auto; min-inline-size: 0; }
+  .hero-stack-glow { position: absolute; inset: -18% -14%; background: var(--glow-cyan) no-repeat 85% 15% / 70% 70%, var(--glow-blue) no-repeat 10% 90% / 65% 65%; z-index: -1; pointer-events: none; }
+  .hero-stack-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
+  .hero-stack-nav { display: flex; align-items: center; gap: var(--space-3); }
+  .hero-stack-arrow { display: inline-grid; place-items: center; inline-size: 44px; block-size: 44px; padding: 0; border-radius: var(--radius-pill); cursor: pointer; background: var(--gradient-ink); color: var(--on-ink-strong); border: 1px solid var(--on-ink-border); box-shadow: var(--shadow-sm); transition: background var(--duration-base) var(--ease-out), transform var(--duration-fast) var(--ease-out), filter var(--duration-base) var(--ease-out); }
+  .hero-stack-count { font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  /* One grid cell for every card: the stack takes the height of its tallest card. */
+  .hero-stack-cards { display: grid; inline-size: 100%; margin: 0; padding: var(--space-6) 0 0; list-style: none; }
+  .hero-stack-card { grid-area: 1 / 1; position: relative; display: flex; border-radius: var(--radius-xl); overflow: hidden; isolation: isolate; background: var(--gradient-ink); border: 1px solid var(--on-ink-border); box-shadow: var(--shadow-lg); }
+  .hero-stack-card-glow { position: absolute; inline-size: 80%; aspect-ratio: 1 / 1; inset-inline-end: -30%; inset-block-end: -35%; background: var(--glow-cyan); z-index: -1; pointer-events: none; }
+  .hero-stack-link { flex: 1 1 auto; display: flex; flex-direction: column; gap: var(--space-5); padding-block-end: var(--space-6); color: var(--on-ink-strong); text-decoration: none; outline-offset: -3px; min-inline-size: 0; }
+  .hero-stack-caption { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-6) var(--space-6) 0; min-inline-size: 0; }
+  .hero-stack-kicker { display: flex; justify-content: space-between; gap: var(--space-3); font-family: var(--font-mono); font-size: var(--text-mono-sm); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--on-ink-link); }
+  .hero-stack-kicker > span { flex: 1 1 auto; min-inline-size: 0; }
+  .hero-stack-kicker > bdi { flex: 0 0 auto; }
+  .hero-stack-title { font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-snug); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); text-wrap: balance; }
+  .hero-stack-line { font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--on-ink-body); text-wrap: pretty; }
+  .hero-stack-cta { display: inline-flex; align-items: center; gap: var(--space-1); align-self: flex-start; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--on-ink-link); }
+  /* A picture sits in a tilted window that runs off the card's foot and end, as on the Home deck. */
+  .hero-stack-stage { position: relative; display: block; margin-block: auto calc(-1 * var(--space-6)); aspect-ratio: 16 / 10; }
+  .hero-stack-frame { position: absolute; inset-inline: 10% -6%; inset-block: 0 -8%; display: block; border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-card); border: 1px solid var(--on-ink-border-strong); box-shadow: var(--shadow-xl); transform: rotate(calc(-4deg * var(--dir-x))); transform-origin: 0 100%; }
+  .hero-stack-frame img { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; object-position: left top; }
+  .hero-stack-frame .hero-stack-picture { object-position: center 20%; }
+  /* A sheet of points sits upright inside the card, so every word reads and none is cut at an edge. The picture and the
+     sheet sit at the card's foot, so a card shorter than its neighbours opens space under its words, not an empty band. */
+  .hero-stack-sheet { display: block; margin: auto var(--space-6) 0; border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-card); border: 1px solid var(--on-ink-border-strong); box-shadow: var(--shadow-xl); }
+  .hero-stack-bar { display: flex; gap: 6px; align-items: center; padding: 8px 10px; border-block-end: 1px solid var(--border-subtle); background: var(--surface-sunken); }
+  .hero-stack-bar span { inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--border-strong); }
+  .hero-stack-points { display: grid; gap: var(--space-3); padding: var(--space-4) var(--space-5) var(--space-5); }
+  .hero-stack-points span { position: relative; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; padding-inline-start: var(--space-4); font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-body); overflow-wrap: anywhere; }
+  .hero-stack-points span::before { content: ""; position: absolute; inset-inline-start: 0; inset-block-start: 0.6em; inline-size: 6px; block-size: 6px; border-radius: 50%; background: var(--text-link); }
+  @media (prefers-reduced-motion: reduce) { .hero-stack-arrow { transition: none; } }
+</style>

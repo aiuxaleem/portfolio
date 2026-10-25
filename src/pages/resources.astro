@@ -5,7 +5,8 @@
    src/content/resources/ and links out to its own site. The page: who it is for and three counts; the categories, each
    linking to the list filtered to it; the list with filters and a sort order; and a form to suggest a resource, which
    goes to the owner for review. The form is offered only where /api/resources exists (the Vercel build and dev); the
-   static copies offer email instead. */
+   static copies offer email instead. The website for clients passes its first-screen stack in the `art` slot, in place
+   of the library panel (src/pages/clients/resources.astro). */
 import PageLayout from '../layouts/page-layout.astro';
 import Button from '../components/ui/button.astro';
 import ResourceCard from '../components/cards/resource-card.astro';
@@ -52,7 +53,7 @@ const inkLink = 'display: flex; align-items: center; justify-content: space-betw
           <Button variant="secondary" size="lg" href="#suggest">Suggest a resource</Button>
         </div>
       </div>
-      {real.length > 0 && (
+      {Astro.slots.has('art') ? <slot name="art" /> : real.length > 0 && (
         <div class="project-cta" aria-labelledby="library-title" role="region" style="padding: var(--space-8); display: grid; gap: var(--space-6); box-shadow: var(--shadow-md);">
           <div style="display: grid; gap: var(--space-2);">
             <p class="cory-overline" style="margin: 0; color: var(--on-ink-link);">In the library</p>

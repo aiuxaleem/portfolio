@@ -1,5 +1,16 @@
 ---
-/* Projects on an audience website (docs/SITES.md): the main site's list, with its topic and status filters. */
-import WorkPage from '../../work/index.astro';
+/* Projects on the website for clients (docs/SITES.md): a first screen with the projects as a board beside the words, then
+   every project with its topic and status filters. */
+import PageLayout from '../../../layouts/page-layout.astro';
+import SiteHero from '../../../components/sites/site-hero.astro';
+import HeroStack from '../../../components/sites/hero-stack.astro';
+import { projectCards } from '../../../lib/site-stacks';
+import ProjectDirectory from '../../../components/sites/project-directory.astro';
+const stack = await projectCards();
 ---
-<WorkPage />
+<PageLayout title="Projects · AIUXAleem, for clients" description="Projects by Mohammad Abdul Aleem: design systems and AI product work, with status, tools and links to the full case studies." page="work" bg="grid" mainStyle="outline: none; overflow: clip;">
+  <SiteHero id="clients-work" overline="Projects" title="What is shipped, and what is being built." accent="shipped" lead="Products and systems I have built, grouped by status: each links to where you can see it working, and to the case study where there is one." primary={{ label: 'Browse the projects', href: '#project-list' }} secondary={{ label: 'See the services', href: '/' }}>
+    <HeroStack slot="art" id="projects-stack" label="Projects" noun="project" cards={stack} />
+  </SiteHero>
+  <ProjectDirectory />
+</PageLayout>

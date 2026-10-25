@@ -1,0 +1,108 @@
+---
+title: One kit, five brands
+index: "10"
+category: Design systems · Accessibility
+lead: Five public brands now render through one shared component library, with each brand's look stored as token data and its contrast measured live in light and dark.
+cover:
+  src: ../../assets/cases/case-study-10.png
+  alt: The five-brand family lineup above the same sign-in screen rendered in three brands, with a card showing 80 contrast pairs measured, a lowest ratio of 4.5:1, and 8 systems in 2 modes.
+role: Design system lead, from brief to handoff
+company: Colaberry Inc
+timeline: Aug to Sep 2026
+team: Me, my manager who wrote the brief, and the developers and AI tools that consume the system
+platform: Web and email, light and dark mode
+stack:
+  - GitHub
+  - JSON tokens
+  - CSS
+  - Google Fonts
+tldr:
+  - Turned a brief for five brand token sets into one shared component library that renders all five.
+  - "Built 8 complete design systems: one each for the two Colaberry brands, and two options each for the three independent brands."
+  - Derived 11 colour roles per system from the brand accent by rule, in light and dark.
+  - Measured 80 contrast pairs live from the token data. All pass WCAG AA, and the lowest is 4.5:1.
+  - Packaged everything behind a registry with permanent system IDs, plus drop-in CSS, email skeletons and logo packs.
+context:
+  problem: The company runs five public brands, from a parent platform to a nonprofit. Each needed its own look, but five separate component libraries would multiply every fix by five. The brief asked for one shared library with each brand stored as data, accessible in both modes, and with only the two Colaberry brands looking related.
+  business: "My manager's brief, dated 21 Aug 2026, set the rules: an 11-role token set, light and dark, WCAG 2.1 AA on five named pairs and open-licence typefaces. I owned the system end to end, from reading the shipping repository to the handoff package that developers and AI tools consume."
+  constraints:
+    - Light and dark mode for every brand.
+    - "WCAG 2.1 AA on five named pairs in both modes: text pairs at 4.5:1, accent on background at 3:1."
+    - An 11-role colour set, plus heading and body font, type scale, radius and one shadow.
+    - Open-licence typefaces only.
+    - "Family rule: only the two Colaberry brands may look related. The other three must read as independent."
+    - The nonprofit brand had to work on cheap phones in poor lighting.
+research:
+  summary: The baseline had to come from what ships, not from memory. Reading the live repository first gave the real brand colours, fonts and ramps, so both Colaberry systems were built on values already in production.
+  insights:
+    - The shipping Enterprise accent had to be deepened to reach 4.5:1 on white.
+    - The parent platform's accent could be derived from the blue in its existing logo instead of invented.
+    - The Colaberry pair and the parent platform already owned cool blues and reds, so the nonprofit took green and violet and the build shop took rust and teal.
+    - Dark mode cannot be an inversion. The dark background has to lean toward the brand hue, and raised surfaces get lighter, not darker.
+process:
+  summary: Read the source, offer real options, derive tokens by rule, measure, then package.
+  steps:
+    - title: Start from what ships
+      body: "Before any exploration I connected the Colaberry repository and read its colour, font and brand files, and copied in the real logo variants. Enterprise and Training were rebuilt on those values: same type family and mark, different temperature."
+    - title: Two full options per independent brand
+      body: The three brands with no shipping identity each got two complete systems instead of one guess. Every option has its own permanent ID, so the final choice can be made later without rework.
+    - title: Derive tokens, not colours
+      body: Each system's 11 roles were derived from its accent in both modes by rule. Hover, press and focus colours come from the accent automatically. Each system also carries spacing, a 44px touch target, breakpoints and a motion set with a one-line personality, and reduced motion switches it off.
+    - title: Measure contrast live
+      body: The specimen computes the five AA pairs from the token data for all eight systems in both modes, so any later edit re-audits itself. The measured ratios ship inside each brand's payload.
+    - title: One kit, eight skins, packaged
+      body: A small set of component classes reads only semantic variables, so swapping one stylesheet re-skins identical markup. A ten-view specimen proves it. Email skeletons, logo packs and a registry that maps every system ID to its files complete the handoff.
+ai:
+  summary: The system is written for AI tools as well as people. Each brand ships a prompt block and a brand guide that tell a coding assistant which tokens and rules to build with.
+  trust:
+    - Contrast is guaranteed by the tokens, so generated UI inherits AA without anyone checking each screen.
+    - Every file carries the same system ID, so a tool can always tell which brand it is building.
+  guardrails:
+    - Use semantic tokens only, never raw hex values.
+    - One filled primary action per view.
+    - 44px touch targets.
+    - Respect reduced motion.
+  evaluation: Contrast recomputed live from the token data for every system in both modes.
+decisions:
+  - decision: Build the Colaberry baseline from the live repository, not a reconstruction.
+    tradeoff: A slower start, and the shipping accent had to be adjusted to pass AA. In return the systems match what is already in production.
+  - decision: Offer two full systems for each independent brand instead of one guess.
+    tradeoff: More systems to keep until a choice is made. The registry keeps both IDs, so switching later is a one-line change.
+  - decision: Compute contrast from the token data instead of auditing once.
+    tradeoff: More work in the specimen up front. The audit then became a property of the system rather than a gate before launch.
+  - decision: Store each brand as data, with a permanent ID stamped in every file.
+    tradeoff: More packaging discipline. Any tool, or person, can now find every file for a brand from one registry.
+outcomes:
+  summary: "The system was delivered as a handoff package, not yet a launch. Five brands render through one library across eight systems, and all 80 measured contrast pairs pass AA, from 4.5:1 up to 17.6:1. The nonprofit brand has the highest floor at 6.3:1. Open items: choosing A or B for three brands, sending domains, legal addresses and the final payload format."
+  metrics:
+    - value: 80 of 80
+      label: Contrast pairs passing WCAG 2.1 AA across 8 systems in 2 modes
+      kind: outcome
+      source: Live contrast audit in the specimen, Sep 2026
+    - value: 4.5:1
+      label: Lowest contrast ratio across every palette
+      kind: outcome
+      source: Live contrast audit in the specimen, Sep 2026
+    - value: "8"
+      label: Complete design systems on one component library
+      kind: outcome
+      source: registry.json, Sep 2026
+    - value: 6.3:1
+      label: Lowest ratio for the nonprofit brand, built for cheap phones in poor light
+      kind: outcome
+      source: Live contrast audit in the specimen, Sep 2026
+quote: A brand should be a file you swap, not a library you rebuild.
+reflection:
+  summary: Treating brands as data turned the hardest parts, consistency and accessibility, into properties of the system instead of review steps.
+  learnings:
+    - Start from the source, not from memory.
+    - Full options are cheap when every option runs through the same pipeline.
+    - Live audits beat pasted numbers.
+    - When the plan is written as prompts, the prompt pack can become the structure of the deliverable.
+    - Next time I would give the lowest pairs some headroom above 4.5:1 instead of sitting exactly on the threshold.
+project: multi-brand-token-system
+order: 3
+seo:
+  title: One kit, five brands · Case study
+  description: Eight token systems for five brands on one shared component library, with 80 contrast pairs measured live and all passing WCAG AA.
+---

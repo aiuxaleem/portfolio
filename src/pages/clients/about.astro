@@ -3,7 +3,6 @@
    how I work with AI and the tools, the verified certifications, then the contact block with the subject set to a project.
    No resume, no job search: those are on the website for hiring teams. */
 import PageLayout from '../../layouts/page-layout.astro';
-import Button from '../../components/ui/button.astro';
 import Learning from '../../components/sites/learning.astro';
 import ContactBlock from '../../components/profile/contact-block.astro';
 import { site } from '../../content/site';
@@ -13,17 +12,15 @@ import { chrome } from '../../i18n/chrome';
 
 const c = chrome.en;
 const num = (i: number) => String(i + 1).padStart(2, '0');
+import SiteHero from '../../components/sites/site-hero.astro';
+import HeroStack from '../../components/sites/hero-stack.astro';
+import { aboutCards } from '../../lib/site-stacks';
+const stack = aboutCards({ method: '#clients-ai-title', principles: '#clients-principles-title', expertise: '#clients-expertise-title' });
 ---
 <PageLayout title="About · AIUXAleem, for clients" description={`Who you work with: ${site.name}, ${profile.headline}. Principles, what he brings to a product team, and how he works with AI.`} page="about" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
-  <section class="cory-container" aria-labelledby="clients-about-title" style="display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
-    <p class="cory-overline" style="margin: 0px;">About</p>
-    <h1 id="clients-about-title" class="clients-about-h1">Who you'll work with.</h1>
-    <p class="clients-about-lead">I'm {site.name}, a {profile.headline} with 13+ years across fintech and enterprise platforms, working from {site.location} on GCC hours. {profile.positioning}</p>
-    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
-      <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
-      <Button variant="secondary" size="lg" href="/case-studies">See the case studies</Button>
-    </div>
-  </section>
+  <SiteHero id="clients-about" overline="About" title="Who you'll work with." accent="work with" lead={`I'm ${site.name}, a ${profile.headline} with 13+ years across fintech and enterprise platforms, working from ${site.location} on GCC hours. ${profile.positioning}`} primary={{ label: c.call, href: site.calendarUrl, newTab: true }} secondary={{ label: 'See the case studies', href: '/case-studies' }}>
+    <HeroStack slot="art" id="about-stack" label="About me" noun="card" cards={stack} />
+  </SiteHero>
 
   <section class="page-section" data-surface="card" aria-labelledby="clients-principles-title">
     <div class="cory-container">
@@ -60,7 +57,3 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
   <ContactBlock id="contact" overline="Next step" title="Have a product that needs to feel trustworthy?" lead="Tell me what you're building, or book a 15-minute call to scope it. I reply within 48 hours." topic="project" />
 </PageLayout>
 
-<style>
-  .clients-about-h1 { margin: 0; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
-  .clients-about-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted); }
-</style>

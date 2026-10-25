@@ -1,29 +1,53 @@
 ---
 /* The website for clients (docs/SITES.md), its Home: clients.aiuxaleem.com. The main site's Services page, rewritten in a
-   few places so it speaks to teams with a product problem only; its "Full-time role" card leads to the website for hiring
-   teams. The snapshot itself is not edited. */
+   few places so it speaks to teams with a product problem only. Its first screen is the audience websites' own (the
+   words, and the stack of the three services with what each delivers, read from the snapshot below it), with one line
+   across to the website for hiring teams. The snapshot itself is not edited. */
 import SnapshotPage from '../../layouts/snapshot-page.astro';
+import SiteHero from '../../components/sites/site-hero.astro';
+import HeroStack from '../../components/sites/hero-stack.astro';
 import snapshot from '../../snapshots/services.json';
 import { SUB_SITES } from '../../lib/sites';
+import { site } from '../../content/site';
+import { profile } from '../../content/profile';
+import type { StackCard } from '../../lib/site-stacks';
 
 const swap = (html: string, a: string | RegExp, b: string) => { const out = html.replace(a, b); if (out === html) throw new Error(`v2 services: not found: ${a}`); return out; };
+const text = (html: string) => html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+
+/* The three services as the snapshot has them: title, the line under it and "What you get". */
+const services: StackCard[] = ['offer-ai', 'offer-ds', 'offer-audit'].map((id, i) => {
+  const at = snapshot.main.indexOf(`id="${id}"`);
+  if (at < 0) throw new Error(`clients: service ${id} not found`);
+  const block = snapshot.main.slice(at, snapshot.main.indexOf('</article>', at) > at ? snapshot.main.indexOf('</article>', at) : at + 8000);
+  const title = text(block.match(new RegExp(`id="${id}-title"[^>]*>([\\s\\S]*?)</h3>`))?.[1] ?? '');
+  const line = text(block.slice(block.indexOf(`id="${id}-title"`)).match(/<\/h3>\s*<p[^>]*>([\s\S]*?)<\/p>/)?.[1] ?? '');
+  const gets = block.slice(block.indexOf('What you get'));
+  const points = [...gets.slice(0, gets.indexOf('</ul>')).matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)].map(m => text(m[1]));
+  if (!title || points.length === 0) throw new Error(`clients: service ${id} has changed shape`);
+  return { kicker: `Service ${String(i + 1).padStart(2, '0')}`, title, line, href: `#${id}`, cta: 'What you get', points };
+});
+
 const rewrite = (html: string) => {
   let s = html;
-  s = swap(s, 'What I offer</p>', 'For clients · What I offer</p>');
-  s = swap(s, /Whether you’re hiring an? [^<]*? or need one on a project, the offer is the same: what I do, what you get, and the work that proves it\./, 'For teams with a product problem: what I do on a project, what you get, and the work that proves it.');
-  s = swap(s, 'Full-time role</p>', 'Hiring instead?</p>');
-  s = swap(s, /Hiring an? [^<?]*\? That’s me\./, 'Hiring for a full-time role?');
-  s = swap(s, 'Senior and lead roles in KSA and UAE, on-site or remote. AI products, design systems and enterprise UX, 13+ years in.', 'There is a website written for hiring teams: the experience, the case studies and the resume, for a Lead or Principal role in KSA or the UAE.');
-  /* The card's resume link becomes the link to the website for hiring teams, in the same place and style. */
-  const card = s.indexOf('Hiring for a full-time role?'); const open = s.indexOf('<a ', card); const close = s.indexOf('</a>', open) + 4;
-  if (card < 0 || open < 0 || close < 4) throw new Error('v2 services: resume link not found');
-  const style = s.slice(open, close).match(/style="[^"]*"/)?.[0] || '';
-  /* It now leads inside the site, so its arrow points along the line, not out of the page. */
-  const svg = '<svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>';
-  s = s.slice(0, open) + `<a data-link href="${SUB_SITES.job.live}" ${style}><span>Open the website for hiring teams</span>${svg}</a>` + s.slice(close);
+  /* The snapshot's first screen gives way to the audience websites' own (above). */
+  const head = s.indexOf('<section data-bg="grid rings" aria-labelledby="services-title"');
+  const end = s.indexOf('</section>', head) + '</section>'.length;
+  if (head < 0 || end < '</section>'.length) throw new Error('clients: hero not found');
+  s = s.slice(0, head) + s.slice(end);
   s = swap(s, 'Both. Companies hiring a senior or lead product designer in KSA or UAE, on-site or remote, can start with the resume. Teams with a product problem can bring me in for a scoped project, with me doing the work.', 'Both. Companies hiring a Lead or Principal product designer in KSA or the UAE have a website of their own, for hiring teams. Teams with a product problem can bring me in for a scoped project, with me doing the work.');
   s = swap(s, "Tell me what you're building, or who you're hiring", "Tell me what you're building");
   return s;
 };
 ---
-<SnapshotPage snapshot={snapshot} title="Services for product teams · AIUXAleem" description="AI product design, design system builds and UX audits for product teams in the GCC and beyond: what you get, how it runs, and the proof." rewrite={rewrite} hideCta hideHeaderCta />
+<SnapshotPage snapshot={snapshot} title="Services for product teams · AIUXAleem" description="AI product design, design system builds and UX audits for product teams in the GCC and beyond: what you get, how it runs, and the proof." rewrite={rewrite} slotBefore={'<section aria-labelledby="offers-title"'} hideCta>
+  <SiteHero id="services" overline="For clients · What I offer" title="Three things I can do for your team." accent="team" lead={`I'm ${site.name}, a ${profile.headline} with 13+ years in enterprise UX and AI products. For teams with a product problem: what I do on a project, what you get, and the work that proves it.`} primary={{ label: 'Book a 15-min call', href: site.calendarUrl, newTab: true }} secondary={{ label: 'How I work', href: '#process-title' }}>
+    <p slot="after" class="services-across"><a data-link href={SUB_SITES.job.live}>Hiring instead? Open the website for hiring teams</a></p>
+    <HeroStack slot="art" id="services-stack" label="Services" noun="service" cards={services} />
+  </SiteHero>
+</SnapshotPage>
+
+<style>
+  .services-across { margin: 0; font-size: var(--text-body-sm); }
+  .services-across a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); color: var(--text-link); font-weight: var(--weight-semibold); }
+</style>

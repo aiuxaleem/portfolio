@@ -1,0 +1,40 @@
+---
+/* The AI tools with their search, category and cost filters, grouped by category: the main site's /ai-tools list, as a
+   component for the website for clients (docs/SITES.md), whose page has its own first screen. The main site's page keeps
+   its own copy, so version 1 of the A/B test does not change. */
+import AiToolCard from '../cards/ai-tool-card.astro';
+import ProjectFilters from '../projects/project-filters.astro';
+import Button from '../ui/button.astro';
+import { listedAiTools, aiCategoryCounts, aiCategoryLabel, aiCostLabel } from '../../lib/ai-tools';
+
+const tools = await listedAiTools();
+const groups = aiCategoryCounts(tools).filter(g => g.count > 0 || tools.some(t => t.data.category === g.slug));
+const items = tools.map(t => ({ tags: [t.data.category], status: t.data.cost }));
+---
+<section id="tools" class="cory-container" aria-label="Tools" style="display: grid; gap: var(--space-10); padding-block: var(--space-8) var(--section-y);">
+  {tools.length > 0 && <ProjectFilters tags={groups.map(g => g.slug)} tagLabels={aiCategoryLabel} tagsLabel="Category" total={tools.length} items={items} options={aiCostLabel} optionsLabel="Cost" noun="tool" id="ai-filter" search={{ label: 'Find a tool', placeholder: 'Name, site or use' }} />}
+  {tools.length === 0
+    ? <div class="project-empty"><p class="project-empty-title">No tools are listed yet.</p><p class="project-empty-body">Tools appear here as they are added. Until then, the UX Glossary has the wider list of tools and references.</p><div><Button variant="secondary" href="/resources">Open the UX Glossary</Button></div></div>
+    : <div data-project-list class="tooldir-groups">
+        {groups.map(g => (
+          <section class="tooldir-group" aria-labelledby={`ai-${g.slug}`} data-filter-group>
+            <div class="page-section-head">
+              <h2 id={`ai-${g.slug}`} class="project-h2">{g.label} <span class="tooldir-count">{g.count}</span></h2>
+              <p class="project-filter-count">{g.blurb}</p>
+            </div>
+            <div data-cq><ul data-cq-grid data-cq-3 style="display: grid; gap: var(--grid-gap);">{tools.filter(t => t.data.category === g.slug).sort((a, b) => Number(b.data.pick) - Number(a.data.pick)).map(t => <li><AiToolCard tool={t} level={3} /></li>)}</ul></div>
+          </section>
+        ))}
+      </div>}
+</section>
+
+<style>
+  .tooldir-groups { display: grid; gap: var(--space-12); }
+  .tooldir-group { display: grid; gap: var(--space-5); }
+  .tooldir-count { font-family: var(--font-mono); font-size: var(--text-mono); font-weight: var(--weight-medium); color: var(--text-subtle); vertical-align: middle; }
+  .tooldir-group:not(:has(li:not([hidden]))) { display: none; }
+</style>
+
+<script>
+  import '../islands/project-filters.ts';
+</script>

@@ -1,5 +1,43 @@
 ---
-/* The resume on the website for hiring teams (docs/SITES.md): the main site's page, unchanged. */
-import ResumePage from '../resume.astro';
+/* The resume on the website for hiring teams (docs/SITES.md): a first screen with the resume's first lines drawn as a sheet
+   beside the words, then the same sections as the main site's /resume (summary, experience, expertise, tools, education,
+   certifications). Every fact comes from the profile, site settings and the certifications collection. */
+import PageLayout from '../../layouts/page-layout.astro';
+import SiteHero from '../../components/sites/site-hero.astro';
+import HeroStack from '../../components/sites/hero-stack.astro';
+import { resumeCards } from '../../lib/site-stacks';
+import Career from '../../components/profile/career.astro';
+import Certifications from '../../components/profile/certifications.astro';
+import { profile } from '../../content/profile';
+import { personLd } from '../../lib/seo';
+import { site, resumePdf, resumeExternal } from '../../content/site';
+
+const open = resumePdf
+  ? { label: 'Download resume (PDF)', href: resumePdf, download: true }
+  : { label: resumeExternal ? 'Open on Google Drive' : 'Download resume', href: site.resumeUrl, newTab: resumeExternal };
+const stack = await resumeCards();
 ---
-<ResumePage />
+<PageLayout hideCta title="Resume · AIUXAleem, for hiring teams" description={`Resume of ${site.name}, ${profile.headline}: experience at Colaberry, NTT DATA and Teqsar, expertise, tools and certifications.`} page="resume" ogType="profile" jsonLd={[personLd()]} bg="grid" mainStyle="outline: none; overflow: clip;">
+  <SiteHero id="resume" overline="Resume" title={site.name} lead={`${profile.headline}. ${site.location}, on GCC hours. ${site.availability.label}.`} primary={open} secondary={{ label: 'Email me', href: `mailto:${site.email}` }}>
+    <ul slot="after" class="resume-contact">
+      <li><a href={`mailto:${site.email}`}><bdi>{site.email}</bdi></a></li>
+      <li><a href={site.socials.linkedin} target="_blank" rel="noopener">LinkedIn<span class="cory-visually-hidden"> (opens in a new tab)</span></a></li>
+      {site.socials.behance && <li><a href={site.socials.behance} target="_blank" rel="noopener">Behance<span class="cory-visually-hidden"> (opens in a new tab)</span></a></li>}
+    </ul>
+    <HeroStack slot="art" id="resume-stack" label="On the resume" noun="section" cards={stack} />
+  </SiteHero>
+
+  <article class="cory-container cory-container-narrow resume-page" aria-label="Resume" style="position: relative; padding-block: var(--space-8) var(--section-y);">
+    <section class="resume-block" aria-labelledby="cv-summary"><h2 id="cv-summary">Summary</h2><div><p>{profile.positioning}</p>{profile.summary.map(p => <p>{p}</p>)}</div></section>
+    <section class="resume-block" aria-labelledby="cv-experience"><h2 id="cv-experience">Experience</h2><div><Career level={3} /></div></section>
+    <section class="resume-block" aria-labelledby="cv-expertise"><h2 id="cv-expertise">Expertise</h2><div><ul style="display: grid; gap: var(--space-4);">{profile.expertise.map(e => <li><p><strong style="color: var(--text-strong);">{e.title}.</strong> {e.body}</p></li>)}</ul></div></section>
+    <section class="resume-block" aria-labelledby="cv-tools"><h2 id="cv-tools">Tools</h2><div><ul class="tool-list">{profile.tools.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul></div></section>
+    <section class="resume-block" aria-labelledby="cv-education"><h2 id="cv-education">Education</h2><div><ul style="display: grid; gap: var(--space-4);">{profile.education.map(e => <li><p><strong style="color: var(--text-strong);">{e.school}</strong><br />{e.qualification}</p></li>)}</ul></div></section>
+    <section class="resume-block" aria-labelledby="cv-certs"><h2 id="cv-certs">Certifications</h2><div><Certifications compact /></div></section>
+  </article>
+</PageLayout>
+
+<style>
+  /* The first section follows the first screen directly; a rule above it read as a stray line. */
+  .resume-page > .resume-block:first-child { border-block-start: 0; padding-block-start: 0; }
+</style>

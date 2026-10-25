@@ -5,8 +5,8 @@
    is --border-interactive (3:1) and an error carries an icon as well as words.
    Without JavaScript the form posts to the form service directly and the browser's own validation applies.
    Behaviour: islands/contact-form.ts */
-interface Props { /** The topic chosen before the visitor arrives (version 2's doors). */ topic?: 'role' | 'project'; endpoint: string; email: string; id?: string; /** Off on /_states, where several forms share the page: a named form is a landmark and landmark names must be unique. */ landmark?: boolean; /** Fix a state, for /_states. */ /** The submit's weight: secondary where the page's primary call is in the same view (Contact, two columns). */ submit?: 'ink' | 'secondary'; state?: 'idle' | 'invalid' | 'submitting' | 'success' | 'failure' }
-const { endpoint, email, id = 'contact', landmark = true, state = 'idle', submit = 'ink', topic } = Astro.props;
+interface Props { /** The topic chosen before the visitor arrives (version 2's doors). */ topic?: 'role' | 'project'; endpoint: string; email: string; id?: string; /** Off on /_states, where several forms share the page: a named form is a landmark and landmark names must be unique. */ landmark?: boolean; /** Fix a state, for /_states. */ /** The submit's weight: secondary where the page's primary call is in the same view (Contact, two columns). */ submit?: 'ink' | 'secondary'; state?: 'idle' | 'invalid' | 'submitting' | 'success' | 'failure'; /** The message box's height in lines. */ rows?: number }
+const { endpoint, email, id = 'contact', landmark = true, state = 'idle', submit = 'ink', topic, rows = 6 } = Astro.props;
 const fixed = !!Astro.props.state;
 const invalid = state === 'invalid';
 const busy = state === 'submitting';
@@ -54,7 +54,7 @@ const alertIcon = 'M12 8v4M12 16h.01';
         <label for={`${id}-${f.name}`}>{f.label}</label>
         {f.hint && <p class="form-hint" id={`${id}-${f.name}-hint`}>{f.hint}</p>}
         {f.type === 'textarea'
-          ? <textarea id={`${id}-${f.name}`} name={f.name} rows="6" required autocomplete={f.autocomplete} aria-invalid={invalid ? 'true' : undefined} aria-describedby={invalid ? `${id}-${f.name}-error` : undefined} disabled={busy}>{f.value}</textarea>
+          ? <textarea id={`${id}-${f.name}`} name={f.name} rows={rows} required autocomplete={f.autocomplete} aria-invalid={invalid ? 'true' : undefined} aria-describedby={invalid ? `${id}-${f.name}-error` : undefined} disabled={busy}>{f.value}</textarea>
           : <input id={`${id}-${f.name}`} name={f.name} type={f.type as 'text' | 'email'} required autocomplete={f.autocomplete} value={f.value} aria-invalid={invalid ? 'true' : undefined} aria-describedby={[f.hint && `${id}-${f.name}-hint`, invalid && `${id}-${f.name}-error`].filter(Boolean).join(' ') || undefined} disabled={busy} />}
         <p class="form-error" id={`${id}-${f.name}-error`} data-field-error hidden={!invalid}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={alertIcon}></path></svg><span>{invalid ? f.error : ''}</span></p>
       </div>

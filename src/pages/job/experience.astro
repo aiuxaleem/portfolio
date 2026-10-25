@@ -3,28 +3,25 @@
    each role shipped), certifications, education, the principles, and how I work with AI. The main site's About without
    the parts written for clients. */
 import PageLayout from '../../layouts/page-layout.astro';
-import Button from '../../components/ui/button.astro';
 import Career from '../../components/profile/career.astro';
 import Learning from '../../components/sites/learning.astro';
 import ContactBlock from '../../components/profile/contact-block.astro';
-import { site, resumeAttrs, resumeExternal } from '../../content/site';
+import { site, resumeExternal } from '../../content/site';
 import { profile } from '../../content/profile';
 import { personLd } from '../../lib/seo';
 import { chrome } from '../../i18n/chrome';
 
 const c = chrome.en;
 const num = (i: number) => String(i + 1).padStart(2, '0');
+import SiteHero from '../../components/sites/site-hero.astro';
+import HeroStack from '../../components/sites/hero-stack.astro';
+import { careerCards } from '../../lib/site-stacks';
+const stack = careerCards('#experience-career-title');
 ---
 <PageLayout title="Experience · AIUXAleem, for hiring teams" description={`The experience of ${site.name}, ${profile.headline}: every role with what it shipped, certifications, education and how he works with AI.`} page="experience" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
-  <section class="cory-container" aria-labelledby="experience-title" style="display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
-    <p class="cory-overline" style="margin: 0px;">Experience</p>
-    <h1 id="experience-title" class="experience-h1">Thirteen-plus years, from enterprise UX to AI products.</h1>
-    <p class="experience-lead">{profile.positioning}</p>
-    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
-      <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
-      <Button variant="secondary" size="lg" href={site.resumeUrl} {...resumeAttrs}>{resumeExternal ? 'View resume' : 'Download resume'}{resumeExternal && <span class="cory-visually-hidden"> (opens in a new tab)</span>}</Button>
-    </div>
-  </section>
+  <SiteHero id="experience" overline="Experience" title="Thirteen-plus years, from enterprise UX to AI products." accent="AI products" lead={profile.positioning} primary={{ label: c.call, href: site.calendarUrl, newTab: true }} secondary={{ label: resumeExternal ? 'View resume' : 'Download resume', href: site.resumeUrl, newTab: resumeExternal }}>
+    <HeroStack slot="art" id="career-stack" label="Where I have worked" noun="company" cards={stack} />
+  </SiteHero>
 
   <section class="page-section" data-surface="card" aria-labelledby="experience-career-title">
     <div class="cory-container">
@@ -71,8 +68,6 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 </PageLayout>
 
 <style>
-  .experience-h1 { margin: 0; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
-  .experience-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted); }
   .experience-education { display: grid; gap: var(--grid-gap); margin: 0; padding: 0; list-style: none; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
   .experience-education h3 { margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong); overflow-wrap: anywhere; }
   .experience-education p { margin: 0; color: var(--text-muted); }

@@ -1,5 +1,29 @@
 ---
-/* AI Tools on the website for clients (docs/SITES.md): the main site's page, unchanged. */
-import AiToolsPage from '../ai-tools.astro';
+/* AI Tools on the website for clients (docs/SITES.md): a first screen with the directory drawn as a window of real tools
+   beside the words, then every tool with its search, category and cost filters. */
+import PageLayout from '../../layouts/page-layout.astro';
+import SiteHero from '../../components/sites/site-hero.astro';
+import HeroStack from '../../components/sites/hero-stack.astro';
+import { aiToolCards } from '../../lib/site-stacks';
+import AiToolDirectory from '../../components/sites/ai-tool-directory.astro';
+const stack = await aiToolCards();
 ---
-<AiToolsPage />
+<PageLayout title="AI tools for product teams · AIUXAleem, for clients" description="AI tools for product teams, grouped by what they help with: UI generation, research, testing, images, video and voice. Kept by Mohammad Abdul Aleem." page="ai-tools" bg="grid" mainStyle="outline: none; overflow: clip;">
+  <SiteHero id="clients-tools" overline="Resources · AI Tools" title="AI tools for product teams." accent="AI tools" lead="The AI tools worth knowing, grouped by what they help a product team do: from a prompt to screens, interviews to insight, a sketch to a clip. The ones I use are marked “I use this” in the list. Prices change, so check before you rely on one." primary={{ label: 'Find a tool', href: '#ai-filter-search' }} secondary={{ label: 'Open the UX Glossary', href: '/resources' }}>
+    <HeroStack slot="art" id="tools-stack" label="Where I use AI" noun="category" cards={stack} />
+  </SiteHero>
+  <AiToolDirectory />
+</PageLayout>
+
+<script>
+  /* "Find a tool" puts the cursor in the search field, not only the page at it. Without JavaScript the link still goes to
+     the field. */
+  document.querySelector('a[href="#ai-filter-search"]')?.addEventListener('click', event => {
+    const field = document.getElementById('ai-filter-search');
+    if (!field) return;
+    event.preventDefault();
+    field.scrollIntoView({ block: 'center' });
+    field.focus({ preventScroll: true });
+    history.replaceState(null, '', '#ai-filter-search');
+  });
+</script>

@@ -47,6 +47,8 @@ const aiToolSample = [...aiToolsAll.filter(t => !t.data.fixture && t.data.pick).
 const resourceSample = [...resourcesAll.filter(r => !r.data.fixture).slice(0, 2), ...resourcesAll.filter(r => r.data.fixture).sort((a, b) => a.id.localeCompare(b.id))];
 import HomeFeeds from '../components/home/home-feeds.astro';
 import CaseDeck from '../components/home/case-deck.astro';
+import HeroStack from '../components/sites/hero-stack.astro';
+import { caseCard, type StackCard } from '../lib/site-stacks';
 import WorkedWith from '../components/home/worked-with.astro';
 import Skills from '../components/home/skills.astro';
 import { feedItems, feedTags, feedTypes } from '../lib/writing';
@@ -63,6 +65,14 @@ import { site } from '../content/site';
 const formStates = [['idle', 'Idle (live: try it; it posts to a fixture address, so sending ends in the failure state)'], ['invalid', 'Inline errors and the error summary'], ['submitting', 'Submitting: fields locked, button disabled, status message'], ['success', 'Success'], ['failure', 'Failure: the input is kept and email is offered']] as const;
 const li = { urn: 'urn:li:share:0000000000000000000', url: 'https://www.linkedin.com/in/aiuxaleem' };
 const allCases = await listedCaseStudies();
+/* The audience websites' first-screen stack with the stress content: a long title and line, an unbroken string with
+   eight points, a one-word title with no optional field, and a real case study with its cover. */
+const coverCase = allCases.find(c => !c.data.fixture && c.data.cover);
+const stackStress: StackCard[] = [
+  { kicker: stress.unbroken, meta: '2026', title: stress.longTitle, line: stress.longTitle + ' ' + stress.longTitle, href: '#main', cta: 'Read the case study', points: [...stress.tags] },
+  { kicker: 'Fixture', title: stress.oneWord, href: '#main', cta: 'Open' },
+  ...(coverCase ? [caseCard(coverCase)] : []),
+];
 const fullCase = allCases.find(c => c.id === 'full-fixture');
 const caseCards = allCases.filter(c => c.data.fixture);
 const projects = await listedProjects();
@@ -316,6 +326,9 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <h2 style={h2}>Home hero: case study deck</h2>
             <p style={note}>The deck from the Home hero, still, with the stress fixture on the front card (a 120-character title, a long subtitle, no cover image). On Home it holds the featured case studies and the arrows bring the next card forward.</p>
             <div style="max-inline-size: min(100%, 440px); overflow: clip;"><CaseDeck fixtures /></div>
+            <h2 style={h2}>Audience websites: first-screen stack</h2>
+            <p style={note}>The stack beside the words on every first screen of the websites for hiring teams and for clients. Live: the arrows bring the next card forward. Front card: a 120-character title, a long line and an unbroken kicker over eight points (the sheet shows four). Then a one-word title with every optional field missing, and a case study with its cover. Below it, a stack of one card, which has no arrows.</p>
+            <div style="display: grid; gap: var(--space-10); max-inline-size: min(100%, 440px); overflow-x: clip;"><HeroStack id={`states-stack-${theme}`} label="Stack" noun="card" cards={stackStress} /><HeroStack id={`states-stack-one-${theme}`} label="One card" noun="card" cards={[stackStress[1]]} /></div>
             <h2 style={h2}>Home: skills</h2>
             <p style={note}>The Skills section of Home, as captured from the design. It has one state: its text and tools are part of the capture, so there is nothing to be missing or empty. The Arabic capture is on the Arabic Home page.</p>
             <Skills fixture={theme} />

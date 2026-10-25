@@ -38,12 +38,13 @@ for (const [route, sel] of HOVER) { const { ctx, p } = await open(route); const 
 { const { ctx, p } = await open('/services', { w: 390, h: 844, touch: true }); const loc = p.locator('summary >> nth=0'); await loc.scrollIntoViewIfNeeded(); const a = await read(loc); await loc.tap(); await p.waitForTimeout(350); const b = await read(loc); const hoverMedia = await p.evaluate(() => matchMedia('(hover: hover)').matches); out['touch /services summary'] = { hoverMedia, before: a, after: b }; if (hoverMedia) console.log('  note: this browser reports hover: hover in touch emulation; sticky-hover test skipped'); else if (a !== b) fail('/services: a tapped question keeps a hover style on a touch screen'); await ctx.close(); }
 console.log(`hover: ${HOVER.length} elements`);
 
-// 3. Home deck: a swap moves the cards (transform transitions run) and ends in the resting poses.
-for (const route of ['/', '/ar']) { const { ctx, p } = await open(route); const next = p.locator('div:has(+ [data-hero-stack]) button >> nth=1'); if (!(await next.count())) { fail(`${route}: deck buttons not found`); await ctx.close(); continue; } await next.click(); await p.waitForTimeout(60);
+// 3. Home deck, and the stacks on the audience websites' first screens: a swap moves the cards (transform transitions run)
+//    and ends in the resting poses.
+for (const route of ['/', '/ar', '/job', '/clients']) { const { ctx, p } = await open(route); const next = p.locator('div:has(+ [data-hero-stack]) button >> nth=1'); if (!(await next.count())) { fail(`${route}: deck buttons not found`); await ctx.close(); continue; } await next.click(); await p.waitForTimeout(60);
   const mid = await p.evaluate(() => document.getAnimations().filter(a => a.transitionProperty === 'transform' && a.effect?.target?.hasAttribute('data-stack-card')).length); await p.waitForTimeout(500);
   const end = await p.evaluate(() => ({ running: document.getAnimations().filter(a => a.effect?.target?.hasAttribute?.('data-stack-card')).length, front: [...document.querySelectorAll('[data-stack-card]')].findIndex(c => c.dataset.pos === '0') }));
   out[`deck ${route}`] = { cardsMoving: mid, ...end }; if (mid < 2) fail(`${route}: only ${mid} deck cards animate on a swap`); if (end.running || end.front !== 1) fail(`${route}: deck did not settle on the second card`); await ctx.close(); }
-console.log('deck: 2 pages');
+console.log('deck: 4 pages (Home, Arabic Home, and the first-screen stacks of the two audience websites)');
 
 // 4. Smooth scrolling is on when motion is allowed.
 { const { ctx, p } = await open('/case-studies/colaberry-design-system'); const s = await p.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior); out.smooth = s; if (s !== 'smooth') fail(`scroll-behavior is ${s} with motion allowed`); await ctx.close(); }

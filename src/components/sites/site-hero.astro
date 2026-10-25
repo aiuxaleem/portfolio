@@ -1,0 +1,55 @@
+---
+/* The first screen of every page on the audience websites (docs/SITES.md): the words on the left and, in the `art` slot, a
+   stack of the page's own content (hero-stack.astro, the main site's Home deck), so every first screen has the same
+   shape and none is a column of text beside empty space. From 1024px the two sit side by side; below that the stack
+   follows the words. The `after` slot holds a line under the buttons (facts, contact links). Sizes, type and buttons
+   are the main site's hero recipe. */
+import Button from '../ui/button.astro';
+
+interface Action { label: string; href: string; external?: boolean; newTab?: boolean; download?: boolean }
+interface Props {
+  id: string;
+  overline: string;
+  title: string;
+  /** One word or phrase of the title drawn in the brand gradient, as on the main site's heroes. */
+  accent?: string;
+  lead: string;
+  primary?: Action;
+  secondary?: Action;
+}
+const { id, overline, title, accent, lead, primary, secondary } = Astro.props;
+const [before, after] = accent && title.includes(accent) ? [title.slice(0, title.indexOf(accent)), title.slice(title.indexOf(accent) + accent.length)] : [title, ''];
+const attrs = (a: Action) => ({ ...(a.newTab ? { target: '_blank', rel: 'noopener' } : {}), ...(a.download ? { download: true } : {}) });
+---
+<section class="cory-container site-hero" aria-labelledby={`${id}-title`}>
+  <div class="site-hero-words">
+    <p class="cory-overline" style="margin: 0;">{overline}</p>
+    <h1 id={`${id}-title`} class="site-hero-title">{before}{accent && after !== undefined && title.includes(accent) && <span class="site-hero-accent">{accent}</span>}{after}</h1>
+    <p class="site-hero-lead">{lead}</p>
+    {(primary || secondary) && (
+      <div data-hero-ctas class="site-hero-ctas">
+        {primary && <Button variant="primary" size="lg" href={primary.href} {...attrs(primary)}>{primary.label}{primary.newTab && <span class="cory-visually-hidden"> (opens in a new tab)</span>}</Button>}
+        {secondary && <Button variant="secondary" size="lg" href={secondary.href} {...attrs(secondary)}>{secondary.label}{secondary.newTab && <span class="cory-visually-hidden"> (opens in a new tab)</span>}</Button>}
+      </div>
+    )}
+    <slot name="after" />
+  </div>
+  <div class="site-hero-art"><slot name="art" /></div>
+</section>
+
+<style>
+  /* The stack's fanned back cards and glow may pass the edge of the screen; they are cut there, never scrolled to. */
+  .site-hero { display: grid; gap: var(--space-10); align-items: center; padding-block: var(--space-12) var(--space-10); overflow-x: clip; }
+  @media (min-width: 1024px) {
+    /* As tall as its content, so the next section starts on the first screen and says there is more. The columns of
+       .cory-split (the hiring Home, the UX Glossary), so every first screen's illustration has the same edges. */
+    .site-hero { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); padding-block: var(--space-16) var(--space-10); }
+  }
+  .site-hero-words { display: grid; gap: var(--space-6); align-content: center; min-inline-size: 0; }
+  .site-hero-title { margin: 0; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
+  .site-hero-accent { background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .site-hero-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted); }
+  .site-hero-ctas { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; }
+  .site-hero-art { position: relative; min-inline-size: 0; display: grid; align-items: center; }
+  @media (forced-colors: active) { .site-hero-accent { background: none; color: CanvasText; } }
+</style>

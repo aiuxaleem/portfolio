@@ -1,60 +1,47 @@
 ---
 /* The website for hiring teams (docs/SITES.md), its Home: job.aiuxaleem.com. Everything a recruiter or a hiring manager
-   screens for, in the order they screen: who, what level, where and what for (the hero and the facts panel), the work
-   (three case studies), what he brings, the experience in short, the certifications, then the call. No client offer: the
+   screens for, in the order they screen: who, what level, where and what for (the hero, its four facts and the stack
+   of featured case studies, as on the main site's Home), more work, what he brings, the experience in short, the certifications, then the call. No client offer: the
    band before the call leads to the website for clients. Every fact comes from the profile and site settings. */
 import PageLayout from '../../layouts/page-layout.astro';
-import Button from '../../components/ui/button.astro';
+import SiteHero from '../../components/sites/site-hero.astro';
+import HeroStack from '../../components/sites/hero-stack.astro';
 import CaseCard from '../../components/cards/case-card.astro';
 import Career from '../../components/profile/career.astro';
 import Certifications from '../../components/profile/certifications.astro';
 import ContactBlock from '../../components/profile/contact-block.astro';
 import DoorSwitch from '../../components/sites/door-switch.astro';
-import { site, resumeAttrs, resumeExternal } from '../../content/site';
+import { site, resumeExternal } from '../../content/site';
 import { profile, period } from '../../content/profile';
 import { listedCaseStudies } from '../../lib/case-studies';
+import { caseCard } from '../../lib/site-stacks';
 import { personLd } from '../../lib/seo';
 import { chrome } from '../../i18n/chrome';
 
 const c = chrome.en;
 const now = profile.career[0];
-const cases = (await listedCaseStudies()).filter(x => !x.data.fixture).slice(0, 3);
+/* The stack holds the featured case studies; the section after the first screen, the newest of the others. */
+const listed = (await listedCaseStudies()).filter(x => !x.data.fixture);
+const featured = listed.filter(x => x.data.featured).slice(0, 3);
+const cases = listed.filter(x => !featured.includes(x)).slice(0, 3);
+/* Four facts under the buttons, as on the main site's Home: what a hiring manager checks in the first seconds. */
 const facts: [string, string][] = [
   ['Now', `${now.role}, ${now.company} (${period(now)})`],
   ['Experience', '13+ years, from enterprise UX to AI products'],
-  ['Open to', 'Lead and Principal design or product roles in KSA and the UAE, on-site or remote'],
-  ['Based in', `${site.location}, on GCC hours`],
-  ['Relocation', site.availability.label],
-  ['Education', profile.education[0]?.qualification ?? ''],
-].filter(([, v]) => v) as [string, string][];
-const inkText = 'margin: 0; color: var(--on-ink-strong); font-weight: var(--weight-semibold); overflow-wrap: anywhere;';
+  ['Open to', 'Lead and Principal roles in KSA and the UAE, on-site or remote'],
+  ['Based in', `${site.location}, on GCC hours. ${site.availability.label}`],
+];
 ---
 <PageLayout title={`${profile.headline} · For hiring teams · AIUXAleem`} description={`For recruiters and hiring managers: ${site.name}, ${profile.headline}. Experience, case studies, certifications and the resume in one place.`} page="hiring" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
-  <section class="cory-container hiring-hero" aria-labelledby="hiring-title">
-    <div class="cory-split" style="align-items: start;">
-      <div style="display: grid; gap: var(--space-6); align-content: start;">
-        <p class="cory-overline" style="margin: 0px;">For hiring teams</p>
-        <h1 id="hiring-title" class="hiring-h1">A {profile.headline} for your team.</h1>
-        <p class="hiring-lead">I'm {site.name}. {profile.positioning} Thirteen-plus years in enterprise UX, fintech and AI products, now leading AI product design at {now.company}.</p>
-        <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
-          <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
-          <Button variant="secondary" size="lg" href={site.resumeUrl} {...resumeAttrs}>{resumeExternal ? 'View resume' : 'Download resume'}{resumeExternal && <span class="cory-visually-hidden"> (opens in a new tab)</span>}</Button>
-        </div>
-      </div>
-      <div class="project-cta hiring-facts" role="region" aria-labelledby="hiring-facts-title">
-        <p class="cory-overline" style="margin: 0; color: var(--on-ink-link);">At a glance</p>
-        <h2 id="hiring-facts-title" class="hiring-facts-title">What you'll want to know first</h2>
-        <dl class="hiring-facts-list">
-          {facts.map(([k, v]) => <div><dt>{k}</dt><dd style={inkText}>{v}</dd></div>)}
-        </dl>
-      </div>
-    </div>
-  </section>
+  <SiteHero id="hiring" overline="For hiring teams" title={`A ${profile.headline} for your team.`} accent="AI Product Designer" lead={`I'm ${site.name}. ${profile.positioning} Thirteen-plus years in enterprise UX, fintech and AI products, now leading AI product design at ${now.company}.`} primary={{ label: c.call, href: site.calendarUrl, newTab: true }} secondary={{ label: resumeExternal ? 'View resume' : 'Download resume', href: site.resumeUrl, newTab: resumeExternal, download: !resumeExternal }}>
+    <div slot="after" data-cq><dl data-cq-grid class="hiring-facts">{facts.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl></div>
+    {featured.length > 0 && <HeroStack slot="art" id="hiring-stack" label="Selected work" noun="case study" cards={featured.map(caseCard)} />}
+  </SiteHero>
 
   {cases.length > 0 && (
     <section class="page-section" data-surface="card" aria-labelledby="hiring-work-title">
       <div class="cory-container">
-        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">The work</p><h2 id="hiring-work-title" class="page-h2">Case studies to start with</h2><p class="project-filter-count" style="max-inline-size: var(--measure-lead);">Each one gives the problem, the constraints, the decisions with their trade-offs, and what shipped.</p></div>
+        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">The work</p><h2 id="hiring-work-title" class="page-h2">{featured.length > 0 ? 'More case studies' : 'Case studies to start with'}</h2><p class="project-filter-count" style="max-inline-size: var(--measure-lead);">Each one gives the problem, the constraints, the decisions with their trade-offs, and what shipped.</p></div>
         <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{cases.map(entry => <li><CaseCard entry={entry} level={3} /></li>)}</ul></div>
         <a data-link class="post-back" href="/case-studies"><span>All case studies</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
       </div>
@@ -89,12 +76,9 @@ const inkText = 'margin: 0; color: var(--on-ink-strong); font-weight: var(--weig
 </PageLayout>
 
 <style>
-  .hiring-hero { padding-block: var(--section-y) var(--space-12); }
-  .hiring-h1 { margin: 0; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
-  .hiring-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted); }
-  .hiring-facts { display: grid; gap: var(--space-4); padding: var(--space-8); box-shadow: var(--shadow-md); }
-  .hiring-facts-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); }
-  .hiring-facts-list { display: grid; gap: 0; margin: 0; }
-  .hiring-facts-list > div { display: grid; gap: var(--space-1); padding-block: var(--space-3); border-block-start: 1px solid var(--on-ink-border); }
-  .hiring-facts-list dt { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--on-ink-muted); }
+  /* The four facts: the main site's Home hero row (a rule above each, the label small, the fact strong). */
+  .hiring-facts { display: grid; gap: var(--space-4) var(--space-6); margin: var(--space-2) 0 0; }
+  .hiring-facts > div { display: grid; gap: var(--space-1); align-content: start; padding-block-start: var(--space-3); border-block-start: 1px solid var(--border-default); min-inline-size: 0; }
+  .hiring-facts dt { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
+  .hiring-facts dd { margin: 0; font-size: var(--text-body-md); font-weight: var(--weight-semibold); line-height: var(--leading-heading); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
 </style>
