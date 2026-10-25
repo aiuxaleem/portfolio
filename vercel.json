@@ -11,220 +11,201 @@
       "content/*": false
     }
   },
-  "redirects": [
+  "routes": [
     {
-      "source": "/job",
+      "src": "^/_astro/(.*)$",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/fonts/(.*)$",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/assets/(.*)$",
+      "headers": {
+        "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/og/(.*)$",
+      "headers": {
+        "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/(.*)$",
+      "headers": {
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "strict-origin-when-cross-origin"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/job/?$",
       "missing": [
         {
           "type": "host",
           "value": "(job\\.aiuxaleem\\.com|aiuxaleem-job(-[a-z0-9-]+)?\\.vercel\\.app)"
         }
       ],
-      "destination": "https://aiuxaleem-job.vercel.app/",
-      "permanent": false
+      "status": 307,
+      "headers": {
+        "Location": "https://aiuxaleem-job.vercel.app/"
+      }
     },
     {
-      "source": "/job/:path*",
+      "src": "^/job/(.*)$",
       "missing": [
         {
           "type": "host",
           "value": "(job\\.aiuxaleem\\.com|aiuxaleem-job(-[a-z0-9-]+)?\\.vercel\\.app)"
         }
       ],
-      "destination": "https://aiuxaleem-job.vercel.app/:path*",
-      "permanent": false
+      "status": 307,
+      "headers": {
+        "Location": "https://aiuxaleem-job.vercel.app/$1"
+      }
     },
     {
-      "source": "/:path((?!$|case-studies|work|experience|resume|contact|_astro|fonts|assets|og|api|favicon|sitemap\\.xml|robots\\.txt).*)",
+      "src": "^/(?!(?:case-studies|work|experience|resume|contact|_astro|fonts|assets|og|api|favicon\\.svg|sitemap\\.xml|robots\\.txt)(?:/|$))(.+)$",
       "has": [
         {
           "type": "host",
           "value": "(job\\.aiuxaleem\\.com|aiuxaleem-job(-[a-z0-9-]+)?\\.vercel\\.app)"
         }
       ],
-      "destination": "https://aiuxaleem-portfolio-app.vercel.app/:path",
-      "permanent": false
+      "status": 307,
+      "headers": {
+        "Location": "https://aiuxaleem-portfolio-app.vercel.app/$1"
+      }
     },
     {
-      "source": "/clients",
+      "src": "^/clients/?$",
       "missing": [
         {
           "type": "host",
           "value": "(clients\\.aiuxaleem\\.com|aiuxaleem-clients(-[a-z0-9-]+)?\\.vercel\\.app)"
         }
       ],
-      "destination": "https://aiuxaleem-clients.vercel.app/",
-      "permanent": false
+      "status": 307,
+      "headers": {
+        "Location": "https://aiuxaleem-clients.vercel.app/"
+      }
     },
     {
-      "source": "/clients/:path*",
+      "src": "^/clients/(.*)$",
       "missing": [
         {
           "type": "host",
           "value": "(clients\\.aiuxaleem\\.com|aiuxaleem-clients(-[a-z0-9-]+)?\\.vercel\\.app)"
         }
       ],
-      "destination": "https://aiuxaleem-clients.vercel.app/:path*",
-      "permanent": false
+      "status": 307,
+      "headers": {
+        "Location": "https://aiuxaleem-clients.vercel.app/$1"
+      }
     },
     {
-      "source": "/:path((?!$|case-studies|work|resources|ai-tools|about|contact|_astro|fonts|assets|og|api|favicon|sitemap\\.xml|robots\\.txt).*)",
+      "src": "^/(?!(?:case-studies|work|resources|ai-tools|about|contact|_astro|fonts|assets|og|api|favicon\\.svg|sitemap\\.xml|robots\\.txt)(?:/|$))(.+)$",
       "has": [
         {
           "type": "host",
           "value": "(clients\\.aiuxaleem\\.com|aiuxaleem-clients(-[a-z0-9-]+)?\\.vercel\\.app)"
         }
       ],
-      "destination": "https://aiuxaleem-portfolio-app.vercel.app/:path",
-      "permanent": false
+      "status": 307,
+      "headers": {
+        "Location": "https://aiuxaleem-portfolio-app.vercel.app/$1"
+      }
     },
     {
-      "source": "/v2/hiring",
-      "destination": "https://aiuxaleem-job.vercel.app/",
-      "permanent": false
+      "src": "^/v2/hiring/?$",
+      "status": 307,
+      "headers": {
+        "Location": "https://aiuxaleem-job.vercel.app/"
+      }
     },
     {
-      "source": "/v2/services",
-      "destination": "https://aiuxaleem-clients.vercel.app/",
-      "permanent": false
+      "src": "^/v2/services/?$",
+      "status": 307,
+      "headers": {
+        "Location": "https://aiuxaleem-clients.vercel.app/"
+      }
     },
     {
-      "source": "/v2/contact",
-      "destination": "/v2",
-      "permanent": false
-    }
-  ],
-  "rewrites": [
+      "src": "^/v2/contact/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/v2"
+      }
+    },
     {
-      "source": "/",
+      "src": "^/$",
       "has": [
         {
           "type": "host",
           "value": "(job\\.aiuxaleem\\.com|aiuxaleem-job(-[a-z0-9-]+)?\\.vercel\\.app)"
         }
       ],
-      "destination": "/job"
+      "dest": "/job"
     },
     {
-      "source": "/:path((?:case-studies|work|experience|resume|contact)(?:/.*)?)",
+      "src": "^/((?:case-studies|work|experience|resume|contact)(?:/.*)?)$",
       "has": [
         {
           "type": "host",
           "value": "(job\\.aiuxaleem\\.com|aiuxaleem-job(-[a-z0-9-]+)?\\.vercel\\.app)"
         }
       ],
-      "destination": "/job/:path"
+      "dest": "/job/$1"
     },
     {
-      "source": "/sitemap.xml",
+      "src": "^/(sitemap\\.xml|robots\\.txt)$",
       "has": [
         {
           "type": "host",
           "value": "(job\\.aiuxaleem\\.com|aiuxaleem-job(-[a-z0-9-]+)?\\.vercel\\.app)"
         }
       ],
-      "destination": "/job/sitemap.xml"
+      "dest": "/job/$1"
     },
     {
-      "source": "/robots.txt",
-      "has": [
-        {
-          "type": "host",
-          "value": "(job\\.aiuxaleem\\.com|aiuxaleem-job(-[a-z0-9-]+)?\\.vercel\\.app)"
-        }
-      ],
-      "destination": "/job/robots.txt"
-    },
-    {
-      "source": "/",
+      "src": "^/$",
       "has": [
         {
           "type": "host",
           "value": "(clients\\.aiuxaleem\\.com|aiuxaleem-clients(-[a-z0-9-]+)?\\.vercel\\.app)"
         }
       ],
-      "destination": "/clients"
+      "dest": "/clients"
     },
     {
-      "source": "/:path((?:case-studies|work|resources|ai-tools|about|contact)(?:/.*)?)",
+      "src": "^/((?:case-studies|work|resources|ai-tools|about|contact)(?:/.*)?)$",
       "has": [
         {
           "type": "host",
           "value": "(clients\\.aiuxaleem\\.com|aiuxaleem-clients(-[a-z0-9-]+)?\\.vercel\\.app)"
         }
       ],
-      "destination": "/clients/:path"
+      "dest": "/clients/$1"
     },
     {
-      "source": "/sitemap.xml",
+      "src": "^/(sitemap\\.xml|robots\\.txt)$",
       "has": [
         {
           "type": "host",
           "value": "(clients\\.aiuxaleem\\.com|aiuxaleem-clients(-[a-z0-9-]+)?\\.vercel\\.app)"
         }
       ],
-      "destination": "/clients/sitemap.xml"
-    },
-    {
-      "source": "/robots.txt",
-      "has": [
-        {
-          "type": "host",
-          "value": "(clients\\.aiuxaleem\\.com|aiuxaleem-clients(-[a-z0-9-]+)?\\.vercel\\.app)"
-        }
-      ],
-      "destination": "/clients/robots.txt"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/_astro/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/fonts/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=86400, stale-while-revalidate=604800"
-        }
-      ]
-    },
-    {
-      "source": "/og/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=86400, stale-while-revalidate=604800"
-        }
-      ]
-    },
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        }
-      ]
+      "dest": "/clients/$1"
     }
   ]
 }
