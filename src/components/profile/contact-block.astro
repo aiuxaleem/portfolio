@@ -10,6 +10,7 @@ import ContactForm from '../forms/contact-form.astro';
 import { site } from '../../content/site';
 import { formEndpoint } from '../../content/profile';
 import { chrome } from '../../i18n/chrome';
+import { SUB_SITES } from '../../lib/sites';
 
 interface Props {
   /** 1 on /contact, 2 at the end of another page. */ level?: 1 | 2;
@@ -18,7 +19,7 @@ interface Props {
   title: string;
   lead: string;
   /** Off on /_states, where several forms share the page and landmark names must be unique. */ landmark?: boolean;
-  /** Version 2 (docs/AB_TEST.md): links to the page for hiring teams and the page for clients, under the lead. */ doors?: boolean;
+  /** Links to the two audience websites (docs/SITES.md), under the lead. */ doors?: boolean;
   /** The form's subject, chosen before the visitor arrives. */ topic?: 'role' | 'project';
 }
 const { level = 2, id, overline, title, lead, landmark = true, doors = false, topic } = Astro.props;
@@ -42,7 +43,7 @@ const elsewhere = [
       <p class="cory-overline" style="margin: 0;">{overline}</p>
       <Heading id={`${id}-title`} class:list={['contact-block-title', level === 1 && 'contact-block-title-page']}>{title}</Heading>
       <p class="contact-block-lead">{lead}</p>
-      {doors && <p class="contact-block-doors"><a data-link href="/v2/hiring">Hiring? The page for hiring teams</a><a data-link href="/v2/services">Building? How I work with clients</a></p>}
+      {doors && <p class="contact-block-doors"><a data-link href={SUB_SITES.job.live}>Hiring? The website for hiring teams</a><a data-link href={SUB_SITES.clients.live}>Building? The website for clients</a></p>}
       <div data-hero-ctas class="contact-block-ctas">
         <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
         <Button variant="secondary" size="lg" href={`mailto:${site.email}`}>Email me</Button>

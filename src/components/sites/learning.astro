@@ -1,0 +1,46 @@
+---
+/* Certifications on the audience websites (docs/SITES.md): the ones in progress on an ink panel, the verified ones two to
+   a row, the completed courses in a closed fold. The same arrangement as the main site's About page. `completed` off
+   leaves the courses out (the website for clients). `id` keeps the panel's heading id unique. */
+import { getCollection } from 'astro:content';
+import Certifications from '../profile/certifications.astro';
+
+interface Props { id: string; completed?: boolean; nowHref?: string }
+const { id, completed: showCompleted = true, nowHref } = Astro.props;
+const certs = (await getCollection('certifications', ({ data }) => !data.draft && !data.fixture)).sort((a, b) => a.data.order - b.data.order || a.id.localeCompare(b.id));
+const studying = certs.filter(c => c.data.status === 'in-progress');
+const completed = certs.filter(c => c.data.status === 'completed').length;
+---
+{studying.length > 0 && (
+  <div class="project-cta learning-studying" role="region" aria-labelledby={`${id}-studying`}>
+    <div style="display: grid; gap: var(--space-2);">
+      <p class="cory-overline" style="margin: 0; color: var(--on-ink-link);">In progress now</p>
+      <h3 id={`${id}-studying`} class="learning-studying-title">What I am studying</h3>
+    </div>
+    <ul class="learning-studying-list">
+      {studying.map(({ data: c }) => <li><span class="learning-studying-name">{c.name}</span><span class="learning-studying-meta">{[c.issuer, c.issued].filter(Boolean).join(' · ')}</span></li>)}
+    </ul>
+    {nowHref && <a data-link class="post-back learning-studying-link" href={nowHref}><span>More on what I am learning now</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>}
+  </div>
+)}
+<div class="learning-verified"><Certifications only={['verified']} /></div>
+{showCompleted && completed > 0 && (
+  <details class="resource-disclosure learning-courses">
+    <summary><span class="project-filter-label" style="flex-basis: auto; margin: 0;">Courses completed</span><span data-disclosure-state>{completed}</span><svg data-chevron width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></summary>
+    <div class="learning-courses-body"><Certifications only={['completed']} compact /></div>
+  </details>
+)}
+
+<style>
+  .learning-studying { display: grid; gap: var(--space-5); padding: var(--space-8); margin-block-end: var(--space-8); box-shadow: var(--shadow-md); }
+  .learning-studying-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); }
+  .learning-studying-list { display: grid; gap: var(--space-4); margin: 0; padding: 0; list-style: none; }
+  @media (min-width: 768px) { .learning-studying-list { grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); } }
+  .learning-studying-list li { display: grid; gap: var(--space-1); padding-block-start: var(--space-4); border-block-start: 1px solid var(--on-ink-border); min-inline-size: 0; }
+  .learning-studying-name { font-size: var(--text-body-lg); font-weight: var(--weight-bold); color: var(--on-ink-strong); overflow-wrap: anywhere; }
+  .learning-studying-meta { font-size: var(--text-body-sm); color: var(--on-ink-muted); }
+  .learning-studying-link { color: var(--on-ink-link); }
+  .learning-verified :global(.cert-list) { grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
+  .learning-courses { margin-block-start: var(--space-6); }
+  .learning-courses-body { padding: 0 var(--space-5) var(--space-5); }
+</style>

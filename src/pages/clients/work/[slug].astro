@@ -1,0 +1,11 @@
+---
+/* A project on an audience website (docs/SITES.md): the main site's page, unchanged; the header and footer know from the
+   address which website they are on. */
+import ProjectPage from '../../work/[slug].astro';
+import { listedProjects } from '../../../lib/projects';
+export async function getStaticPaths() {
+  const projects = await listedProjects();
+  return projects.map((project, i) => ({ params: { slug: project.id }, props: { project, prev: projects[i - 1], next: projects[i + 1] } }));
+}
+---
+<ProjectPage {...Astro.props} />

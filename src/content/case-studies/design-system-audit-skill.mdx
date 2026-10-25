@@ -1,0 +1,123 @@
+---
+title: A design system that audits its own product
+index: "06"
+category: AI workflow · Accessibility
+lead: The freight platform's design system became a reusable audit skill that found and fixed contrast, state and layout issues across 97 UAT screens, without touching behaviour.
+cover:
+  src: ../../assets/cases/case-study-6.png
+  alt: An operations dashboard for a freight platform shown in light and dark themes, with audit labels marking contrast and focus fixes. Placeholder data.
+role: Product designer and UI/UX reviewer
+company: Colaberry Inc
+timeline: Sep to Oct 2026
+team: Me, plus the client's development team, who reviewed and merged
+platform: Web app, light and dark themes, laptop, tablet and mobile
+stack:
+  - Claude Code
+  - Basecamp
+nda: true
+ndaNote: The client and its partners are not named. Screens shown use placeholder data.
+tldr:
+  - Turned the freight platform's design system into a Claude Code skill that audits a build and fixes it to the system.
+  - Reviewed 97 screens in light and dark, at desktop, tablet and mobile widths.
+  - Cut text below WCAG AA contrast from 1,646 nodes to 7 in light mode, mostly by fixing one token.
+  - Kept every change presentational. Anything touching logic became a to-do for the dev team.
+  - Nothing merged by me. The dev team reviews and merges every fix.
+context:
+  problem: The platform's UAT build had drifted from its design system. Text failed contrast in both themes, some states had no design at all, and nobody had a full picture of how many screens were affected. A manual pass across every page, popup, theme and width would have taken weeks and been hard to repeat on the next build.
+  business: "The product is an AI platform for freight brokerage, built by Colaberry for a client. I had already designed its logo and its design system: tokens, components, accessibility rules and theming. The UAT review was the point where that system had to prove it could hold the shipped product to the same standard."
+  constraints:
+    - Screens only. Every left-menu page and popup, but no campaign or call could be started, because the product runs live AI outreach.
+    - Presentational changes only. No backend, API, validation or handler changes.
+    - The dev team owns the codebase. I could push to a branch but not merge.
+    - Three widths (1280, 768 and 390) in two themes, so six views of every screen.
+    - The client's partner branding had to survive on co-branded screens such as login.
+research:
+  summary: Most of the contrast failures were not 1,646 separate problems. About 1,600 of them traced back to a single colour token. The fastest fix was in the system, not in the screens.
+  insights:
+    - 14 colour pairs caused all of the light-mode contrast failures.
+    - Roughly 1,600 failing text nodes came from one token.
+    - The last few dark-mode failures came from frozen inline styles that bypass the token layer.
+    - Several screens had no designed empty, error, 404 or boot state, so failures looked broken rather than handled.
+    - A third of the issues found needed a product or backend decision, not a design fix.
+process:
+  summary: Brand first, then the system, then a skill that holds the product to the system.
+  steps:
+    - title: Start from the system I had already built
+      body: "The logo and design system came first: tokens, components, accessibility rules and light and dark theming. That gave the audit a written standard to measure against, instead of my opinion on each screen."
+    - title: Package the system as an audit skill
+      body: "I wrote a Claude Code skill that reads the design system, audits a build against it and applies fixes at the CSS token layer first. Scope rules sit inside the skill: screens only, presentational only, content and functionality unchanged."
+    - title: Audit every screen, theme and width
+      body: The skill covered 97 screens, every page and popup, in both themes at 1280, 768 and 390. I also scanned 14 widths for overflow and found none.
+    - title: Fix on a branch, log the rest
+      body: "Fixes landed in 4 commits on the dev branch: layout, contrast tokens, hover and focus states, 404, error and boot screens, empty states and a responsive pass. Every flaw became its own to-do in the UAT report format, 22 in all."
+    - title: Hand over with the evidence
+      body: FINDINGS.md, AUDIT.md and every prompt I used went on the ticket. The dev team reviews and merges, and runs their full test suite and Playwright before merge.
+ai:
+  summary: The AI here is the reviewer, not the product feature. A Claude Code skill does the repetitive audit and the safe fixes, and people keep the decisions that change behaviour.
+  behaviour:
+    - The skill reads the design system, inspects each screen in both themes and three widths, reports where the build breaks the system and proposes fixes at the token layer before touching components.
+  trust:
+    - Every prompt used is posted on the ticket, so anyone can see how a fix was made.
+    - FINDINGS.md and AUDIT.md record what was found and what changed.
+    - One to-do per flaw, in the team's existing UAT format, so findings land where the team already works.
+  humanInLoop: |-
+    I review the skill's findings and decide what counts as a presentational fix.
+    The dev team reviews and merges every change. Nothing is merged by me.
+    Product and backend issues go to the people who own them as to-dos.
+  guardrails:
+    - "Presentational only: no backend, API, validation or handler changes."
+    - No campaign or call started during the audit.
+    - Content and functionality stay unchanged.
+    - Work stays on a branch until the dev team merges.
+  failureStates:
+    - Inline styles outside the token layer cannot be fixed by the skill. Two such dark-mode issues remain and are flagged for the dev team.
+    - Issues that need a product or backend decision are logged, not patched. Eight are open.
+  evaluation: |-
+    Contrast: count of text nodes below AA, before and after, per theme.
+    Overflow: scan across 14 widths.
+    Regression: the dev team's full suite and Playwright run before merge.
+    Re-run the live audit once the branch reaches UAT.
+decisions:
+  - decision: Fix the token, not the screens. About 1,600 of 1,646 failures came from one token, so I corrected the system and let the fix flow to every screen.
+    tradeoff: Inline styles that bypass tokens stayed out of reach. Two dark-mode failures remain until the dev team removes them.
+  - decision: Keep the audit presentational only. Anything touching logic became a to-do rather than a fix.
+    tradeoff: 8 of 22 issues stay open, waiting on product and backend decisions. Slower, but no behaviour changed without its owner knowing.
+  - decision: Push to a branch and let the dev team merge.
+    tradeoff: Fixes reach production later. In return the team that owns the code owns every change, and trusts the next audit.
+  - decision: Build a reusable skill instead of a one-off review.
+    tradeoff: More upfront work to write the rules down. The same skill can now bring any build back to the system without changing content or functionality.
+outcomes:
+  summary: These are tested results on the dev branch, not yet measured on the deployed build. Light-mode contrast failures fell from 1,646 to 7 and dark-mode from 21 to 2. Of 22 to-dos, 14 are fixed on the branch and 8 wait on product or backend calls. The skill is now available for the next build on request.
+  metrics:
+    - value: 1,646 to 7
+      label: Text nodes below WCAG AA contrast, light mode
+      kind: outcome
+      source: AUDIT.md on the UAT ticket, Oct 2026
+    - value: 21 to 2
+      label: Text nodes below WCAG AA contrast, dark mode
+      kind: outcome
+      source: AUDIT.md on the UAT ticket, Oct 2026
+    - value: "97"
+      label: Screens audited, each in two themes and three widths
+      kind: outcome
+      source: FINDINGS.md on the UAT ticket, Oct 2026
+    - value: 14 of 22
+      label: Logged issues fixed on the branch
+      kind: outcome
+      source: UAT to-do list on Basecamp, Oct 2026
+quote: A design system that only lives in a file can't stop drift. Written as a skill, it audits the next build too.
+reflection:
+  summary: "The design system did its real job here: it became the standard a machine could check against, while people kept the decisions that change behaviour."
+  learnings:
+    - Most accessibility debt is concentrated. Find the token before fixing the screens.
+    - Scope rules belong inside the tool, not in someone's memory.
+    - A merge gate owned by engineering is what makes AI-made fixes acceptable.
+    - Next time I would run the contrast check inside the system before UAT, so a failing token never ships.
+    - I would also get product and backend owners into the review earlier, so the 8 open issues don't wait on a separate decision.
+project: freight-platform-rebrand
+order: 2
+featured: true
+seo:
+  title: A design system that audits its own product · Case study
+  description: How a design system became a Claude Code audit skill that cut contrast failures from 1,646 to 7 across 97 screens, with no behaviour changed.
+---

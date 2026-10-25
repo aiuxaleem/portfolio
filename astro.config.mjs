@@ -49,6 +49,8 @@ const devOnly = {
 const inSitemap = page => {
   if (page.includes('/_states')) return false;
   if (withStates) return true;
+  /* The audience websites (docs/SITES.md) have sitemaps of their own, on their own hosts. */
+  if (/^\/(job|clients)(\/|$)/.test(new URL(page).pathname)) return false;
   const route = new URL(page).pathname.replace(/\/$/, '');
   // With the Vercel adapter the built pages are under dist/client.
   const file = ['dist', 'dist/client'].flatMap(d => [`${d}${route || '/index'}.html`, `${d}${route}/index.html`]).find(f => fs.existsSync(f));

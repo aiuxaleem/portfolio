@@ -1,5 +1,5 @@
 ---
-/* Version 2 of Home (the A/B test, docs/AB_TEST.md). Version 1's Home with one addition: the two doors under the teams
+/* Version 2 of Home (the A/B test, docs/AB_TEST.md). Version 1's Home with one addition: the two doors to the two audience websites (docs/SITES.md) under the teams
    strip, so a hiring manager and a client each take the page written for them. Kept out of search (its canonical is
    Home); visits are still counted, as /v2. */
 import BaseLayout from '../../layouts/base-layout.astro';
@@ -14,7 +14,7 @@ import DesignSection from '../../components/home/design-section.astro';
 import HomeFeeds from '../../components/home/home-feeds.astro';
 import ServicesTeaser from '../../components/home/services-teaser.astro';
 import Closing from '../../components/home/closing.astro';
-import AudienceFork from '../../components/v2/audience-fork.astro';
+import AudienceFork from '../../components/sites/audience-fork.astro';
 import { site } from '../../content/site';
 import { profile } from '../../content/profile';
 import { personLd, websiteLd } from '../../lib/seo';
@@ -28,7 +28,7 @@ import { personLd, websiteLd } from '../../lib/seo';
         <Hero />
         <WorkedWith />
         <section id="doors" data-section class="cory-container" aria-labelledby="doors-title" style="display: grid; gap: var(--space-8); padding-block: var(--section-y) 0;">
-          <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Two ways in</p><h2 id="doors-title" class="page-h2">Hiring, or building?</h2><p class="project-filter-count" style="max-inline-size: var(--measure-lead);">Pick the page written for you. Both lead to the same work.</p></div>
+          <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Two ways in</p><h2 id="doors-title" class="page-h2">Hiring, or building?</h2><p class="project-filter-count" style="max-inline-size: var(--measure-lead);">Two websites, each written for one of you. Both show the same work.</p></div>
           <AudienceFork id="home-doors" />
         </section>
         <HomeFeeds show={['projects']} />

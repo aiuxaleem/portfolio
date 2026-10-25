@@ -4,16 +4,20 @@
 import Button from '../ui/button.astro';
 import IconButton from '../ui/icon-button.astro';
 import { site, resumeAttrs, resumeExternal, legacyChrome, parity, currentKey, isGroup, type NavEntry } from '../../content/site';
+import { siteOf, subCurrentKey, SUB_SITES } from '../../lib/sites';
 import { chrome, arNav } from '../../i18n/chrome';
 
 interface Props { lang?: string; langs?: string; altLangHref?: string; /** No "Let's talk" button: the page is Contact itself. */ hideCta?: boolean }
 const { lang = 'en', langs = 'en', altLangHref, hideCta = false } = Astro.props;
 const ar = lang === 'ar';
 const c = chrome[ar ? 'ar' : 'en'];
-const nav: NavEntry[] = ar ? arNav : parity ? legacyChrome.nav : site.nav;
+/* On an audience website (docs/SITES.md) the header takes that website's menu and has no language switch (English only). */
+const sub = ar ? undefined : siteOf(Astro.url.pathname);
+const subSite = sub ? SUB_SITES[sub] : undefined;
+const nav: NavEntry[] = ar ? arNav : parity ? legacyChrome.nav : subSite ? subSite.nav : site.nav;
 const chevron = '<svg data-chevron width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>';
-const cta = ar ? { label: c.talk, href: '/ar#contact' } : parity ? legacyChrome.cta : site.cta;
-const current = ar ? (Astro.url.pathname.includes('/case-studies') ? 'work' : 'home') : currentKey(Astro.url.pathname);
+const cta = ar ? { label: c.talk, href: '/ar#contact' } : parity ? legacyChrome.cta : subSite ? subSite.cta : site.cta;
+const current = ar ? (Astro.url.pathname.includes('/case-studies') ? 'work' : 'home') : subSite ? subCurrentKey(Astro.url.pathname) : currentKey(Astro.url.pathname);
 const home = ar ? '/ar' : '/';
 const hasOther = langs.split(' ').includes(ar ? 'en' : 'ar');
 const t = { ...c, langHint: hasOther ? c.langHint : c.langHintFallback, langTip: hasOther ? c.langTip : c.langTipFallback, resume: resumeExternal ? c.resumeView : c.resumeMenu };
@@ -27,6 +31,7 @@ const linkStyle = 'display: inline-flex; align-items: center; justify-content: c
     <a href={home} aria-label={t.homeAria} style="display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); text-decoration: none; color: var(--text-strong); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h4); letter-spacing: var(--tracking-tight); flex-shrink: 0;">
       <span aria-hidden="true" style="inline-size: var(--space-5); block-size: var(--space-5); border-radius: var(--radius-tile); background: var(--gradient-brand); flex-shrink: 0;"></span>
       <span lang="en" dir="ltr" style="white-space: nowrap;">{site.brand}</span>
+      {subSite && <span class="site-audience" lang="en">{subSite.label}</span>}
     </a>
     <nav data-hdr-desktop aria-label="Primary">
       <ul data-nav-list style="display: flex; gap: var(--space-1); align-items: center;">
@@ -51,7 +56,7 @@ const linkStyle = 'display: inline-flex; align-items: center; justify-content: c
           <svg data-icon-moon width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
           <svg data-icon-sun width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
         </IconButton>
-        <a href={langHref} hreflang={t.langLabelLang} title={t.langTip} class="header-lang" style="min-inline-size: var(--tap-target); min-block-size: var(--tap-target); display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1); padding-inline: var(--space-3); border-radius: var(--radius-pill); border: 0px; background: transparent; color: var(--text-link); font-weight: var(--weight-semibold); font-size: var(--text-ui-sm); cursor: pointer; text-decoration: none; transition: background var(--duration-base) var(--ease-out);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path></svg><span lang={t.langLabelLang}>{t.langLabel}</span><span class="cory-visually-hidden"> ({t.langHint})</span></a>
+        {!sub && <a href={langHref} hreflang={t.langLabelLang} title={t.langTip} class="header-lang" style="min-inline-size: var(--tap-target); min-block-size: var(--tap-target); display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1); padding-inline: var(--space-3); border-radius: var(--radius-pill); border: 0px; background: transparent; color: var(--text-link); font-weight: var(--weight-semibold); font-size: var(--text-ui-sm); cursor: pointer; text-decoration: none; transition: background var(--duration-base) var(--ease-out);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path></svg><span lang={t.langLabelLang}>{t.langLabel}</span><span class="cory-visually-hidden"> ({t.langHint})</span></a>}
       </div>
       {!hideCta && <span data-hdr-talk><Button variant="secondary" size="md" href={cta.href}>{cta.label}</Button></span>}
       <span data-hdr-mobile><IconButton variant="secondary" label={t.openMenu} data-menu-open aria-expanded="false" aria-controls="site-menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></IconButton></span>
@@ -71,19 +76,22 @@ const linkStyle = 'display: inline-flex; align-items: center; justify-content: c
         <ul class="menu-group-list">{n.children.map(c => <li><a data-nav-link href={c.href} aria-current={c.key === current ? 'page' : undefined} class="menu-nav-link menu-nav-child">{c.label}</a></li>)}</ul>
       </div>
     ) : <a data-nav-link href={n.href} aria-current={n.key === current ? 'page' : undefined} class="menu-nav-link" style="display: flex; align-items: center; min-block-size: var(--tap-target); padding-block: var(--space-2); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-decoration: none; inline-size: fit-content;">{n.label}</a>)}
-    <a data-link href={site.resumeUrl} {...resumeAttrs} style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); margin-block-start: var(--space-4); font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;">{t.resume}{resumeExternal && <span class="cory-visually-hidden"> {t.newTab}</span>}</a>
+    {sub !== 'clients' && <a data-link href={site.resumeUrl} {...resumeAttrs} style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); margin-block-start: var(--space-4); font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;">{t.resume}{resumeExternal && <span class="cory-visually-hidden"> {t.newTab}</span>}</a>}
   </nav>
   <div class="menu-foot" style="margin-block-start: auto; padding-block-start: var(--space-8); display: grid; gap: var(--space-4);">
     <div role="group" aria-label={t.display} style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3);">
       <button type="button" data-theme-toggle data-menu-theme data-label-dark={t.darkTip} data-label-light={t.lightTip} aria-pressed="false" class="menu-setting" style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-block-size: var(--tap-target); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font-weight: var(--weight-semibold); font-size: var(--text-body-sm); cursor: pointer; text-align: start;"><span data-theme-text>{t.darkTip}</span><svg data-icon-moon width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg><svg data-icon-sun width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg></button>
-      <a href={langHref} hreflang={t.langLabelLang} class="menu-setting" style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-block-size: var(--tap-target); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font-weight: var(--weight-semibold); font-size: var(--text-body-sm); cursor: pointer; text-align: start; text-decoration: none;"><span><span lang={t.langLabelLang}>{t.langLabel}</span><span class="cory-visually-hidden"> ({t.langHint})</span></span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path></svg></a>
+      {!sub && <a href={langHref} hreflang={t.langLabelLang} class="menu-setting" style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-block-size: var(--tap-target); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font-weight: var(--weight-semibold); font-size: var(--text-body-sm); cursor: pointer; text-align: start; text-decoration: none;"><span><span lang={t.langLabelLang}>{t.langLabel}</span><span class="cory-visually-hidden"> ({t.langHint})</span></span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path></svg></a>}
     </div>
-    {!hasOther && <p style="margin: 0; font-size: var(--text-caption); color: var(--text-muted);">{c.langTipFallback}</p>}
+    {!hasOther && !sub && <p style="margin: 0; font-size: var(--text-caption); color: var(--text-muted);">{c.langTipFallback}</p>}
     {!hideCta && <Button variant="primary" size="lg" fullWidth href={cta.href}>{cta.label}</Button>}
   </div>
 </div>
 
 <style is:global>
+  /* An audience website names its audience beside the brand (docs/SITES.md); hidden on narrow screens, where the menu says it. */
+  .site-audience { display: none; padding: 2px var(--space-2); border-radius: var(--radius-pill); background: var(--surface-sunken); color: var(--text-muted); font-family: var(--font-sans); font-size: var(--text-caption); font-weight: var(--weight-semibold); white-space: nowrap; }
+  @media (min-width: 640px) { .site-audience { display: inline-block; } }
   .skip-link:focus { transform: none !important; }
   /* Seven links fit the bar from 960px up; between 960 and 1023px they sit a step closer so no label is squeezed. */
   @container (max-width: 1023px) { [data-hdr-desktop] ul { gap: var(--space-2) !important; } }

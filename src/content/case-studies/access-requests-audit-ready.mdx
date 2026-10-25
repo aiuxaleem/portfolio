@@ -1,0 +1,90 @@
+---
+title: Access requests, made audit-ready
+index: "07"
+category: Service design · AI workflow
+lead: Access requests moved from a hand-typed spreadsheet to a ticket flow that writes its own audit log, as part of getting the IT function ready for ISO 27001.
+cover:
+  src: ../../assets/cases/case-study-7.png
+  alt: A four-step flow from a request ticket to an audit-ready access register, drawn as cards with arrows. Placeholder data.
+role: Product designer and analyst, covering IT administration
+company: Colaberry Inc
+timeline: 2026, ongoing
+team: Me, the managers who raise requests, an external IT vendor and Finance
+platform: Internal operations on Basecamp
+stack:
+  - Basecamp
+  - Basecamp MCP
+ndaNote: Security controls are described at a general level. Internal systems and people are not named.
+tldr:
+  - Mapped how a tool access request travels, from the manager who asks to the auditor who checks.
+  - Moved intake to an IT Service Desk on Basecamp, with one ticket template per tool.
+  - Each ticket now closes with the access record, so the log is generated through an MCP connection instead of typed into Excel.
+  - The log lands in the ISO template as an Access Log Register and feeds the biannual Access Rights Review.
+  - 10 of 14 ISO 27001 action items for the IT function done in the period.
+context:
+  problem: ISO 27001 asks for evidence of who was given access to what, when and on whose request. That evidence was being typed into Excel by hand, after the fact. A log written later is slow to produce, easy to leave incomplete and hard to defend in an audit. Six months of past access, April to September 2026, also had to be rebuilt.
+  business: Alongside product design at Colaberry, I cover IT administration. The IT function had 14 action items for ISO 27001 readiness, covering access, assets, software baselines, device policy and audit evidence. Access logging touched every team, because every new tool seat starts with a request.
+  constraints:
+    - Use the tool the team already works in. Requests had to live on Basecamp.
+    - The register had to match the ISO template, not a format I invented.
+    - The log had to cover April to September 2026 retroactively, before the new process existed.
+    - Some evidence sits with others. Workstation hardening and evidence logs are with an external vendor, and network and ISP details come from Finance.
+research:
+  summary: The audit log is a by-product of the request, not a separate task. If the ticket is complete when it closes, the log can be generated instead of written.
+  insights:
+    - The moment IT grants access is the moment the record is most accurate, so that is where to capture it.
+    - Different tools need different details, so one template per tool asks for exactly what each needs.
+    - The access log feeds the biannual Access Rights Review directly, so the log's quality sets the review's quality.
+    - Rebuilding six months by hand showed the cost of not having the process from the start.
+process:
+  summary: Map the request from ask to audit, then let the tickets write the log.
+  steps:
+    - title: Map the request from ask to audit
+      body: "I traced who asks, who grants, where the record lives and who checks it later. The gap was between granting and logging: access was given in one place and typed up somewhere else."
+    - title: One intake, one template per tool
+      body: Managers raise a ticket on an IT Service Desk in Basecamp. Each tool has its own template, so a request arrives with the details that tool needs.
+    - title: Close the ticket with the record
+      body: IT provisions the seat, grants access and closes the ticket with the access record attached. Closing the ticket is now the act of logging.
+    - title: Generate the register
+      body: A Basecamp MCP connection pulls completed tickets, with no manual copy-paste. The output is cleaned into the ISO template's Access Log Register, ready for audit.
+    - title: Close the loop
+      body: The register feeds the biannual Access Rights Review, which covers seven business tools plus shared drives. The April to September backlog is being rebuilt into the same register, so the auditor sees one record.
+ai:
+  summary: An MCP connection to Basecamp reads completed access tickets and drafts the register, so nobody copies rows from one system to another.
+  behaviour:
+    - Pulls completed access tickets from the IT Service Desk and maps them into the Access Log Register fields of the ISO template.
+  trust:
+    - Every row in the register traces back to a closed ticket.
+    - The ticket template, not the model, decides what a record must contain.
+  humanInLoop: |-
+    IT closes each ticket with the record, so a person confirms every grant.
+    (confirm) The cleaned register is checked by me before it goes into the audit pack.
+decisions:
+  - decision: Put the intake in Basecamp, where the team already works, instead of adding a new service desk tool.
+    tradeoff: Basecamp is not built for IT tickets, so structure comes from templates and discipline rather than the tool.
+  - decision: One ticket template per tool, not one generic form.
+    tradeoff: More templates to keep up to date as the tool list changes.
+  - decision: Generate the log from closed tickets through MCP instead of typing it.
+    tradeoff: The log is only as good as each ticket. Closing a ticket now has to include the record, every time.
+  - decision: Rebuild the April to September backlog into the same register, not a separate legacy sheet.
+    tradeoff: A one-time effort now, so the auditor sees one register instead of two formats.
+outcomes:
+  summary: From September 2026 the access log is generated from Basecamp, not typed in Excel. The April to September backlog is being rebuilt into the same register. 10 of 14 IT action items are done, 3 are in progress with the vendor and Finance, and 1 is not started. No audit has happened yet, so there is no compliance result to report.
+  metrics:
+    - value: 10 of 14
+      label: ISO 27001 action items completed for the IT function
+      kind: outcome
+      source: ISO action tracker, Oct 2026
+quote: The best audit log is one nobody has to write. It comes from doing the work properly.
+reflection:
+  summary: Compliance is a service design problem. The evidence gets better when you design the moment it is created, not when you ask people to type more carefully.
+  learnings:
+    - Design where the record is created, not the report that collects it later.
+    - Put the process in the tool people already open every day.
+    - Next time I would set up the intake before the audit window opens, so there is no backlog to rebuild.
+    - I would also give the items others own, like the vendor's evidence logs, their own dates on the tracker from day one.
+order: 6
+seo:
+  title: Access requests, made audit-ready · Case study
+  description: How a Basecamp ticket flow and an MCP connection turned a hand-typed Excel log into an audit-ready access register for ISO 27001.
+---

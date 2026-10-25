@@ -1,0 +1,11 @@
+---
+/* A case study on an audience website (docs/SITES.md): the main site's page, unchanged; the header and footer know from
+   the address which website they are on. */
+import CaseStudyPage from '../../case-studies/[slug].astro';
+import { listedCaseStudies } from '../../../lib/case-studies';
+export async function getStaticPaths() {
+  const all = await listedCaseStudies();
+  return all.map((entry, i) => ({ params: { slug: entry.id }, props: { entry, prev: all[i - 1], next: all[i + 1] } }));
+}
+---
+<CaseStudyPage {...Astro.props} />

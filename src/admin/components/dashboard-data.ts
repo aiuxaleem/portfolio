@@ -31,5 +31,5 @@ export interface Dashboard {
   /** The latest view in the log: when, from where, which page. */
   lastVisit?: { at: string; country: string; path: string; name?: string };
   /** The A/B test (docs/AB_TEST.md): visits in each version and how many of them reached Contact or the hiring page. */
-  ab?: { v1: { visits: number; contact: number }; v2: { visits: number; contact: number; hiring: number } };
+  ab?: { v1: { visits: number; contact: number }; v2: { visits: number; contact: number; hiring: number; clients?: number } };
 }

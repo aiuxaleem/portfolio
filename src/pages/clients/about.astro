@@ -1,0 +1,66 @@
+---
+/* About on the website for clients (docs/SITES.md): who a team works with. The positioning, the principles, what I bring,
+   how I work with AI and the tools, the verified certifications, then the contact block with the subject set to a project.
+   No resume, no job search: those are on the website for hiring teams. */
+import PageLayout from '../../layouts/page-layout.astro';
+import Button from '../../components/ui/button.astro';
+import Learning from '../../components/sites/learning.astro';
+import ContactBlock from '../../components/profile/contact-block.astro';
+import { site } from '../../content/site';
+import { profile } from '../../content/profile';
+import { personLd } from '../../lib/seo';
+import { chrome } from '../../i18n/chrome';
+
+const c = chrome.en;
+const num = (i: number) => String(i + 1).padStart(2, '0');
+---
+<PageLayout title="About · AIUXAleem, for clients" description={`Who you work with: ${site.name}, ${profile.headline}. Principles, what he brings to a product team, and how he works with AI.`} page="about" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
+  <section class="cory-container" aria-labelledby="clients-about-title" style="display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <p class="cory-overline" style="margin: 0px;">About</p>
+    <h1 id="clients-about-title" class="clients-about-h1">Who you'll work with.</h1>
+    <p class="clients-about-lead">I'm {site.name}, a {profile.headline} with 13+ years across fintech and enterprise platforms, working from {site.location} on GCC hours. {profile.positioning}</p>
+    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+      <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
+      <Button variant="secondary" size="lg" href="/case-studies">See the case studies</Button>
+    </div>
+  </section>
+
+  <section class="page-section" data-surface="card" aria-labelledby="clients-principles-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Principles</p><h2 id="clients-principles-title" class="page-h2">Three things I won't trade away</h2></div>
+      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.principles.map((p, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{p.title}</h3><p>{p.body}</p></div></li>)}</ol></div>
+    </div>
+  </section>
+
+  <section class="page-section" aria-labelledby="clients-expertise-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Expertise</p><h2 id="clients-expertise-title" class="page-h2">What I bring to a product team</h2></div>
+      <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.expertise.map(e => <li><div class="tile"><h3>{e.title}</h3><p>{e.body}</p></div></li>)}</ul></div>
+    </div>
+  </section>
+
+  <section class="page-section" data-surface="card" aria-labelledby="clients-ai-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Method</p><h2 id="clients-ai-title" class="page-h2">How I work with AI</h2></div>
+      <div data-cq><ol data-cq-grid style="display: grid; gap: var(--grid-gap);">{profile.aiWorkflow.map((s, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol></div>
+      <div style="display: grid; gap: var(--space-3);">
+        <h3 style="margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong);">Tools</h3>
+        <ul class="tool-list">{profile.tools.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section" aria-labelledby="clients-certs-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="clients-certs-title" class="page-h2">Certifications</h2></div>
+      <Learning id="clients-learning" completed={false} />
+    </div>
+  </section>
+
+  <ContactBlock id="contact" overline="Next step" title="Have a product that needs to feel trustworthy?" lead="Tell me what you're building, or book a 15-minute call to scope it. I reply within 48 hours." topic="project" />
+</PageLayout>
+
+<style>
+  .clients-about-h1 { margin: 0; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
+  .clients-about-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted); }
+</style>

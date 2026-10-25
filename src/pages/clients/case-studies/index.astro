@@ -1,0 +1,37 @@
+---
+/* Case studies on the website for clients (docs/SITES.md): the same cases as the main site, framed as proof of the work a
+   team can bring me in for. The newest case leads, wide; the call is a scoping call, and there is no resume here. */
+import PageLayout from '../../../layouts/page-layout.astro';
+import Button from '../../../components/ui/button.astro';
+import CaseCard from '../../../components/cards/case-card.astro';
+import { listedCaseStudies } from '../../../lib/case-studies';
+import { site } from '../../../content/site';
+import { chrome } from '../../../i18n/chrome';
+
+const cases = await listedCaseStudies();
+const c = chrome.en;
+---
+<PageLayout title="Case studies · AIUXAleem, for clients" description="Case studies by Mohammad Abdul Aleem for product teams: the problem, the constraints, the decisions and what shipped, in AI product design and design systems." page="case-studies" bg="grid" mainStyle="outline: none; overflow: clip;">
+  <section class="cory-container" aria-labelledby="clients-cases-title" style="display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <p class="cory-overline" style="margin: 0px;">The proof</p>
+    <h1 id="clients-cases-title" class="clients-h1">The work, and how it was decided.</h1>
+    <p class="clients-lead">Each case gives the problem, the constraints, the decisions with their trade-offs, and what shipped. If your problem looks like one of these, a 15-minute call is enough to scope it.</p>
+    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+      <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
+      <Button variant="secondary" size="lg" href="/">See the services</Button>
+    </div>
+  </section>
+  <section class="cory-container" aria-label="Case studies" style="padding-block-end: var(--section-y);">
+    {cases.length === 0
+      ? <div class="project-empty"><p class="project-empty-title">No case studies are published yet.</p><p class="project-empty-body">The projects show the work in the meantime.</p><div><Button variant="secondary" href="/work">See the projects</Button></div></div>
+      : <ul class="clients-bento">{cases.map((entry, i) => <li class={i === 0 ? 'clients-bento-lead' : undefined}><CaseCard entry={entry} first={i === 0} wide={i === 0} /></li>)}</ul>}
+  </section>
+</PageLayout>
+
+<style>
+  .clients-h1 { margin: 0; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
+  .clients-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted); }
+  .clients-bento { display: grid; gap: var(--grid-gap); margin: 0; padding: 0; list-style: none; }
+  .clients-bento > li { display: grid; min-inline-size: 0; }
+  @media (min-width: 768px) { .clients-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); } .clients-bento-lead { grid-column: 1 / -1; } }
+</style>

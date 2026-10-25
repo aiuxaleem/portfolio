@@ -11,6 +11,171 @@
       "content/*": false
     }
   },
+  "redirects": [
+    {
+      "source": "/job",
+      "missing": [
+        {
+          "type": "host",
+          "value": "(job\\.aiuxaleem\\.com|aiuxaleem-job(-[a-z0-9-]+)?\\.vercel\\.app)"
+        }
+      ],
+      "destination": "https://aiuxaleem-job.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/job/:path*",
+      "missing": [
+        {
+          "type": "host",
+          "value": "(job\\.aiuxaleem\\.com|aiuxaleem-job(-[a-z0-9-]+)?\\.vercel\\.app)"
+        }
+      ],
+      "destination": "https://aiuxaleem-job.vercel.app/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/:path((?!$|case-studies|work|experience|resume|contact|_astro|fonts|assets|og|api|favicon|sitemap\\.xml|robots\\.txt).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "(job\\.aiuxaleem\\.com|aiuxaleem-job(-[a-z0-9-]+)?\\.vercel\\.app)"
+        }
+      ],
+      "destination": "https://aiuxaleem-portfolio-app.vercel.app/:path",
+      "permanent": false
+    },
+    {
+      "source": "/clients",
+      "missing": [
+        {
+          "type": "host",
+          "value": "(clients\\.aiuxaleem\\.com|aiuxaleem-clients(-[a-z0-9-]+)?\\.vercel\\.app)"
+        }
+      ],
+      "destination": "https://aiuxaleem-clients.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/clients/:path*",
+      "missing": [
+        {
+          "type": "host",
+          "value": "(clients\\.aiuxaleem\\.com|aiuxaleem-clients(-[a-z0-9-]+)?\\.vercel\\.app)"
+        }
+      ],
+      "destination": "https://aiuxaleem-clients.vercel.app/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/:path((?!$|case-studies|work|resources|ai-tools|about|contact|_astro|fonts|assets|og|api|favicon|sitemap\\.xml|robots\\.txt).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "(clients\\.aiuxaleem\\.com|aiuxaleem-clients(-[a-z0-9-]+)?\\.vercel\\.app)"
+        }
+      ],
+      "destination": "https://aiuxaleem-portfolio-app.vercel.app/:path",
+      "permanent": false
+    },
+    {
+      "source": "/v2/hiring",
+      "destination": "https://aiuxaleem-job.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/v2/services",
+      "destination": "https://aiuxaleem-clients.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/v2/contact",
+      "destination": "/v2",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "(job\\.aiuxaleem\\.com|aiuxaleem-job(-[a-z0-9-]+)?\\.vercel\\.app)"
+        }
+      ],
+      "destination": "/job"
+    },
+    {
+      "source": "/:path((?:case-studies|work|experience|resume|contact)(?:/.*)?)",
+      "has": [
+        {
+          "type": "host",
+          "value": "(job\\.aiuxaleem\\.com|aiuxaleem-job(-[a-z0-9-]+)?\\.vercel\\.app)"
+        }
+      ],
+      "destination": "/job/:path"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [
+        {
+          "type": "host",
+          "value": "(job\\.aiuxaleem\\.com|aiuxaleem-job(-[a-z0-9-]+)?\\.vercel\\.app)"
+        }
+      ],
+      "destination": "/job/sitemap.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [
+        {
+          "type": "host",
+          "value": "(job\\.aiuxaleem\\.com|aiuxaleem-job(-[a-z0-9-]+)?\\.vercel\\.app)"
+        }
+      ],
+      "destination": "/job/robots.txt"
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "(clients\\.aiuxaleem\\.com|aiuxaleem-clients(-[a-z0-9-]+)?\\.vercel\\.app)"
+        }
+      ],
+      "destination": "/clients"
+    },
+    {
+      "source": "/:path((?:case-studies|work|resources|ai-tools|about|contact)(?:/.*)?)",
+      "has": [
+        {
+          "type": "host",
+          "value": "(clients\\.aiuxaleem\\.com|aiuxaleem-clients(-[a-z0-9-]+)?\\.vercel\\.app)"
+        }
+      ],
+      "destination": "/clients/:path"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [
+        {
+          "type": "host",
+          "value": "(clients\\.aiuxaleem\\.com|aiuxaleem-clients(-[a-z0-9-]+)?\\.vercel\\.app)"
+        }
+      ],
+      "destination": "/clients/sitemap.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [
+        {
+          "type": "host",
+          "value": "(clients\\.aiuxaleem\\.com|aiuxaleem-clients(-[a-z0-9-]+)?\\.vercel\\.app)"
+        }
+      ],
+      "destination": "/clients/robots.txt"
+    }
+  ],
   "headers": [
     {
       "source": "/_astro/(.*)",

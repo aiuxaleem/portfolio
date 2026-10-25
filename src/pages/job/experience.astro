@@ -1,0 +1,79 @@
+---
+/* Experience on the website for hiring teams (docs/SITES.md): the full timeline (each company beside its roles, with what
+   each role shipped), certifications, education, the principles, and how I work with AI. The main site's About without
+   the parts written for clients. */
+import PageLayout from '../../layouts/page-layout.astro';
+import Button from '../../components/ui/button.astro';
+import Career from '../../components/profile/career.astro';
+import Learning from '../../components/sites/learning.astro';
+import ContactBlock from '../../components/profile/contact-block.astro';
+import { site, resumeAttrs, resumeExternal } from '../../content/site';
+import { profile } from '../../content/profile';
+import { personLd } from '../../lib/seo';
+import { chrome } from '../../i18n/chrome';
+
+const c = chrome.en;
+const num = (i: number) => String(i + 1).padStart(2, '0');
+---
+<PageLayout title="Experience · AIUXAleem, for hiring teams" description={`The experience of ${site.name}, ${profile.headline}: every role with what it shipped, certifications, education and how he works with AI.`} page="experience" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
+  <section class="cory-container" aria-labelledby="experience-title" style="display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <p class="cory-overline" style="margin: 0px;">Experience</p>
+    <h1 id="experience-title" class="experience-h1">Thirteen-plus years, from enterprise UX to AI products.</h1>
+    <p class="experience-lead">{profile.positioning}</p>
+    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+      <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">{c.call}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
+      <Button variant="secondary" size="lg" href={site.resumeUrl} {...resumeAttrs}>{resumeExternal ? 'View resume' : 'Download resume'}{resumeExternal && <span class="cory-visually-hidden"> (opens in a new tab)</span>}</Button>
+    </div>
+  </section>
+
+  <section class="page-section" data-surface="card" aria-labelledby="experience-career-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Work experience</p><h2 id="experience-career-title" class="page-h2">Every role, with what it shipped</h2><p class="project-filter-count">Newest first.</p></div>
+      <Career wide />
+    </div>
+  </section>
+
+  <section class="page-section" aria-labelledby="experience-certs-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="experience-certs-title" class="page-h2">Certifications</h2></div>
+      <Learning id="experience-learning" />
+    </div>
+  </section>
+
+  {profile.education.length > 0 && (
+    <section class="page-section" data-surface="card" aria-labelledby="experience-education-title">
+      <div class="cory-container">
+        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Education</p><h2 id="experience-education-title" class="page-h2">Education and training</h2></div>
+        <ul class="experience-education">{profile.education.map(e => <li class="tile"><h3>{e.qualification}</h3><p>{e.school}</p></li>)}</ul>
+      </div>
+    </section>
+  )}
+
+  <section class="page-section" aria-labelledby="experience-principles-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Principles</p><h2 id="experience-principles-title" class="page-h2">Three things I won't trade away</h2></div>
+      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.principles.map((p, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{p.title}</h3><p>{p.body}</p></div></li>)}</ol></div>
+    </div>
+  </section>
+
+  <section class="page-section" data-surface="card" aria-labelledby="experience-ai-title">
+    <div class="cory-container">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Method</p><h2 id="experience-ai-title" class="page-h2">How I work with AI</h2></div>
+      <div data-cq><ol data-cq-grid style="display: grid; gap: var(--grid-gap);">{profile.aiWorkflow.map((s, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol></div>
+      <div style="display: grid; gap: var(--space-3);">
+        <h3 style="margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong);">Tools</h3>
+        <ul class="tool-list">{profile.tools.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <ContactBlock id="contact" overline="Next step" title="Hiring for a design lead? Let's talk." lead="Book a 15-minute call, or send the role and the team. I reply within 48 hours." topic="role" />
+</PageLayout>
+
+<style>
+  .experience-h1 { margin: 0; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
+  .experience-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted); }
+  .experience-education { display: grid; gap: var(--grid-gap); margin: 0; padding: 0; list-style: none; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+  .experience-education h3 { margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong); overflow-wrap: anywhere; }
+  .experience-education p { margin: 0; color: var(--text-muted); }
+</style>

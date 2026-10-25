@@ -69,7 +69,14 @@ for (const f of html) {
 // Unique titles and canonicals among pages that may be indexed. A page and its translation may share a title when they
 // name each other with hreflang links.
 for (const p of pages.filter(p => p.hreflang.length)) for (const h of p.hreflang) { const target = h.split(' ')[1].replace(/\/$/, '') || '/'; if (!pages.some(q => q.route === target)) fail(p.route, 'hreflang', `points at ${target}, which is not built`); }
-for (const key of ['title', 'canonical']) { const seen = {}; for (const p of pages.filter(p => !p.noindex)) (seen[(key === 'title' ? p.lang + ' | ' : '') + p[key]] ||= []).push(p.route); for (const [v, rs] of Object.entries(seen)) if (rs.length > 1) fail(rs.join(', '), `duplicate-${key}`, v); }
+/* Titles are unique within each website: the audience websites (docs/SITES.md) show some of the main site's pages on their
+   own hosts, under the same title, each with its own canonical address. */
+const siteOfRoute = r => (r.match(/^\/(job|clients)(\/|$)/) || [])[1] || 'main';
+for (const key of ['title', 'canonical']) { const seen = {}; for (const p of pages.filter(p => !p.noindex)) (seen[(key === 'title' ? siteOfRoute(p.route) + ' | ' + p.lang + ' | ' : '') + p[key]] ||= []).push(p.route); for (const [v, rs] of Object.entries(seen)) if (rs.length > 1) fail(rs.join(', '), `duplicate-${key}`, v); }
+/* An audience website's page names its own address as canonical: the website's origin and the page's path without the
+   prefix. */
+const SUB_ORIGINS = { job: 'https://job.aiuxaleem.com', clients: 'https://clients.aiuxaleem.com' };
+for (const p of pages.filter(p => !p.noindex && siteOfRoute(p.route) !== 'main')) { const k = siteOfRoute(p.route); const want = SUB_ORIGINS[k] + (p.route.slice(k.length + 1) || '/'); if (p.canonical !== want) fail(p.route, 'canonical', `should be ${want}, is ${p.canonical}`); }
 
 // Expected structured data per template
 const expect = [[/^\/$/, ['Person', 'WebSite']], [/^\/about$/, ['Person']], [/^\/blog\/(?!page\/|tag\/)[^/]+$/, ['BlogPosting']], [/^\/case-studies\/[^/]+$/, ['CreativeWork']]];
@@ -82,7 +89,12 @@ const sitemap = { urls: urls.length, list: urls };
 // A quality build (--fixtures) keeps fixture pages in the sitemap on purpose, so the sitemap rules apply to production builds only.
 const fixturesBuild = process.argv.includes('--fixtures');
 if (!fixturesBuild) for (const u of urls) { if (/_states|fixture|stress/.test(u)) fail(u, 'sitemap', 'a dev or fixture page is listed'); const p = pages.find(p => p.route === u); if (!p) fail(u, 'sitemap', 'listed but not built'); else if (p.noindex) fail(u, 'sitemap', 'a noindex page is listed'); }
-if (!fixturesBuild) for (const p of pages.filter(p => !p.noindex && p.route !== '/404')) if (!urls.includes(p.route)) fail(p.route, 'sitemap', 'indexable page is not listed');
+/* The audience websites (docs/SITES.md) list their pages in sitemaps of their own (/job/sitemap.xml, /clients/sitemap.xml),
+   on their own addresses; the main sitemap must not list them. */
+const subUrls = {};
+for (const k of Object.keys(SUB_ORIGINS)) { const f = path.join(dir, k, 'sitemap.xml'); subUrls[k] = fs.existsSync(f) ? [...fs.readFileSync(f, 'utf8').matchAll(/<loc>([^<]*)<\/loc>/g)].map(m => `/${k}` + (m[1].replace(SUB_ORIGINS[k], '').replace(/\/$/, ''))) : null; if (!subUrls[k]) fail(`/${k}/sitemap.xml`, 'sitemap', 'missing'); }
+if (!fixturesBuild) for (const u of urls) if (siteOfRoute(u) !== 'main') fail(u, 'sitemap', 'an audience website page is in the main sitemap');
+if (!fixturesBuild) for (const p of pages.filter(p => !p.noindex && p.route !== '/404')) { const k = siteOfRoute(p.route); const listed = k === 'main' ? urls : subUrls[k] || []; if (!listed.includes(p.route)) fail(p.route, 'sitemap', k === 'main' ? 'indexable page is not listed' : `indexable page is not in /${k}/sitemap.xml`); }
 const robotsFile = path.join(dir, 'robots.txt'); const robots = fs.existsSync(robotsFile) ? fs.readFileSync(robotsFile, 'utf8') : null;
 if (!robots) fail('/robots.txt', 'robots', 'missing'); else { if (!/Sitemap: https:\/\/aiuxaleem\.com\/sitemap-index\.xml/.test(robots)) fail('/robots.txt', 'robots', 'no Sitemap line'); if (/Disallow: \/\s*$/m.test(robots)) fail('/robots.txt', 'robots', 'blocks the whole site'); }
 const feeds = {};

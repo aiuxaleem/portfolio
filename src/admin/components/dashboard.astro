@@ -292,13 +292,13 @@ const devices = data ? data.devices.map(d => ({ label: deviceName[d.device] || d
           <li class="span-4">
             <div class="admin-card" data-dash-ab>
               <h3 class="admin-card-title"><AdminIcon name="ab-test" />Version 1 and version 2</h3>
-              <p class="form-note">The A/B test: new visitors who open Home, Services or Contact are split evenly between the two versions. Version 2 adds the two doors on Home, the page for hiring teams and the client-only Services page.</p>
+              <p class="form-note">The A/B test: new visitors who open Home or Services on the main site are split evenly between the two versions. Version 2 is the two audience websites, one for hiring teams and one for clients, reached through two doors on Home.</p>
               <div class="post-table dash-table" tabindex="0" role={plain ? 'group' : 'region'} aria-label="Version 1 and version 2, as a table"><table>
                 <caption class="cory-visually-hidden">Visits in each version of the site and how many reached Contact</caption>
-                <thead><tr><th scope="col">Version</th><th scope="col" class="dash-num">Visits</th><th scope="col" class="dash-num">Reached Contact</th><th scope="col" class="dash-num">Share</th><th scope="col" class="dash-num">Opened the page for hiring teams</th></tr></thead>
+                <thead><tr><th scope="col">Version</th><th scope="col" class="dash-num">Visits</th><th scope="col" class="dash-num">Reached Contact</th><th scope="col" class="dash-num">Share</th><th scope="col" class="dash-num">Opened the website for hiring teams</th><th scope="col" class="dash-num">Opened the website for clients</th></tr></thead>
                 <tbody>
-                  <tr><th scope="row">Version 1</th><td class="dash-num">{n(data.ab.v1.visits)}</td><td class="dash-num">{n(data.ab.v1.contact)}</td><td class="dash-num">{data.ab.v1.visits >= FLOOR ? `${Math.round((100 * data.ab.v1.contact) / data.ab.v1.visits)}%` : '—'}</td><td class="dash-num">—</td></tr>
-                  <tr><th scope="row">Version 2</th><td class="dash-num">{n(data.ab.v2.visits)}</td><td class="dash-num">{n(data.ab.v2.contact)}</td><td class="dash-num">{data.ab.v2.visits >= FLOOR ? `${Math.round((100 * data.ab.v2.contact) / data.ab.v2.visits)}%` : '—'}</td><td class="dash-num">{n(data.ab.v2.hiring)}</td></tr>
+                  <tr><th scope="row">Version 1</th><td class="dash-num">{n(data.ab.v1.visits)}</td><td class="dash-num">{n(data.ab.v1.contact)}</td><td class="dash-num">{data.ab.v1.visits >= FLOOR ? `${Math.round((100 * data.ab.v1.contact) / data.ab.v1.visits)}%` : '—'}</td><td class="dash-num">—</td><td class="dash-num">—</td></tr>
+                  <tr><th scope="row">Version 2</th><td class="dash-num">{n(data.ab.v2.visits)}</td><td class="dash-num">{n(data.ab.v2.contact)}</td><td class="dash-num">{data.ab.v2.visits >= FLOOR ? `${Math.round((100 * data.ab.v2.contact) / data.ab.v2.visits)}%` : '—'}</td><td class="dash-num">{n(data.ab.v2.hiring)}</td><td class="dash-num">{n(data.ab.v2.clients ?? 0)}</td></tr>
                 </tbody>
               </table></div>
               <p class="form-note">A share is shown once a version has {FLOOR} visits. Read the result only when both versions have well over {FLOOR}: with a few visits a difference is chance. The full method is in docs/AB_TEST.md.</p>

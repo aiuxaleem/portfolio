@@ -1,16 +1,15 @@
 ---
-/* Version 2 (the A/B test, docs/AB_TEST.md): the page for hiring teams. Everything a recruiter or a hiring manager
+/* The website for hiring teams (docs/SITES.md), its Home: job.aiuxaleem.com. Everything a recruiter or a hiring manager
    screens for, in the order they screen: who, what level, where and what for (the hero and the facts panel), the work
-   (three case studies), what he brings, the experience, the certifications, then the call. No client offer here: the
-   band before the call is the way across to the page for clients. Every fact comes from the profile and site settings.
-   Kept out of search while the test runs. */
+   (three case studies), what he brings, the experience in short, the certifications, then the call. No client offer: the
+   band before the call leads to the website for clients. Every fact comes from the profile and site settings. */
 import PageLayout from '../../layouts/page-layout.astro';
 import Button from '../../components/ui/button.astro';
 import CaseCard from '../../components/cards/case-card.astro';
 import Career from '../../components/profile/career.astro';
 import Certifications from '../../components/profile/certifications.astro';
 import ContactBlock from '../../components/profile/contact-block.astro';
-import DoorSwitch from '../../components/v2/door-switch.astro';
+import DoorSwitch from '../../components/sites/door-switch.astro';
 import { site, resumeAttrs, resumeExternal } from '../../content/site';
 import { profile, period } from '../../content/profile';
 import { listedCaseStudies } from '../../lib/case-studies';
@@ -30,7 +29,7 @@ const facts: [string, string][] = [
 ].filter(([, v]) => v) as [string, string][];
 const inkText = 'margin: 0; color: var(--on-ink-strong); font-weight: var(--weight-semibold); overflow-wrap: anywhere;';
 ---
-<PageLayout ab title="For hiring teams · AIUXAleem" description={`For recruiters and hiring managers: ${site.name}, ${profile.headline}. Experience, case studies, certifications and the resume in one place.`} page="hiring" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
+<PageLayout title={`${profile.headline} · For hiring teams · AIUXAleem`} description={`For recruiters and hiring managers: ${site.name}, ${profile.headline}. Experience, case studies, certifications and the resume in one place.`} page="hiring" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
   <section class="cory-container hiring-hero" aria-labelledby="hiring-title">
     <div class="cory-split" style="align-items: start;">
       <div style="display: grid; gap: var(--space-6); align-content: start;">
@@ -71,14 +70,15 @@ const inkText = 'margin: 0; color: var(--on-ink-strong); font-weight: var(--weig
 
   <section class="page-section" data-surface="card" aria-labelledby="hiring-career-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Work experience</p><h2 id="hiring-career-title" class="page-h2">Enterprise UX to AI product design</h2><p class="project-filter-count">Newest first, with what each role shipped.</p></div>
-      <Career wide />
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Work experience</p><h2 id="hiring-career-title" class="page-h2">Enterprise UX to AI product design</h2><p class="project-filter-count">Newest first. Each role, with what it shipped, is on the Experience page.</p></div>
+      <Career highlights={false} />
+      <a data-link class="post-back" href="/experience"><span>The full experience, with what each role shipped</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
     </div>
   </section>
 
   <section class="page-section" aria-labelledby="hiring-certs-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="hiring-certs-title" class="page-h2">Certifications</h2><p class="project-filter-count">Verified certificates and the ones in progress. The full list is on the About page.</p></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="hiring-certs-title" class="page-h2">Certifications</h2><p class="project-filter-count">Verified certificates and the ones in progress. The full list is on the Experience page.</p></div>
       <Certifications only={['in-progress', 'verified']} />
     </div>
   </section>

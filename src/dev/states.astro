@@ -39,8 +39,8 @@ import { listedResources, categoryCounts } from '../lib/resources';
 import AiToolCard from '../components/cards/ai-tool-card.astro';
 import { listedAiTools, aiCategoryLabel, aiCostLabel } from '../lib/ai-tools';
 import ContactBlock from '../components/profile/contact-block.astro';
-import AudienceFork from '../components/v2/audience-fork.astro';
-import DoorSwitch from '../components/v2/door-switch.astro';
+import AudienceFork from '../components/sites/audience-fork.astro';
+import DoorSwitch from '../components/sites/door-switch.astro';
 const resourcesAll = await listedResources();
 const aiToolsAll = await listedAiTools();
 const aiToolSample = [...aiToolsAll.filter(t => !t.data.fixture && t.data.pick).slice(0, 1), ...aiToolsAll.filter(t => !t.data.fixture && !t.data.pick).slice(0, 1), ...aiToolsAll.filter(t => t.data.fixture).sort((a, b) => a.id.localeCompare(b.id))];
@@ -117,7 +117,7 @@ const dashFull = { days: 30, from: dashDays[0].day, to: dashDays[dashDays.length
   publishes: [{ day: '2026-09-28', kind: 'linkedinPosts', slug: 'ux-is-what-you-see-and-touch', title: 'UX is what you see and touch', path: '/posts', pathName: 'LinkedIn posts', shared: true, views: 40 }, { day: '2026-09-28', kind: 'videos', slug: 'the-state-of-designer-2026', title: 'The state of the designer in 2026', path: '/videos', pathName: 'Videos', shared: true, views: 25 }, { day: '2026-09-23', kind: 'posts', slug: 'component-spec-files', title: 'Component spec files: six tiers deep, eight sections wide, and the one hundred and twenty character title fixture', path: '/blog/component-spec-files', views: 14 }],
   lastVisit: { at: '2026-09-30T08:12:00.000Z', country: 'SA', path: '/case-studies/colaberry-design-system', name: 'Colaberry design system' },
   /* The A/B card: version 1 past the share floor, version 2 still under it (its share is withheld). */
-  ab: { v1: { visits: 24, contact: 3 }, v2: { visits: 17, contact: 4, hiring: 6 } } };
+  ab: { v1: { visits: 24, contact: 3 }, v2: { visits: 17, contact: 4, hiring: 6, clients: 9 } } };
 /* The earlier period only partly in the log: its totals are the five covered days, as the query would return them. */
 const prevTail = dashPrev.slice(-5);
 const dashPartial = { ...dashFull, totals: { ...dashFull.totals, target: 0 }, previous: { series: dashPrev, totals: { views: prevTail.reduce((a, d) => a + d.views, 0), visits: prevTail.reduce((a, d) => a + d.visits, 0), target: 2 } }, previousCovered: 5, countingSince: '2026-09-12', sources: [{ source: 'LinkedIn', visits: 0, hosts: [] }, { source: 'Direct or app', visits: 185, hosts: [] }], countries: [{ country: 'SA', visits: 0 }, { country: 'AE', visits: 0 }, { country: 'IN', visits: 120 }, { country: 'GB', visits: 65 }], publishes: [], patternDays: 20, lastVisit: undefined };

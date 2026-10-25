@@ -1,8 +1,10 @@
 ---
-/* Version 2 (docs/AB_TEST.md): the two doors. One card for hiring teams and one for clients, each saying what is behind
-   it, each a whole-card link (CLAUDE.md 2.7). Equal weight: neither is the primary action, so both use the card's own
+/* The two doors (docs/SITES.md, docs/AB_TEST.md): one card for the website for hiring teams and one for the website for
+   clients, each saying what is behind it, each a whole-card link (CLAUDE.md 2.7). Equal weight: neither is the primary action, so both use the card's own
    call line, not a filled button. Used on version 2's Home under the hero and on its Contact page.
    States: default; `compact` (Contact: the words only, no list). */
+import { SUB_SITES } from '../../lib/sites';
+
 interface Props {
   id: string;
   hiringHref?: string;
@@ -10,11 +12,11 @@ interface Props {
   /** Heading level of the two card titles. */ level?: 2 | 3;
   /** The words only, no list of what is behind each door. */ compact?: boolean;
 }
-const { id, hiringHref = '/v2/hiring', clientsHref = '/v2/services', level = 3, compact = false } = Astro.props;
+const { id, hiringHref = SUB_SITES.job.live, clientsHref = SUB_SITES.clients.live, level = 3, compact = false } = Astro.props;
 const Heading = `h${level}` as any;
 const doors = [
-  { key: 'hiring', overline: 'For hiring teams', title: 'Hiring for a design lead?', body: 'The experience, the case studies and the resume in one place, for a Lead or Principal role in KSA or the UAE.', items: ['13+ years, from enterprise UX to AI products', 'Case studies with the decisions behind them', 'Resume, certifications and a call to talk it through'], cta: 'See the page for hiring teams', href: hiringHref },
-  { key: 'clients', overline: 'For clients', title: 'Building a product?', body: 'What I do on a project, what you get, and the work that proves it, for teams with an AI or design system problem.', items: ['AI product design, design systems, UX audits', 'Handed off as code and spec files', 'A 15-minute call to scope it'], cta: 'See how I work with clients', href: clientsHref },
+  { key: 'hiring', overline: 'For hiring teams', title: 'Hiring for a design lead?', body: 'The experience, the case studies and the resume in one place, for a Lead or Principal role in KSA or the UAE.', items: ['13+ years, from enterprise UX to AI products', 'Case studies with the decisions behind them', 'Resume, certifications and a call to talk it through'], cta: 'Open the website for hiring teams', href: hiringHref },
+  { key: 'clients', overline: 'For clients', title: 'Building a product?', body: 'What I do on a project, what you get, and the work that proves it, for teams with an AI or design system problem.', items: ['AI product design, design systems, UX audits', 'Handed off as code and spec files', 'A 15-minute call to scope it'], cta: 'Open the website for clients', href: clientsHref },
 ];
 const arrow = 'M5 12h14M12 5l7 7-7 7';
 ---
