@@ -130,6 +130,34 @@ html [data-deck-kicker], html [data-deck-kicker] span { overflow-wrap: anywhere;
 .project-filter-search > label { display: inline-flex; align-items: center; gap: var(--space-2); }
 .project-filter-search svg { flex-shrink: 0; color: var(--text-link); }
 
+/* ---------- Filter bar (owner, 26 October 2026: "the filter design looks outdated") ----------
+   One glass panel: the search field large, with the result count and Clear beside it; then each group as a row, its
+   name a small overline and its choices soft chips with the count in a badge. A chosen chip turns ink with a check and a
+   soft ring. The markup and behaviour are unchanged (project-filters.astro, resource-filters.astro and their islands). */
+.project-filters { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-4) var(--space-6); padding: var(--space-5); border-radius: var(--radius-xl); background: var(--surface-glass-strong); border: 1px solid var(--border-default); box-shadow: var(--shadow-md); -webkit-backdrop-filter: blur(var(--blur-header)); backdrop-filter: blur(var(--blur-header)); }
+.project-filters > * { flex: 1 1 100%; min-inline-size: 0; }
+.project-filters > .project-filter-search { flex: 1 1 20rem; max-inline-size: none; order: -2; position: relative; }
+.project-filters > .project-filter-group:has([data-result-count]) { flex: 0 1 auto; order: -1; margin-inline-start: auto; flex-wrap: nowrap; }
+/* Without a search field the count closes the panel instead of opening it. */
+.project-filters:not(:has(> .project-filter-search)) > .project-filter-group:has([data-result-count]) { order: 1; }
+.project-filters .project-filter-search > label { font-size: var(--text-overline); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-overline); text-transform: uppercase; color: var(--text-subtle); }
+.project-filters .project-filter-search > label svg { position: absolute; inset-inline-start: var(--space-5); inset-block-end: 16px; inline-size: 20px; block-size: 20px; pointer-events: none; }
+.project-filters .project-filter-search input { min-block-size: 54px; padding-inline: calc(var(--space-5) + 30px) var(--space-5); border-radius: var(--radius-pill); background: var(--surface-card); font-size: var(--text-body-md); box-shadow: var(--shadow-xs); }
+.project-filters .project-filter-label { font-size: var(--text-overline); letter-spacing: var(--tracking-overline); text-transform: uppercase; color: var(--text-subtle); }
+@media (min-width: 768px) { .project-filters .project-filter-group > .project-filter-label { flex: 0 0 6.5rem; margin: 0; } }
+.project-filters .project-filter-count { padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill); background: var(--surface-sunken); font-weight: var(--weight-semibold); color: var(--text-strong); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.project-filters .ui-chip { gap: var(--space-2); padding: 6px 8px 6px 16px; background: var(--surface-sunken); box-shadow: inset 0 0 0 1px var(--border-default); font-weight: var(--weight-medium); }
+.project-filters .ui-chip:not(:has(.chip-n)) { padding-inline-end: 16px; }
+.chip-n { display: inline-grid; place-items: center; min-inline-size: 28px; block-size: 28px; padding-inline: 6px; border-radius: var(--radius-pill); background: var(--surface-card); font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.ui-chip[aria-pressed="true"] .chip-n, .ui-chip[aria-current="page"] .chip-n { background: color-mix(in srgb, var(--surface-card) 18%, transparent); color: var(--surface-card); }
+.project-filters .ui-chip[aria-pressed="true"] { background: var(--action-ink); box-shadow: 0 0 0 3px color-mix(in srgb, var(--text-link) 28%, transparent); }
+@media (hover: hover) { .project-filters .ui-chip:not([aria-pressed="true"]):hover { background: var(--surface-card); box-shadow: inset 0 0 0 1px var(--border-interactive), var(--shadow-sm); } }
+.project-filters .ui-chip:not([aria-pressed="true"]):focus-visible { background: var(--surface-card); }
+/* The folded categories sit in the panel as one more row, not a card of their own. */
+.project-filters .resource-disclosure { background: transparent; border: 0; box-shadow: none; border-block-start: 1px solid var(--border-subtle); border-radius: 0; padding-block-start: var(--space-2); }
+.project-filters .resource-disclosure > summary { padding-inline: 0; }
+.project-filters .resource-disclosure > .project-filter-group { padding: var(--space-2) 0 0; }
+
 /* The category chips of the resource filters sit in a closed disclosure (the Services FAQ recipe), so the open bar
    offers few choices at once. The summary line says what is chosen; the chevron turns when open. */
 .resource-disclosure { background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); }

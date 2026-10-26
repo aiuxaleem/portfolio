@@ -191,8 +191,8 @@
 :root, [data-theme] {
   --surface-glass: color-mix(in srgb, var(--surface-card) 66%, transparent); /* @kind color */
   --surface-glass-strong: color-mix(in srgb, var(--surface-card) 86%, transparent); /* @kind color */
-  --field-dot: color-mix(in srgb, var(--border-strong) 80%, transparent); /* @kind color */
-  --field-line: var(--border-default); /* @kind color */
+  --field-dot: color-mix(in srgb, var(--text-link) 34%, transparent); /* @kind color */
+  --field-line: color-mix(in srgb, var(--text-link) 12%, transparent); /* @kind color */
 }
 
 /* OS preference: CSS can't alias a media query onto [data-theme], so set the

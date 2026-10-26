@@ -80,6 +80,13 @@ async function worker() {
     const view = `${width}x${height} ${theme}`;
     try {
       const { ctx, page } = await open(browser, origin, route, { width, height, theme });
+      /* On a laptop or larger screen (at least 1024 by 650), the first screen holds the hero's main action (owner, 26 October
+         2026: sections must sit correctly in a laptop's screen). Measured before the reveals scroll the page. */
+      if (width >= 1024 && height >= 650) {
+        const fold = await page.evaluate(() => { /* The hero's actions: the first group of hero buttons that starts on the first screen (a page with no hero at its top, such as /_states, has none). */
+        const a = [...document.querySelectorAll('main [data-hero-ctas]')].filter(g => g.getBoundingClientRect().top < innerHeight).flatMap(g => [...g.querySelectorAll('a, button')]).find(x => x.getBoundingClientRect().height > 0); return a ? { bottom: Math.round(a.getBoundingClientRect().bottom), H: innerHeight, label: a.textContent.trim().slice(0, 40) } : null; });
+        if (fold && fold.bottom > fold.H) fail('first-screen', route.name, view, `the hero's action "${fold.label}" ends at ${fold.bottom}px, below a ${fold.H}px screen`);
+      }
       await revealAll(page, height);
       for (const f of await page.evaluate(pageChecks)) fail(f.check, route.name, view, f.detail);
       await page.addScriptTag({ content: AXE });

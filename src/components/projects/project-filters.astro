@@ -27,7 +27,7 @@ const nouns = total === 1 ? noun : `${noun}s`;
   {tagChips.length > 0 && tagChips.length <= 6 && (
     <div role="group" aria-labelledby={`${id}-tags`} class="project-filter-group">
       <span id={`${id}-tags`} class="project-filter-label">{tagsLabel}</span>
-      {tagChips.map(c => <button type="button" class="ui-chip" aria-pressed="false" data-filter-tag={c.value} data-filter-label={c.label}>{c.label}{c.n !== undefined && <Fragment><span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{c.n}</Fragment>}</button>)}
+      {tagChips.map(c => <button type="button" class="ui-chip" aria-pressed="false" data-filter-tag={c.value} data-filter-label={c.label}>{c.label}{c.n !== undefined && <Fragment><span class="cory-visually-hidden">, </span><span class="chip-n">{c.n}</span></Fragment>}</button>)}
     </div>
   )}
   {tagChips.length > 6 && (
@@ -39,14 +39,14 @@ const nouns = total === 1 ? noun : `${noun}s`;
       </summary>
       <div role="group" aria-labelledby={`${id}-tags`} class="project-filter-group">
         <span id={`${id}-tags`} class="cory-visually-hidden">{tagsLabel}</span>
-        {tagChips.map(c => <button type="button" class="ui-chip" aria-pressed="false" data-filter-tag={c.value} data-filter-label={c.label}>{c.label}{c.n !== undefined && <Fragment><span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{c.n}</Fragment>}</button>)}
+        {tagChips.map(c => <button type="button" class="ui-chip" aria-pressed="false" data-filter-tag={c.value} data-filter-label={c.label}>{c.label}{c.n !== undefined && <Fragment><span class="cory-visually-hidden">, </span><span class="chip-n">{c.n}</span></Fragment>}</button>)}
       </div>
     </details>
   )}
   {statusChips.length > 0 && (
     <div role="group" aria-labelledby={`${id}-status`} class="project-filter-group">
       <span id={`${id}-status`} class="project-filter-label">{optionsLabel}</span>
-      {statusChips.map(c => <button type="button" class="ui-chip" aria-pressed="false" data-filter-status={c.value}>{c.label}{c.n !== undefined && <Fragment><span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{c.n}</Fragment>}</button>)}
+      {statusChips.map(c => <button type="button" class="ui-chip" aria-pressed="false" data-filter-status={c.value}>{c.label}{c.n !== undefined && <Fragment><span class="cory-visually-hidden">, </span><span class="chip-n">{c.n}</span></Fragment>}</button>)}
     </div>
   )}
   <div class="project-filter-group">

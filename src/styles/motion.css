@@ -1,11 +1,14 @@
-/* The site's motion, in one place: how things answer the pointer and the keyboard, and how pages change.
-   Rules it keeps (CLAUDE.md 2.7):
-   - Only transform and opacity move. Colour, background and shadow may fade on hover, focus and press.
+/* The site's motion, in one place: how things answer the pointer and the keyboard, how pages change, and (since the
+   owner's request of 26 October 2026: "I'm giving you full freedom to make interaction design more engaging … add scroll
+   animation") how the page answers the scroll. Rules it still keeps:
+   - Movement uses transform and the independent translate, rotate and scale properties (so a scroll effect never fights a
+     hover); clip-path draws the heading wipes. Colour, background and shadow may fade on hover, focus and press.
    - Every :hover rule is inside @media (hover: hover) and has a :focus-visible twin, so touch screens get no stuck
      states and the keyboard gets the same answer as the pointer.
    - Durations and easings are tokens. The two springs were made the way the Motion skill describes (a damped spring
      sampled into linear()), with a small overshoot: this is a portfolio for hiring managers, not a toy.
-   - With reduced motion the tokens collapse (tokens.css) and the blocks below that add movement are switched off.
+   - With reduced motion the tokens collapse (tokens.css) and every block below that adds movement is switched off: the
+     owner lifted the old limits on motion, not the visitor's own setting.
    - Hover never changes a control's size or the page's height. */
 
 @media (prefers-reduced-motion: no-preference) {
@@ -73,4 +76,68 @@
   ::view-transition-new(site-header) { animation: none; }
   @keyframes page-out { to { opacity: 0; } }
   @keyframes page-in { from { opacity: 0; transform: translateY(var(--space-3)); } }
+
+  /* ---------- First view: the hero's headline rises out of a mask, its line and buttons follow, the stack swings in ---------- */
+  :is(.site-hero-title, #hero-title) { animation: title-in 900ms var(--ease-out) both; }
+  :is(.site-hero-lead, .site-hero-ctas) { animation: rise-in 800ms var(--ease-out) both; }
+  .site-hero-ctas { animation-delay: 160ms; }
+  :is(.site-hero-art, [data-hero] [data-hero-el]:has(> [data-hero-stack])) { animation: art-in 1100ms var(--ease-spring-soft) 120ms both; }
+  @keyframes title-in { from { clip-path: inset(0 0 100% 0); translate: 0 0.35em; } to { clip-path: inset(-0.2em -0.2em -0.3em -0.2em); translate: 0 0; } }
+  @keyframes rise-in { from { opacity: 0; translate: 0 var(--space-5); } }
+  @keyframes art-in { from { opacity: 0; translate: var(--space-10) var(--space-4); rotate: 2deg; } }
+
+  /* ---------- Changing a list (filters, sort): rows glide to their places; arriving rows scale in, leaving rows out ---------- */
+  html[data-vt="list"]::view-transition-old(root), html[data-vt="list"]::view-transition-new(root) { animation: none; }
+  html[data-vt="list"]::view-transition-group(*) { animation-duration: 520ms; animation-timing-function: var(--ease-spring-soft); }
+  html[data-vt="list"]::view-transition-new(*):only-child { animation: card-in 420ms var(--ease-out) both; }
+  html[data-vt="list"]::view-transition-old(*):only-child { animation: card-out 220ms var(--ease-out) both; }
+  @keyframes card-in { from { opacity: 0; transform: scale(0.92) translateY(var(--space-4)); } }
+  @keyframes card-out { to { opacity: 0; transform: scale(0.94); } }
+  .project-filters .ui-chip[aria-pressed="true"]::before { display: inline-block; animation: tick-in var(--duration-spring-pop) var(--ease-spring-pop) both; }
+  @keyframes tick-in { from { transform: scale(0) rotate(-45deg); } }
+
+  /* ---------- The scroll ---------- */
+  @supports (animation-timeline: view()) {
+    /* Pictures settle into their frames as they come into view (scale, so the hover zoom still works). */
+    :is(.project-card-media, .project-cover, .case-figure, .post-gallery) img { animation: settle linear both; animation-timeline: view(); animation-range: entry 0% cover 45%; }
+    @keyframes settle { from { scale: 1.16; } to { scale: 1; } }
+    /* Section headings are drawn in by a wipe that follows the scroll. */
+    .page-section-head > :is(h2, .page-h2) { animation: wipe linear both; animation-timeline: view(); animation-range: entry 10% cover 30%; }
+    [dir="rtl"] .page-section-head > :is(h2, .page-h2) { animation-name: wipe-rtl; }
+    @keyframes wipe { from { clip-path: inset(-0.2em 100% -0.2em 0); translate: calc(-1 * var(--space-6)) 0; } to { clip-path: inset(-0.2em -0.2em -0.2em 0); translate: 0 0; } }
+    @keyframes wipe-rtl { from { clip-path: inset(-0.2em 0 -0.2em 100%); translate: var(--space-6) 0; } to { clip-path: inset(-0.2em 0 -0.2em -0.2em); translate: 0 0; } }
+    /* Cards in a grid lean in from the side they sit on as they arrive. */
+    :is(ul, ol):has(> li > .project-card) > li:nth-child(odd) > .project-card { animation: lean-l linear both; animation-timeline: view(); animation-range: entry 0% entry 90%; }
+    :is(ul, ol):has(> li > .project-card) > li:nth-child(even) > .project-card { animation: lean-r linear both; animation-timeline: view(); animation-range: entry 0% entry 90%; }
+    @keyframes lean-l { from { rotate: -2.5deg; translate: calc(-1 * var(--space-6)) var(--space-8); } }
+    @keyframes lean-r { from { rotate: 2.5deg; translate: var(--space-6) var(--space-8); } }
+    /* The hero gives way with depth: the words drift down slower than the page moves, the stack lifts and the back
+       cards fan out. */
+    /* The hero is cut at its own foot while it moves, so its words never run into the next section. */
+    :is(.site-hero, .hero-split) { clip-path: inset(-100vh -100vw 0 -100vw); }
+    :is(.site-hero-words, .hero-split-words, [data-hero] .cory-split > div:first-child) { animation: drift linear both; animation-timeline: scroll(root); animation-range: 0 90vh; }
+    @keyframes drift { to { translate: 0 16vh; } }
+    :is(.hero-stack, [data-hero] [data-hero-el]:has(> [data-hero-stack])) { animation: lift linear both; animation-timeline: scroll(root); animation-range: 0 90vh; }
+    @keyframes lift { to { translate: 0 -6vh; scale: 0.96; } }
+    [data-stack-card][data-pos="1"] { animation: fan-1 linear both; animation-timeline: scroll(root); animation-range: 0 60vh; }
+    [data-stack-card][data-pos="2"] { animation: fan-2 linear both; animation-timeline: scroll(root); animation-range: 0 60vh; }
+    @keyframes fan-1 { to { translate: 6% -2%; rotate: 4deg; } }
+    @keyframes fan-2 { to { translate: -6% -3%; rotate: -4deg; } }
+    /* A line in the brand gradient under the header follows the reading position, on every page that has no reading bar. */
+    [data-site-header]::after { content: ""; position: absolute; inset-inline: 0; inset-block-end: -1px; block-size: 2px; background: var(--gradient-brand); transform-origin: var(--origin-inline-start); animation: progress linear both; animation-timeline: scroll(root); pointer-events: none; }
+    body:has([data-progress]) [data-site-header]::after { display: none; }
+    @keyframes progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  }
+
+  /* ---------- The hero stack opens a little under the pointer ---------- */
+  @media (hover: hover) {
+    :is(.hero-stack, [data-hero-el]):hover [data-stack-card][data-pos="1"] { transform: translate(calc(14% * var(--dir-x)), -9%) rotate(calc(9deg * var(--dir-x))) scale(0.93); }
+    :is(.hero-stack, [data-hero-el]):hover [data-stack-card][data-pos="2"] { transform: translate(calc(-14% * var(--dir-x)), -16%) rotate(calc(-9deg * var(--dir-x))) scale(0.86); }
+  }
+
+  /* ---------- Cards and buttons answer the pointer (islands/pointer.ts sets the variables) ---------- */
+  :is(ul, ol):has(> li > .project-card) > li { perspective: 1100px; }
+  .project-card[data-tilt] { rotate: var(--tilt-axis, 0 0 1) var(--tilt-angle, 0deg); transition: rotate 140ms linear, transform var(--duration-spring-soft) var(--ease-spring-soft), box-shadow var(--duration-slow) var(--ease-out); background-image: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), color-mix(in srgb, var(--text-link) 10%, transparent), transparent 60%); }
+  .project-card { transition: rotate var(--duration-spring-soft) var(--ease-spring-soft), transform var(--duration-spring-soft) var(--ease-spring-soft), box-shadow var(--duration-slow) var(--ease-out); }
+  [data-magnet] { translate: var(--magnet-x, 0) var(--magnet-y, 0); transition: translate var(--duration-spring-soft) var(--ease-spring-soft); }
 }

@@ -9,6 +9,8 @@
    the hero panel) is handled here without reloading the page: the chips are set, the category disclosure opens, the
    list is filtered and focus lands on its heading. Without JavaScript those links still work (the page opens at the
    list) and every resource is listed. */
+import { smoothList } from './smooth-list';
+
 const bar = document.querySelector<HTMLElement>('[data-resource-filters]');
 const list = document.querySelector<HTMLElement>('[data-resource-list]');
 if (bar && list) {
@@ -69,12 +71,13 @@ if (bar && list) {
     if (details) details.open = pressed(categoryChips).length > 0;
     limit = PAGE;
   };
-  const clear = () => { groups.forEach(g => g.chips.forEach(c => c.setAttribute('aria-pressed', 'false'))); if (search) search.value = ''; if (details) details.open = false; limit = PAGE; apply(true); (search || groups[0]?.chips[0])?.focus(); };
+  const smooth = (fn: () => void) => smoothList('rl', () => items.map(i => i.row), fn);
+  const clear = () => { groups.forEach(g => g.chips.forEach(c => c.setAttribute('aria-pressed', 'false'))); if (search) search.value = ''; if (details) details.open = false; limit = PAGE; smooth(() => apply(true)); (search || groups[0]?.chips[0])?.focus(); };
 
-  groups.forEach(g => g.chips.forEach(chip => chip.addEventListener('click', () => { chip.setAttribute('aria-pressed', String(chip.getAttribute('aria-pressed') !== 'true')); limit = PAGE; apply(true); })));
-  sorts.forEach(chip => chip.addEventListener('click', () => { sorts.forEach(s => s.setAttribute('aria-pressed', String(s === chip))); limit = PAGE; apply(true); }));
+  groups.forEach(g => g.chips.forEach(chip => chip.addEventListener('click', () => { chip.setAttribute('aria-pressed', String(chip.getAttribute('aria-pressed') !== 'true')); limit = PAGE; smooth(() => apply(true)); })));
+  sorts.forEach(chip => chip.addEventListener('click', () => { sorts.forEach(s => s.setAttribute('aria-pressed', String(s === chip))); limit = PAGE; smooth(() => apply(true)); }));
   clears.forEach(button => button.addEventListener('click', clear));
-  if (search) { let timer = 0; search.addEventListener('input', () => { window.clearTimeout(timer); timer = window.setTimeout(() => { limit = PAGE; apply(true); }, 120); }); search.addEventListener('search', () => { limit = PAGE; apply(true); }); }
+  if (search) { let timer = 0; search.addEventListener('input', () => { window.clearTimeout(timer); timer = window.setTimeout(() => { limit = PAGE; smooth(() => apply(true)); }, 120); }); search.addEventListener('search', () => { limit = PAGE; apply(true); }); }
   moreButton?.addEventListener('click', () => { limit += PAGE; apply(false, true); });
 
   /* Links on this page into the filtered list: handled here, no reload. */
@@ -94,5 +97,3 @@ if (bar && list) {
   apply(false);
 }
 
-/* Keeps this file a module of its own, so its names never clash with the other islands. */
-export {};

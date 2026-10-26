@@ -2,6 +2,8 @@
    selected values matches: within a group choices widen, between groups they narrow, as on the Resources page.
    The result count is announced through the aria-live region; the bar's "Clear filters" shows once a filter is on;
    an empty result shows the empty state. */
+import { smoothList } from './smooth-list';
+
 const bar = document.querySelector<HTMLElement>('[data-project-filters]');
 const list = document.querySelector<HTMLElement>('[data-project-list]');
 if (bar && list) {
@@ -31,12 +33,11 @@ if (bar && list) {
     /* A folded first group still says which of its values are chosen. */
     if (state) state.textContent = tags.length ? `Chosen: ${chips.filter(c => c.dataset.filterTag && c.getAttribute('aria-pressed') === 'true').map(c => c.dataset.filterLabel || c.dataset.filterTag).join(', ')}` : state.dataset.default || '';
   };
-  const clear = () => { chips.forEach(c => c.setAttribute('aria-pressed', 'false')); if (search) search.value = ''; apply(); (search || chips[0])?.focus(); };
-  search?.addEventListener('input', apply);
-  chips.forEach(chip => chip.addEventListener('click', () => { chip.setAttribute('aria-pressed', String(chip.getAttribute('aria-pressed') !== 'true')); apply(); }));
+  const smooth = (fn: () => void) => smoothList('pf', () => items.map(i => i.row), fn);
+  const clear = () => { chips.forEach(c => c.setAttribute('aria-pressed', 'false')); if (search) search.value = ''; smooth(apply); (search || chips[0])?.focus(); };
+  let typing = 0; search?.addEventListener('input', () => { window.clearTimeout(typing); typing = window.setTimeout(() => smooth(apply), 120); });
+  chips.forEach(chip => chip.addEventListener('click', () => { chip.setAttribute('aria-pressed', String(chip.getAttribute('aria-pressed') !== 'true')); smooth(apply); }));
   document.querySelectorAll<HTMLButtonElement>('[data-clear-filters]').forEach(button => button.addEventListener('click', clear));
   apply();
 }
 
-/* Keeps this file a module of its own, so its names never clash with the other islands. */
-export {};

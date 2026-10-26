@@ -42,7 +42,9 @@ console.log(`hover: ${HOVER.length} elements`);
 //    and ends in the resting poses.
 for (const route of ['/', '/ar', '/job', '/clients']) { const { ctx, p } = await open(route); const next = p.locator('div:has(+ [data-hero-stack]) button >> nth=1'); if (!(await next.count())) { fail(`${route}: deck buttons not found`); await ctx.close(); continue; } await next.click(); await p.waitForTimeout(60);
   const mid = await p.evaluate(() => document.getAnimations().filter(a => a.transitionProperty === 'transform' && a.effect?.target?.hasAttribute('data-stack-card')).length); await p.waitForTimeout(500);
-  const end = await p.evaluate(() => ({ running: document.getAnimations().filter(a => a.effect?.target?.hasAttribute?.('data-stack-card')).length, front: [...document.querySelectorAll('[data-stack-card]')].findIndex(c => c.dataset.pos === '0') }));
+  // A swap must settle: no time-based animation is left on a card. Scroll-linked ones (the cards fanning out as the page
+  // scrolls, motion.css) follow the scroll, not the clock, so they are not counted.
+  const end = await p.evaluate(() => ({ running: document.getAnimations().filter(a => a.effect?.target?.hasAttribute?.('data-stack-card') && a.timeline instanceof DocumentTimeline).length, front: [...document.querySelectorAll('[data-stack-card]')].findIndex(c => c.dataset.pos === '0') }));
   out[`deck ${route}`] = { cardsMoving: mid, ...end }; if (mid < 2) fail(`${route}: only ${mid} deck cards animate on a swap`); if (end.running || end.front !== 1) fail(`${route}: deck did not settle on the second card`); await ctx.close(); }
 console.log('deck: 4 pages (Home, Arabic Home, and the first-screen stacks of the two audience websites)');
 

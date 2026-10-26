@@ -40,14 +40,14 @@ const chip = (value: string, label: string, n: number) => ({ value, label, n });
       </summary>
       <div role="group" aria-labelledby={`${id}-category`} class="project-filter-group" data-filter-group="category">
         <span id={`${id}-category`} class="cory-visually-hidden">Category</span>
-        {categories.map(([value, label, n]) => <button type="button" class="ui-chip" aria-pressed="false" data-filter-value={value} data-filter-label={label}><CategoryIcon category={value as ResourceCategory} size={16} />{label}<span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{n}</button>)}
+        {categories.map(([value, label, n]) => <button type="button" class="ui-chip" aria-pressed="false" data-filter-value={value} data-filter-label={label}><CategoryIcon category={value as ResourceCategory} size={16} />{label}<span class="cory-visually-hidden">, </span><span class="chip-n">{n}</span></button>)}
       </div>
     </details>
   )}
   {groups.map(g => g.options.length > 0 && (
     <div role="group" aria-labelledby={`${id}-${g.key}`} class="project-filter-group" data-filter-group={g.key}>
       <span id={`${id}-${g.key}`} class="project-filter-label">{g.label}</span>
-      {g.options.map(([value, label, n]) => chip(value, label, n)).map(c => <button type="button" class="ui-chip" aria-pressed="false" data-filter-value={c.value} data-filter-label={c.label}>{c.label}<span class="cory-visually-hidden">, </span><span aria-hidden="true">·</span>{c.n}</button>)}
+      {g.options.map(([value, label, n]) => chip(value, label, n)).map(c => <button type="button" class="ui-chip" aria-pressed="false" data-filter-value={c.value} data-filter-label={c.label}>{c.label}<span class="cory-visually-hidden">, </span><span class="chip-n">{c.n}</span></button>)}
     </div>
   ))}
   <div role="group" aria-labelledby={`${id}-sort`} class="project-filter-group" data-sort-group>

@@ -9,7 +9,9 @@ import { chromium } from 'playwright-core';
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 /** Test viewports from CLAUDE.md 2.4. */
-export const VIEWPORTS = [[320, 568], [360, 740], [390, 844], [414, 896], [768, 1024], [1024, 768], [1280, 720], [1440, 900], [1920, 1080], [844, 390]];
+/* The laptops most visitors use, as the browser leaves them (owner, 26 October 2026): a 1366x768 screen gives about 1366x657
+   inside Chrome or Edge, a MacBook Air about 1440x789. */
+export const VIEWPORTS = [[320, 568], [360, 740], [390, 844], [414, 896], [768, 1024], [1024, 768], [1280, 720], [1366, 657], [1440, 789], [1440, 900], [1920, 1080], [844, 390]];
 export const QUICK_VIEWPORTS = [[390, 844], [1280, 720]];
 export const THEMES = ['light', 'dark'];
 

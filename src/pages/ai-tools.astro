@@ -3,6 +3,8 @@
    page's filter bar: chips with counts, a live count, "Clear filters"), then the tools grouped under their category with
    a line on what the group is for. Tools I use are marked. Added and edited in the admin (AI tools). Without JavaScript the
    filter bar is hidden and every tool is listed. Part of "Resources" in the header. */
+import HeroStack from '../components/sites/hero-stack.astro';
+import { aiToolCards } from '../lib/site-stacks';
 import PageLayout from '../layouts/page-layout.astro';
 import AiToolCard from '../components/cards/ai-tool-card.astro';
 import ProjectFilters from '../components/projects/project-filters.astro';
@@ -14,18 +16,22 @@ const groups = aiCategoryCounts(tools).filter(g => g.count > 0 || tools.some(t =
 const picks = tools.filter(t => t.data.pick && !t.data.fixture).length;
 const items = tools.map(t => ({ tags: [t.data.category], status: t.data.cost }));
 const stat = 'margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); color: var(--text-strong); font-variant-numeric: tabular-nums;';
+const stack = await aiToolCards();
 ---
 <PageLayout title="AI tools for product designers · AIUXAleem" description="AI tools for product designers, grouped by what they help with: UI generation, research, testing, images, video and voice. Kept by Mohammad Abdul Aleem." page="ai-tools" bg="grid" mainStyle="outline: none; overflow: clip;">
-  <section class="cory-container" aria-labelledby="ai-tools-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
-    <p class="cory-overline" style="margin: 0px;">Resources · AI Tools</p>
-    <h1 id="ai-tools-title" style="margin: 0px; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">AI tools for product designers.</h1>
-    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">The AI tools worth knowing, grouped by what they help you do, from a prompt to screens, interviews to insight, and a sketch to a clip. Each opens on its own site. Prices change, so check before you rely on one.</p>
-    <dl class="ai-tools-stats">
-      <div><dt>Tools</dt><dd style={stat}>{tools.length}</dd></div>
-      <div><dt>Categories</dt><dd style={stat}>{groups.filter(g => g.count > 0).length}</dd></div>
-      {picks > 0 && <div><dt>I use</dt><dd style={stat}>{picks}</dd></div>}
-    </dl>
-    {tools.length > 0 && <ProjectFilters tags={groups.map(g => g.slug)} tagLabels={aiCategoryLabel} tagsLabel="Category" total={tools.length} items={items} options={aiCostLabel} optionsLabel="Cost" noun="tool" id="ai-filter" search={{ label: 'Find a tool', placeholder: 'Name, site or use' }} />}
+  <section class="cory-container hero-split" aria-labelledby="ai-tools-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <div class="hero-split-words">
+      <p class="cory-overline" style="margin: 0px;">Resources · AI Tools</p>
+      <h1 id="ai-tools-title" style="margin: 0px; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">AI tools for product designers.</h1>
+      <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">The AI tools worth knowing, grouped by what they help you do, from a prompt to screens, interviews to insight, and a sketch to a clip. Each opens on its own site. Prices change, so check before you rely on one.</p>
+      <dl class="ai-tools-stats">
+        <div><dt>Tools</dt><dd style={stat}>{tools.length}</dd></div>
+        <div><dt>Categories</dt><dd style={stat}>{groups.filter(g => g.count > 0).length}</dd></div>
+        {picks > 0 && <div><dt>I use</dt><dd style={stat}>{picks}</dd></div>}
+      </dl>
+      {tools.length > 0 && <ProjectFilters tags={groups.map(g => g.slug)} tagLabels={aiCategoryLabel} tagsLabel="Category" total={tools.length} items={items} options={aiCostLabel} optionsLabel="Cost" noun="tool" id="ai-filter" search={{ label: 'Find a tool', placeholder: 'Name, site or use' }} />}
+    </div>
+    <HeroStack id="tools-stack" label="Where I use AI" noun="category" cards={stack} />
   </section>
 
   <section class="cory-container" aria-label="Tools" style="display: grid; gap: var(--space-12); padding-block-end: var(--section-y);">

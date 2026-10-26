@@ -13,11 +13,13 @@
   .ai-field { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; background: var(--glow-cyan) no-repeat right -18vw top -22vh / min(72vw, 860px) min(72vw, 860px), var(--glow-blue) no-repeat left -18vw bottom -26vh / min(80vw, 940px) min(80vw, 940px); }
   :global([dir="rtl"]) .ai-field { background-position: left -18vw top -22vh, right -18vw bottom -26vh; }
   /* A glass veil over the glows: text can sit on a glow's peak as the page scrolls, and the veil keeps every text colour
-     at 4.5:1 or more there (measured at the peak: links 4.63 in light, 5.29 in dark; without it 3.50 and 3.66). */
-  .ai-field::after { content: ""; position: absolute; inset: 0; background: var(--surface-glass); }
-  /* The reference grid: a dot every 28px, above the veil, strongest at the edges of the screen, gone in the middle where
-     text is read. */
-  .ai-field::before { content: ""; position: absolute; inset: 0; z-index: 1; background-image: radial-gradient(circle, var(--field-dot) 1px, transparent 1.5px); background-size: 28px 28px; -webkit-mask-image: radial-gradient(ellipse 70% 65% at 50% 45%, transparent 35%, #000 100%); mask-image: radial-gradient(ellipse 70% 65% at 50% 45%, transparent 35%, #000 100%); }
+     at 4.5:1 or more there (measured at the peak: links 4.63 in light, 5.29 in dark; without it 3.50 and 3.66). The veil
+     is whole over the content column and thins only in the margins beside it, where no text sits, so on a wide screen
+     the glows show at their strength there (a laptop's margins are narrower than the fade, so the veil stays whole). */
+  .ai-field::after { --field-edge: max(0px, calc((100vw - var(--container-max)) / 2)); content: ""; position: absolute; inset: 0; background: var(--surface-glass); -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.3) 0, #000 var(--field-edge), #000 calc(100% - var(--field-edge)), rgba(0, 0, 0, 0.3) 100%); mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.3) 0, #000 var(--field-edge), #000 calc(100% - var(--field-edge)), rgba(0, 0, 0, 0.3) 100%); }
+  /* The reference grid, above the veil: a brand-tinted dot every 28px and a faint major line every five dots, like graph
+     paper; strongest at the edges of the screen, gone in the middle where text is read. */
+  .ai-field::before { content: ""; position: absolute; inset: 0; z-index: 1; background-image: radial-gradient(circle, var(--field-dot) 1.2px, transparent 1.8px), linear-gradient(var(--field-line) 1px, transparent 1px), linear-gradient(90deg, var(--field-line) 1px, transparent 1px); background-size: 28px 28px, 140px 140px, 140px 140px; background-position: 0 0, -14px -14px, -14px -14px; -webkit-mask-image: radial-gradient(ellipse 70% 65% at 50% 45%, transparent 35%, #000 100%); mask-image: radial-gradient(ellipse 70% 65% at 50% 45%, transparent 35%, #000 100%); }
   @media (prefers-reduced-transparency: reduce) { .ai-field { display: none; } }
   @media (forced-colors: active) { .ai-field { display: none; } }
   @media print { .ai-field { display: none; } }
