@@ -19,9 +19,13 @@ if (stack) {
     });
     if (counter) counter.textContent = `${pad(front + 1)} / ${pad(cards.length)}`;
   };
+  /* The back cards' pictures (hidden until a card comes to the front) load once the page has finished, so they never compete
+     with the first screen on a slow connection; a click that brings a card forward loads them at once. */
+  const later = () => stack.querySelectorAll<HTMLImageElement>('img[data-deck-src]').forEach(img => { img.srcset = img.dataset.deckSrcset || ''; img.src = img.dataset.deckSrc || ''; delete img.dataset.deckSrc; });
+  if (document.readyState === 'complete') window.setTimeout(later, 1500); else window.addEventListener('load', () => window.setTimeout(later, 1500), { once: true });
   if (cards.length > 1 && prev && next) {
-    prev.addEventListener('click', () => { front = (front - 1 + cards.length) % cards.length; paint(); });
-    next.addEventListener('click', () => { front = (front + 1) % cards.length; paint(); });
+    prev.addEventListener('click', () => { later(); front = (front - 1 + cards.length) % cards.length; paint(); });
+    next.addEventListener('click', () => { later(); front = (front + 1) % cards.length; paint(); });
   }
 }
 

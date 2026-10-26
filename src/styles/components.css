@@ -61,6 +61,7 @@ html [data-deck-kicker], html [data-deck-kicker] span { overflow-wrap: anywhere;
 .prose ul, .prose ol { display: grid; gap: var(--space-2); padding-inline-start: var(--space-5); list-style: revert; }
 /* Plain links in running text. Components inside the body (buttons, cards) keep their own link styles. */
 .prose a:not([class]) { color: var(--text-link); text-decoration: underline; text-underline-offset: 0.22em; }
+.prose a[data-lone-link] { display: inline-flex; align-items: center; min-block-size: var(--tap-target); }
 
 /* Card used by the project list and the case study list (CLAUDE.md 2.7). */
 .project-card { position: relative; display: flex; flex-direction: column; block-size: 100%; border-radius: var(--radius-xl); background: var(--surface-glass-strong); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); overflow: hidden; transition: transform var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out); }
@@ -138,6 +139,8 @@ html [data-deck-kicker], html [data-deck-kicker] span { overflow-wrap: anywhere;
 .project-filters > * { flex: 1 1 100%; min-inline-size: 0; }
 .project-filters > .project-filter-search { flex: 1 1 20rem; max-inline-size: none; order: -2; position: relative; }
 .project-filters > .project-filter-group:has([data-result-count]) { flex: 0 1 auto; order: -1; margin-inline-start: auto; flex-wrap: nowrap; }
+/* On a phone the count and Clear close the panel, under the choices they count (beside the search there is no room). */
+@media (max-width: 767.98px) { .project-filters > .project-filter-group:has([data-result-count]) { order: 1; flex: 1 1 100%; margin-inline-start: 0; justify-content: space-between; } }
 /* Without a search field the count closes the panel instead of opening it. */
 .project-filters:not(:has(> .project-filter-search)) > .project-filter-group:has([data-result-count]) { order: 1; }
 .project-filters .project-filter-search > label { font-size: var(--text-overline); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-overline); text-transform: uppercase; color: var(--text-subtle); }

@@ -123,6 +123,10 @@ html[data-theme-switching] *, html[data-theme-switching] *::before, html[data-th
 /* The Arabic headline is three lines in its own font and two in the fallback shown first. Room for three is kept from the
    start, so the rest of the hero does not move when the font arrives (measured: a 39px jump at 412px wide, CLS 0.13). */
 @media (max-width: 1023.98px) { [dir="rtl"] [data-hero-title] { min-block-size: calc(3 * var(--leading-snug) * 1em) !important; } }
+/* The guide's meta line (a badge, then the date and reading time in the code font) fits one line in the fallback font but
+   two in the code font on a phone, so it moved the page when the font arrived (CLS 0.11). On a phone it is two lines
+   from the start. */
+@media (max-width: 639.98px) { [data-page="guide"] article > header > div:has(> .sc-host-x > [data-badge]) { flex-direction: column; align-items: flex-start !important; } }
 /* From 1024px wide the headline is one or two lines in either font, so no room is held back: on a laptop the held room
    pushed the Arabic case study's call to action below the first screen. */
 /* Short desktop viewports (laptops, 1280x720): smaller display type so the hero fits above the fold */
@@ -227,6 +231,10 @@ main[tabindex] { padding-block-start: 0 !important; }
 @media (min-width: 1024px) and (max-height: 640px) {
   :root { --section-y: 40px; --text-fluid-display: clamp(30px, 3.1vw, 42px); --text-fluid-title: clamp(28px, 2.8vw, 36px); --text-fluid-lead: 16px; }
   .hero-stack-stage { aspect-ratio: 9 / 2.6 !important; }
+  .hero-stack-points > span:nth-child(n+4) { display: none !important; }
+  .site-hero { padding-block-start: var(--space-5) !important; }
+  .hero-stack-cards { padding-block-start: var(--space-4) !important; }
+  section[aria-labelledby="services-title"] { padding-block-start: var(--space-6) !important; }
 }
 /* A page hero of words beside a card stack (the main Projects, Case Studies and AI Tools; the audience websites use
    sites/site-hero.astro for the same shape). */

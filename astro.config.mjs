@@ -75,6 +75,17 @@ const postDates = (() => {
   return out;
 })();
 const withDates = item => { const d = postDates[new URL(item.url).pathname.replace(/\/$/, '')]; return d ? { ...item, lastmod: new Date(`${d}T00:00:00Z`).toISOString() } : item; };
+/* Marks each link that is the only content of its paragraph (whitespace aside) with data-lone-link. */
+const markLoneLinks = () => tree => {
+  const walk = node => {
+    if (node.type === 'element' && node.tagName === 'p') {
+      const kids = node.children.filter(c => !(c.type === 'text' && !c.value.trim()));
+      if (kids.length === 1 && kids[0].type === 'element' && kids[0].tagName === 'a') kids[0].properties = { ...kids[0].properties, dataLoneLink: '' };
+    }
+    node.children?.forEach(walk);
+  };
+  walk(tree);
+};
 
 export default defineConfig({
   site: siteUrl,
@@ -88,7 +99,9 @@ export default defineConfig({
   /* The one stylesheet (about 14 KB gzipped) is inlined into each page, so the first paint does not wait for a second request. */
   build: { format: asFolders ? 'directory' : 'file', inlineStylesheets: 'always' },
   /* Code blocks are plain <pre><code>, styled with tokens so they follow the theme. A highlighter would inline fixed colours. */
-  markdown: { syntaxHighlight: false },
+  /* A link that is a paragraph on its own (a "Read the case study" line) is marked, so the long-form styles give it a
+     44px target (CLAUDE.md 2.4); a link inside a sentence stays inline. */
+  markdown: { syntaxHighlight: false, rehypePlugins: [markLoneLinks] },
   /* The editor's server entry imports an Astro virtual module that the dev dependency optimiser cannot resolve; leave it unbundled. */
   /* COUNT_VISITS tells the page head whether to send a page view: only where the /api/hit route exists. */
   vite: { optimizeDeps: { exclude: ['@keystatic/astro'] }, define: { 'import.meta.env.COUNT_VISITS': JSON.stringify(withAdmin || isDev ? '1' : '') } },

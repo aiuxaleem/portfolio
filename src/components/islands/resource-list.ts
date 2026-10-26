@@ -68,11 +68,13 @@ if (bar && list) {
     groups.forEach(g => { const wanted = (params.get(g.key) || '').split(',').filter(Boolean); g.chips.forEach(c => c.setAttribute('aria-pressed', String(wanted.includes(c.dataset.filterValue!)))); });
     if (params.has('sort')) sorts.forEach(s => s.setAttribute('aria-pressed', String(s.dataset.sort === params.get('sort'))));
     if (search && params.has('q')) search.value = params.get('q') || '';
-    if (details) details.open = pressed(categoryChips).length > 0;
+    /* Category is the list's main way in: open from the start where there is room for it (a laptop and up), and
+       whenever a category is chosen. */
+    if (details) details.open = pressed(categoryChips).length > 0 || matchMedia('(min-width: 1024px)').matches;
     limit = PAGE;
   };
   const smooth = (fn: () => void) => smoothList('rl', () => items.map(i => i.row), fn);
-  const clear = () => { groups.forEach(g => g.chips.forEach(c => c.setAttribute('aria-pressed', 'false'))); if (search) search.value = ''; if (details) details.open = false; limit = PAGE; smooth(() => apply(true)); (search || groups[0]?.chips[0])?.focus(); };
+  const clear = () => { groups.forEach(g => g.chips.forEach(c => c.setAttribute('aria-pressed', 'false'))); if (search) search.value = ''; if (details) details.open = matchMedia('(min-width: 1024px)').matches; limit = PAGE; smooth(() => apply(true)); (search || groups[0]?.chips[0])?.focus(); };
 
   groups.forEach(g => g.chips.forEach(chip => chip.addEventListener('click', () => { chip.setAttribute('aria-pressed', String(chip.getAttribute('aria-pressed') !== 'true')); limit = PAGE; smooth(() => apply(true)); })));
   sorts.forEach(chip => chip.addEventListener('click', () => { sorts.forEach(s => s.setAttribute('aria-pressed', String(s === chip))); limit = PAGE; smooth(() => apply(true)); }));
