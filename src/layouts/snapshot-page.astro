@@ -9,6 +9,7 @@ import { rewriteLinks } from '../lib/routes';
 import { tuneSnapshot } from '../lib/snapshot-tune';
 import { site, parity } from '../content/site';
 import { chrome } from '../i18n/chrome';
+import { getImage } from 'astro:assets';
 
 interface Snapshot { title: string; description: string; lang: string; dir: string; langs: string; page: string; css: string; fonts: string; header: string; extras: string; main: string; footer: string }
 interface Props { snapshot: Snapshot; canonical?: string; /** Version 2 rewrites its copy of the page: applied after the usual tuning. */ rewrite?: (html: string) => string; /** No footer CTA band: the page ends with its own. */ hideCta?: boolean; /** No "Get in touch" in the header: the hero already asks for contact. */ hideHeaderCta?: boolean; altLangHref?: string; title?: string; description?: string; /** The opening tag of the section before which the default slot is placed. */ slotBefore?: string; /** Image paths that are below the first view on this page at every screen size. */ lazyImages?: string[]; ogType?: string; ogImage?: string; jsonLd?: (Record<string, unknown> | undefined)[] }
@@ -18,7 +19,20 @@ const hideCta = Astro.props.hideCta ?? !s.footer.includes('data-cta-row');
 const LEGACY_AVAILABILITY = 'Open to Lead and Principal design or product roles · KSA, UAE, remote';
 const main = parity ? s.main : s.main.split(LEGACY_AVAILABILITY).join(site.availability.label);
 const tuned = parity ? rewriteLinks(main) : tuneSnapshot(rewriteLinks(main), Astro.props.lazyImages, (s.lang === 'ar' ? chrome.ar : chrome.en).newTab);
-const html = Astro.props.rewrite ? Astro.props.rewrite(tuned) : tuned;
+const rewritten = Astro.props.rewrite ? Astro.props.rewrite(tuned) : tuned;
+/* The legacy pages name case pictures as full-size JPEGs in public/assets/cases/. Where the same file is in
+   src/assets/cases/, it is served through the build pipeline instead: WebP in a few widths, so a phone gets a file sized
+   for its screen (CLAUDE.md 2.9). The picture drawn is the same. */
+const CASE_SOURCES = import.meta.glob<{ default: ImageMetadata }>('../assets/cases/*.{jpg,jpeg,png}', { eager: true });
+const caseImages = new Map(Object.entries(CASE_SOURCES).map(([file, mod]) => [file.split('/').pop()!, mod.default]));
+let html = rewritten;
+if (!parity) for (const name of new Set([...rewritten.matchAll(/<img src="\/assets\/cases\/([\w.-]+\.(?:jpe?g|png))"/g)].map(m => m[1]))) {
+  const source = caseImages.get(name); if (!source) continue;
+  const widths = [480, 800, 1200, 1600].filter(w => w < source.width).concat(source.width);
+  const img = await getImage({ src: source, format: 'webp', widths });
+  const srcset = img.srcSet.attribute;
+  html = html.split(`<img src="/assets/cases/${name}"`).join(`<img src="${img.src}" srcset="${srcset}" sizes="(min-width: 1024px) 50vw, 100vw"`);
+}
 const at = Astro.props.slotBefore ? html.indexOf(Astro.props.slotBefore) : -1;
 if (Astro.props.slotBefore && at < 0) throw new Error(`snapshot-page: "${Astro.props.slotBefore}" was not found in the ${s.page} snapshot`);
 ---
