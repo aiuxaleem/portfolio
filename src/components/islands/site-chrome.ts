@@ -38,16 +38,35 @@ if (header?.querySelector('[data-site-switch]')) {
   mark();
 }
 
-/* ---------- Header menus: a group's button opens its pages (click, Enter or Space); Escape, a click outside or focus
-   leaving the group closes it. Hover opening is CSS only, on pointer devices. One menu is open at a time. ---------- */
+/* ---------- Header menus: one open state for mouse, touch and keyboard, so one menu is open at a time. A mouse opens a
+   group on hover and closes it a moment after leaving (time to travel down to the card), so a mouse click on the button
+   keeps it open rather than toggling it shut under the pointer. Touch and keyboard toggle it with a tap, Enter or Space;
+   Escape, a click outside or focus leaving the group closes it. Without this script, the header's hover rule still opens
+   the cards. ---------- */
 const groups = [...document.querySelectorAll<HTMLElement>('[data-nav-group]')];
-const shut = (except?: HTMLElement) => groups.forEach(g => { if (g !== except) g.querySelector('.nav-group-button')?.setAttribute('aria-expanded', 'false'); });
+if (groups.length) root.setAttribute('data-nav-ready', '');
+const LEAVE_DELAY = 200;
+let leaveTimer = 0, pressedWith = '';
+const buttonOf = (g: HTMLElement) => g.querySelector<HTMLButtonElement>('.nav-group-button');
+const isOpen = (g: HTMLElement) => buttonOf(g)?.getAttribute('aria-expanded') === 'true';
+const setOpen = (group: HTMLElement, open: boolean) => {
+  clearTimeout(leaveTimer);
+  groups.forEach(g => buttonOf(g)?.setAttribute('aria-expanded', String(open && g === group)));
+};
+const shut = () => { clearTimeout(leaveTimer); groups.forEach(g => buttonOf(g)?.setAttribute('aria-expanded', 'false')); };
 groups.forEach(group => {
-  const button = group.querySelector<HTMLButtonElement>('.nav-group-button');
+  const button = buttonOf(group);
   if (!button) return;
-  button.addEventListener('click', () => { const open = button.getAttribute('aria-expanded') !== 'true'; shut(group); button.setAttribute('aria-expanded', String(open)); });
-  group.addEventListener('keydown', e => { if (e.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') { button.setAttribute('aria-expanded', 'false'); button.focus(); } });
-  group.addEventListener('focusout', e => { if (!group.contains(e.relatedTarget as Node | null)) button.setAttribute('aria-expanded', 'false'); });
+  group.addEventListener('pointerenter', e => { if (e.pointerType !== 'mouse') return; clearTimeout(leaveTimer); if (!isOpen(group)) setOpen(group, true); });
+  // A keyboard user's focus inside the card keeps it open when the mouse wanders off.
+  group.addEventListener('pointerleave', e => { if (e.pointerType !== 'mouse' || group.contains(document.activeElement) && document.activeElement !== button) return; clearTimeout(leaveTimer); leaveTimer = window.setTimeout(() => { if (isOpen(group)) setOpen(group, false); }, LEAVE_DELAY); });
+  button.addEventListener('pointerdown', e => { pressedWith = e.pointerType; });
+  button.addEventListener('click', e => {
+    const mouse = e.detail > 0 && pressedWith === 'mouse'; pressedWith = '';
+    setOpen(group, mouse || !isOpen(group));
+  });
+  group.addEventListener('keydown', e => { if (e.key === 'Escape' && isOpen(group)) { setOpen(group, false); button.focus(); } });
+  group.addEventListener('focusout', e => { if (!group.contains(e.relatedTarget as Node | null) && isOpen(group)) setOpen(group, false); });
 });
 document.addEventListener('click', e => { if (!(e.target as HTMLElement).closest?.('[data-nav-group]')) shut(); });
 

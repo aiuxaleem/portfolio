@@ -108,7 +108,9 @@ const linkStyle = 'display: inline-flex; align-items: center; justify-content: c
   .nav-panel { display: none; position: absolute; inset-block-start: 100%; inset-inline-start: 50%; transform: translateX(-50%); padding-block-start: var(--space-2); z-index: var(--z-raised); }
   [dir="rtl"] .nav-panel { transform: translateX(50%); }
   .nav-group-button[aria-expanded="true"] + .nav-panel { display: block; }
-  @media (hover: hover) { .nav-group:hover > .nav-panel { display: block; } .nav-group:hover > .nav-group-button [data-chevron] { transform: rotate(180deg); } }
+  /* Without the script, hover alone opens a card. With it (data-nav-ready), the script owns the open state, so hover and click
+     can never leave two cards open (islands/site-chrome.ts). */
+  @media (hover: hover) { :root:not([data-nav-ready]) .nav-group:hover > .nav-panel { display: block; } :root:not([data-nav-ready]) .nav-group:hover > .nav-group-button [data-chevron] { transform: rotate(180deg); } }
   .nav-panel-list { display: grid; gap: var(--space-1); inline-size: max-content; min-inline-size: 16rem; max-inline-size: 22rem; margin: 0; padding: var(--space-2); list-style: none; border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-lg); }
   .nav-panel-link { display: grid; gap: 2px; min-block-size: var(--tap-target); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); text-decoration: none; color: var(--text-strong); }
   .nav-panel-label { font-size: var(--text-body-sm); font-weight: var(--weight-semibold); }

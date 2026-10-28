@@ -51,9 +51,10 @@ html { scroll-padding-block-start: var(--header-height); }
 /* Glass falls back to solid surfaces when the visitor asks for less transparency (the field is then hidden too). */
 @media (prefers-reduced-transparency: reduce) { :root, [data-theme] { --surface-glass: var(--surface-card); --surface-glass-strong: var(--surface-card); } }
 /* The bar of the three websites is the header's first row (site-switch.astro): after the first scroll the header slides up
-   by its height, and comes back while anything in the header has focus, so a focused link is never off screen. */
+   by its height, and comes back while anything in the header has keyboard focus, so a focused link is never off screen.
+   A mouse click on a header button leaves it focused but not :focus-visible, so it no longer holds the bar in view. */
 [data-site-header]:has([data-site-switch]) { transition: transform var(--duration-base) var(--ease-out); }
-[data-site-header][data-scrolled]:has([data-site-switch]):not(:focus-within) { transform: translateY(calc(-1 * var(--tap-target))); }
+[data-site-header][data-scrolled]:has([data-site-switch]):not(:has(:focus-visible)) { transform: translateY(calc(-1 * var(--tap-target))); }
 @media (prefers-reduced-motion: reduce) { [data-site-header]:has([data-site-switch]) { transition: none; } }
 /* In-page links scroll smoothly when the visitor has not asked for reduced motion. */
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
