@@ -30,7 +30,7 @@ while (queue.length) { const url = queue.shift(); const p = await ctx.newPage();
   p.on('response', r => { const u = new URL(r.url()); if (u.host !== host) return; requests++; if (!u.pathname.startsWith(base + '/') && u.pathname !== base) bad.push(`outside the folder: ${u.pathname}`); else if (r.status() >= 400) bad.push(`${r.status()} ${u.pathname}`); });
   p.on('pageerror', e => bad.push('script error: ' + String(e).slice(0, 80)));
   try { await p.goto(url, { waitUntil: 'load', timeout: 45000 }); await p.evaluate(async () => { for (const i of document.images) i.loading = 'eager'; await new Promise(r => setTimeout(r, 400)); });
-    const found = await p.evaluate(() => ({ links: [...document.querySelectorAll('a[href]')].map(a => a.href), broken: [...document.images].filter(i => i.complete && !i.naturalWidth).map(i => i.currentSrc || i.src), assets: [...document.querySelectorAll('link[href], [srcset], [imagesrcset]')].flatMap(e => e.href ? [e.href] : []) }));
+    const found = await p.evaluate(() => ({ links: [...document.querySelectorAll('a[href]')].map(a => a.href), broken: [...document.images].filter(i => (i.getAttribute('src') !== null || i.srcset) && i.complete && !i.naturalWidth).map(i => i.currentSrc || i.src), assets: [...document.querySelectorAll('link[href], [srcset], [imagesrcset]')].flatMap(e => e.href ? [e.href] : []) }));
     for (const b of found.broken) bad.push('broken image: ' + b);
     for (const href of found.links) { let u; try { u = new URL(href); } catch { continue; } if (u.host !== host) continue; u.hash = '';
       if (!u.pathname.startsWith(base + '/') && u.pathname !== base) { bad.push(`link leaves the folder: ${u.pathname}`); continue; }
@@ -41,6 +41,15 @@ while (queue.length) { const url = queue.shift(); const p = await ctx.newPage();
 // The files a visitor never clicks to but browsers and search engines ask for.
 for (const f of ['/sitemap-index.xml', '/sitemap-0.xml', '/robots.txt', '/rss.xml', '/og/home.png', '/assets/favicon.svg']) { const r = await ctx.request.get(origin + base + f); requests++; if (r.status() >= 400) problems.push(`${r.status()} ${base + f}`); else if (/\.(xml|txt)$/.test(f)) { const t = await r.text(); const wrong = [...t.matchAll(new RegExp(`https?://${host.replace(/\./g, '\\.')}(/[^<\\s"]*)?`, 'g'))].map(m => m[1] || '/').filter(pth => !pth.startsWith(base + '/') && pth !== base); if (wrong.length) problems.push(`${f} lists addresses outside the folder: ${[...new Set(wrong)].slice(0, 3).join(', ')}`); } }
 { const r = await ctx.request.get(origin + base + '/no-such-page-xyz'); if (r.status() !== 404) problems.push(`an unknown address returned ${r.status()}, expected the 404 page`); }
+// The pages above ran with reduced motion, so the motion module (fetched after load, only when motion is allowed, from an
+// address written in the page head) was never asked for. Open the first page once with motion on and require that request
+// to stay inside the folder and load.
+{ const c2 = await browser.newContext({ viewport: { width: 1280, height: 800 }, reducedMotion: 'no-preference' }); await c2.route(u => u.host !== host, r => r.abort());
+  const p = await c2.newPage(); const waiting = p.waitForResponse(r => r.url().includes('/_m/motion'), { timeout: 10000 }).catch(() => null);
+  await p.goto(start, { waitUntil: 'load', timeout: 45000 }); const r = await waiting; requests++;
+  if (!r) problems.push(`the motion module was not requested within 10 s of ${start.replace(origin, '')} with motion on`);
+  else { const u = new URL(r.url()); if (!u.pathname.startsWith(base + '/')) problems.push(`outside the folder: ${u.pathname} (the motion module)`); else if (r.status() >= 400) problems.push(`${r.status()} ${u.pathname} (the motion module)`); }
+  await c2.close(); }
 await browser.close(); server?.close();
 console.log(`${pages} pages opened, ${requests} requests on ${origin}${base}/`);
 if (problems.length) { console.log(`FAILED: ${problems.length} problem(s)\n  ` + problems.join('\n  ')); process.exit(1); }

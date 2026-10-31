@@ -19,7 +19,8 @@ const fix = u => (local(u) ? base + u : u);
 const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 // Full addresses on this host, in canonical links, share images, structured data, the sitemap and the feeds.
 const absolute = text => text.replace(new RegExp(esc(origin) + '(?!' + esc(base) + '(?:/|["\'<\\s?#]|$))(?=/|["\'<\\s?#]|$)', 'g'), origin + base);
-const cssUrls = text => text.replace(/url\(\s*(['"]?)(\/[^)'"]*)\1\s*\)/g, (m, q, u) => `url(${q}${fix(u)}${q})`);
+// In a style attribute Astro writes the quote as an entity: style="background-image: url(&#34;/_astro/x.webp&#34;)".
+const cssUrls = text => text.replace(/url\(\s*(['"]|&#34;|&quot;|&#39;)?(\/[^)'"&]*)\1\s*\)/g, (m, q = '', u) => `url(${q}${fix(u)}${q})`);
 
 const counts = { html: 0, css: 0, js: 0, other: 0, links: 0 };
 for (const file of walk(dir)) {
@@ -28,18 +29,18 @@ for (const file of walk(dir)) {
   const before = fs.readFileSync(file, 'utf8'); let text = before;
   if (ext === '.html') {
     // Attributes that hold one address.
-    text = text.replace(/(\s(?:href|src|poster|action|data-embed-poster|data-full|data-src)=)(["'])([^"']*)\2/g, (m, a, q, u) => { const v = fix(u); if (v !== u) counts.links++; return a + q + v + q; });
+    text = text.replace(/(\s(?:href|src|poster|action|data-embed-poster|data-full|data-src|data-deck-src)=)(["'])([^"']*)\2/g, (m, a, q, u) => { const v = fix(u); if (v !== u) counts.links++; return a + q + v + q; });
     // A page that has moved leaves a stub that sends the visitor on: <meta http-equiv="refresh" content="0;url=/read">.
     text = text.replace(/(<meta http-equiv="refresh" content="\d+;\s*url=)([^"]*)"/gi, (m, a, u) => { const v = fix(u); if (v !== u) counts.links++; return a + v + '"'; });
-    // srcset and imagesrcset hold a comma-separated list.
-    text = text.replace(/(\s(?:srcset|imagesrcset)=)(["'])([^"']*)\2/g, (m, a, q, list) => a + q + list.split(',').map(part => { const t = part.trim(); const [u, ...rest] = t.split(/\s+/); return [fix(u), ...rest].join(' '); }).join(', ') + q);
+    // srcset, imagesrcset and the Home deck's data-deck-srcset (set on the image when its card turns up) hold a comma-separated list.
+    text = text.replace(/(\s(?:srcset|imagesrcset|data-deck-srcset)=)(["'])([^"']*)\2/g, (m, a, q, list) => a + q + list.split(',').map(part => { const t = part.trim(); const [u, ...rest] = t.split(/\s+/); return [fix(u), ...rest].join(' '); }).join(', ') + q);
     // Inline stylesheets and style attributes.
     text = cssUrls(text);
-    // Bundled scripts imported by path.
-    text = text.replace(/(["'`])\/_astro\//g, `$1${base}/_astro/`);
+    // Bundled scripts imported by path: Astro's and the motion module (public/_m/, named in the page head).
+    text = text.replace(/(["'`])\/(_astro|_m)\//g, `$1${base}/$2/`);
     text = absolute(text); counts.html++;
   } else if (ext === '.css') { text = cssUrls(text); counts.css++; }
-  else if (ext === '.js') { text = text.replace(/(["'`])\/_astro\//g, `$1${base}/_astro/`); counts.js++; }
+  else if (ext === '.js') { text = text.replace(/(["'`])\/(_astro|_m)\//g, `$1${base}/$2/`); counts.js++; }
   else { text = absolute(text); counts.other++; }
   if (text !== before) fs.writeFileSync(file, text);
 }
