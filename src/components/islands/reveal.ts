@@ -2,14 +2,16 @@
    Cards in a grid follow each other by one stagger step. Long reading text (article and case study bodies) is left alone.
    A block is hidden only while it is still below the screen and about to scroll in, never in the first view, so the
    first view and the LCP image are never touched and the page is not restyled as a whole when it loads.
-   Does nothing under reduced motion. Styles: site.css ([data-reveal-state]). */
+   Does nothing under reduced motion. Styles: site.css ([data-reveal-state]).
+   A block that islands/motion.ts animates itself (a section head, the career, the names on the "worked with" band) is
+   marked data-motion-owned before this runs and is left alone here, so no element is hidden by both. */
 const BLOCKS = '[data-reveal], .page-section-head, .page-section-head ~ *, .resume-block, .project-related, .project-pager, .project-cta';
 const GROUPS = '[data-reveal-group], ul:has(> li > .project-card), ul:has(> li > .video-card)';
 
 if (matchMedia('(prefers-reduced-motion: no-preference)').matches && 'IntersectionObserver' in window) {
   const grouped = new Set<Element>();
   document.querySelectorAll(GROUPS).forEach(group => [...group.children].forEach(child => grouped.add(child)));
-  const all = [...new Set<Element>([...document.querySelectorAll(BLOCKS), ...grouped])] as HTMLElement[];
+  const all = [...new Set<Element>([...document.querySelectorAll(BLOCKS), ...grouped])].filter(el => !el.hasAttribute('data-motion-owned')) as HTMLElement[];
   // A block inside another revealing block moves with it.
   const items = all.filter(el => !all.some(other => other !== el && other.contains(el)));
   const settle = (el: HTMLElement) => { delete el.dataset.revealState; el.style.removeProperty('--i'); };

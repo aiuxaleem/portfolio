@@ -7,9 +7,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "predev": "node scripts/content/youtube-posters.mjs",
+    "predev": "node scripts/content/youtube-posters.mjs && node scripts/perf/bundle-motion.mjs",
     "dev": "astro dev",
-    "prebuild": "node scripts/content/youtube-posters.mjs",
+    "prebuild": "node scripts/content/youtube-posters.mjs && node scripts/perf/bundle-motion.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
@@ -22,7 +22,8 @@
     "visual": "node scripts/visual/compare.mjs",
     "perf": "npm run build && node scripts/perf/weights.mjs --label=latest && node scripts/perf/lighthouse.mjs --label=latest",
     "fonts": "node scripts/perf/fetch-fonts.mjs && node scripts/perf/subset-fonts.mjs",
-    "unused": "node scripts/perf/unused.mjs"
+    "unused": "node scripts/perf/unused.mjs",
+    "motion:bundle": "node scripts/perf/bundle-motion.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",
@@ -37,6 +38,7 @@
     "@neondatabase/serverless": "^1.2.0",
     "@resvg/resvg-js": "^2.6.2",
     "astro": "^5.0.0",
+    "gsap": "^3.15.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "satori": "^0.35.0",

@@ -35,7 +35,8 @@ if (target === 'dist') {
     const html = fs.readFileSync(path.join(dist, String(file)), 'utf8');
     const local = re => [...html.matchAll(re)].map(m => m[1]).filter(u => u.startsWith('/')).map(u => path.join(dist, u.split('?')[0])).filter(f => fs.existsSync(f));
     const inlineJs = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)].reduce((n, m) => n + zlib.gzipSync(m[1]).length, 0);
-    const js = local(/<script[^>]+src="([^"]+)"/g).reduce((n, f) => n + gz(f), 0) + inlineJs;
+    // The GSAP module is fetched by an import() in the head after the load event (base-layout.astro): it is page JavaScript all the same.
+    const js = local(/<script[^>]+src="([^"]+)"/g).reduce((n, f) => n + gz(f), 0) + local(/import\("([^"]+)"\)/g).reduce((n, f) => n + gz(f), 0) + inlineJs;
     const css = local(/<link[^>]+rel="stylesheet"[^>]+href="([^"]+)"/g).reduce((n, f) => n + gz(f), 0) + [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].reduce((n, m) => n + zlib.gzipSync(m[1]).length, 0);
     console.log(`  ${file}: JS ${(js / 1024).toFixed(1)} KB, CSS ${(css / 1024).toFixed(1)} KB (gzip)`);
     if (js > 100 * 1024) fail('budget-js', String(file), '-', `${(js / 1024).toFixed(1)} KB gzipped, limit 100`);

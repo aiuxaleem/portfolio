@@ -5,6 +5,8 @@ import '../styles/global.css';
 import { site } from '../content/site';
 import fonts from '../styles/fonts.json';
 import { ogImageFor, abs, languageAlternates } from '../lib/seo';
+/* The motion script's address: islands/motion.ts bundled with GSAP into public/_m/ by scripts/perf/bundle-motion.mjs (before every build and dev start), named in the head below. */
+import motion from '../components/islands/motion.json';
 
 
 interface Props {
@@ -82,9 +84,15 @@ const field = !Astro.url.pathname.startsWith('/admin');
         if (t !== 'light' && t !== 'dark') { try { t = localStorage.getItem('aiuxaleem-theme'); } catch (e) {} }
         if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         d.setAttribute('data-theme', t);
+        /* Motion is on when the visitor allows it and JavaScript runs: the GSAP module is fetched after the load event (below), and reveal.ts leaves the blocks it owns. */
+        if (matchMedia('(prefers-reduced-motion: no-preference)').matches) d.setAttribute('data-motion', 'on');
       })();
     </script>
     {preload.map(href => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
+    <!-- The GSAP module (islands/motion.ts bundled by scripts/perf/bundle-motion.mjs) is fetched after the load event, on an idle
+         moment, and only when motion is allowed and this is not the admin: it is never on the path to the first paint or the
+         largest paint (Lighthouse counts every early high-priority request against them). -->
+    <script is:inline set:html={`addEventListener('load',function(){if(!document.documentElement.hasAttribute('data-motion')||document.querySelector('.admin-app'))return;(self.requestIdleCallback||function(f){setTimeout(f,300)})(function(){import(${JSON.stringify(motion.url)})},{timeout:2000})})`}></script>
     {countVisits && <script is:inline set:html={countScript} />}
   </head>
   <body>

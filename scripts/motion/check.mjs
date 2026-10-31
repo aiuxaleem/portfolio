@@ -1,5 +1,5 @@
-// Motion behaviour check (Phase 17): scroll reveals, the hover states added in MO-D2, the Home deck swap, smooth scrolling
-// and the reading progress bar.
+// Motion behaviour check (Phase 17): scroll reveals, the hover states added in MO-D2, the Home deck swap, smooth scrolling,
+// the reading progress bar and, since 1 November 2026, the GSAP first view and scroll reveals of islands/motion.ts.
 // node scripts/motion/check.mjs [--dir=dist]   -> reports/motion/check.json, exit code 1 on any failure
 // Run against a production build. Changes nothing.
 import fs from 'node:fs';
@@ -57,6 +57,40 @@ for (const route of ['/case-studies/colaberry-design-system', '/blog/component-s
   const r = { top: await width('no-preference', 0), end: await width('no-preference', 1), reducedEnd: await width('reduce', 1) }; out[`progress ${route}`] = r;
   if (r.top === -1) fail(`${route}: no progress bar`); else if (r.top === -2) console.log('  note: this browser has no scroll timelines; progress bar not measured'); else if (r.top > 3 || r.end < 99 || r.reducedEnd !== 0) fail(`${route}: progress bar is ${r.top}% at the top, ${r.end}% at the end, ${r.reducedEnd}% under reduced motion`); }
 console.log('progress bar: 3 pages');
+
+// 6. GSAP (islands/motion.ts): fetched after the load event and only with motion allowed, it owns the section heads and the
+//    other blocks in its header, nothing it touches stays hidden or styled once it has played, the first view is the CSS
+//    intro in every case, and with reduced motion or without JavaScript the module is not even fetched.
+/* Elements with text that cannot be seen; `onScreen` limits it to the first screen (below the fold a block may be hidden
+   while it waits to scroll in, by design). */
+const invisible = onScreen => [...document.querySelectorAll('main *')].filter(e => e.textContent.trim() && !e.closest('[hidden], [aria-hidden="true"], .cory-visually-hidden, details:not([open])') && (!onScreen || (e.getBoundingClientRect().top < innerHeight && e.getBoundingClientRect().bottom > 0)) && (getComputedStyle(e).visibility === 'hidden' || getComputedStyle(e).opacity === '0')).length;
+const probe = () => ({ flag: document.documentElement.dataset.motion, fetched: performance.getEntriesByType('resource').filter(e => e.name.includes('/_m/motion')).length, owned: document.querySelectorAll('[data-motion-owned]').length, lines: document.querySelectorAll('.motion-line').length, cssIntro: document.getAnimations().some(a => a.animationName === 'title-in') || !document.querySelector('.site-hero-title, #hero-title, .hero-split-words > h1') });
+for (const route of ['/', '/ar', '/work', '/about', '/blog/component-spec-files', '/job', '/clients']) {
+  const { ctx, p } = await open(route);
+  const atLoad = await p.evaluate(probe);
+  await p.waitForTimeout(2600);
+  const after = await p.evaluate(`(() => { const invisible = ${invisible}; const r = (${probe})(); return { ...r, hidden: invisible(true) }; })()`);
+  // Scroll through; then everything the script owns must be back as authored.
+  const scrolled = await p.evaluate(`(async () => { const invisible = ${invisible}; for (let y = 0; y <= document.documentElement.scrollHeight; y += Math.round(innerHeight * 0.5)) { scrollTo({ top: y, behavior: 'instant' }); await new Promise(r => setTimeout(r, 120)); } await new Promise(r => setTimeout(r, 2800));
+    const owned = [...document.querySelectorAll('[data-motion-owned]')]; return { owned: owned.length, lines: document.querySelectorAll('.motion-line, .motion-line-mask').length, styled: owned.filter(e => /opacity|visibility|transform|--draw/.test(e.getAttribute('style') || '')).length, drawn: [...document.querySelectorAll('[data-core-link]')].filter(e => e.style.getPropertyValue('--core-draw')).length, hidden: invisible(), label: !!document.querySelector('main h2[aria-label]') }; })()`);
+  out[`gsap ${route}`] = { atLoad, after, scrolled };
+  if (atLoad.flag !== 'on') fail(`${route}: html[data-motion] is "${atLoad.flag}" with motion allowed`);
+  if (!atLoad.cssIntro) fail(`${route}: the CSS first view (title-in) is not running with motion allowed`);
+  if (after.fetched !== 1) fail(`${route}: the GSAP module was fetched ${after.fetched} times (once expected, after load)`);
+  if (!after.owned) fail(`${route}: no block is owned by motion.ts 2.6 s after load`);
+  if (after.hidden) fail(`${route}: ${after.hidden} elements with text invisible in the first view`);
+  if (scrolled.lines || scrolled.styled || scrolled.drawn || scrolled.hidden || scrolled.label) fail(`${route}: after scrolling, ${scrolled.lines} split lines, ${scrolled.styled} owned blocks still styled, ${scrolled.drawn} diagram lines still drawing, ${scrolled.hidden} elements invisible, aria-label left ${scrolled.label}`);
+  await ctx.close();
+}
+for (const [label, o] of [['reduced motion', { motion: 'reduce' }], ['JavaScript off', { js: false }]]) for (const route of ['/', '/ar', '/work']) {
+  const { ctx, p } = await open(route, o); await p.waitForTimeout(1500);
+  const r = await p.evaluate(probe);
+  out[`gsap ${label} ${route}`] = r;
+  if (r.flag || r.fetched || r.owned || r.lines) fail(`${route} with ${label}: data-motion "${r.flag}", module fetched ${r.fetched} times, ${r.owned} owned blocks, ${r.lines} split lines`);
+  if (label === 'JavaScript off' && !r.cssIntro) fail(`${route} without JavaScript: the CSS first view (title-in) is not running`);
+  await ctx.close();
+}
+console.log('gsap: 7 pages with motion, 3 with reduced motion, 3 without JavaScript');
 
 await browser.close(); server.close();
 fs.mkdirSync(path.join(ROOT, 'reports/motion'), { recursive: true }); fs.writeFileSync(path.join(ROOT, 'reports/motion/check.json'), JSON.stringify({ fails, out }, null, 1));
