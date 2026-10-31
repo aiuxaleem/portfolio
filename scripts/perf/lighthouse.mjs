@@ -16,7 +16,8 @@ fs.mkdirSync(outDir, { recursive: true });
 const EDGE = ['C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', 'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe'].find(p => fs.existsSync(p));
 const server = await serve(dir, PORT); const rows = [];
 for (const [name, route] of TEMPLATES.filter(t => !only || only.includes(t[0]))) {
-  const chrome = await chromeLauncher.launch({ chromePath: process.env.CHROME_PATH || EDGE, chromeFlags: ['--headless=new', '--no-first-run'] });
+  /* A fixed port: with a dynamic one the launcher waits for a "DevTools listening" line on stderr that Edge 156 no longer prints in new headless mode (31 Oct 2026). */
+  const chrome = await chromeLauncher.launch({ chromePath: process.env.CHROME_PATH || EDGE, chromeFlags: ['--headless=new', '--no-first-run'], port: Number(process.env.LIGHTHOUSE_PORT) || 9222 });
   try {
     const r = await lighthouse(`http://127.0.0.1:${PORT}${route}`, { port: chrome.port, output: 'json', logLevel: 'error', onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'] });
     const l = r.lhr, a = l.audits, num = k => (a[k] ? a[k].numericValue : null), score = c => Math.round(l.categories[c].score * 100);
