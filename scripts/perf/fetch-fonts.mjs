@@ -1,5 +1,6 @@
 // Self-hosting the web fonts (CLAUDE.md 2.9). Run once, and again only when the font list changes:
 //   node scripts/perf/fetch-fonts.mjs
+// Then subset-fonts.mjs cuts the Arabic files down (npm run fonts runs both; see that script for what it drops and why).
 // It asks Google Fonts for the same stylesheet the site used to link, downloads every woff2 file that stylesheet names
 // into public/fonts/, and writes src/styles/fonts.css with the same @font-face rules pointing at the local files.
 // The files are the ones visitors were already getting (already split into subsets by unicode-range), so text renders

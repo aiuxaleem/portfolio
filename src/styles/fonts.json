@@ -4,24 +4,24 @@
       "/fonts/plus-jakarta-sans-latin-variable.a389d97d.woff2"
     ],
     "arabic": [
-      "/fonts/ibm-plex-sans-arabic-arabic-400.a9cefdca.woff2",
-      "/fonts/noto-kufi-arabic-arabic-variable.a51630f1.woff2"
+      "/fonts/ibm-plex-sans-arabic-arabic-400.775594b5.woff2",
+      "/fonts/noto-kufi-arabic-arabic-variable.b1ebece0.woff2"
     ]
   },
   "files": [
-    "ibm-plex-sans-arabic-arabic-400.a9cefdca.woff2",
+    "ibm-plex-sans-arabic-arabic-400.775594b5.woff2",
     "ibm-plex-sans-arabic-cyrillic-ext-400.ef407fd8.woff2",
     "ibm-plex-sans-arabic-latin-ext-400.9e102773.woff2",
     "ibm-plex-sans-arabic-latin-400.653bfd52.woff2",
-    "ibm-plex-sans-arabic-arabic-500.31cb9792.woff2",
+    "ibm-plex-sans-arabic-arabic-500.3a7fd9e0.woff2",
     "ibm-plex-sans-arabic-cyrillic-ext-500.5029ac7b.woff2",
     "ibm-plex-sans-arabic-latin-ext-500.946dca41.woff2",
     "ibm-plex-sans-arabic-latin-500.c55b4b1b.woff2",
-    "ibm-plex-sans-arabic-arabic-600.9e5c019d.woff2",
+    "ibm-plex-sans-arabic-arabic-600.843999f3.woff2",
     "ibm-plex-sans-arabic-cyrillic-ext-600.4bbd2f37.woff2",
     "ibm-plex-sans-arabic-latin-ext-600.9959205d.woff2",
     "ibm-plex-sans-arabic-latin-600.ee160f53.woff2",
-    "ibm-plex-sans-arabic-arabic-700.27765dba.woff2",
+    "ibm-plex-sans-arabic-arabic-700.d1374cb4.woff2",
     "ibm-plex-sans-arabic-cyrillic-ext-700.d867d2f2.woff2",
     "ibm-plex-sans-arabic-latin-ext-700.6d13d257.woff2",
     "ibm-plex-sans-arabic-latin-700.9e002e65.woff2",
@@ -31,7 +31,7 @@
     "jetbrains-mono-vietnamese-variable.326a88b4.woff2",
     "jetbrains-mono-latin-ext-variable.06ad3600.woff2",
     "jetbrains-mono-latin-variable.4f27206c.woff2",
-    "noto-kufi-arabic-arabic-variable.a51630f1.woff2",
+    "noto-kufi-arabic-arabic-variable.b1ebece0.woff2",
     "noto-kufi-arabic-math-variable.9d642afd.woff2",
     "noto-kufi-arabic-symbols-variable.db76b6db.woff2",
     "noto-kufi-arabic-latin-ext-variable.cd1004b4.woff2",
