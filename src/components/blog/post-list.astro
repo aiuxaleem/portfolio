@@ -3,10 +3,12 @@
 import PageLayout from '../../layouts/page-layout.astro';
 import PostCard from '../cards/post-card.astro';
 import Button from '../ui/button.astro';
-import { type Post, tagSlug } from '../../lib/posts';
+import { type Post, tagSlug, listedPosts, postUrl } from '../../lib/posts';
 
 interface Props { posts: Post[]; /** Every published topic with its post count. */ tags: { tag: string; n: number }[]; tag?: string; page?: number; pages?: number; total: number }
 const { posts, tags, tag, page = 1, pages = 1, total } = Astro.props;
+/* The newest post on the site: the first view's main action on the blog's own pages (a topic's page keeps its back link). */
+const newest = tag ? undefined : (await listedPosts())[0];
 const href = (n: number) => (n === 1 ? '/blog' : `/blog/page/${n}`);
 const heading = tag ? `Posts tagged ${tag}` : 'Blog';
 /* Which posts this page holds, for the count line (every page but the last is full). */
@@ -23,6 +25,12 @@ const description = tag
       : <p class="cory-overline" style="margin: 0;">My resources · Blogs</p>}
     <h1 id="blog-title" style="margin: 0; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); overflow-wrap: anywhere;">{heading}</h1>
     {!tag && <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">Guides and articles on design systems and designing AI products.</p>}
+    {!tag && newest && (
+      <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+        <Button variant="primary" size="lg" href={postUrl(newest)}>Read the latest post</Button>
+        <Button variant="secondary" size="lg" href="/posts">Posts on LinkedIn</Button>
+      </div>
+    )}
     {tags.length > 0 && tags.length <= 6 && (
       <nav class="post-tags" aria-label="Topics">
         <span class="project-filter-label">Topic</span>

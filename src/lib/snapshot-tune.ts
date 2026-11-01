@@ -29,7 +29,7 @@ const TITLES: [string, string][] = [
 
 const RESUME_LABELS: [string, string][] = [['Download resume', 'View resume'], ['Resume (PDF)', 'View resume'], ['تحميل السيرة الذاتية', 'عرض السيرة الذاتية'], ['السيرة الذاتية (PDF)', 'عرض السيرة الذاتية']];
 
-export function tuneSnapshot(html: string, lazy: string[] = [], newTab = '(opens in a new tab)'): string {
+export function tuneSnapshot(html: string, lazy: string[] = [], newTab = '(opens in a new tab)', subject = 'subject'): string {
   let out = html.split(LEGACY_EMAIL).join(site.email);
   for (const [from, to] of TITLES) out = out.split(from).join(to);
   /* The resume link: the legacy pages linked a direct download. A link to another site cannot be a download, so it opens in a new tab. */
@@ -45,6 +45,15 @@ export function tuneSnapshot(html: string, lazy: string[] = [], newTab = '(opens
   return out
     .replace(/https:\/\/cdn\.simpleicons\.org\/([\w-]+)\/([0-9A-Fa-f]{6})/g, (_, slug, colour) => `/assets/tools/${slug}-${colour.toLowerCase()}.svg`)
     /* A link that opens a new tab says so, in text only screen readers get. Links that already say it are left alone. */
-    .replace(/<a\b[^>]*target="_blank"[^>]*>[\s\S]*?<\/a>/g, link => (/new tab|تبويب/.test(link) ? link : link.replace(/<\/a>$/, `<span class="cory-visually-hidden"> ${newTab}</span></a>`)))
+    .replace(/<a\b[^>]*target="_blank"[^>]*>[\s\S]*?<\/a>/g, link => {
+      if (/new tab|تبويب/.test(link)) return link;
+      /* A link named by an aria-label is read by that label alone, so the phrase goes into the label (the Home reel card). */
+      const label = link.match(/^<a\b[^>]*?\baria-label="([^"]*)"/);
+      if (label) return link.replace(`aria-label="${label[1]}"`, `aria-label="${label[1]} ${newTab}"`);
+      return link.replace(/<\/a>$/, `<span class="cory-visually-hidden"> ${newTab}</span></a>`);
+    })
+    /* The address link that carries a mail subject says so in hidden text, so its name differs from the footer's plain
+       address link (WCAG 2.4.4: the same name for two destinations). */
+    .replace(/<a\b[^>]*data-email[^>]*href="mailto:[^"?]*\?subject=([^"&]+)"[^>]*>[\s\S]*?<\/a>/g, (link, enc) => (link.includes('data-subject-said') ? link : link.replace(/<\/a>$/, `<span class="cory-visually-hidden" data-subject-said=""> (${subject}: ${decodeURIComponent(enc).replace(/&/g, '&amp;').replace(/</g, '&lt;')})</span></a>`)))
     .replace(/<img\b[^>]*>/g, tag => (lazy.some(src => tag.includes(`src="${src}"`)) && !/\bloading=/.test(tag) ? tag.replace('<img', '<img loading="lazy" decoding="async"') : tag));
 }

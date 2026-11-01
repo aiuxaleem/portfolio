@@ -35,7 +35,7 @@ const attrs = href ? { href } : { type: 'button' };
   .ui-button-on-ink-solid { background: var(--on-ink-strong); color: var(--navy-800); box-shadow: var(--shadow-md); }
   .ui-button:not(:disabled):not([aria-disabled="true"]):active { transform: scale(var(--press-scale)); }
   @media (hover: hover) {
-    .ui-button:not(:disabled):not([aria-disabled="true"]):hover { transform: translateY(-1px); }
+    .ui-button:not(:disabled):not([aria-disabled="true"]):hover { transform: translateY(var(--lift-hover-sm)); }
     /* No brightness filter on hover: it took the white label to about 4.0:1 at the cyan end (docs/AUDIT_FINDINGS.md L-05). */
     .ui-button-primary:not(:disabled):hover { color: var(--text-on-brand); box-shadow: var(--shadow-brand-hover); }
     .ui-button-ink:not(:disabled):hover { color: var(--surface-card); background: var(--action-ink-hover); box-shadow: var(--shadow-md); }

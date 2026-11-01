@@ -13,7 +13,7 @@
 /* M-16, M-17: buttons from the legacy markup get their hover and press states in CSS, only on devices that hover. */
 [data-ds-button]:active { transform: scale(var(--press-scale)) !important; }
 @media (hover: hover) {
-  [data-ds-button]:hover { transform: translateY(-1px) !important; }
+  [data-ds-button]:hover { transform: translateY(var(--lift-hover-sm)) !important; }
   [data-ds-button="primary"]:hover { box-shadow: var(--shadow-brand-hover) !important; } /* no brightness filter: L-05 */
   [data-ds-button="ink"]:hover { background: var(--action-ink-hover) !important; box-shadow: var(--shadow-md) !important; }
   [data-ds-button="secondary"]:hover { background: var(--action-secondary-hover) !important; box-shadow: var(--shadow-sm) !important; }
@@ -37,7 +37,7 @@
 :is(div:has(+ [data-hero-stack]), div:has(+ [data-deck-static])) button:not(:disabled):active { transform: scale(var(--press-scale)) !important; }
 details > summary { border-radius: inherit; transition: background var(--duration-base) var(--ease-out); }
 @media (hover: hover) {
-  :is(div:has(+ [data-hero-stack]), div:has(+ [data-deck-static])) button:not(:disabled):hover { background: var(--action-secondary-hover) !important; transform: translateY(-1px) !important; }
+  :is(div:has(+ [data-hero-stack]), div:has(+ [data-deck-static])) button:not(:disabled):hover { background: var(--action-secondary-hover) !important; transform: translateY(var(--lift-hover-sm)) !important; }
   details > summary:hover { background: var(--action-ghost-hover); }
 }
 details > summary:focus-visible { background: var(--action-ghost-hover); } /* the pointer's tint, for the keyboard too */

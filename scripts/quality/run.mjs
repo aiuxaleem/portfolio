@@ -2,6 +2,7 @@
 // npm run quality:quick      two viewports per theme, for use while working
 // npm run quality:legacy     run the same checks against the untouched export in legacy/
 // Exit code 1 if anything fails. No check is skipped or downgraded.
+// Since 1 November 2026 the full run ends with the measured sections of verify.mjs (contrast, zoom and text spacing, first view).
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
@@ -16,18 +17,19 @@ const target = arg('target', 'dist');
 const quick = !!arg('quick', false);
 const PORT = 4400;
 const failures = [];
+const started = Date.now(), elapsed = since => Math.round((Date.now() - since) / 1000) + ' s';
 const fail = (check, route, view, detail) => failures.push({ check, route, view, detail });
 const run = (cmd, env = {}) => spawnSync(cmd, { cwd: ROOT, shell: true, stdio: 'inherit', env: { ...process.env, ...env } }).status === 0;
 
 // 1. Types, content and build (built site only)
 if (target === 'dist') {
-  console.log('\n[1/4] astro check');
+  console.log('\n[1/5] astro check');
   if (!run('npx astro check')) fail('type-check', '-', '-', 'astro check reported errors');
-  console.log('\n[2/4] build (with /_states)');
+  console.log('\n[2/5] build (with /_states)');
   if (!run('npx astro build', { QUALITY_BUILD: '1' })) { fail('build', '-', '-', 'astro build failed'); report(); }
 
   // 2. Budgets (CLAUDE.md 2.9): gzipped JS <= 100 KB and CSS <= 50 KB per page
-  console.log('\n[3/4] budgets');
+  console.log('\n[3/5] budgets');
   const dist = path.join(ROOT, 'dist');
   const gz = file => zlib.gzipSync(fs.readFileSync(file)).length;
   const htmlFiles = fs.readdirSync(dist, { recursive: true }).filter(f => String(f).endsWith('.html'));
@@ -66,7 +68,7 @@ if (target === 'dist') {
 }
 
 // 3. Browser checks on every route x viewport x theme
-console.log(`\n[4/4] browser checks against ${target}/`);
+console.log(`\n[4/5] browser checks against ${target}/`);
 const server = await serve(target === 'legacy' ? 'legacy' : 'dist', PORT);
 const origin = `http://127.0.0.1:${PORT}`;
 const browser = await launch();
@@ -118,11 +120,27 @@ for (const route of list) for (const theme of quick ? ['light'] : THEMES) {
   } catch (e) { fail('focus-walk', route.name, `1280x720 ${theme}`, String(e.message).slice(0, 160)); }
 }
 await browser.close(); server.close();
+
+// 5. The measured sections of the verification pass (scripts/quality/verify.mjs), part of the gate since 1 November 2026
+//    (the owner: "complete everything"; docs/VERIFICATION_REPORT.md section 5 item 17): the contrast of every text node
+//    in both themes at rest and of links and buttons on hover and on keyboard focus (CLAUDE.md 2.2); 200% and 400% zoom
+//    and the WCAG text-spacing override (2.1); the first view at 1280x720 and 390x844, who, what level and one action
+//    (2.8). Every finding is a failure. Lighthouse stays in `npm run perf`: its numbers swing with the machine
+//    (docs/PERFORMANCE.md), so they are read, not gated. The quick run, for use while working, leaves this step out.
+if (target === 'dist' && !quick) {
+  console.log('\n[5/5] contrast, zoom and text spacing, first view (verify.mjs)');
+  const t5 = Date.now();
+  const ok = run('node scripts/quality/verify.mjs --dir=dist --only=contrast,zoom,fold');
+  const file = path.join(ROOT, 'reports/verify/verify-contrast-zoom-fold.json');
+  if (!ok || !fs.existsSync(file)) fail('verify', '-', '-', 'verify.mjs did not finish; see the output above');
+  else for (const [name, s] of Object.entries(JSON.parse(fs.readFileSync(file, 'utf8')).sections)) for (const f of s.findings || []) fail(`verify-${name}`, String(f).split(' ')[0], '-', String(f));
+  console.log(`  step 5 took ${elapsed(t5)}`);
+}
 report();
 
 function report() {
   const dir = path.join(ROOT, 'reports/quality'); fs.mkdirSync(dir, { recursive: true });
-  const pending = ['contrast scan', 'hover and touch states', 'text-spacing and zoom', 'JavaScript-off and blocked-host runs', 'stress fixtures on /_states', 'typography scale and measure', 'link check', 'Lighthouse budgets', 'lint rules (no raw colours, no physical properties)'];
+  const pending = ['hover and touch states', 'JavaScript-off and blocked-host runs', 'stress fixtures on /_states', 'typography scale and measure', 'link check', 'Lighthouse budgets', 'lint rules (no raw colours, no physical properties)'];
   fs.writeFileSync(path.join(dir, `${target}${quick ? '-quick' : ''}.json`), JSON.stringify({ target, quick, date: new Date().toISOString(), failures, notYetWired: pending }, null, 1));
   const byCheck = {};
   for (const f of failures) (byCheck[f.check] = byCheck[f.check] || []).push(f);
@@ -134,6 +152,7 @@ function report() {
     if (distinct.length > 6) console.log(`  … ${distinct.length - 6} more in reports/quality/`);
   }
   console.log(`\nNot yet wired into this command (planned in docs/IMPLEMENTATION_PLAN.md section 6): ${pending.join('; ')}.`);
+  console.log(`\nThe run took ${elapsed(started)}.`);
   console.log(failures.length ? `\nFAILED: ${failures.length} failure(s) across ${Object.keys(byCheck).length} check(s).` : '\nPASSED: 0 failures in the checks that are wired.');
   process.exit(failures.length ? 1 : 0);
 }

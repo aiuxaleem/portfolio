@@ -403,11 +403,13 @@
   --lift-hover: -3px; /* @kind other */
   --lift-hover-lg: -6px; /* @kind other */
   --press-scale: 0.97; /* @kind other */
+  --lift-hover-sm: -1px; /* @kind other */ /* buttons and chips: the design's 1 px rise */
+  --grow-hover: 1.06; /* @kind other */ /* the video play disc under the pointer */
   --reveal-distance: 24px; /* @kind other */
 }
 
 /* --- Reduced motion: keep state changes, drop movement --- */
 @media (prefers-reduced-motion: reduce) {
-  :root { --duration-enter: 1ms; /* @kind other */ --reveal-distance: 0px; /* @kind other */ --lift-hover: 0px; /* @kind other */ --lift-hover-lg: 0px; /* @kind other */ --press-scale: 1; /* @kind other */ }
+  :root { --duration-enter: 1ms; /* @kind other */ --reveal-distance: 0px; /* @kind other */ --lift-hover: 0px; /* @kind other */ --lift-hover-lg: 0px; /* @kind other */ --press-scale: 1; /* @kind other */ --lift-hover-sm: 0px; /* @kind other */ --grow-hover: 1; /* @kind other */ }
   *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; scroll-behavior: auto !important; }
 }

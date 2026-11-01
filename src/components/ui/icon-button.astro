@@ -10,7 +10,7 @@ const { label, variant = 'secondary', ...rest } = Astro.props;
   .ui-icon-button-ghost { background: transparent; color: var(--text-body); }
   .ui-icon-button-secondary { background: var(--surface-card); color: var(--text-strong); border-color: var(--border-interactive); box-shadow: var(--shadow-xs); }
   @media (hover: hover) {
-    .ui-icon-button:hover { transform: translateY(-1px); }
+    .ui-icon-button:hover { transform: translateY(var(--lift-hover-sm)); }
     .ui-icon-button-ghost:hover { background: var(--action-ghost-hover); color: var(--text-link); }
     .ui-icon-button-secondary:hover { background: var(--action-secondary-hover); }
   }

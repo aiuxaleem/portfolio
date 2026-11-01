@@ -9,6 +9,7 @@ import PageLayout from '../layouts/page-layout.astro';
 import AiToolCard from '../components/cards/ai-tool-card.astro';
 import ProjectFilters from '../components/projects/project-filters.astro';
 import Button from '../components/ui/button.astro';
+import { site } from '../content/site';
 import { listedAiTools, aiCategoryCounts, aiCategoryLabel, aiCostLabel } from '../lib/ai-tools';
 
 const tools = await listedAiTools();
@@ -24,6 +25,10 @@ const stack = await aiToolCards();
       <p class="cory-overline" style="margin: 0px;">Resources · AI Tools</p>
       <h1 id="ai-tools-title" style="margin: 0px; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">AI tools for product designers.</h1>
       <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">The AI tools worth knowing, grouped by what they help you do, from a prompt to screens, interviews to insight, and a sketch to a clip. Each opens on its own site. Prices change, so check before you rely on one.</p>
+      <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+        <Button variant="primary" size="lg" href="#tools">Browse the tools</Button>
+        <Button variant="secondary" size="lg" href={`mailto:${site.email}?subject=${encodeURIComponent('AI tool suggestion')}`}>Suggest a tool</Button>
+      </div>
       <dl class="ai-tools-stats">
         <div><dt>Tools</dt><dd style={stat}>{tools.length}</dd></div>
         <div><dt>Categories</dt><dd style={stat}>{groups.filter(g => g.count > 0).length}</dd></div>
@@ -34,7 +39,7 @@ const stack = await aiToolCards();
     <HeroStack id="tools-stack" label="Where I use AI" noun="category" cards={stack} />
   </section>
 
-  <section class="cory-container" aria-label="Tools" style="display: grid; gap: var(--space-12); padding-block-end: var(--section-y);">
+  <section id="tools" class="cory-container" aria-label="Tools" style="display: grid; gap: var(--space-12); padding-block-end: var(--section-y);">
     {tools.length === 0
       ? <div class="project-empty"><p class="project-empty-title">No tools are listed yet.</p><p class="project-empty-body">Tools appear here as they are added. Until then, the UX Glossary has the wider list of tools and references.</p><div><Button variant="secondary" href="/resources">Open the UX Glossary</Button></div></div>
       : <div data-project-list class="ai-tools-groups">
