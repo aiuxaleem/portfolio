@@ -5,7 +5,7 @@
     ],
     "arabic": [
       "/fonts/ibm-plex-sans-arabic-arabic-400.775594b5.woff2",
-      "/fonts/noto-kufi-arabic-arabic-variable.b1ebece0.woff2"
+      "/fonts/noto-kufi-arabic-arabic-variable.95cdb755.woff2"
     ]
   },
   "files": [
@@ -31,7 +31,7 @@
     "jetbrains-mono-vietnamese-variable.326a88b4.woff2",
     "jetbrains-mono-latin-ext-variable.06ad3600.woff2",
     "jetbrains-mono-latin-variable.4f27206c.woff2",
-    "noto-kufi-arabic-arabic-variable.b1ebece0.woff2",
+    "noto-kufi-arabic-arabic-variable.95cdb755.woff2",
     "noto-kufi-arabic-math-variable.9d642afd.woff2",
     "noto-kufi-arabic-symbols-variable.db76b6db.woff2",
     "noto-kufi-arabic-latin-ext-variable.cd1004b4.woff2",

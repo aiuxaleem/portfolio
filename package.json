@@ -21,7 +21,7 @@
     "baseline:verify": "node scripts/visual/verify-baseline.mjs",
     "visual": "node scripts/visual/compare.mjs",
     "perf": "npm run build && node scripts/perf/weights.mjs --label=latest && node scripts/perf/lighthouse.mjs --label=latest",
-    "fonts": "node scripts/perf/fetch-fonts.mjs && node scripts/perf/subset-fonts.mjs",
+    "fonts": "node scripts/perf/fetch-fonts.mjs && node scripts/perf/subset-fonts.mjs --narrow-weights",
     "unused": "node scripts/perf/unused.mjs",
     "motion:bundle": "node scripts/perf/bundle-motion.mjs"
   },
