@@ -6,7 +6,7 @@ import BaseLayout from './base-layout.astro';
 import SiteHeader from '../components/layout/site-header.astro';
 import SiteFooter from '../components/layout/site-footer.astro';
 import { rewriteLinks } from '../lib/routes';
-import { tuneSnapshot } from '../lib/snapshot-tune';
+import { tuneSnapshot, bentoTools } from '../lib/snapshot-tune';
 import { site, parity } from '../content/site';
 import { chrome } from '../i18n/chrome';
 import { pipelineImages } from '../lib/snapshot-images';
@@ -21,7 +21,7 @@ const main = parity ? s.main : s.main.split(LEGACY_AVAILABILITY).join(site.avail
 const tuned = parity ? rewriteLinks(main) : tuneSnapshot(rewriteLinks(main), Astro.props.lazyImages, (s.lang === 'ar' ? chrome.ar : chrome.en).newTab, (s.lang === 'ar' ? chrome.ar : chrome.en).subject);
 const rewritten = Astro.props.rewrite ? Astro.props.rewrite(tuned) : tuned;
 /* Case pictures and the portrait come through the build pipeline where src/assets/ holds the file (src/lib/snapshot-images.ts). */
-const html = parity ? rewritten : await pipelineImages(rewritten);
+const html = parity ? rewritten : bentoTools(await pipelineImages(rewritten));
 const at = Astro.props.slotBefore ? html.indexOf(Astro.props.slotBefore) : -1;
 if (Astro.props.slotBefore && at < 0) throw new Error(`snapshot-page: "${Astro.props.slotBefore}" was not found in the ${s.page} snapshot`);
 ---

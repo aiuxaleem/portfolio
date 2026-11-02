@@ -57,3 +57,20 @@ export function tuneSnapshot(html: string, lazy: string[] = [], newTab = '(opens
     .replace(/<a\b[^>]*data-email[^>]*href="mailto:[^"?]*\?subject=([^"&]+)"[^>]*>[\s\S]*?<\/a>/g, (link, enc) => (link.includes('data-subject-said') ? link : link.replace(/<\/a>$/, `<span class="cory-visually-hidden" data-subject-said=""> (${subject}: ${decodeURIComponent(enc).replace(/&/g, '&amp;').replace(/</g, '&lt;')})</span></a>`)))
     .replace(/<img\b[^>]*>/g, tag => (lazy.some(src => tag.includes(`src="${src}"`)) && !/\bloading=/.test(tag) ? tag.replace('<img', '<img loading="lazy" decoding="async"') : tag));
 }
+
+/* The Skills section tools tile shows every chip (owner instruction, 2 November 2026, L-37): the two groups the owner named
+   become the cells of a small bento inside the tile (.home-tools, .home-tools-group in components.css). Applied to the
+   Home section (skills.astro) and to the Arabic Home snapshot; a page without a skills section is returned as it is. */
+export function bentoTools(src: string): string {
+  const sec = src.indexOf('id="skills'); if (sec < 0) return src;
+  const at = src.indexOf('<h4', sec); if (at < 0) return src;
+  const liStart = src.lastIndexOf('<li', src.lastIndexOf('<h3', at)); if (liStart < 0) return src;
+  let depth = 0, liEnd = -1;
+  const re = /<li\b|<\/li>/g; re.lastIndex = liStart;
+  for (let m; (m = re.exec(src));) { depth += m[0] === '</li>' ? -1 : 1; if (depth === 0) { liEnd = m.index; break; } }
+  if (liEnd < 0) return src;
+  const tile = src.slice(liStart, liEnd)
+    .replace('<div style="display: grid; gap: var(--space-6);">', '<div class="home-tools">')
+    .replace(/<div style="display: grid; gap: var\(--space-3\);">/g, '<div class="home-tools-group">');
+  return src.slice(0, liStart) + tile + src.slice(liEnd);
+}
