@@ -106,6 +106,9 @@ html[data-theme-switching] *, html[data-theme-switching] *::before, html[data-th
 @container (min-width: 520px) { [data-cq-grid] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
 @container (min-width: 860px) { [data-cq-grid="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; } }
 @container (min-width: 720px) { [data-cq-3] { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; } }
+/* Three columns in a 720 to 779px container (a tablet of about 768px) leave an AI tool's name 123 to 142px beside its letter tile, and "NotebookLM"
+   needs 138px at the card title size: in that band only, the name takes the next size of the scale and stays whole (L-47, 3 November 2026). */
+@container (min-width: 720px) and (max-width: 779px) { [data-cq-3] .ai-tool .project-card-title { font-size: var(--text-h4); } }
 @container (min-width: 760px) { [data-case-grid] { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) !important; } }
 @container (max-width: 359px) { [data-cq-pad] { padding: var(--space-4) !important; } }
 

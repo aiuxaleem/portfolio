@@ -13,6 +13,8 @@
    12. A required field left empty says "This is needed." when it loses focus, and stops saying it once it is filled;
        the server's check stays the source of truth.
    13. A thumbnail on the Images page that cannot be loaded says so.
+   14. From 1024px the side panel's list of sections scrolls on its own; while more sections sit below its edge, the foot
+       draws a fade over the edge (admin.css), so the cut reads as a scroll and not as the end of the list.
    Every part is selector-guarded, so the file is a no-op on a page that has none of it (the sign-in page has 6 and 7 only). */
 const button = document.querySelector<HTMLButtonElement>('[data-admin-menu]'), panel = document.querySelector<HTMLElement>('[data-admin-panel]');
 if (button && panel) {
@@ -157,6 +159,13 @@ if (errorTemplate) {
 
 /* 13. A thumbnail that cannot be loaded leaves words, not a blank box. */
 document.querySelectorAll<HTMLImageElement>('.admin-thumb img').forEach(img => img.addEventListener('error', () => { const box = img.parentElement; if (!box) return; img.remove(); box.dataset.failed = ''; box.textContent = 'Preview not available'; }));
+
+/* 14. The section list's scroll cue: the foot carries data-more-below while the list can scroll further down. */
+const sectionList = document.querySelector<HTMLElement>('.admin-nav'), sideFoot = document.querySelector<HTMLElement>('.admin-side-foot');
+if (sectionList && sideFoot) {
+  const paint = () => sideFoot.toggleAttribute('data-more-below', sectionList.scrollHeight - sectionList.clientHeight - sectionList.scrollTop > 2);
+  sectionList.addEventListener('scroll', paint, { passive: true }); window.addEventListener('resize', paint); paint();
+}
 
 /* 7. Show password. */
 document.querySelectorAll<HTMLInputElement>('[data-show-password]').forEach(box => {

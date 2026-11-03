@@ -25,6 +25,15 @@ export function pageChecks() {
     // Text inside a deliberate horizontal scroller (overflow-x: auto or scroll) is reachable, so it is not clipped.
     if (!why) for (let p = el; p && p !== document.body; p = p.parentElement) { const s = getComputedStyle(p), pr = p.getBoundingClientRect(); if (/(auto|scroll)/.test(s.overflowX)) break; if (/(hidden|clip)/.test(s.overflowX) && (r.right > pr.right + 1.5 || r.left < pr.left - 1.5)) { why = 'cut by an ancestor'; break; } }
     if (why) fails.push({ check: 'text-clipped', detail: `"${node.nodeValue.trim().slice(0, 40)}" ${why} (x ${Math.round(r.left)} to ${Math.round(r.right)}) in ${where(el)}` });
+    // 2.3 A short word is never broken across lines: a label, a heading or a table cell squeezed to a letter a line (found on the
+    //     live sign-in page's "Show password" and the dashboard's A/B table on a phone, 3 November 2026, L-40 and L-41). Whole words of
+    //     2 to 12 letters or digits only (a token between spaces): a longer string, an address or a path may break anywhere by design, and hyphenated text is left alone.
+    if (range.getClientRects().length > 1 && getComputedStyle(el).hyphens !== 'auto') {
+      /* A token is what sits between spaces; an address or a path is one long token and is left out by its length. */
+      const text = node.nodeValue, re = /(?<=^|\s)([\p{L}\p{N}]{2,12})[.,;:!?)]*(?=\s|$)/gu; let m, broken = null;
+      while ((m = re.exec(text))) { const wr = document.createRange(); wr.setStart(node, m.index); wr.setEnd(node, m.index + m[1].length); const rects = [...wr.getClientRects()].filter(x => x.width > 0); if (rects.length > 1 && Math.abs(rects[0].top - rects[rects.length - 1].top) > 2) { broken = m[1]; break; } }
+      if (broken) fails.push({ check: 'word-broken', detail: `the word "${broken}" is broken across lines in "${text.trim().slice(0, 40)}" in ${where(el)}` });
+    }
   }
 
   // 2.4 Targets at least 44x44, and fully inside the viewport horizontally

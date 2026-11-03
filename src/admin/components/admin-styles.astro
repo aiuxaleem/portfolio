@@ -1,0 +1,9 @@
+---
+/* The admin stylesheet, brought in through a component so that it is bundled AFTER the site's global stylesheet.
+   A bare `import '../../styles/admin.css'` is hoisted above every other import by the Astro compiler, and the build
+   orders a page's stylesheets by import position, so on the live site admin.css came first and lost every tie to
+   profile.css (the sign-in page's Show password box took the text field's full-width border, L-40). A component
+   import keeps its place in the frontmatter: every admin page imports this after its layout, so the admin rules sit
+   last, as they do in development. The component draws nothing. */
+import '../../styles/admin.css';
+---

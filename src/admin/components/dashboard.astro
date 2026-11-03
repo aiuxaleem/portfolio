@@ -24,7 +24,7 @@ import BarList from './bar-list.astro';
 import Columns from './columns.astro';
 import type { Dashboard } from './dashboard-data';
 import type { AdminIcon as IconName } from './admin-icons';
-import '../../styles/admin.css';
+import AdminStyles from './admin-styles.astro'; /* last, so admin.css is bundled after global.css (L-40) */
 
 interface Props { data?: Dashboard; error?: string; range: number; ranges: readonly number[]; /** Where the range links point. */ base?: string; plain?: boolean; uid?: string }
 const { data, error, range, ranges, base = '/admin', plain = false, uid = 'dash' } = Astro.props;
@@ -127,7 +127,7 @@ const weekdays = data ? data.weekdays.map((v, i) => ({ label: DAYS[i], value: v,
 const showHours = !!data && data.patternDays >= 7, showWeekdays = !!data && data.patternDays >= 28;
 const devices = data ? data.devices.map(d => ({ label: deviceName[d.device] || d.device, value: d.visits })) : [];
 ---
-<Block class="dash" {...labelled('numbers-title')}>
+<AdminStyles /><Block class="dash" {...labelled('numbers-title')}>
   <div class="admin-section-head">
     <div class="admin-head-text">
       <h2 id={`${uid}-numbers-title`} class="dash-h2"><AdminIcon name="numbers" />Visitors</h2>
@@ -292,8 +292,8 @@ const devices = data ? data.devices.map(d => ({ label: deviceName[d.device] || d
           <li class="span-4">
             <div class="admin-card" data-dash-ab>
               <h3 class="admin-card-title"><AdminIcon name="ab-test" />Version 1 and version 2</h3>
-              <p class="form-note">The A/B test: new visitors who open Home or Services on the main site are split evenly between the two versions. Version 2 is the two audience websites, one for hiring teams and one for clients, reached through two doors on Home.</p>
-              <div class="post-table dash-table" tabindex="0" role={plain ? 'group' : 'region'} aria-label="Version 1 and version 2, as a table"><table>
+              <p class="form-note">The A/B test ran on 24 and 25 October 2026: new visitors who opened Home or Services on the main site were split evenly between the two versions. Version 2 was the two audience websites, one for hiring teams and one for clients, reached through two doors on Home. It ended when the bar of websites went up (every visitor chooses a website now); the visits counted while it ran stay readable here.</p>
+              <div class="post-table dash-table dash-ab" tabindex="0" role={plain ? 'group' : 'region'} aria-label="Version 1 and version 2, as a table"><table>
                 <caption class="cory-visually-hidden">Visits in each version of the site and how many reached Contact</caption>
                 <thead><tr><th scope="col">Version</th><th scope="col" class="dash-num">Visits</th><th scope="col" class="dash-num">Reached Contact</th><th scope="col" class="dash-num">Share</th><th scope="col" class="dash-num">Opened the website for hiring teams</th><th scope="col" class="dash-num">Opened the website for clients</th></tr></thead>
                 <tbody>
@@ -301,7 +301,7 @@ const devices = data ? data.devices.map(d => ({ label: deviceName[d.device] || d
                   <tr><th scope="row">Version 2</th><td class="dash-num">{n(data.ab.v2.visits)}</td><td class="dash-num">{n(data.ab.v2.contact)}</td><td class="dash-num">{data.ab.v2.visits >= FLOOR ? `${Math.round((100 * data.ab.v2.contact) / data.ab.v2.visits)}%` : '—'}</td><td class="dash-num">{n(data.ab.v2.hiring)}</td><td class="dash-num">{n(data.ab.v2.clients ?? 0)}</td></tr>
                 </tbody>
               </table></div>
-              <p class="form-note">A share is shown once a version has {FLOOR} visits. Read the result only when both versions have well over {FLOOR}: with a few visits a difference is chance. The full method is in docs/AB_TEST.md.</p>
+              <p class="form-note">A share is shown once a version has {FLOOR} visits. Read the result only when both versions have well over {FLOOR}: with a few visits a difference is chance. The method is written up in the repository (docs/AB_TEST.md).</p>
             </div>
           </li>
         )}

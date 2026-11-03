@@ -14,6 +14,8 @@
 .dash-table table { min-inline-size: 0; table-layout: auto; }
 /* A day or week in the series table keeps to one line; its part ("today so far") sits under it. */
 .dash-table .dash-day { white-space: nowrap; overflow-wrap: normal; }
+/* A column name and the "6 published" count keep to one line on a phone; the region scrolls sideways (L-46). */
+.dash-table thead th, .dash-pub-count { white-space: nowrap; overflow-wrap: normal; }
 .dash-path { display: block; font-size: var(--text-caption); font-weight: var(--weight-regular); color: var(--text-muted); overflow-wrap: anywhere; }
 .dash-part { display: block; font-size: var(--text-caption); font-weight: var(--weight-regular); color: var(--text-muted); white-space: nowrap; }
 /* What was published on a day, one name a line; on a phone the count stands in, the list above the table naming them. */
@@ -25,6 +27,8 @@
 @media (max-width: 639px) { .dash .dash-table th, .dash .dash-table td { padding-inline: var(--space-2); } }
 .dash-table th[scope="row"] { font-weight: var(--weight-regular); background: transparent; color: var(--text-body); overflow-wrap: anywhere; }
 .dash-num { text-align: end !important; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* The A/B table has six columns: on a phone its row headers kept breaking a letter a line (L-41). They stay on one line; the region scrolls sideways, as every table region does. */
+.dash-ab th { white-space: nowrap; overflow-wrap: normal; }
 
 /* Bars: one series in the link blue, thin, rounded at the data end, a 2px gap between neighbours, on a card surface. */
 .dash-chart { display: grid; gap: var(--space-2); }
@@ -76,19 +80,25 @@
 .admin-body { font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--leading-relaxed); }
 .admin-check { display: flex; align-items: center; gap: var(--space-3); min-block-size: var(--tap-target); font-size: var(--text-body-md); color: var(--text-strong); }
 /* The box that is drawn is 20px; the control itself is 44px, so it is easy to tap. */
-.admin-check input { appearance: none; position: relative; display: grid; place-content: center; inline-size: var(--tap-target); block-size: var(--tap-target); margin: 0; margin-inline-start: calc(-1 * var(--space-3)); flex-shrink: 0; border-radius: var(--radius-md); background: transparent; cursor: pointer; }
-.admin-check input::before { content: ""; inline-size: 20px; block-size: 20px; border-radius: var(--radius-xs); border: 1.5px solid var(--border-interactive); background: var(--surface-card); }
-.admin-check input:checked::before { background: var(--action-primary); border-color: var(--action-primary); }
-.admin-check input:checked::after { content: ""; position: absolute; inset-block-start: 50%; inset-inline-start: 50%; inline-size: 6px; block-size: 11px; border: solid var(--text-on-brand); border-width: 0 2px 2px 0; transform: translate(-50%, -60%) rotate(45deg); }
-.admin-check input:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: -4px; }
+label.admin-check input { appearance: none; position: relative; display: grid; place-content: center; inline-size: var(--tap-target); block-size: var(--tap-target); margin: 0; margin-inline-start: calc(-1 * var(--space-3)); flex-shrink: 0; border-radius: var(--radius-md); background: transparent; cursor: pointer; }
+label.admin-check input::before { content: ""; inline-size: 20px; block-size: 20px; border-radius: var(--radius-xs); border: 1.5px solid var(--border-interactive); background: var(--surface-card); }
+label.admin-check input:checked::before { background: var(--action-primary); border-color: var(--action-primary); }
+label.admin-check input:checked::after { content: ""; position: absolute; inset-block-start: 50%; inset-inline-start: 50%; inline-size: 6px; block-size: 11px; border: solid var(--text-on-brand); border-width: 0 2px 2px 0; transform: translate(-50%, -60%) rotate(45deg); }
+label.admin-check input:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: -4px; }
 .admin-check { gap: 0; }
 .admin-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
 .admin-problems { display: grid; gap: var(--space-1); padding-inline-start: var(--space-5); list-style: disc; }
 .admin-problems a, .admin-list th a, .admin-form .form-note a, .admin-form .form-hint a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); min-inline-size: var(--tap-target); overflow-wrap: anywhere; }
 /* The title is what the owner scans for: two fifths of the table, so long titles do not wrap into a tall column. */
-.admin-list thead th:first-child { inline-size: 40%; } /* the table is laid out fixed, so the first row sets the columns */
+/* Columns follow their content (the site's tables are laid out fixed, which squeezed Status and the chips to a letter a line at 768 and 1024px, L-46): the title column takes the rest and wraps at spaces; a short value, a column name and a chip stay on one line; the region scrolls sideways when the row is wider than the screen. */
+.admin-list table { table-layout: auto; }
+.admin-list thead th, .admin-list .ui-badge { white-space: nowrap; overflow-wrap: normal; }
+@media (min-width: 640px) { .admin-list td[data-label]:not([data-label="Publishing"]) { white-space: nowrap; overflow-wrap: normal; } } /* under 640px a row is a card and a long value wraps at its spaces */
+.admin-list thead th:first-child { inline-size: 40%; } /* a hint for the title column */
 .admin-list thead th:nth-child(2) { inline-size: 14rem; } /* room for the longest state chip on one line, inside the cell padding */
 .admin-list th[scope="row"] { font-weight: var(--weight-semibold); background: transparent; }
+/* The title link is a 44px target, so every cell of a row aligns to the middle: the title, the state chip and the facts sit on one line (L-43; aligned to the top, the title read 10px lower than its chip). */
+.admin-list tbody th, .admin-list tbody td { vertical-align: middle; }
 .admin-list td .ui-badge { margin-inline-end: var(--space-2); }
 /* From 1280px the Last edited column is sized for its stamp and the stamp stays on one line; narrower, it wraps after the comma. */
 @media (min-width: 1280px) { .admin-list thead th[data-col="edited"] { inline-size: 11rem; } .admin-list td[data-label="Last edited"] { white-space: nowrap; } }
@@ -120,6 +130,9 @@
 .admin-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--gutter); min-block-size: var(--header-height-compact); }
 .admin-brand { display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-body-lg); letter-spacing: var(--tracking-tight); color: var(--text-strong); text-decoration: none; }
 .admin-brand-mark { inline-size: var(--space-5); block-size: var(--space-5); border-radius: var(--radius-tile); background: var(--gradient-brand); flex-shrink: 0; }
+/* The brand's words never break; under 360px the bar has no room for the Admin badge beside the Menu button (the page's overline says Admin), as the public header drops its language label there (M-03) (L-45). */
+.admin-bar .admin-brand > span { white-space: nowrap; }
+@media (max-width: 359px) { .admin-bar .admin-brand .ui-badge { display: none; } }
 .admin-panel { display: grid; gap: var(--space-6); padding: var(--space-4) var(--gutter) var(--space-6); border-block-start: 1px solid var(--border-subtle); max-block-size: calc(100dvh - var(--header-height-compact)); overflow-y: auto; }
 /* With JavaScript the sections sit behind the Menu button on small screens; without it they are simply listed. */
 [data-admin-js] .admin-panel:not([data-open]) { display: none; }
@@ -147,12 +160,15 @@ html:not([data-admin-js]) .admin-menu-button { display: none; }
 .admin-head-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
 @media (min-width: 1024px) {
   .admin-app { grid-template-columns: 17rem minmax(0, 1fr); }
-  /* The whole panel scrolls as one on a short screen (the design's aside has overflow auto); the foot sits at the bottom when there is room. At 1280x800 everything fits without scrolling. */
-  .admin-side { block-size: 100vh; block-size: 100dvh; display: flex; flex-direction: column; border-block-end: 0; border-inline-end: 1px solid var(--border-subtle); overflow-y: auto; }
+  /* The panel is as tall as the screen. Its sections (909px of them with every section listed) are taller than a 1280x800 or 1366x657 laptop screen, so the list of sections scrolls on its own and the foot (View the site, the theme, Sign out) stays in reach at the bottom (L-42; before, the whole panel scrolled and Sign out sat below the fold on every laptop size). */
+  .admin-side { block-size: 100vh; block-size: 100dvh; display: flex; flex-direction: column; border-block-end: 0; border-inline-end: 1px solid var(--border-subtle); overflow: hidden; }
   .admin-bar { padding: var(--space-2) var(--space-5); flex-shrink: 0; }
   .admin-menu-button { display: none; }
-  .admin-panel, [data-admin-js] .admin-panel:not([data-open]) { display: flex; flex-direction: column; gap: var(--space-2); flex: 1 0 auto; min-block-size: 0; max-block-size: none; padding: var(--space-2) var(--space-3); border-block-start: 0; overflow: visible; }
-  .admin-side-foot { margin-block-start: auto; }
+  .admin-panel, [data-admin-js] .admin-panel:not([data-open]) { display: flex; flex-direction: column; gap: var(--space-2); flex: 1 1 auto; min-block-size: 0; max-block-size: none; padding: var(--space-2) var(--space-3); border-block-start: 0; overflow: hidden; }
+  .admin-nav { flex: 1 1 auto; min-block-size: 0; overflow-y: auto; overscroll-behavior: contain; }
+  .admin-side-foot { position: relative; margin-block-start: auto; flex-shrink: 0; }
+  /* While sections sit below the list's edge (the island sets the attribute), a fade over that edge says the list scrolls. */
+  .admin-side-foot[data-more-below]::before { content: ""; position: absolute; inset-inline: 0; inset-block-end: 100%; block-size: var(--space-8); background: linear-gradient(to top, var(--surface-card), transparent); pointer-events: none; }
   .admin-main { padding-block-start: var(--space-10); }
 }
 
@@ -325,8 +341,8 @@ form[aria-busy="true"] .ui-button { opacity: var(--opacity-disabled); pointer-ev
 .admin-images-fold > summary { gap: var(--space-2); }
 .admin-images-fold > .admin-images { padding: 0 var(--space-5) var(--space-5); }
 @media (max-width: 639px) { .admin-images { grid-template-columns: repeat(auto-fill, minmax(min(100%, 7.5rem), 1fr)); } }
-/* The sign-in page's checkbox inherits the text field's box from .form-field input; only its own 20px box is drawn. */
-.admin-check input { border: 0; padding: 0; min-block-size: 0; }
+/* The checkbox sits inside a .form-field, whose text-field box (profile.css, .form-field input) is bundled after this file on the live site: the element selector lifts these rules above it (0,1,2 against 0,1,1) whatever the order, so only the 20px box is drawn (L-40). */
+label.admin-check input { border: 0; padding: 0; min-block-size: 0; }
 
 /* ---------- Sign-in: a control that needs JavaScript is not shown without it ---------- */
 html:not([data-admin-js]) [data-needs-js] { display: none; }
@@ -426,3 +442,4 @@ html:not([data-admin-js]) [data-needs-js] { display: none; }
 @media (hover: hover) { .admin-remove .ui-button:hover { color: var(--text-danger); } }
 /* A link in a card that leaves the admin (the YouTube channel): 44px tall, with the leave icon, like View the site. */
 .admin-out-link { display: inline-flex; align-items: center; gap: var(--space-1); min-block-size: var(--tap-target); color: var(--text-link); font-weight: var(--weight-semibold); overflow-wrap: anywhere; }
+label.admin-check input:disabled { background: transparent; cursor: not-allowed; }
