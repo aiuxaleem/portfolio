@@ -159,17 +159,18 @@ if (want('motion')) { const findings = [], per = {};
 // ---------------------------------------------------------------- theme
 if (want('theme')) { const findings = [], per = {};
   /* Neither half of the states page is a visitor page: the admin half has no public header, so no theme button. */
-  for (const route of all.filter(r => !r.startsWith('/_states'))) { const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 }, colorScheme: 'dark', reducedMotion: 'reduce' }); await ctx.route(u => !u.hostname.startsWith('127.0.0.1'), r => r.abort()); const p = await ctx.newPage(); await p.goto(O + route, { waitUntil: 'load' });
+  /* The OS is set to light here: the first visit must still be dark, the site's default (CLAUDE.md 2.5, L-38). */
+  for (const route of all.filter(r => !r.startsWith('/_states'))) { const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 }, colorScheme: 'light', reducedMotion: 'reduce' }); await ctx.route(u => !u.hostname.startsWith('127.0.0.1'), r => r.abort()); const p = await ctx.newPage(); await p.goto(O + route, { waitUntil: 'load' });
     const read = () => p.evaluate(() => { const b = document.querySelector('[data-theme-toggle]'); return { theme: document.documentElement.dataset.theme, pressed: b?.getAttribute('aria-pressed'), name: b?.getAttribute('aria-label') || b?.textContent.trim(), tag: b?.tagName, scheme: getComputedStyle(document.documentElement).colorScheme, bg: getComputedStyle(document.body).backgroundColor, meta: document.querySelector('meta[name="theme-color"]')?.content }; });
     const a = await read(); await p.locator('[data-theme-toggle]').first().focus(); await p.keyboard.press('Enter'); await p.waitForTimeout(200); const b = await read(); await p.reload({ waitUntil: 'load' }); const c = await read();
-    per[route] = { followsSystem: a.theme, afterToggle: b.theme, afterReload: c.theme, names: [a.name, b.name], pressed: [a.pressed, b.pressed], colorScheme: [a.scheme, b.scheme] };
-    if (a.theme !== 'dark') findings.push(`${route}: does not follow the system dark setting on first visit (${a.theme})`);
+    per[route] = { firstVisit: a.theme, afterToggle: b.theme, afterReload: c.theme, names: [a.name, b.name], pressed: [a.pressed, b.pressed], colorScheme: [a.scheme, b.scheme] };
+    if (a.theme !== 'dark') findings.push(`${route}: the first visit is not dark, the site's default, with the OS set to light (${a.theme})`);
     if (a.tag !== 'BUTTON') findings.push(`${route}: theme control is a ${a.tag}`); if (!a.name) findings.push(`${route}: theme button has no name`);
     if (b.theme === a.theme) findings.push(`${route}: the theme button did not switch the theme`); if (a.pressed === b.pressed && a.name === b.name) findings.push(`${route}: the theme button's state is not announced`);
     if (c.theme !== b.theme) findings.push(`${route}: the choice was lost on reload`); if (a.bg === b.bg) findings.push(`${route}: the page background did not change`);
     if (!String(b.scheme).includes(b.theme)) findings.push(`${route}: color-scheme is "${b.scheme}" in ${b.theme} theme`);
     await ctx.close(); }
-  section('theme', { summary: `${Object.keys(per).length} pages: system preference, toggle from the keyboard, reload; ${findings.length} findings`, findings, per }); }
+  section('theme', { summary: `${Object.keys(per).length} pages: dark on the first visit with the OS set to light, toggle from the keyboard, reload; ${findings.length} findings`, findings, per }); }
 
 // ---------------------------------------------------------------- first view
 if (want('fold')) { const findings = [], per = {}; fs.mkdirSync(path.join(shots, 'fold'), { recursive: true });

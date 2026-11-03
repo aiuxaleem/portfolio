@@ -30,7 +30,7 @@ const TITLES: [string, string][] = [
 const RESUME_LABELS: [string, string][] = [['Download resume', 'View resume'], ['Resume (PDF)', 'View resume'], ['تحميل السيرة الذاتية', 'عرض السيرة الذاتية'], ['السيرة الذاتية (PDF)', 'عرض السيرة الذاتية']];
 
 export function tuneSnapshot(html: string, lazy: string[] = [], newTab = '(opens in a new tab)', subject = 'subject'): string {
-  let out = html.split(LEGACY_EMAIL).join(site.email);
+  let out = themeColours(html.split(LEGACY_EMAIL).join(site.email));
   for (const [from, to] of TITLES) out = out.split(from).join(to);
   /* The resume link: the legacy pages linked a direct download. A link to another site cannot be a download, so it opens in a new tab. */
   /* Its label says what it does: "View resume" for a link to another site, "Download resume" for a file on this one. */
@@ -61,6 +61,17 @@ export function tuneSnapshot(html: string, lazy: string[] = [], newTab = '(opens
 /* The Skills section tools tile shows every chip (owner instruction, 2 November 2026, L-37): the two groups the owner named
    become the cells of a small bento inside the tile (.home-tools, .home-tools-group in components.css). Applied to the
    Home section (skills.astro) and to the Arabic Home snapshot; a page without a skills section is returned as it is. */
+/* Hard-coded light-theme colours in the legacy markup become the semantic tokens with the same light values, so the dark
+   theme gets its own (panel of 2 November 2026, L-39): the grey pills (slate-100 on slate-700 = sunken on body text), the
+   blue pills (blue-100 on blue-700 = the ghost tint on link text) and the blue icon tiles (blue-100 with a blue-600 icon = the
+   ghost tint with the primary hover blue, 4.9:1 on a dark card). Applied by tuneSnapshot and by skills.astro. */
+export function themeColours(src: string): string {
+  return src
+    .split('background: var(--slate-100); color: var(--slate-700)').join('background: var(--surface-sunken); color: var(--text-body)')
+    .split('background: var(--blue-100); color: var(--blue-700)').join('background: var(--action-ghost-hover); color: var(--text-link)')
+    .split('background: var(--blue-100); color: var(--blue-600)').join('background: var(--action-ghost-hover); color: var(--action-primary-hover)');
+}
+
 export function bentoTools(src: string): string {
   const sec = src.indexOf('id="skills'); if (sec < 0) return src;
   const at = src.indexOf('<h4', sec); if (at < 0) return src;

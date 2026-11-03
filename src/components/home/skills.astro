@@ -9,13 +9,13 @@
 import skills from '../../snapshots/home-skills.json';
 import skillsAr from '../../snapshots/home-skills-ar.json';
 /* The tools tile: every chip shown, its two groups as bento cells (owner instruction, 2 November 2026, L-37; snapshot-tune.ts). */
-import { bentoTools } from '../../lib/snapshot-tune';
+import { bentoTools, themeColours } from '../../lib/snapshot-tune';
 
 interface Props { lang?: 'en' | 'ar'; /** On /_states the section is shown once per theme, inside another section: its ids get this ending and it is not a landmark. */ fixture?: string }
 const { lang = 'en', fixture } = Astro.props;
 const snap = lang === 'ar' ? skillsAr : skills;
 const html0 = fixture ? snap.html.replace(/^<section /, '<div ').replace(/<\/section>\s*$/, '</div>').replace(' id="skills"', ` id="skills-${fixture}"`).replace(' aria-labelledby="skills-title"', '').replace(' id="skills-title"', ` id="skills-title-${fixture}"`) : snap.html;
-const html = bentoTools(html0);
+const html = bentoTools(themeColours(html0));
 ---
 <Fragment set:html={html} />
 <style is:inline set:html={snap.css}></style>

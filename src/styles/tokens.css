@@ -3,8 +3,9 @@
 /* ===========================================================================
    AgentCory: Color tokens
    Brand: deep navy ink + blue→cyan signal gradient on cool off-white surfaces.
-   Two themes: light (default) and dark. Switch with <html data-theme="dark">;
-   ThemeToggle (or the one-line script at the bottom) applies the OS preference.
+   Two themes: dark (the default since 2 November 2026, owner instruction, L-38) and light. Switch with
+   <html data-theme="light">. The markup carries data-theme="dark" (so a page without JavaScript is dark too) and the
+   boot script in base-layout.astro replaces it with the stored choice before the first paint.
    =========================================================================== */
 :root {
   color-scheme: light;
@@ -140,7 +141,7 @@
   --text-body: var(--navy-100);
   --text-muted: var(--navy-200);
   --text-subtle: #9DB0C6; /* 6.1:1 on navy-850, 4.6:1 on navy-700 */
-  --text-disabled: var(--navy-500);
+  --text-disabled: #4A7AAB; /* navy hue between navy-500 and navy-400: 3.5:1 on the card, 4.2:1 on the page; navy-500 was 2.0:1 (L-39) */
   --text-on-brand: #FFFFFF;
   --text-link: var(--blue-400);
   --text-link-hover: var(--blue-300);
@@ -152,13 +153,13 @@
   --surface-card: var(--navy-850);
   --surface-raised: var(--navy-700);
   --surface-sunken: var(--navy-950);
-  --surface-ink: var(--navy-950);
+  --surface-ink: var(--navy-700); /* 1.40:1 above the page; was navy-950, 1.04:1, so the ink objects had no edge (L-39) */
   --surface-tile: var(--navy-700);
   --surface-header: rgba(6, 18, 31, 0.82);
   --surface-overlay: rgba(4, 12, 22, 0.70);
 
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-default: rgba(255, 255, 255, 0.12);
+  --border-subtle: rgba(255, 255, 255, 0.12); /* 0.08 before L-39: with no shadow to carry an edge on navy, the hairlines sit a step ahead of light (card on page 1.74:1) */
+  --border-default: rgba(255, 255, 255, 0.16); /* 0.12 before L-39 */
   --border-strong: rgba(255, 255, 255, 0.22);
   --border-interactive: rgba(255, 255, 255, 0.48);
   --border-focus: var(--blue-400);
@@ -173,7 +174,8 @@
   --action-ghost-hover: rgba(90, 167, 254, 0.14);
 
   --focus-ring: rgba(90, 167, 254, 0.45);
-  --gradient-ink: linear-gradient(160deg, #0E2440 0%, #06121F 100%); /* @kind color */
+  --gradient-ink: linear-gradient(160deg, #12304F 0%, #0B1F36 100%); /* @kind color */ /* the light theme's own ink, so the ink object is theme-stable: 1.40:1 to 1.13:1 against the page; was navy-850 to navy-900, which ended in the page colour (L-39) */
+  --on-ink-border: rgba(255, 255, 255, 0.16); /* the edge of ink objects on a dark page (0.12 in light); the deck's fanned cards and the footer rule need it (L-39) */
 
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.30);
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.32);
@@ -195,9 +197,8 @@
   --field-line: color-mix(in srgb, var(--text-link) 12%, transparent); /* @kind color */
 }
 
-/* OS preference: CSS can't alias a media query onto [data-theme], so set the
-   attribute once at load (ThemeToggle does this automatically):
-   <script>document.documentElement.dataset.theme ||= matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</script> */
+/* The theme attribute is set once before the first paint by the boot script in base-layout.astro: ?theme, else the
+   stored choice, else dark. The OS preference is not consulted (owner instruction, 2 November 2026, L-38). */
 
 /* ---- tokens/typography.css ---- */
 /* ===========================================================================

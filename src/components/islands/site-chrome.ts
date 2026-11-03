@@ -2,7 +2,8 @@
 const THEME_KEY = 'aiuxaleem-theme';
 const root = document.documentElement;
 
-/* ---------- Theme (CLAUDE.md 2.5): follows the system until the visitor chooses; the choice persists ---------- */
+/* ---------- Theme (CLAUDE.md 2.5): dark until the visitor chooses (owner instruction, 2 November 2026, L-38); the choice
+   persists. The OS preference is not consulted, so a change of it is not followed either. ---------- */
 function paintTheme() {
   const dark = root.getAttribute('data-theme') === 'dark';
   document.querySelectorAll<HTMLElement>('[data-theme-toggle]').forEach(btn => {
@@ -22,10 +23,6 @@ function setTheme(next: 'light' | 'dark', store: boolean) {
   paintTheme();
 }
 document.querySelectorAll('[data-theme-toggle]').forEach(btn => btn.addEventListener('click', () => setTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark', true)));
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-  let stored: string | null = null; try { stored = localStorage.getItem(THEME_KEY); } catch { /* ignore */ }
-  if (stored !== 'light' && stored !== 'dark') setTheme(e.matches ? 'dark' : 'light', false); // a system change is never stored as a choice
-});
 paintTheme();
 
 /* ---------- The bar of the three websites (layout/site-switch.astro): the header carries it at the top of the page; from
