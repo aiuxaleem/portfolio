@@ -126,7 +126,7 @@ Replace the host with `http://localhost:4321` against a development server. Ther
 | --- | --- |
 | `DATABASE_URL` | Drafts and the suggestion limit. Already set for the admin area. |
 | `GITHUB_TOKEN`, `GITHUB_REPO`, `GITHUB_BRANCH` | Publishing with the key. Already set for the admin area. |
-| `RESOURCES_API_KEY` | Owner access to the API. New; without it the API takes visitor suggestions only. |
+| `RESOURCES_API_KEY` | Owner access to the API. Without it the API takes visitor suggestions only. The same key opens `POST /api/linkedin`, which takes a LinkedIn post or article from its link (`docs/LINKEDIN_CAPTURE.md`). |
 
 The database needs migration `004_suggestions.sql` applied once: `node scripts/db/migrate.mjs`.
 

@@ -17,7 +17,7 @@ export const ICONS = {
   // states of an entry
   published: 'check', changes: 'pencil-line', new: 'file-plus', hidden: 'eye-off', suggested: 'mail',
   // actions
-  search: 'search', nomatch: 'search-x', add: 'plus', youtube: 'youtube', refresh: 'refresh-cw', upload: 'upload', publish: 'send', draft: 'save', discard: 'trash-2', copy: 'copy', copied: 'clipboard-check',
+  search: 'search', nomatch: 'search-x', add: 'plus', youtube: 'youtube', link: 'link', phone: 'smartphone', refresh: 'refresh-cw', upload: 'upload', publish: 'send', draft: 'save', discard: 'trash-2', copy: 'copy', copied: 'clipboard-check',
   // dashboard
   waiting: 'inbox', recent: 'history', clock: 'clock', 'ab-test': 'split', opportunities: 'compass', numbers: 'activity', views: 'eye', people: 'users', pages: 'files', busiest: 'calendar-days', chart: 'chart-column', top: 'trending-up', referrers: 'link', countries: 'globe', devices: 'monitor-smartphone',
   // deltas

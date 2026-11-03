@@ -25,6 +25,8 @@ interface Props {
   ogImage?: string;
   /** JSON-LD objects for this page. Empty entries are skipped. */
   jsonLd?: (Record<string, unknown> | undefined)[];
+  /** The web app manifest, for the admin pages only (a phone can install the admin as an app). Public pages have none. */
+  manifest?: string;
 }
 const { title, description, page = '', langs = 'en', lang = 'en', dir = 'ltr' } = Astro.props;
 const noindex = Astro.props.noindex;
@@ -34,7 +36,7 @@ const noindex = Astro.props.noindex;
 const sub = siteOf(Astro.url.pathname);
 /* Fonts are self-hosted (src/styles/fonts.css). Only the faces used above the fold are preloaded. */
 const preload = [...fonts.preload.latin, ...(lang === 'ar' ? fonts.preload.arabic : [])];
-const { ogType = 'website', jsonLd = [] } = Astro.props;
+const { ogType = 'website', jsonLd = [], manifest } = Astro.props;
 const image = abs(Astro.props.ogImage || await ogImageFor(Astro.url.pathname));
 /* The share title drops the site suffix; the site name is its own tag. */
 const shareTitle = title.replace(/ · AIUXAleem$/, '');
@@ -76,6 +78,7 @@ const field = !Astro.url.pathname.startsWith('/admin');
     {jsonLd.filter(Boolean).map(o => <script type="application/ld+json" set:html={JSON.stringify(o).replace(/</g, '\\u003c')} />)}
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
     <meta name="theme-color" content="#0B1F36" />
+    {manifest && <link rel="manifest" href={manifest} />}
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <!-- Theme before first paint: ?theme (the checks' hook), then the stored choice, else dark, the site's default (owner instruction, 2 November 2026, L-38: the OS preference is not consulted; the visitor's choice from the theme button persists). The html element carries data-theme="dark" in the markup, so a page without JavaScript is dark too. -->
     <script is:inline>

@@ -26,6 +26,8 @@ const ROUTES = [
   { name: 'opportunities list', path: '/admin/opportunities' }, { name: 'opportunity new', path: '/admin/opportunities/new' }, { name: 'opportunity editor', path: '/admin/opportunities', first: true },
   { name: 'site details', path: '/admin/site/config' }, { name: 'about and career', path: '/admin/profile/profile' },
   { name: 'images', path: '/admin/images' }, { name: 'youtube', path: '/admin/youtube' },
+  /* The share page that takes a LinkedIn link (docs/LINKEDIN_CAPTURE.md): its box, and its refused state. */
+  { name: 'share', path: '/admin/share' }, { name: 'share refused', path: '/admin/share?url=https%3A%2F%2Fexample.com%2Fnot-a-post' },
 ];
 const only = String(arg('only', '')).split(',').filter(Boolean); const routes = ROUTES.filter(r => !only.length || only.some(o => r.name.includes(o)));
 

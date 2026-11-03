@@ -23,8 +23,10 @@ if (fs.existsSync(envFile)) for (const line of fs.readFileSync(envFile, 'utf8').
   const m = line.match(/^([A-Z_][A-Z0-9_]*)=("?)(.*)\2$/); if (m && !(m[1] in process.env)) process.env[m[1]] = m[3];
 }
 process.env.COUNT_LOCAL ||= '1';
-const entry = path.join(root, 'dist/server/entry.mjs');
-if (!fs.existsSync(entry)) { console.error(`No server build at ${entry}. Run ADMIN_APP=1 npm run build first.`); process.exit(1); }
+/* A complete adapter build moves the server into .vercel/output/_functions; in a junctioned worktree that move fails and
+   the server stays in dist/server (see the note above). Either is served. */
+const entry = ['dist/server/entry.mjs', '.vercel/output/_functions/entry.mjs'].map(f => path.join(root, f)).find(f => fs.existsSync(f));
+if (!entry) { console.error(`No server build under ${root} (dist/server or .vercel/output/_functions). Run ADMIN_APP=1 npm run build first.`); process.exit(1); }
 const { default: handler } = await import(pathToFileURL(entry).href);
 const client = path.join(root, 'dist/client');
 const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.avif': 'image/avif', '.woff2': 'font/woff2', '.ico': 'image/x-icon', '.xml': 'application/xml', '.txt': 'text/plain' };

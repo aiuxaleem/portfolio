@@ -36,6 +36,11 @@ const devOnly = {
         injectRoute({ pattern: '/admin/images/file', entrypoint: './src/admin/pages/image-file.ts' });
         // Visitors suggest a UX resource here (saved as a draft for review); the owner can add or publish one with a key.
         injectRoute({ pattern: '/api/resources', entrypoint: './src/admin/pages/resources-api.ts' });
+        // A LinkedIn post or article from its link (docs/LINKEDIN_CAPTURE.md): the share page a phone's share sheet opens,
+        // the owner's API, and the manifest that lets a phone install the admin as an app.
+        injectRoute({ pattern: '/admin/share', entrypoint: './src/admin/pages/share.astro' });
+        injectRoute({ pattern: '/api/linkedin', entrypoint: './src/admin/pages/linkedin-api.ts' });
+        injectRoute({ pattern: '/admin/manifest.webmanifest', entrypoint: './src/admin/pages/manifest.ts' });
         // One list and one editor for every kind of entry: /admin/projects, /admin/case-studies, /admin/posts.
         // The Opportunity check: private, in the database (src/admin/lib/opportunities.ts). Before the [kind] routes.
         injectRoute({ pattern: '/admin/opportunities', entrypoint: './src/admin/pages/opportunities/index.astro' });

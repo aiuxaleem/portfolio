@@ -1,0 +1,23 @@
+---
+/* The box on /admin/share that takes a LinkedIn link, and its refused state. One component, so /_states-admin shows
+   the same markup the page uses. The form is a GET: the same address the phone's share sheet opens, so pressing the
+   button and sharing from the phone are one path, and a link that is already here opens its entry instead of making
+   another. The lead copy says what the page does; the box says what to paste. */
+import AdminIcon from './admin-icon.astro';
+import Button from '../../components/ui/button.astro';
+
+interface Props { url?: string; /** Why the link was refused, in words for the owner. Empty when it was not. */ error?: string; /** A prefix for the ids, so two boxes on one page (the states page) stay distinct. */ uid?: string; /** Said after the heading, unseen, when several boxes share a page (the states page): a form landmark's name has to be unique. */ note?: string }
+const { url = '', error = '', uid = 'share', note = '' } = Astro.props;
+const id = `${uid}-url`;
+---
+<form method="get" action="/admin/share" class="admin-card" aria-labelledby={`${uid}-title`} data-busy novalidate>
+  <h2 id={`${uid}-title`} class="dash-h2"><AdminIcon name="link" />Add a post or article from its link{note && <span class="cory-visually-hidden"> ({note})</span>}</h2>
+  <p class="form-note">A draft is made from the link and opened in the editor; nothing goes public until you publish it. A post's day is read from its link when the link carries one; otherwise it is today.</p>
+  {error && <p class="form-error" id={`${id}-error`} role="alert"><AdminIcon name="alert" size={16} /><span>{error}</span></p>}
+  <div class="form-field admin-wide">
+    <label for={id}>Link to the post or article</label>
+    <input id={id} name="url" type="url" inputmode="url" autocomplete="off" spellcheck="false" value={url} aria-describedby={`${id}-hint${error ? ` ${id}-error` : ''}`} aria-invalid={error ? 'true' : undefined} />
+    <p class="form-hint" id={`${id}-hint`}>On LinkedIn, open the post's menu and choose "Copy link to post", or copy an article's address. A short lnkd.in link is followed to the full one.</p>
+  </div>
+  <div><Button variant="primary" type="submit" data-busy-label="Adding…"><AdminIcon name="add" size={18} slot="icon-left" />Add as a draft</Button></div>
+</form>

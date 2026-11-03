@@ -138,6 +138,8 @@ You don't need to add a poster. Before every build, `scripts/content/youtube-pos
 
 ## Add a LinkedIn post
 
+**From your phone:** share the post from the LinkedIn app to the admin, installed once as an app, and it arrives as a draft with its link and day filled in; type the title and publish. Or paste the link into **LinkedIn posts → Add from a link**. Both are described in `docs/LINKEDIN_CAPTURE.md`, with the API for a Shortcut or a script.
+
 In the editor: **LinkedIn posts → Create**. Fill in the title (the first line of the post works well), the link to the post, the date, and optionally the series it belongs to and tags. It appears on the Posts page (`/posts`, under **My Resources** in the menu), newest first. A visitor can narrow the list to one series.
 
 **Let visitors load this post on the page** is ticked for a new post. The card then has a button that shows the post itself, from LinkedIn, without leaving the site. Nothing is loaded from LinkedIn until a visitor presses it. It needs the link LinkedIn gives you under the post's menu, **Copy link to post**, because that link carries the post's number. Untick the box and the card is a title and a link only.
@@ -154,7 +156,7 @@ embed: true
 
 ## Add a LinkedIn article
 
-In the editor: **LinkedIn articles → Create**. Title, link, and if you have them the date and an excerpt. It appears on the Articles page (`/articles`, under **My Resources** in the menu), newest first, and opens on LinkedIn. The newest article is shown wide at the top.
+In the editor: **LinkedIn articles → Create**. Title, link, and if you have them the date and an excerpt. It appears on the Articles page (`/articles`, under **My Resources** in the menu), newest first, and opens on LinkedIn. The newest article is shown wide at the top. An article's link can be shared from the phone or pasted into **Add from a link** like a post's (`docs/LINKEDIN_CAPTURE.md`); the day is then the day you shared it.
 
 By file: `src/content/linkedin-articles/your-title.yaml`.
 

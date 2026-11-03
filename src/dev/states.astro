@@ -20,6 +20,7 @@ import { listedProjects, updatesNewestFirst, day } from '../lib/projects';
 import BeforeAfter from '../components/case-study/before-after.astro';
 import { listedCaseStudies } from '../lib/case-studies';
 import YouTube from '../components/embeds/youtube.astro';
+import ShareBox from '../admin/components/share-box.astro';
 import LinkedInPost from '../components/embeds/linkedin-post.astro';
 import LinkedInArticle from '../components/embeds/linkedin-article.astro';
 import Callout from '../components/content/callout.astro';
@@ -489,6 +490,14 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
           </div>
             <p style={note}>Error: the numbers could not be read.</p>
             <div data-lazy-block style="content-visibility: auto; contain-intrinsic-size: auto 900px;"><DashboardView plain uid={`${theme}-error`} error="The database did not answer. Nothing is lost: visits are still being recorded if the site itself is up." range={30} ranges={[7, 30, 90]} base="#main" /></div>
+          </div>
+
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
+            <h2 style={h2}>Admin: a LinkedIn post from its link</h2>
+            <p style={note}>The box on /admin/share, which a phone's share sheet opens with the link (docs/LINKEDIN_CAPTURE.md): empty; refused, with the link kept; and the editor's notice when a link was taken in.</p>
+            <ShareBox uid={`${theme}-share`} note={`${theme} theme, empty`} />
+            <ShareBox uid={`${theme}-share-refused`} note={`${theme} theme, refused`} url="https://example.com/not-a-post" error="That is not a link to a LinkedIn post or article. A post's link has /posts/ in it, an article's has /pulse/." />
+            <div class="form-panel admin-note" role="status" data-tone="success"><AdminIcon name="ok" /><div><p>Saved as a draft from the link you shared. Check the title and the day, then publish.</p></div></div>
           </div>
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
