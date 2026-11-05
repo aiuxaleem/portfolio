@@ -16,11 +16,21 @@ function paintTheme() {
   if (meta) meta.setAttribute('content', getComputedStyle(root).getPropertyValue('--surface-page').trim() || meta.getAttribute('content') || '');
 }
 function setTheme(next: 'light' | 'dark', store: boolean) {
-  root.setAttribute('data-theme-switching', '');
-  root.setAttribute('data-theme', next);
-  if (store) { try { localStorage.setItem(THEME_KEY, next); } catch { /* storage may be blocked */ } }
-  requestAnimationFrame(() => requestAnimationFrame(() => root.removeAttribute('data-theme-switching')));
-  paintTheme();
+  const apply = () => {
+    root.setAttribute('data-theme-switching', '');
+    root.setAttribute('data-theme', next);
+    if (store) { try { localStorage.setItem(THEME_KEY, next); } catch { /* storage may be blocked */ } }
+    requestAnimationFrame(() => requestAnimationFrame(() => root.removeAttribute('data-theme-switching')));
+    paintTheme();
+  };
+  /* The page cross-fades to its new colours (a same-document view transition, styled in motion.css under
+     html[data-vt="theme"]). Without the API, with reduced motion, or while a list is already changing, the colours change
+     at once. */
+  const doc = document as Document & { startViewTransition?: (cb: () => void) => { finished: Promise<void> } };
+  if (doc.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches && !root.dataset.vt) {
+    root.dataset.vt = 'theme';
+    doc.startViewTransition(apply).finished.finally(() => { if (root.dataset.vt === 'theme') delete root.dataset.vt; });
+  } else apply();
 }
 document.querySelectorAll('[data-theme-toggle]').forEach(btn => btn.addEventListener('click', () => setTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark', true)));
 paintTheme();

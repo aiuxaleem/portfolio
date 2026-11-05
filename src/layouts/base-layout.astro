@@ -45,6 +45,10 @@ const shareTitle = title.replace(/ · AIUXAleem$/, '');
    to be tracked. */
 const countVisits = import.meta.env.COUNT_VISITS === '1' && !noindex;
 const countScript = "(function(){try{if(navigator.doNotTrack==='1'||navigator.globalPrivacyControl||localStorage.getItem('aiuxaleem-owner')==='1')return;var s=function(){navigator.sendBeacon('/api/hit',JSON.stringify({p:(document.documentElement.dataset.site&&location.pathname.indexOf('/'+document.documentElement.dataset.site)!==0?'/'+document.documentElement.dataset.site+(location.pathname==='/'?'':location.pathname):location.pathname),r:document.referrer}))};if(document.readyState==='complete')s();else addEventListener('load',s,{once:true})}catch(e){}})();";
+/* The page-flow script (see the comment at its tag below): pageswap names the picture on the page being left, pagereveal
+   the one on the page arriving; the name comes off when the transition ends. The two session flags are read by
+   scripts/motion/check.mjs. */
+const pageFlowScript = "(function(){var N='cover',F='.project-card',M='.project-card-media img',C='main .project-cover img';function off(){return matchMedia('(prefers-reduced-motion: reduce)').matches||!!document.querySelector('.admin-app,[data-admin-js]')}function path(u){try{return new URL(String(u||''),location.href).pathname.replace(/\\/$/,'')||'/'}catch(e){return ''}}function card(p){if(!p)return null;var a=document.querySelectorAll('main a[href]');for(var i=0;i<a.length;i++){if(path(a[i].href)!==p)continue;var c=a[i].closest(F),img=c&&c.querySelector(M);if(img&&img.getClientRects().length)return img}return null}function keep(k,v){try{sessionStorage.setItem(k,v)}catch(e){}}addEventListener('pageswap',function(e){if(!e.viewTransition||off())return;var to=path(e.activation&&e.activation.entry&&e.activation.entry.url),el=card(to)||document.querySelector(C);if(!el)return;el.style.viewTransitionName=N;keep('motion-cover-swap',to)});addEventListener('pagereveal',function(e){if(!e.viewTransition||off())return;var from=path(self.navigation&&navigation.activation&&navigation.activation.from&&navigation.activation.from.url),el=document.querySelector(C)||card(from);if(!el)return;el.style.viewTransitionName=N;document.documentElement.setAttribute('data-vt-cover','');keep('motion-cover-reveal',location.pathname);e.viewTransition.finished.finally(function(){el.style.viewTransitionName='';document.documentElement.removeAttribute('data-vt-cover')})})})();";
 const canonical = Astro.props.canonical || (sub ? SUB_SITES[sub].origin + sitePath(Astro.url.pathname) : new URL(Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/'), Astro.site));
 /* The page's field (layout/ai-field.astro) is behind every public page; the admin and its sign-in keep a plain surface. */
 const field = !Astro.url.pathname.startsWith('/admin');
@@ -96,6 +100,11 @@ const field = !Astro.url.pathname.startsWith('/admin');
          moment, and only when motion is allowed and this is not the admin: it is never on the path to the first paint or the
          largest paint (Lighthouse counts every early high-priority request against them). -->
     <script is:inline set:html={`addEventListener('load',function(){if(!document.documentElement.hasAttribute('data-motion')||document.querySelector('.admin-app'))return;(self.requestIdleCallback||function(f){setTimeout(f,300)})(function(){import(${JSON.stringify(motion.url)})},{timeout:2000})})`}></script>
+    <!-- Page flow (owner, 5 November 2026): when a link leads from a card to its page, the card's picture travels into the
+         page's cover, and on the way back the cover returns to its card. A cross-document view transition (motion.css opts in;
+         Chrome and Edge 126 up): for its length the two carry the same view-transition-name. pagereveal fires at the new page's
+         first render, before any module script runs, so this lives in the head. Nothing under reduced motion or in the admin. -->
+    <script is:inline set:html={pageFlowScript}></script>
     {countVisits && <script is:inline set:html={countScript} />}
   </head>
   <body>

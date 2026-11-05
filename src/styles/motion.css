@@ -100,7 +100,7 @@
      after the load event; motion.ts then does the scroll reveals listed in its header (section heads line by line, the
      skills diagram, the career line, the "worked with" names, the closing panel). The first view stays the CSS above.
      The script reads these tokens. */
-  :root { --duration-reveal: 800ms; --stagger-line: 80ms; --stagger-item: 60ms; }
+  :root { --duration-reveal: 800ms; --stagger-line: 80ms; --stagger-item: 60ms; --stagger-menu: 30ms; }
   /* A heading's line masks (SplitText) get a little room above and below, so ascenders and descenders are not cut while
      the line rises; the negative margin keeps the heading's height as it was. */
   .motion-line-mask { padding-block: 0.14em; margin-block: -0.14em; }
@@ -150,6 +150,12 @@
     [data-site-header]::after { content: ""; position: absolute; inset-inline: 0; inset-block-end: -1px; block-size: 2px; background: var(--gradient-brand); transform-origin: var(--origin-inline-start); animation: progress linear both; animation-timeline: scroll(root); pointer-events: none; }
     body:has([data-progress]) [data-site-header]::after { display: none; }
     @keyframes progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    /* With the script (html[data-motion="on"]) a section heading rises line by line instead (islands/motion.ts): the wipe is
+       for the page without it. */
+    html[data-motion="on"] .page-section-head > :is(h2, .page-h2) { animation-name: none; }
+    /* A card in a grid already leans in with the scroll: its fade (islands/reveal.ts, which marks such an item data-reveal-lean)
+       adds no second rise. */
+    [data-reveal-state="pending"][data-reveal-lean] { transform: none !important; }
   }
 
   /* ---------- The hero stack opens a little under the pointer ---------- */
@@ -163,4 +169,51 @@
   .project-card[data-tilt] { rotate: var(--tilt-axis, 0 0 1) var(--tilt-angle, 0deg); transition: rotate 140ms linear, transform var(--duration-spring-soft) var(--ease-spring-soft), box-shadow var(--duration-slow) var(--ease-out); background-image: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), color-mix(in srgb, var(--text-link) 10%, transparent), transparent 60%); }
   .project-card { transition: rotate var(--duration-spring-soft) var(--ease-spring-soft), transform var(--duration-spring-soft) var(--ease-spring-soft), box-shadow var(--duration-slow) var(--ease-out); }
   [data-magnet] { translate: var(--magnet-x, 0) var(--magnet-y, 0); transition: translate var(--duration-spring-soft) var(--ease-spring-soft); }
+
+  /* ---------- Every other page's first view (owner, 5 November 2026): the title rises out of its mask and what sits with it
+     follows, one step apart: the lists, the blog, a project, a case study, the resume, the 404. The heroes above keep their
+     own order. A page's cover is left to the scroll (settle) and, when the visitor came from its card, to the travelling
+     picture below. Decoration (aria-hidden) stays still. Sibling combinators from the page's one h1, not :has(): measured,
+     :has() on every section and div of the Home page cost the first paint. ---------- */
+  main h1:not(.site-hero-title, #hero-title, .hero-split-words > h1) { animation: title-in 900ms var(--ease-out) both; }
+  main h1 ~ :not(.project-cover, [aria-hidden="true"], [data-hero] *, .site-hero-words > *, .hero-split-words > *) { animation: rise-in 800ms var(--ease-out) both; animation-delay: 80ms; }
+  main h1 + * + :not(.project-cover, [data-hero] *, .site-hero-words > *, .hero-split-words > *) { animation-delay: 160ms; }
+  main h1 + * + * ~ :not(.project-cover, [data-hero] *, .site-hero-words > *, .hero-split-words > *) { animation-delay: 240ms; }
+
+  /* ---------- Header menus and the phone menu: a card rises under its button and its pages follow one by one; the phone
+     menu fades in and its groups rise in turn. display is transitioned too (allow-discrete), so the closing fade plays
+     before a card goes; a browser without that shows and hides them as before. ---------- */
+  .nav-panel { opacity: 0; translate: 0 calc(-1 * var(--space-2)); transition: opacity var(--duration-base) var(--ease-out), translate var(--duration-spring-soft) var(--ease-spring-soft), display var(--duration-base) allow-discrete; }
+  .nav-group-button[aria-expanded="true"] + .nav-panel, :root:not([data-nav-ready]) .nav-group:hover > .nav-panel { opacity: 1; translate: 0 0; }
+  @starting-style { .nav-group-button[aria-expanded="true"] + .nav-panel, :root:not([data-nav-ready]) .nav-group:hover > .nav-panel { opacity: 0; translate: 0 calc(-1 * var(--space-2)); } }
+  .nav-panel-list > li { transition: opacity var(--duration-base) var(--ease-out), translate var(--duration-base) var(--ease-out); }
+  .nav-panel-list > li:nth-child(2) { transition-delay: var(--stagger-menu); }
+  .nav-panel-list > li:nth-child(3) { transition-delay: calc(2 * var(--stagger-menu)); }
+  .nav-panel-list > li:nth-child(4) { transition-delay: calc(3 * var(--stagger-menu)); }
+  .nav-panel-list > li:nth-child(5) { transition-delay: calc(4 * var(--stagger-menu)); }
+  .nav-panel-list > li:nth-child(n + 6) { transition-delay: calc(5 * var(--stagger-menu)); }
+  @starting-style { .nav-panel-list > li { opacity: 0; translate: 0 calc(-1 * var(--space-1)); } }
+  [data-menu] { transition: opacity var(--duration-slow) var(--ease-out), display var(--duration-slow) allow-discrete; }
+  [data-menu][hidden] { opacity: 0; }
+  @starting-style { [data-menu]:not([hidden]) { opacity: 0; } }
+  [data-menu] :is(.menu-group, .menu-nav > li, .menu-foot) { transition: opacity var(--duration-slow) var(--ease-out), translate var(--duration-spring-soft) var(--ease-spring-soft); }
+  [data-menu] :is(.menu-group, .menu-nav > li):nth-child(2) { transition-delay: calc(2 * var(--stagger-menu)); }
+  [data-menu] :is(.menu-group, .menu-nav > li):nth-child(3) { transition-delay: calc(4 * var(--stagger-menu)); }
+  [data-menu] :is(.menu-group, .menu-nav > li):nth-child(4) { transition-delay: calc(6 * var(--stagger-menu)); }
+  [data-menu] :is(.menu-group, .menu-nav > li):nth-child(n + 5), [data-menu] .menu-foot { transition-delay: calc(8 * var(--stagger-menu)); }
+  @starting-style { [data-menu]:not([hidden]) :is(.menu-group, .menu-nav > li, .menu-foot) { opacity: 0; translate: 0 var(--space-4); } }
+
+  /* ---------- Changing theme: the page cross-fades to its new colours, header included (islands/site-chrome.ts starts the
+     transition and marks the root while it runs) ---------- */
+  html[data-vt="theme"]::view-transition-old(root) { animation: page-out var(--duration-slow) var(--ease-out) both; }
+  html[data-vt="theme"]::view-transition-new(root) { animation: theme-in var(--duration-slow) var(--ease-out) both; }
+  html[data-vt="theme"]::view-transition-old(site-header) { display: block; animation: page-out var(--duration-slow) var(--ease-out) both; }
+  html[data-vt="theme"]::view-transition-new(site-header) { animation: theme-in var(--duration-slow) var(--ease-out) both; }
+  @keyframes theme-in { from { opacity: 0; } }
+
+  /* ---------- A card's picture travels into its page's cover, and back (islands/page-flow.ts names the two for the length
+     of the change of page). The two pictures fill the moving frame, so a 4:3 card and a 16:9 cover meet without a jump. ---------- */
+  ::view-transition-group(cover) { animation-duration: var(--duration-enter); animation-timing-function: var(--ease-out); }
+  ::view-transition-image-pair(cover) { isolation: auto; }
+  ::view-transition-old(cover), ::view-transition-new(cover) { animation: none; mix-blend-mode: normal; inline-size: 100%; block-size: 100%; object-fit: cover; }
 }
