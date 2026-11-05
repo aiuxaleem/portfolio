@@ -166,7 +166,7 @@ Create a blog post with the full text, then fill in **Originally published elsew
 
 ## Add a UX resource
 
-The UX Glossary (`/resources`, under **Resources** in the menu) lists tools, references and reading you recommend, each linking out to its own site. In the admin area: **UX Glossary → Add a resource**. By file: `src/content/resources/your-resource.yaml`.
+The UX Library (`/resources`, under **Resources** in the menu) lists tools, references and reading you recommend, each linking out to its own site. In the admin area: **UX Library → Add a resource**. By file: `src/content/resources/your-resource.yaml`.
 
 | Field | What to write |
 | --- | --- |
@@ -178,7 +178,7 @@ The UX Glossary (`/resources`, under **Resources** in the menu) lists tools, ref
 | Topics | Short tags shown on the card. |
 | Made by me | Tick it for your own work: an AI workflow, a Claude skill (.md file) or a Claude artifact. Choose the matching Type. These lead the page in a section of their own, marked "Made by me". The link can be a GitHub file or gist, a Claude artifact link, or any page where it lives. |
 
-Visitors can suggest a resource from the page. A suggestion arrives in **UX Glossary** as a draft with a note saying when it came and who sent it; nothing is published until you publish it. The full field rules, the categories and the API that takes a resource from outside the site are in `docs/RESOURCES_API.md`.
+Visitors can suggest a resource from the page. A suggestion arrives in **UX Library** as a draft with a note saying when it came and who sent it; nothing is published until you publish it. The full field rules, the categories and the API that takes a resource from outside the site are in `docs/RESOURCES_API.md`.
 
 ## Add an AI tool
 
@@ -265,3 +265,7 @@ Keep an original under about 500 KB. Do not put text that matters inside an imag
 - **Look at the page** at `http://localhost:4321` in light and dark theme, and narrow the window to phone width.
 - **Open `http://localhost:4321/_states`.** It shows every component in every state, in both themes, with stress content, plus the list of facts still to check. It exists only on your computer.
 - **Run `npm run quality`** before you publish. It builds the site and checks every page at ten screen sizes in both themes. It takes about half an hour. It must end with `PASSED`.
+
+## For agents: /llms.txt
+
+`src/pages/llms.txt.ts` builds `/llms.txt` at build time from the same content as the pages: the site's name and positioning, the About summary, then every published case study, project and blog post with a one-line description, and the other sections. Nothing to maintain: a new entry appears there when it is published. Drafts and fixtures never appear. The header's groups since 5 November 2026 are Work (Projects, Case studies), Writing (Blog, Posts, Articles), Videos, Resources (UX Library, AI tools) and About; the labels live in `src/content/site.ts` and, for the audience websites, `src/lib/sites.ts`.

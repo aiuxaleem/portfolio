@@ -41,7 +41,7 @@ const stack = await aiToolCards();
 
   <section id="tools" class="cory-container" aria-label="Tools" style="display: grid; gap: var(--space-12); padding-block-end: var(--section-y);">
     {tools.length === 0
-      ? <div class="project-empty"><p class="project-empty-title">No tools are listed yet.</p><p class="project-empty-body">Tools appear here as they are added. Until then, the UX Glossary has the wider list of tools and references.</p><div><Button variant="secondary" href="/resources">Open the UX Glossary</Button></div></div>
+      ? <div class="project-empty"><p class="project-empty-title">No tools are listed yet.</p><p class="project-empty-body">Tools appear here as they are added. Until then, the UX Library has the wider list of tools and references.</p><div><Button variant="secondary" href="/resources">Open the UX Library</Button></div></div>
       : <div data-project-list class="ai-tools-groups">
           {groups.map(g => (
             <section class="ai-tools-group" aria-labelledby={`ai-${g.slug}`} data-filter-group>

@@ -22,7 +22,7 @@ const description = tag
   <section class="cory-container" aria-labelledby="blog-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
     {tag
       ? <a data-link href="/blog" class="post-back"><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All posts</span></a>
-      : <p class="cory-overline" style="margin: 0;">My resources · Blogs</p>}
+      : <p class="cory-overline" style="margin: 0;">Writing · Blog</p>}
     <h1 id="blog-title" style="margin: 0; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); overflow-wrap: anywhere;">{heading}</h1>
     {!tag && <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">Guides and articles on design systems and designing AI products.</p>}
     {!tag && newest && (
@@ -37,7 +37,7 @@ const description = tag
         <ul>{tags.map(t => <li><a class="ui-chip" href={`/blog/tag/${tagSlug(t.tag)}`} aria-current={tag && tagSlug(t.tag) === tagSlug(tag) ? 'page' : undefined}>{t.tag}<span class="cory-visually-hidden">, </span><span class="chip-n">{t.n}</span></a></li>)}</ul>
       </nav>
     )}
-    {/* More than six topics fold into the closed disclosure the UX Glossary uses, so the first post stays near the top on a
+    {/* More than six topics fold into the closed disclosure the UX Library uses, so the first post stays near the top on a
         phone; on a topic's own page it is open, with that topic marked. */}
     {tags.length > 6 && (
       <details class="resource-disclosure post-topics" open={!!tag}>

@@ -14,7 +14,7 @@ const items = tools.map(t => ({ tags: [t.data.category], status: t.data.cost }))
 <section id="tools" class="cory-container" aria-label="Tools" style="display: grid; gap: var(--space-10); padding-block: var(--space-8) var(--section-y);">
   {tools.length > 0 && <ProjectFilters tags={groups.map(g => g.slug)} tagLabels={aiCategoryLabel} tagsLabel="Category" total={tools.length} items={items} options={aiCostLabel} optionsLabel="Cost" noun="tool" id="ai-filter" search={{ label: 'Find a tool', placeholder: 'Name, site or use' }} />}
   {tools.length === 0
-    ? <div class="project-empty"><p class="project-empty-title">No tools are listed yet.</p><p class="project-empty-body">Tools appear here as they are added. Until then, the UX Glossary has the wider list of tools and references.</p><div><Button variant="secondary" href="/resources">Open the UX Glossary</Button></div></div>
+    ? <div class="project-empty"><p class="project-empty-title">No tools are listed yet.</p><p class="project-empty-body">Tools appear here as they are added. Until then, the UX Library has the wider list of tools and references.</p><div><Button variant="secondary" href="/resources">Open the UX Library</Button></div></div>
     : <div data-project-list class="tooldir-groups">
         {groups.map(g => (
           <section class="tooldir-group" aria-labelledby={`ai-${g.slug}`} data-filter-group>

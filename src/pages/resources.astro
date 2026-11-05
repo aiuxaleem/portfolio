@@ -1,5 +1,5 @@
 ---
-/* /resources, the UX Glossary ("Resources" in the header, beside AI Tools): a curated directory of tools, references
+/* /resources, the UX Library ("Resources" in the header, beside AI Tools): a curated directory of tools, references
    and reading for AI product design, led by my own AI workflows, Claude skills and artifacts when there are any.
    Originally: a curated directory of tools, references and reading for AI product design. Every entry is a file in
    src/content/resources/ and links out to its own site. The page: who it is for and three counts; the categories, each
@@ -40,12 +40,12 @@ const updated = real.length ? real.reduce((d, r) => (r.data.added > d ? r.data.a
 const stat = 'margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); font-variant-numeric: tabular-nums;';
 const inkLink = 'display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-block-size: var(--tap-target); padding-block: var(--space-2); color: var(--on-ink-strong); text-decoration: none; font-weight: var(--weight-semibold); font-size: var(--text-body-md); border-block-start: 1px solid var(--on-ink-border);';
 ---
-<PageLayout title="UX Glossary · AIUXAleem" description="Tools, references and reading for AI product design, design systems and accessibility, plus my own AI workflows and Claude skills." page="resources" bg="grid" mainStyle="outline: none; overflow: clip;">
+<PageLayout title="UX Library · AIUXAleem" description="Tools, references and reading for AI product design, design systems and accessibility, plus my own AI workflows and Claude skills." page="resources" bg="grid" mainStyle="outline: none; overflow: clip;">
   <section aria-labelledby="resources-title" style="position: relative; padding-block: var(--section-y) var(--space-10); overflow: clip;">
     <div class="cory-container cory-split" style="align-items: center;">
       <div style="display: grid; gap: var(--space-6); align-content: center;">
-        <p class="cory-overline" style="margin: 0px;">Resources · UX Glossary</p>
-        <h1 id="resources-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">The UX glossary for AI product design.</h1>
+        <p class="cory-overline" style="margin: 0px;">Resources · UX Library</p>
+        <h1 id="resources-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">The UX library for AI product design.</h1>
         <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">The tools, references and reading I use in design system and AI product work, each with a line on why it earns its place. Every entry opens on its own site.</p>
         <p class="case-kicker">Kept by <bdi>{site.name}</bdi>, {profile.headline}{updated && <Fragment> · Updated <time datetime={updated.toISOString().slice(0, 10)}>{day(updated)}</time></Fragment>}</p>
         <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">

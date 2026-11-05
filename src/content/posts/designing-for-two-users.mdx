@@ -1,0 +1,64 @@
+---
+title: "Two users now: the person, and the agent acting for them"
+subtitle: What changes in my design reviews when the first user of a product is an AI agent working on someone's behalf.
+excerpt: When a person sends an AI agent to book, file or cancel something, the agent reads your product first and the person may never see a screen. Here is what I now check in every review, and what it changes in the design systems I build.
+category: AI UX
+tags:
+  - AI UX
+  - Agents
+  - Design systems
+  - Accessibility
+published: 2026-11-05
+updated: 2026-11-05
+seo:
+  title: "Designing for two users: the person and the AI agent"
+  description: "AI agents are now the first user of many products, acting for a person who never sees the screen. What to design for the agent, the person and the handoff."
+---
+
+For thirteen years the person I designed for was the person at the screen. That is still who the work is for. But more and more often, the first thing that touches a product I design is not a person. It is an agent, sent by one.
+
+Someone asks an assistant to book the flight, file the complaint, cancel the subscription or pull last quarter's numbers. The agent reads the product: its structure, its data, its rules. The person reads the result. If the agent could not finish the task, or finished it in a way the person did not want, the experience failed, and no amount of visual polish on the screen they never saw will fix it.
+
+Nielsen Norman Group has started calling this wider field [experience design](https://www.nngroup.com/articles/ux-vs-experience-design/), dropping the "user" from the name because the user is no longer always the human. I am not attached to the label. I am attached to what it points at: there are two users now, and the hardest problems sit between them.
+
+## What the agent needs
+
+An agent does not see visual hierarchy. It sees what the page or the API tells it, and it acts on names, states and rules. Designing for it is mostly the discipline I already practise for accessibility and for design systems, taken seriously.
+
+- **Structure it can read.** Semantic landmarks, one heading per thing, lists that are lists, buttons that are buttons. An agent that has to guess what a `div` does will guess wrong, the same way a screen reader would.
+- **Names that stay put.** A field called "Amount" today and "Value" tomorrow is a broken contract. Tokens, components and spec files exist so that an engineer and an agent build the same thing from the same source. I wrote about [making a design system readable by AI](/blog/ai-readable-design-system); the same files serve an agent at run time.
+- **States it can tell apart.** Thinking, unsure, wrong, done, failed. If the only difference between "saved" and "saving" is a shade of grey, a person might notice. An agent will not.
+- **A record of what happened.** What was changed, by whom, with what, so the person can check it and so an audit can. The [access-request register](/case-studies/access-requests-audit-ready) I built writes its own log for exactly this reason.
+
+## What the person still needs
+
+The agent is the immediate user. The person is still the one whose goal, safety and trust decide whether any of it worked. That does not change, and it does not get delegated.
+
+- Their goal stated plainly, and shown back to them before anything irreversible happens.
+- Control at the right moments: a chance to confirm, to correct, to stop.
+- Honest copy about what the agent did, what it could not do and why.
+- The same floor as always: accessible, readable, usable without a trick.
+
+## The handoff is where it fails
+
+The agent picks the right flight and then hands over for payment, inside a browser where the person's password manager does not work, on a page that was never designed to be arrived at mid-task. Each part works. The experience fails.
+
+So the moment control returns to the person is now a screen I design on purpose. What did the agent do, what is left, what does it need from me, and can I undo it. The same for the other direction: when the person hands a task to an agent, what did it understand, what will it do, and where will it stop and ask.
+
+## What I check in every review
+
+Three questions have joined my review list, next to the usual ones about states, contrast and copy.
+
+1. **Can an agent read this and finish the task?** Not "is it beautiful" but "is it legible to something that reads structure, data and rules".
+2. **Is the handoff back to the person designed?** Is there a screen for arriving mid-task, with the context the agent built, and a way back?
+3. **Does the agent serve the person, or us?** It is easy to steer an agent toward the plan we want sold. That is a dark pattern with a new user, and it will be found out the way the old ones were.
+
+## What it changes in the systems I build
+
+Most of this lands in the design system, because that is where the contract lives. The components I ship now carry their states and their names in a spec file beside the code, so an agent building a screen and an agent using one read the same thing. Tokens stay closed so a value cannot drift between sessions. Errors say what went wrong in words a person and a program can both act on.
+
+This site is built the same way. It has semantic landmarks, structured data on every page, a sitemap, feeds, and an [llms.txt](/llms.txt) that tells an agent what is here and where. I would rather practise it than only write about it.
+
+## Where I am going with this
+
+I have spent my career on the trust between a product and the person using it. The agent does not replace that person. It adds a second user whose needs are different, and a handoff that nobody owns yet. That handoff is where I want to spend my design time, and it is why the work I show here keeps moving from screens toward systems: the tokens, the specs, the states and the rules that both users read.

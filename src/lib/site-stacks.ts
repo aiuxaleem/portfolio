@@ -1,5 +1,5 @@
 /* The cards for the stacks on the audience websites' first screens (components/sites/hero-stack.astro, docs/SITES.md).
-   Every card is built from published content: case studies, projects, the profile, the AI tools, the UX Glossary. */
+   Every card is built from published content: case studies, projects, the profile, the AI tools, the UX Library. */
 import type { ImageMetadata } from 'astro';
 import { getCollection } from 'astro:content';
 import { listedCaseStudies, type CaseStudy } from './case-studies';
@@ -119,7 +119,7 @@ export async function aiToolCards(): Promise<StackCard[]> {
   }));
 }
 
-/** The fullest categories of the UX Glossary, each with its first entries. */
+/** The fullest categories of the UX Library, each with its first entries. */
 export async function glossaryCards(): Promise<StackCard[]> {
   const resources = (await listedResources()).filter(r => !r.data.fixture);
   const fullest = categoryCounts(resources).filter(c => c.count > 0).sort((a, b) => b.count - a.count || a.label.localeCompare(b.label)).slice(0, 3);

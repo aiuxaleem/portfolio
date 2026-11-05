@@ -3,7 +3,7 @@
   "positioning": "I design AI products and the design systems behind them, so that what a model produces is something a person can check, trust and act on.",
   "summary": [
     "I'm Mohammad Abdul Aleem, a Lead AI Product Designer in Hyderabad. Thirteen-plus years in enterprise UX taught me that trust is a design outcome: it comes from clear states, honest copy, accessible components and systems that behave the same way every time.",
-    "Today I spend most of my time on design systems that engineers and AI agents can both consume, and on the product flows where a model's output meets a person who has to act on it.",
+    "Today I spend most of my time on design systems that engineers and AI agents can both consume, and on the product flows where a model’s output meets a person who has to act on it. More and more, the first user of those flows is an agent acting for a person, so I design for both, and for the handoff between them.",
     "Where I am heading: product and AI leadership, owning the roadmap, the priorities and the outcomes as well as the screens. My design, enterprise and fintech work is the foundation for it, not something I leave behind."
   ],
   "principles": [
@@ -117,7 +117,7 @@
   "expertise": [
     {
       "title": "AI product design",
-      "body": "Flows where a model's output meets a person who has to act on it: states for thinking, unsure and wrong, review steps, and honest copy."
+      "body": "Flows where a model’s output meets a person who has to act on it: states for thinking, unsure and wrong, review steps, honest copy, and the handoff back to the person when an agent has done the work."
     },
     {
       "title": "Enterprise UX",
@@ -156,6 +156,10 @@
     {
       "title": "Validate it with people",
       "body": "I prototype, test with users and stay with the work through design-to-development handoff until it is in production."
+    },
+    {
+      "title": "Design for both users",
+      "body": "Where an agent acts for the person, I check that it can read and finish the task, that the moment control returns to the person is designed, and that the agent is helped to serve the person rather than steered to serve us."
     }
   ],
   "tools": [

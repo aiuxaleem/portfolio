@@ -1,5 +1,5 @@
 ---
-/* The UX Glossary on the website for clients (docs/SITES.md): the main site's page, with the audience websites' stack on
+/* The UX Library on the website for clients (docs/SITES.md): the main site's page, with the audience websites' stack on
    its first screen (the fullest categories, each with its first entries) in place of the library panel. */
 import ResourcesPage from '../resources.astro';
 import HeroStack from '../../components/sites/hero-stack.astro';
@@ -8,5 +8,5 @@ import { glossaryCards } from '../../lib/site-stacks';
 const stack = await glossaryCards();
 ---
 <ResourcesPage>
-  <HeroStack slot="art" id="glossary-stack" label="In the glossary" noun="category" cards={stack} />
+  <HeroStack slot="art" id="glossary-stack" label="In the library" noun="category" cards={stack} />
 </ResourcesPage>

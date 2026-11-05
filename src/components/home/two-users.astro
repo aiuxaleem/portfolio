@@ -1,0 +1,61 @@
+---
+/* Home "Two users" section (owner request, 5 November 2026: "I am basically becoming a designer who is designing for not
+   just human but also Agent"). The shift from designing for a user to designing for the person and the AI agent acting
+   for them, drawn as the word "User" struck out of "User Experience Design" with "Human + Agent" written above it, the
+   way the owner saw it drawn on a card he liked. Built from the site's own tokens: the display face for the line, the mono
+   face for the note, the brand link colour; the strike is a small inline path, so no new font or colour. The note rises and
+   the strike draws itself as the block scrolls in (motion.css, [data-two-users]). The heading and the three checks that
+   follow are the owner's own words; the field's move is credited to NN/g where the blog piece goes into it. */
+import Button from '../ui/button.astro';
+const checks = [
+  { title: 'Can an agent read it and finish the task?', body: 'Structure, data and rules, not visual hierarchy: an agent needs names it can rely on, states it can tell apart and a clear record of what it has done.' },
+  { title: 'Is the handoff back to the person designed?', body: 'The agent picks the option, then the person has to log in, confirm or pay. That moment is where each part works and the experience still fails, so it gets designed on purpose.' },
+  { title: 'Does the agent serve the person, or us?', body: 'An agent can be helped to reach the person’s goal or steered to reach ours. The first is design. The second is the dark pattern of this decade.' },
+];
+---
+<section id="two-users" data-section="" data-two-users="" aria-labelledby="two-users-title" style="position: relative; padding-block: var(--section-y); border-block-start: 1px solid var(--border-subtle);">
+  <div class="cory-container" style="display: grid; gap: var(--space-10);">
+    <figure class="two-users-figure" data-reveal="">
+      <p class="two-users-line">
+        <span class="two-users-struck"><ins class="two-users-note">Human + Agent</ins><span class="two-users-wordwrap"><del class="two-users-word">User</del><svg class="two-users-strike" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M2 8 C 24 4, 52 10, 98 5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" pathLength="1"></path></svg></span></span>
+        <span class="two-users-rest"> Experience Design</span>
+      </p>
+      <figcaption class="cory-visually-hidden">The word User struck out of User Experience Design, with Human + Agent written above it.</figcaption>
+    </figure>
+    <div data-reveal="" style="display: grid; gap: var(--space-3);">
+      <p class="cory-overline" style="margin: 0px;">Experience design</p>
+      <h2 id="two-users-title" style="margin: 0px; max-inline-size: 24ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">Two users now: the person, and the agent acting for them.</h2>
+      <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-body);">When someone sends an AI agent to book, file or cancel something, the agent reads the product first. The person still decides whether it worked, and may never see a screen. I design for both, and for the moment the work passes between them.</p>
+    </div>
+    <div data-cq=""><ol class="two-users-checks" data-reveal-group="" data-cq-3="" style="display: grid; gap: var(--grid-gap);">
+      {checks.map((c, i) => (
+        <li style="display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-glass-strong); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); min-inline-size: 0;">
+          <bdi class="tile-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</bdi>
+          <h3 style="margin: 0px; font-size: var(--text-h3); font-weight: var(--weight-bold); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); text-wrap: balance;">{c.title}</h3>
+          <p style="margin: 0px; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); text-wrap: pretty;">{c.body}</p>
+        </li>
+      ))}
+    </ol></div>
+    <div data-reveal="" style="display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); align-items: center;">
+      <Button variant="secondary" href="/blog/designing-for-two-users">Read my view on the blog</Button>
+      <p style="margin: 0px; font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-muted); max-inline-size: var(--measure-lead);">This site is built the same way: semantic landmarks, structured data, a sitemap, feeds and an <a data-link href="/llms.txt" style="color: var(--text-link); font-weight: var(--weight-semibold);">llms.txt</a> an agent can read.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* The drawn line. The note sits above the struck word on its own row, a little off true like a hand-written mark
+     (rotate only, so it costs no layout); the strike is a path across the word; both keep the word's own size. */
+  .two-users-figure { margin: 0; display: grid; gap: var(--space-2); justify-items: start; }
+  .two-users-line { margin: 0; display: grid; gap: var(--space-1); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-tight); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
+  .two-users-struck { position: relative; display: inline-grid; justify-items: start; row-gap: 0.12em; }
+  .two-users-note { display: inline-block; text-decoration: none; font-family: var(--font-mono); font-weight: var(--weight-semibold); font-size: var(--text-body-md); line-height: var(--leading-normal); letter-spacing: normal; color: var(--text-link); rotate: -3deg; transform-origin: left bottom; margin-inline-start: var(--space-2); }
+  .two-users-note::after { content: ""; display: block; inline-size: 10px; block-size: 10px; margin-block-start: 2px; margin-inline-start: var(--space-3); border-inline-start: 2px solid currentColor; border-block-end: 2px solid currentColor; rotate: -45deg; }
+  /* The strike belongs to the word alone (its own wrapper), so it is as wide as "User" and not as wide as the note above. */
+  .two-users-wordwrap { position: relative; display: inline-block; }
+  .two-users-word { text-decoration: none; color: var(--text-muted); }
+  .two-users-strike { position: absolute; inset-inline: -0.06em; inset-block-end: 0.34em; block-size: 0.2em; inline-size: calc(100% + 0.12em); color: var(--text-strong); pointer-events: none; }
+  .two-users-rest { display: inline; background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .two-users-checks { margin: 0; padding: 0; list-style: none; counter-reset: none; }
+  @media (forced-colors: active) { .two-users-word { text-decoration: line-through; } .two-users-strike { display: none; } }
+</style>

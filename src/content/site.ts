@@ -28,29 +28,29 @@ export const site = {
   rss: '/rss.xml',
   nav: [
     { key: 'home', label: 'Home', href: '/' },
-    { key: 'recent-work', label: 'My Recent Work', children: [
+    { key: 'recent-work', label: 'Work', children: [
       { key: 'work', label: 'Projects', href: '/work', blurb: 'What I am building and what has shipped' },
-      { key: 'case-studies', label: 'Case Studies', href: '/case-studies', blurb: 'How the work was designed, and what changed' },
+      { key: 'case-studies', label: 'Case studies', href: '/case-studies', blurb: 'How the work was designed, and what changed' },
     ] },
-    { key: 'my-resources', label: 'My Resources', children: [
-      { key: 'blog', label: 'Blogs', href: '/blog', blurb: 'Guides and longer pieces written for this site' },
+    { key: 'my-resources', label: 'Writing', children: [
+      { key: 'blog', label: 'Blog', href: '/blog', blurb: 'Guides and longer pieces written for this site' },
       { key: 'posts', label: 'Posts', href: '/posts', blurb: 'Short posts and series from LinkedIn' },
       { key: 'articles', label: 'Articles', href: '/articles', blurb: 'Longer pieces published on LinkedIn' },
     ] },
-    { key: 'videos', label: 'My Videos', href: '/videos' },
+    { key: 'videos', label: 'Videos', href: '/videos' },
     { key: 'resources-group', label: 'Resources', children: [
-      { key: 'resources', label: 'UX Glossary', href: '/resources', blurb: 'Tools, references and reading for AI product design' },
-      { key: 'ai-tools', label: 'AI Tools', href: '/ai-tools', blurb: 'AI tools for designers, by what they help with' },
+      { key: 'resources', label: 'UX Library', href: '/resources', blurb: 'Tools, references and reading for AI product design' },
+      { key: 'ai-tools', label: 'AI tools', href: '/ai-tools', blurb: 'AI tools for designers, by what they help with' },
     ] },
-    { key: 'about', label: 'About me', href: '/about' },
+    { key: 'about', label: 'About', href: '/about' },
   ] as NavEntry[],
   cta: { label: "Let's talk", href: '/contact' },
   /** The footer's columns: every page a visitor may look for, grouped the way the header groups them. */
   footer: [
-    { label: 'My Recent Work', links: [{ label: 'Projects', href: '/work' }, { label: 'Case Studies', href: '/case-studies' }] },
-    { label: 'My Resources', links: [{ label: 'Blogs', href: '/blog' }, { label: 'Posts', href: '/posts' }, { label: 'Articles', href: '/articles' }, { label: 'My Videos', href: '/videos' }] },
-    { label: 'Resources', links: [{ label: 'UX Glossary', href: '/resources' }, { label: 'AI Tools', href: '/ai-tools' }] },
-    { label: 'About', links: [{ label: 'About me', href: '/about' }, { label: 'Resume', href: '/resume' }, { label: 'Now', href: '/now' }, { label: 'Services', href: '/services' }, { label: "Let's talk", href: '/contact' }] },
+    { label: 'Work', links: [{ label: 'Projects', href: '/work' }, { label: 'Case studies', href: '/case-studies' }] },
+    { label: 'Writing', links: [{ label: 'Blog', href: '/blog' }, { label: 'Posts', href: '/posts' }, { label: 'Articles', href: '/articles' }, { label: 'My Videos', href: '/videos' }] },
+    { label: 'Resources', links: [{ label: 'UX Library', href: '/resources' }, { label: 'AI tools', href: '/ai-tools' }] },
+    { label: 'About and more', links: [{ label: 'About', href: '/about' }, { label: 'Resume', href: '/resume' }, { label: 'Now', href: '/now' }, { label: 'Services', href: '/services' }, { label: "Let's talk", href: '/contact' }] },
   ],
 };
 

@@ -9,7 +9,7 @@ import AiToolDirectory from '../../components/sites/ai-tool-directory.astro';
 const stack = await aiToolCards();
 ---
 <PageLayout title="AI tools for product teams · AIUXAleem, for clients" description="AI tools for product teams, grouped by what they help with: UI generation, research, testing, images, video and voice. Kept by Mohammad Abdul Aleem." page="ai-tools" bg="grid" mainStyle="outline: none; overflow: clip;">
-  <SiteHero id="clients-tools" overline="Resources · AI Tools" title="AI tools for product teams." accent="AI tools" lead="The AI tools worth knowing, grouped by what they help a product team do: from a prompt to screens, interviews to insight, a sketch to a clip. The ones I use are marked “I use this” in the list. Prices change, so check before you rely on one." primary={{ label: 'Find a tool', href: '#ai-filter-search' }} secondary={{ label: 'Open the UX Glossary', href: '/resources' }}>
+  <SiteHero id="clients-tools" overline="Resources · AI Tools" title="AI tools for product teams." accent="AI tools" lead="The AI tools worth knowing, grouped by what they help a product team do: from a prompt to screens, interviews to insight, a sketch to a clip. The ones I use are marked “I use this” in the list. Prices change, so check before you rely on one." primary={{ label: 'Find a tool', href: '#ai-filter-search' }} secondary={{ label: 'Open the UX Library', href: '/resources' }}>
     <HeroStack slot="art" id="tools-stack" label="Where I use AI" noun="category" cards={stack} />
   </SiteHero>
   <AiToolDirectory />

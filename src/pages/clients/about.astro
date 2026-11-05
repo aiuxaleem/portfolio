@@ -19,7 +19,7 @@ const stack = aboutCards({ method: '#clients-ai-title', principles: '#clients-pr
 ---
 <PageLayout title="About · AIUXAleem, for clients" description={`Who you work with: ${site.name}, ${profile.headline}. Principles, what he brings to a product team, and how he works with AI.`} page="about" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
   <SiteHero id="clients-about" overline="About" title="Who you'll work with." accent="work with" lead={`I'm ${site.name}, a ${profile.headline} with 13+ years across fintech and enterprise platforms, working from ${site.location} on GCC hours. ${profile.positioning}`} primary={{ label: c.call, href: site.calendarUrl, newTab: true }} secondary={{ label: 'See the case studies', href: '/case-studies' }}>
-    <HeroStack slot="art" id="about-stack" label="About me" noun="card" cards={stack} />
+    <HeroStack slot="art" id="about-stack" label="About" noun="card" cards={stack} />
   </SiteHero>
 
   <section class="page-section" data-surface="card" aria-labelledby="clients-principles-title">
@@ -54,6 +54,6 @@ const stack = aboutCards({ method: '#clients-ai-title', principles: '#clients-pr
     </div>
   </section>
 
-  <ContactBlock id="contact" overline="Next step" title="Have a product that needs to feel trustworthy?" lead="Tell me what you're building, or book a 15-minute call to scope it. I reply within 48 hours." topic="project" />
+  <ContactBlock id="contact" overline="Next step" title="Have a product people need to trust?" lead="Tell me what you're building, or book a 15-minute call to scope it. I reply within 48 hours." topic="project" />
 </PageLayout>
 

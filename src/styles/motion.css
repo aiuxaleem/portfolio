@@ -216,4 +216,13 @@
   ::view-transition-group(cover) { animation-duration: var(--duration-enter); animation-timing-function: var(--ease-out); }
   ::view-transition-image-pair(cover) { isolation: auto; }
   ::view-transition-old(cover), ::view-transition-new(cover) { animation: none; mix-blend-mode: normal; inline-size: 100%; block-size: 100%; object-fit: cover; }
+
+  /* ---------- The "two users" line on Home (home/two-users.astro): the note rises in and the strike draws itself as the
+     block scrolls in, both following the scroll. ---------- */
+  @supports (animation-timeline: view()) {
+    [data-two-users] .two-users-strike path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: strike-draw linear both; animation-timeline: view(); animation-range: entry 35% entry 95%; }
+    @keyframes strike-draw { to { stroke-dashoffset: 0; } }
+    [data-two-users] .two-users-note { animation: note-in linear both; animation-timeline: view(); animation-range: entry 45% cover 25%; }
+    @keyframes note-in { from { opacity: 0; translate: 0 var(--space-3); rotate: 0deg; } }
+  }
 }
