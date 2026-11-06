@@ -247,6 +247,42 @@ for (const route of ['/', '/about', '/posts']) {
 }
 console.log('fade mode: 3 pages as a person under reduced motion');
 
+// 7i. Depth (owner request, 6 November 2026): on the portrait scene the tiles lead the page and the portrait lags it, the
+//     "two users" line lags, a page's cover slides through its frame; each follows the scroll (reads differently at two
+//     scroll positions, with opposite signs for near and far); nothing of it under reduced motion (fade mode or automation).
+{
+  const depth = async (p, sel) => p.evaluate(s => { const el = document.querySelector(s); return el ? parseFloat(getComputedStyle(el).translate.split(' ')[1] || '0') || 0 : null; }, sel);
+  const { ctx, p } = await open('/');
+  await p.waitForTimeout(600);
+  const at = async (sel, frac) => { await p.evaluate(({ s, f }) => { const el = document.querySelector(s); scrollTo({ top: el.getBoundingClientRect().top + scrollY - innerHeight * f, behavior: 'instant' }); }, { s: sel, f: frac }); await p.waitForTimeout(250); };
+  await at('#about', 0.8); const tileA = await depth(p, '#about [data-hero-stage] > span[aria-hidden="true"]:nth-of-type(2)'), faceA = await depth(p, '#about [data-hero-stage] > div:has([data-image-box])');
+  await at('#about', 0.1); const tileB = await depth(p, '#about [data-hero-stage] > span[aria-hidden="true"]:nth-of-type(2)'), faceB = await depth(p, '#about [data-hero-stage] > div:has([data-image-box])');
+  await at('#two-users', 0.8); const lineA = await depth(p, '#two-users .two-users-figure'); await at('#two-users', 0.1); const lineB = await depth(p, '#two-users .two-users-figure');
+  const overflow = await p.evaluate(() => document.documentElement.scrollWidth > innerWidth);
+  out['depth home'] = { tile: [tileA, tileB], face: [faceA, faceB], line: [lineA, lineB], overflow };
+  if (tileA === null || faceA === null || lineA === null) fail('depth: a layer is missing on Home (tile, portrait or the two-users line)');
+  else { if (!(tileA > tileB) || !(faceA < faceB)) fail(`depth: the tile should lead (${tileA} then ${tileB}) and the portrait lag (${faceA} then ${faceB}) as the scene scrolls up`); if (!(lineA < lineB)) fail(`depth: the two-users line should lag (${lineA} then ${lineB})`); }
+  if (overflow) fail('depth: Home scrolls sideways');
+  await ctx.close();
+}
+{
+  const { ctx, p } = await open('/work/colaberry-design-system'); await p.waitForTimeout(600);
+  const r = await p.evaluate(async () => { const img = document.querySelector('main header .project-cover > img'); if (!img) return null; const read = () => parseFloat(getComputedStyle(img).translate.split(' ')[1] || '0') || 0; const frame = img.parentElement; const a = read(); scrollTo({ top: 400, behavior: 'instant' }); await new Promise(r => setTimeout(r, 250)); const b = read(); return { a, b, clipped: getComputedStyle(frame).overflow === 'hidden', taller: img.getBoundingClientRect().height > frame.getBoundingClientRect().height * 1.05, frameHeight: Math.round(frame.getBoundingClientRect().height) }; });
+  out['depth cover'] = r;
+  if (!r) fail('depth: no cover picture on the project page'); else if (!(r.b < r.a) || !r.clipped || !r.taller) fail(`depth: the cover should slide up through its clipped frame (${r.a} then ${r.b}, clipped ${r.clipped}, taller ${r.taller})`);
+  await ctx.close();
+}
+for (const [label, o] of [['reduced motion (automation)', { motion: 'reduce' }], ['reduced motion (a person)', { motion: 'reduce', person: true }]]) {
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: o.motion }); await ctx.route(u => !u.hostname.startsWith('127.0.0.1'), r => r.abort());
+  if (o.person) await ctx.addInitScript(() => { Object.defineProperty(navigator, 'webdriver', { get: () => false }); });
+  const p = await ctx.newPage(); await p.goto(O + '/', { waitUntil: 'load' }); await p.waitForTimeout(400);
+  const moving = await p.evaluate(() => document.getAnimations().filter(a => !(a.timeline instanceof DocumentTimeline)).length);
+  out[`depth ${label}`] = { scrollDriven: moving };
+  if (moving) fail(`depth under ${label}: ${moving} scroll-driven animations running`);
+  await ctx.close();
+}
+console.log('depth: the portrait scene and the two-users line on Home, a project cover, and none under reduced motion');
+
 console.log('flow: heads and bodies on 3 pages, the heading wipe with and without the script, cascades on 5 lists, the first view on 13 pages, the menu card, the phone menu, the theme in both settings, the travelling picture in both settings');
 
 await browser.close(); server.close();

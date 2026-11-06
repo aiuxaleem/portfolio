@@ -100,7 +100,7 @@
      after the load event; motion.ts then does the scroll reveals listed in its header (section heads line by line, the
      skills diagram, the career line, the "worked with" names, the closing panel). The first view stays the CSS above.
      The script reads these tokens. */
-  :root { --duration-reveal: 800ms; --stagger-line: 80ms; --stagger-item: 60ms; --stagger-menu: 30ms; }
+  :root { --duration-reveal: 800ms; --stagger-line: 80ms; --stagger-item: 60ms; --stagger-menu: 30ms; --parallax-far: 32px; --parallax-mid: 48px; --parallax-near: 88px; }
   /* A heading's line masks (SplitText) get a little room above and below, so ascenders and descenders are not cut while
      the line rises; the negative margin keeps the heading's height as it was. */
   .motion-line-mask { padding-block: 0.14em; margin-block: -0.14em; }
@@ -121,8 +121,11 @@
 
   /* ---------- The scroll ---------- */
   @supports (animation-timeline: view()) {
-    /* Pictures settle into their frames as they come into view (scale, so the hover zoom still works). */
-    :is(.project-card-media, .project-cover, .case-figure, .post-gallery) img { animation: settle linear both; animation-timeline: view(); animation-range: entry 0% cover 45%; }
+    /* Pictures settle into their frames as they come into view (scale, so the hover zoom still works). The frame names the
+       timeline: a frame that clips (overflow hidden) is a scroll container, so the picture's own view() would never move
+       (measured 6 November 2026: stuck at 47% for every cover). */
+    :is(.project-card-media, .project-cover, .case-figure, .post-gallery) { view-timeline: --frame block; }
+    :is(.project-card-media, .project-cover, .case-figure, .post-gallery) img { animation: settle linear both; animation-timeline: --frame; animation-range: entry 0% cover 45%; }
     @keyframes settle { from { scale: 1.16; } to { scale: 1; } }
     /* Section headings are drawn in by a wipe that follows the scroll. */
     .page-section-head > :is(h2, .page-h2) { animation: wipe linear both; animation-timeline: view(); animation-range: entry 10% cover 30%; }
@@ -156,6 +159,30 @@
     /* A card in a grid already leans in with the scroll: its fade (islands/reveal.ts, which marks such an item data-reveal-lean)
        adds no second rise. */
     [data-reveal-state="pending"][data-reveal-lean] { transform: none !important; }
+
+    /* ---------- Depth (owner request, 6 November 2026, L-55): a few layers move at their own speed as the page scrolls, so the
+       page reads as scenery with depth rather than a flat sheet. A far layer lags the page (it drifts down as the page goes
+       up); a near layer leads it. Each layer's own crossing of the screen is its timeline, so it rests when it is out of view.
+       Only translate moves; nothing is resized or re-laid out, so there is no layout shift. --p is the layer's travel. ---------- */
+    @keyframes depth-far { from { translate: 0 calc(-1 * var(--p)); } to { translate: 0 var(--p); } }
+    @keyframes depth-near { from { translate: 0 var(--p); } to { translate: 0 calc(-1 * var(--p)); } }
+    /* The portrait scenes (the point of view on Home, the About hero): the portrait sits back, the glow further back, the
+       four icon tiles float in front at four speeds. */
+    [data-hero-stage] > div:has([data-image-box]) { --p: var(--parallax-mid); animation: depth-far linear both; animation-timeline: view(); }
+    [data-hero-stage] > .cory-glow-drift { --p: var(--parallax-far); animation: depth-far linear both; animation-timeline: view(); }
+    [data-hero-stage] > span[aria-hidden="true"] { animation: depth-near linear both; animation-timeline: view(); }
+    [data-hero-stage] > span[aria-hidden="true"]:nth-of-type(1) { --p: calc(var(--parallax-near) * 0.65); }
+    [data-hero-stage] > span[aria-hidden="true"]:nth-of-type(2) { --p: var(--parallax-near); }
+    [data-hero-stage] > span[aria-hidden="true"]:nth-of-type(3) { --p: calc(var(--parallax-near) * 0.8); }
+    [data-hero-stage] > span[aria-hidden="true"]:nth-of-type(4) { --p: calc(var(--parallax-near) * 1.2); }
+    /* The drawn line of the "two users" section sits a step back. */
+    [data-two-users] .two-users-figure { --p: var(--parallax-mid); animation: depth-far linear both; animation-timeline: view(); }
+    /* Section backgrounds: the dot band, the glows and the grid's glow sit furthest back. */
+    [data-bg~="beam"]::after, [data-bg~="glow"]::before, [data-bg~="glow"]::after, [data-bg~="grid"]::after { --p: var(--parallax-far); animation: depth-far linear both; animation-timeline: view(); }
+    /* Covers on a project or case study page, and the figures in a case study: the picture is a little taller than its
+       frame and slides up through it as the frame crosses the screen (the frame clips it), after settling in as before. */
+    .project-cover > img:not(.fitted-whole) { position: absolute; inset-block-start: 0; inset-inline: 0; block-size: 112%; animation: settle linear both, cover-window linear both; animation-timeline: --frame, --frame; animation-range: entry 0% cover 45%, cover 0% cover 100%; }
+    @keyframes cover-window { from { translate: 0 0; } to { translate: 0 -10.7%; } }
   }
 
   /* ---------- The hero stack opens a little under the pointer ---------- */
