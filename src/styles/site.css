@@ -67,6 +67,8 @@ div:has(> [data-progress]) { display: none; }
    Without the script nothing is ever hidden. !important because carried-over markup sets transform and transition inline. */
 [data-reveal-state="pending"] { opacity: 0 !important; transform: translateY(var(--reveal-distance)) !important; }
 [data-reveal-state="in"] { transition: opacity var(--duration-enter) var(--ease-out), transform var(--duration-enter) var(--ease-out) !important; transition-delay: calc(var(--i, 0) * var(--stagger)) !important; }
+/* Fade mode (the device asks for reduced motion): the same cascade as a fade alone, long enough to be seen, past tokens.css's 1 ms rule. */
+html[data-motion="fade"] [data-reveal-state="in"] { transition-property: opacity !important; transition-duration: var(--duration-fade) !important; }
 @media print { [data-reveal-state] { opacity: 1 !important; transform: none !important; } }
 body { overflow-wrap: anywhere; }
 h1, h2, h3, h4 { overflow-wrap: anywhere; text-wrap: balance; }

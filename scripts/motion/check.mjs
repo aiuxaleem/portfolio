@@ -227,6 +227,26 @@ for (const [label, motion] of [['motion allowed', 'no-preference'], ['reduced mo
   if (there.named || there.flag || back.named || back.flag) fail(`cover (${label}): a name or the root mark was left behind ${JSON.stringify({ there, back })}`);
   await ctx.close();
 }
+// 7h. Fade mode (owner instruction, 6 November 2026): a person's browser that asks for reduced motion gets the reveals and
+//     the first view as fades, opacity only and nothing moving, without the GSAP module; an automated browser under reduced
+//     motion (navigator.webdriver, as every check and screenshot runs) gets the page as authored, which section 1 covers.
+for (const route of ['/', '/about', '/posts']) {
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce' }); await ctx.route(u => !u.hostname.startsWith('127.0.0.1'), r => r.abort());
+  await ctx.addInitScript(() => { Object.defineProperty(navigator, 'webdriver', { get: () => false }); });
+  const p = await ctx.newPage(); await p.goto(O + route, { waitUntil: 'commit' }); await p.waitForTimeout(150);
+  const first = await p.evaluate(() => ({ mode: document.documentElement.getAttribute('data-motion'), h1: document.getAnimations().filter(a => a.effect?.target === document.querySelector('main h1') && a.animationName === 'fade-in').length, moving: document.getAnimations().filter(a => a.timeline instanceof DocumentTimeline && a.animationName && a.animationName !== 'fade-in' && !/ink-|edge/.test(a.animationName)).length }));
+  await p.waitForTimeout(2500);
+  await p.evaluate(() => { window.__seen = []; new MutationObserver(ms => ms.forEach(m => { const t = m.target; if (m.attributeName === 'data-reveal-state' && t.dataset.revealState === 'in') { const s = getComputedStyle(t); window.__seen.push({ dur: parseFloat(s.transitionDuration), props: s.transitionProperty, transform: s.transform }); } })).observe(document.body, { attributes: true, subtree: true, attributeFilter: ['data-reveal-state'] }); });
+  const r = await p.evaluate(async () => { for (let y = 0; y <= document.documentElement.scrollHeight; y += 400) { scrollTo({ top: y, behavior: 'instant' }); await new Promise(r => setTimeout(r, 120)); } await new Promise(r => setTimeout(r, 2000)); const seen = window.__seen; return { revealed: seen.length, shortest: Math.min(...seen.map(s => s.dur)), notOpacityOnly: seen.filter(s => s.props !== 'opacity').length, moved: seen.filter(s => s.transform !== 'none').length, module: performance.getEntriesByType('resource').filter(e => e.name.includes('/_m/')).length, left: document.querySelectorAll('[data-reveal-state]').length, invisible: [...document.querySelectorAll('main *')].filter(e => e.textContent.trim() && !e.closest('[hidden], [aria-hidden="true"], .cory-visually-hidden, details:not([open])') && (getComputedStyle(e).opacity === '0' || getComputedStyle(e).visibility === 'hidden')).length }; });
+  out[`fade ${route}`] = { first, ...r };
+  if (first.mode !== 'fade') fail(`${route} fade mode: html[data-motion] is "${first.mode}" for a person under reduced motion`);
+  if (!first.h1 || first.moving) fail(`${route} fade mode: first view h1 fade ${first.h1}, ${first.moving} moving animations (none allowed)`);
+  if (!r.revealed || r.shortest < 0.3 || r.notOpacityOnly || r.moved) fail(`${route} fade mode: ${r.revealed} reveals, shortest ${r.shortest} s, ${r.notOpacityOnly} not opacity-only, ${r.moved} moved`);
+  if (r.module || r.left || r.invisible) fail(`${route} fade mode: module fetched ${r.module}, ${r.left} states left, ${r.invisible} elements invisible after a scroll`);
+  await ctx.close();
+}
+console.log('fade mode: 3 pages as a person under reduced motion');
+
 console.log('flow: heads and bodies on 3 pages, the heading wipe with and without the script, cascades on 5 lists, the first view on 13 pages, the menu card, the phone menu, the theme in both settings, the travelling picture in both settings');
 
 await browser.close(); server.close();

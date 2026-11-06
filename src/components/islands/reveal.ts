@@ -4,7 +4,9 @@
    text (article and case study bodies) is left alone.
    A block is hidden only while it is still below the screen and about to scroll in, never in the first view, so the
    first view and the LCP image are never touched and the page is not restyled as a whole when it loads.
-   Does nothing under reduced motion. Styles: site.css ([data-reveal-state]).
+   Under reduced motion it runs as fades only (the head script sets html[data-motion="fade"]; site.css then transitions
+   opacity alone and the rise distance is 0), and not at all in an automated browser under reduced motion, where the
+   page must stay as authored. Styles: site.css ([data-reveal-state]).
    A block that islands/motion.ts animates itself (a section head with the body that sits with it, the career, the names
    on the "worked with" band) is marked data-motion-owned and left alone here, whether it was marked before this ran or
    after (the module arrives after the load event), so no element is moved by both. */
@@ -12,7 +14,8 @@ const BLOCKS = '[data-reveal], .page-section-head, .page-section-head ~ *, .resu
 const GROUPS = '[data-reveal-group], :is(ul, ol):has(> li > :is(.project-card, .video-card, .embed-card, .tile, .cert-name, [data-project])), :is(ul, ol):has(> li > div > :is(.project-card, .embed-card)), .articles-rest, .sitemap-list, .cert-list, .footer-columns';
 const OWNED = 'data-motion-owned';
 
-if (matchMedia('(prefers-reduced-motion: no-preference)').matches && 'IntersectionObserver' in window) {
+const mode = document.documentElement.getAttribute('data-motion');
+if ((mode === 'on' || mode === 'fade') && 'IntersectionObserver' in window) {
   const grouped = new Set<Element>();
   document.querySelectorAll(GROUPS).forEach(group => [...group.children].forEach(child => grouped.add(child)));
   const blocks = [...document.querySelectorAll(BLOCKS)].filter(b => ![...grouped].some(g => b.contains(g)));

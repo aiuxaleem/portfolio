@@ -91,15 +91,16 @@ const field = !Astro.url.pathname.startsWith('/admin');
         if (t !== 'light' && t !== 'dark') { try { t = localStorage.getItem('aiuxaleem-theme'); } catch (e) {} }
         if (t !== 'light' && t !== 'dark') t = 'dark';
         d.setAttribute('data-theme', t);
-        /* Motion is on when the visitor allows it and JavaScript runs: the GSAP module is fetched after the load event (below), and reveal.ts leaves the blocks it owns. */
+        /* Motion mode (owner instruction, 6 November 2026, L-50 amended): "on" when the visitor allows motion (the GSAP module is fetched after the load event, below, and reveal.ts leaves the blocks it owns); "fade" when the device asks for reduced motion (the reveals and the first view play as fades, opacity only, nothing moves); nothing at all for an automated browser under reduced motion (navigator.webdriver: every check and screenshot sees the page as authored). */
         if (matchMedia('(prefers-reduced-motion: no-preference)').matches) d.setAttribute('data-motion', 'on');
+        else if (!navigator.webdriver) d.setAttribute('data-motion', 'fade');
       })();
     </script>
     {preload.map(href => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
     <!-- The GSAP module (islands/motion.ts bundled by scripts/perf/bundle-motion.mjs) is fetched after the load event, on an idle
          moment, and only when motion is allowed and this is not the admin: it is never on the path to the first paint or the
          largest paint (Lighthouse counts every early high-priority request against them). -->
-    <script is:inline set:html={`addEventListener('load',function(){if(!document.documentElement.hasAttribute('data-motion')||document.querySelector('.admin-app'))return;(self.requestIdleCallback||function(f){setTimeout(f,300)})(function(){import(${JSON.stringify(motion.url)})},{timeout:2000})})`}></script>
+    <script is:inline set:html={`addEventListener('load',function(){if(document.documentElement.getAttribute('data-motion')!=='on'||document.querySelector('.admin-app'))return;(self.requestIdleCallback||function(f){setTimeout(f,300)})(function(){import(${JSON.stringify(motion.url)})},{timeout:2000})})`}></script>
     <!-- Page flow (owner, 5 November 2026): when a link leads from a card to its page, the card's picture travels into the
          page's cover, and on the way back the cover returns to its card. A cross-document view transition (motion.css opts in;
          Chrome and Edge 126 up): for its length the two carry the same view-transition-name. pagereveal fires at the new page's

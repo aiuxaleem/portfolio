@@ -390,6 +390,7 @@
   --duration-base: 220ms; /* @kind other */ /* hover, focus */
   --duration-slow: 380ms; /* @kind other */ /* panels, menus */
   --duration-enter: 600ms; /* @kind other */ /* content reveal */
+  --duration-fade: 420ms; /* @kind other */ /* a reveal under reduced motion: opacity only, no movement (6 November 2026) */
   /* Springs: a damped spring sampled into linear(). The duration includes the settle, so it is longer than the motion looks. */
   --ease-spring-soft: linear(0, 0.082, 0.255, 0.447, 0.62, 0.758, 0.86, 0.93, 0.973, 0.998, 1.01, 1.015, 1.015, 1.013, 1.01, 1.007, 1.005, 1.003, 1); /* @kind other */ /* lifts and leans: 0.35 s, a 1.5% overshoot */
   --duration-spring-soft: 550ms; /* @kind other */
