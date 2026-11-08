@@ -27,27 +27,30 @@ const attrs = href ? { href } : { type: 'button' };
   .ui-button-label { display: inline-flex; align-items: center; gap: 8px; }
   .ui-button-sm .ui-button-label { gap: 6px; }
   .ui-button-lg .ui-button-label { gap: 10px; }
-  .ui-button-primary { background: var(--gradient-brand-deep); color: var(--text-on-brand); box-shadow: var(--shadow-brand); }
+  .ui-button-primary { background: var(--gradient-brand-deep); background-size: 160% 100%; background-position: 0% 50%; color: var(--text-on-brand); box-shadow: var(--shadow-brand), var(--highlight-inset); }
   .ui-button-ink { background: var(--action-ink); color: var(--surface-card); box-shadow: var(--shadow-sm); }
-  .ui-button-secondary { background: var(--surface-card); color: var(--text-strong); box-shadow: var(--shadow-xs); border-color: var(--border-interactive); }
+  .ui-button-secondary { background: var(--surface-glass-strong); color: var(--text-strong); box-shadow: var(--shadow-xs), var(--highlight-inset); border-color: var(--border-interactive); }
+  /* The breath (motion.css) lives on this layer: a glow that fades in and out above the button, composited, never a repaint of the button. */
+  :is(.ui-button-primary, [data-ds-button="primary"])::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: var(--shadow-brand-hover), 0 0 0 8px color-mix(in srgb, var(--action-primary) 16%, transparent); opacity: 0; pointer-events: none; }
   .ui-button-ghost { background: transparent; color: var(--text-link); }
   .ui-button-on-ink { background: var(--on-ink-fill); color: var(--on-ink-strong); border-color: var(--on-ink-border-strong); }
   .ui-button-on-ink-solid { background: var(--on-ink-strong); color: var(--navy-800); box-shadow: var(--shadow-md); }
   .ui-button:not(:disabled):not([aria-disabled="true"]):active { transform: scale(var(--press-scale)); }
   @media (hover: hover) {
     .ui-button:not(:disabled):not([aria-disabled="true"]):hover { transform: translateY(var(--lift-hover-sm)); }
+    .ui-button-primary:not(:disabled):hover, .ui-button-secondary:not(:disabled):hover { transform: translateY(calc(2 * var(--lift-hover-sm))); }
     /* No brightness filter on hover: it took the white label to about 4.0:1 at the cyan end (docs/AUDIT_FINDINGS.md L-05). */
-    .ui-button-primary:not(:disabled):hover { color: var(--text-on-brand); box-shadow: var(--shadow-brand-hover); }
+    .ui-button-primary:not(:disabled):hover { color: var(--text-on-brand); background-position: 100% 50%; box-shadow: var(--shadow-brand-hover), var(--highlight-inset); }
     .ui-button-ink:not(:disabled):hover { color: var(--surface-card); background: var(--action-ink-hover); box-shadow: var(--shadow-md); }
-    .ui-button-secondary:not(:disabled):hover { color: var(--text-strong); background: var(--action-secondary-hover); box-shadow: var(--shadow-sm); }
+    .ui-button-secondary:not(:disabled):hover { color: var(--text-link); border-color: var(--text-link); background: var(--action-secondary-hover); box-shadow: var(--shadow-sm), var(--highlight-inset); }
     .ui-button-ghost:not(:disabled):hover { background: var(--action-ghost-hover); color: var(--text-link-hover); }
     .ui-button-on-ink:not(:disabled):hover { color: var(--on-ink-strong); background: var(--on-ink-fill-hover); }
     .ui-button-on-ink-solid:not(:disabled):hover { color: var(--navy-800); box-shadow: var(--shadow-lg), var(--shadow-glow); }
   }
   /* Focus twins of the hover tints and shadows (CLAUDE.md 2.7). */
-  .ui-button-primary:not(:disabled):focus-visible { box-shadow: var(--shadow-brand-hover); }
+  .ui-button-primary:not(:disabled):focus-visible { background-position: 100% 50%; box-shadow: var(--shadow-brand-hover), var(--highlight-inset); }
   .ui-button-ink:not(:disabled):focus-visible { background: var(--action-ink-hover); box-shadow: var(--shadow-md); }
-  .ui-button-secondary:not(:disabled):focus-visible { background: var(--action-secondary-hover); box-shadow: var(--shadow-sm); }
+  .ui-button-secondary:not(:disabled):focus-visible { color: var(--text-link); border-color: var(--text-link); background: var(--action-secondary-hover); box-shadow: var(--shadow-sm), var(--highlight-inset); }
   .ui-button-ghost:not(:disabled):focus-visible { background: var(--action-ghost-hover); color: var(--text-link-hover); }
   .ui-button-on-ink:not(:disabled):focus-visible { background: var(--on-ink-fill-hover); }
   .ui-button-on-ink-solid:not(:disabled):focus-visible { box-shadow: var(--shadow-lg), var(--shadow-glow); }

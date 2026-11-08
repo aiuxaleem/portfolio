@@ -18,6 +18,16 @@
      brand blue fell below 4.5:1.) The buttons that come from the design markup carry their own transition inline, so
      the spring is for the site's own buttons and chips; the leaning icon is for both. */
   .ui-button, .ui-chip { transition-property: transform, box-shadow, background, filter, color; transition-duration: var(--duration-spring-soft), var(--duration-base), var(--duration-base), var(--duration-base), var(--duration-base); transition-timing-function: var(--ease-spring-soft), var(--ease-out), var(--ease-out), var(--ease-out), var(--ease-out); }
+  /* The calls to action (L-56): the gradient drifts under the pointer at the slow pace, the border and label take the link colour at the base pace. */
+  .ui-button-primary, [data-ds-button="primary"] { transition-property: transform, box-shadow, background-position, color; transition-duration: var(--duration-spring-soft), var(--duration-base), var(--duration-slow), var(--duration-base); transition-timing-function: var(--ease-spring-soft), var(--ease-out), var(--ease-out), var(--ease-out); }
+  .ui-button-secondary, [data-ds-button="secondary"] { transition-property: transform, box-shadow, background, border-color, color; transition-duration: var(--duration-spring-soft), var(--duration-base), var(--duration-base), var(--duration-base), var(--duration-base); transition-timing-function: var(--ease-spring-soft), var(--ease-out), var(--ease-out), var(--ease-out), var(--ease-out); }
+  /* A primary call to action breathes once as it arrives: the glow swells and settles. In the first view it follows the
+     hero's rise; below it, it follows the scroll as the button comes into view (view timelines). Never while disabled. */
+  @keyframes cta-breath { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+  :is([data-hero] [data-hero-ctas], .site-hero-ctas, .hero-split-words [data-hero-ctas]) :is(.ui-button-primary, [data-ds-button="primary"]):not(:disabled)::after { animation: cta-breath 1.8s var(--ease-in-out) 1.3s 1 both; }
+  @supports (animation-timeline: view()) {
+    main :is(.ui-button-primary, [data-ds-button="primary"]):not(:disabled):not([data-hero] *, .site-hero-ctas *, .hero-split-words *)::after { animation: cta-breath linear both; animation-timeline: view(); animation-range: entry 40% cover 45%; }
+  }
   .ui-button:active, .ui-chip:active { transition-duration: var(--duration-fast); transition-timing-function: var(--ease-out); }
   .ui-button svg, [data-ds-button] svg { transition: transform var(--duration-spring-soft) var(--ease-spring-soft); }
   :is(.ui-button, [data-ds-button]):focus-visible svg[data-dir-icon], :is(.ui-button, [data-ds-button]):focus-visible [data-dir-icon] > svg { transform: translateX(calc(3px * var(--dir-x))) scaleX(var(--dir-x)); }
@@ -251,6 +261,36 @@
     @keyframes strike-draw { to { stroke-dashoffset: 0; } }
     [data-two-users] .two-users-note { animation: note-in linear both; animation-timeline: view(); animation-range: entry 45% cover 25%; }
     @keyframes note-in { from { opacity: 0; translate: 0 var(--space-3); rotate: 0deg; } }
+  }
+
+  /* ---------- Micro-interactions (owner request, 8 November 2026, L-56) ----------
+     The header's links grow an underline from their start on hover and focus (the current page keeps its own mark); the menu
+     button's lines part a little; a text field's border and shadow answer focus; the copy-email button's check pops in. */
+  .header-nav-link:not([aria-current]) { position: relative; }
+  .header-nav-link:not([aria-current])::after { content: ""; position: absolute; inset-inline: 0; inset-block-end: -2px; block-size: 2px; border-radius: 1px; background: var(--gradient-brand); transform: scaleX(0); transform-origin: var(--origin-inline-start); transition: transform var(--duration-spring-soft) var(--ease-spring-soft); pointer-events: none; }
+  .header-nav-link:not([aria-current]):focus-visible::after { transform: scaleX(1); }
+  [data-menu-open] svg path { transition: translate var(--duration-spring-pop) var(--ease-spring-pop); }
+  [data-menu-open]:focus-visible svg path:nth-of-type(1) { translate: 0 -1.5px; }
+  [data-menu-open]:focus-visible svg path:nth-of-type(3) { translate: 0 1.5px; }
+  .form-field :is(input, textarea) { transition: border-color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out), background var(--duration-base) var(--ease-out); }
+  [data-email-copy][data-state="copied"] [data-icon-check] { animation: tick-in var(--duration-spring-pop) var(--ease-spring-pop) both; }
+  @media (hover: hover) {
+    .header-nav-link:not([aria-current]):hover::after { transform: scaleX(1); }
+    [data-menu-open]:hover svg path:nth-of-type(1) { translate: 0 -1.5px; }
+    [data-menu-open]:hover svg path:nth-of-type(3) { translate: 0 1.5px; }
+  }
+
+  /* ---------- Horizontal scrolling (owner request, 8 November 2026, L-56) ----------
+     The "worked with" band becomes a strip that drifts sideways as the page scrolls past it: the names stand in one line,
+     twice over so the strip is always wider than the screen, and the line slides by a third of its width across the band's
+     crossing of the screen. Only with motion allowed and view timelines; otherwise the band wraps as it always did and the
+     second copy is not shown. */
+  @supports (animation-timeline: view()) {
+    html[data-motion="on"] [data-worked-strip] { flex-wrap: nowrap !important; justify-content: flex-start !important; inline-size: max-content; max-inline-size: none !important; margin-inline: 0 !important; animation: strip-drift linear both; animation-timeline: view(); animation-range: entry 0% exit 100%; }
+    html[data-motion="on"] [data-worked-strip] > [data-strip-copy] { display: contents !important; } /* past its inline display: none */
+    @keyframes strip-drift { from { translate: 0 0; } to { translate: calc(-33.333% * var(--dir-x, 1)) 0; } }
+    /* A card in a sideways row does not lean or settle: the row, not the page, is its scroller. */
+    @container (max-width: 519px) { [data-scroll-row] > li > .project-card, [data-scroll-row] img { animation: none !important; } }
   }
 }
 

@@ -27,13 +27,20 @@ const teams = Astro.props.teams ?? [
     </div>
     <div aria-hidden="true" style="overflow: clip; padding-block: var(--space-8) var(--space-6);">
       <div style="inline-size: 106%; margin-inline: -3%; padding-block: var(--space-5); padding-inline: calc(3% + var(--gutter)); background: var(--gradient-brand-deep); box-shadow: var(--shadow-brand); transform: rotate(calc(-1.2deg * var(--dir-x))); direction: ltr;">
-          <div data-reveal="" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-4) var(--space-10); max-inline-size: var(--container-max); margin-inline: auto; color: var(--text-on-brand);">
+          <div data-reveal="" data-worked-strip="" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-4) var(--space-10); max-inline-size: var(--container-max); margin-inline: auto; color: var(--text-on-brand);">
             {teams.map(t => (
               <span style="display: grid; gap: var(--space-1); justify-items: center; text-align: center; min-inline-size: 0;">
                 <span style="font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-body-lg); letter-spacing: var(--tracking-tight); line-height: var(--leading-snug); overflow-wrap: anywhere;">{t.name}</span>
                 <span class="cory-overline" style="color: var(--text-on-brand);">{t.sector}</span>
               </span>
             ))}
+            {/* The second copy keeps the strip wider than the screen while it drifts (motion.css); shown only in that mode. */}
+            <span data-strip-copy="" style="display: none;">{teams.map(t => (
+              <span style="display: grid; gap: var(--space-1); justify-items: center; text-align: center; min-inline-size: 0;">
+                <span style="font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-body-lg); letter-spacing: var(--tracking-tight); line-height: var(--leading-snug); overflow-wrap: anywhere;">{t.name}</span>
+                <span class="cory-overline" style="color: var(--text-on-brand);">{t.sector}</span>
+              </span>
+            ))}</span>
           </div>
       </div>
     </div>

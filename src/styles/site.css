@@ -67,6 +67,11 @@ div:has(> [data-progress]) { display: none; }
    Without the script nothing is ever hidden. !important because carried-over markup sets transform and transition inline. */
 [data-reveal-state="pending"] { opacity: 0 !important; transform: translateY(var(--reveal-distance)) !important; }
 [data-reveal-state="in"] { transition: opacity var(--duration-enter) var(--ease-out), transform var(--duration-enter) var(--ease-out) !important; transition-delay: calc(var(--i, 0) * var(--stagger)) !important; }
+/* The halves of a split section arrive from their own sides (islands/reveal.ts marks them); the distance is 0 under reduced motion. */
+[data-reveal-state="pending"][data-reveal-side="start"] { transform: translateX(calc(-1 * var(--reveal-distance) * var(--dir-x, 1))) !important; }
+[data-reveal-state="pending"][data-reveal-side="end"] { transform: translateX(calc(var(--reveal-distance) * var(--dir-x, 1))) !important; }
+/* Fade mode: hover, focus and press still answer in colour, shade and shadow (not movement), at the base duration, past tokens.css's 1 ms rule. */
+html[data-motion="fade"] :is(a, button, input, textarea, .ui-button, .ui-chip, .project-card, .header-nav-link, .email-copy-button, .nav-panel-link) { transition-property: color, background-color, border-color, box-shadow, opacity, outline-color !important; transition-duration: var(--duration-base) !important; }
 /* Fade mode (the device asks for reduced motion): the same cascade as a fade alone, long enough to be seen, past tokens.css's 1 ms rule. */
 html[data-motion="fade"] [data-reveal-state="in"] { transition-property: opacity !important; transition-duration: var(--duration-fade) !important; }
 @media print { [data-reveal-state] { opacity: 1 !important; transform: none !important; } }
@@ -416,3 +421,19 @@ body:has(> .ai-field) [data-bg~="grid"]::before { display: none; }
 @media (prefers-reduced-motion: reduce) { .ink-aurora > i, .ink-edge > b { animation: none; } .ink-aurora > i[data-follow], .ink-edge { display: none; } }
 /* In forced colours the card is a plain system colour; the glows would only be noise. */
 @media (forced-colors: active) { .ink-aurora, .ink-edge { display: none; } }
+
+/* The copy-email button shows a check while the address is on the clipboard (islands/site-chrome.ts sets data-state). */
+[data-email-copy] [data-icon-check] { display: none; }
+[data-email-copy][data-state="copied"] [data-icon-copy] { display: none; }
+[data-email-copy][data-state="copied"] [data-icon-check] { display: block; color: var(--text-success); }
+[data-email-copy][data-state="copied"] .email-copy-button { color: var(--text-success); }
+
+/* A row of cards on a narrow container scrolls sideways and snaps, with the next card peeking in (owner request, 8 November 2026,
+   L-56: Home's projects, the videos). The page itself never scrolls sideways: only the row does, inside the gutter. The row is
+   focusable only while it can scroll (islands/site-chrome.ts). */
+@container (max-width: 519px) {
+  [data-scroll-row] { display: flex !important; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); gap: var(--space-4) !important; margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); padding-block-end: var(--space-2); scrollbar-width: none; }
+  [data-scroll-row]::-webkit-scrollbar { display: none; }
+  [data-scroll-row] > li { flex: 0 0 84%; scroll-snap-align: start; min-inline-size: 0; }
+  [data-scroll-row]:focus-visible { outline: 2px solid var(--focus-ring, var(--text-link)); outline-offset: 2px; border-radius: var(--radius-md); }
+}

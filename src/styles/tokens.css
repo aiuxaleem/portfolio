@@ -183,6 +183,7 @@
   --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.42);
   --shadow-xl: 0 32px 72px rgba(0, 0, 0, 0.50);
   --shadow-brand: 0 12px 32px rgba(37, 138, 253, 0.40);
+  --highlight-inset: inset 0 1px 0 rgba(255, 255, 255, 0.18); /* @kind other */ /* the one-pixel light along a button's top edge (8 November 2026, L-56) */
   --shadow-glow: 0 0 0 1px rgba(255,255,255,0.08), 0 0 48px rgba(41, 190, 221, 0.18);
 }
 

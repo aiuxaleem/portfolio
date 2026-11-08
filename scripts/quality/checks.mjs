@@ -36,13 +36,18 @@ export function pageChecks() {
     }
   }
 
-  // 2.4 Targets at least 44x44, and fully inside the viewport horizontally
+  // 2.4 Targets at least 44x44, and fully inside the viewport horizontally. A target inside a row that scrolls sideways on
+  //     purpose (overflow-x auto or scroll, wider than itself, itself on screen, and a tab stop so the keyboard can reach it:
+  //     site.css [data-scroll-row], L-56) is reached by scrolling the row; the motion check (7j) measures that focusing such
+  //     a card scrolls it into view. Anything else beyond the screen's edge still fails.
+  const sidewaysScroller = el => { for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) { const cs = getComputedStyle(a); if (/(auto|scroll)/.test(cs.overflowX) && a.scrollWidth > a.clientWidth + 2) return a; } return null; };
+  const reachableByRow = el => { const s = sidewaysScroller(el); if (!s || s.tabIndex < 0) return false; const b = s.getBoundingClientRect(); return b.left >= -1 && b.right <= iw + 1; };
   document.querySelectorAll('a[href], button, [role="button"], [role="switch"], summary, input, select, textarea').forEach(el => {
     if (!visible(el) || el.closest('[aria-hidden="true"]') || el.disabled) return;
     const r = el.getBoundingClientRect(), cs = getComputedStyle(el);
     const inline = cs.display === 'inline' && el.parentElement && el.parentElement.innerText.trim().length > (el.innerText || '').trim().length + 8;
     if (!inline && (r.width < 44 || r.height < 44)) fails.push({ check: 'target-size', detail: `"${label(el)}" is ${Math.round(r.width)}x${Math.round(r.height)} in ${where(el)}` });
-    if (r.right > iw + 1 || r.left < -1) fails.push({ check: 'target-off-screen', detail: `"${label(el)}" spans x ${Math.round(r.left)} to ${Math.round(r.right)} in ${where(el)}` });
+    if ((r.right > iw + 1 || r.left < -1) && !reachableByRow(el)) fails.push({ check: 'target-off-screen', detail: `"${label(el)}" spans x ${Math.round(r.left)} to ${Math.round(r.right)} in ${where(el)}` });
   });
 
   // 2.1 Landmarks, one h1, no skipped levels, lang

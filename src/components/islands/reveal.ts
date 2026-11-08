@@ -22,7 +22,7 @@ if ((mode === 'on' || mode === 'fade') && 'IntersectionObserver' in window) {
   const all = [...new Set<Element>([...blocks, ...grouped])].filter(el => !el.hasAttribute(OWNED)) as HTMLElement[];
   // A block inside another revealing block moves with it.
   const items = all.filter(el => !all.some(other => other !== el && other.contains(el)));
-  const settle = (el: HTMLElement) => { delete el.dataset.revealState; delete el.dataset.revealLean; el.style.removeProperty('--i'); };
+  const settle = (el: HTMLElement) => { delete el.dataset.revealState; delete el.dataset.revealLean; delete el.dataset.revealSide; el.style.removeProperty('--i'); };
 
   // Step 2: the block reaches the screen and fades up.
   const enter = new IntersectionObserver(entries => {
@@ -51,6 +51,9 @@ if ((mode === 'on' || mode === 'fade') && 'IntersectionObserver' in window) {
       el.dataset.revealState = 'pending';
       // A card in a grid leans in with the scroll (motion.css): the fade then adds no second rise.
       if (el.firstElementChild?.matches('.project-card')) el.dataset.revealLean = '';
+      // The two halves of a split section come from their own sides (site.css, data-reveal-side); nothing else moves sideways.
+      const parent = el.parentElement;
+      if (parent?.matches('.cory-split, [data-case-grid], [data-cq-aside]') && parent.children.length === 2) el.dataset.revealSide = parent.firstElementChild === el ? 'start' : 'end';
       enter.observe(el);
     }
   }, { rootMargin: '0px 0px 75% 0px' });

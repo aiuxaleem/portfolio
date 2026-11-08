@@ -119,8 +119,19 @@ document.querySelectorAll<HTMLElement>('[data-email-copy]').forEach(wrap => {
   if (!link || !button || !status) return;
   let timer = 0;
   button.addEventListener('click', async () => {
-    const say = (text: string, ms: number) => { status.textContent = text; clearTimeout(timer); timer = window.setTimeout(() => { status.textContent = ''; }, ms); };
-    try { await navigator.clipboard.writeText(link.textContent || ''); say(wrap.dataset.copied || '', 2200); }
+    const say = (text: string, ms: number) => { status.textContent = text; clearTimeout(timer); timer = window.setTimeout(() => { status.textContent = ''; delete wrap.dataset.state; }, ms); };
+    try { await navigator.clipboard.writeText(link.textContent || ''); wrap.dataset.state = 'copied'; say(wrap.dataset.copied || '', 2200); }
     catch { const range = document.createRange(); range.selectNodeContents(link); const sel = getSelection(); sel?.removeAllRanges(); sel?.addRange(range); say(wrap.dataset.fallback || '', 5000); }
   });
+});
+
+/* ---------- Rows that scroll sideways on a narrow screen (site.css [data-scroll-row]): the row can be reached and scrolled with
+   the keyboard only while it has something to scroll, so it is no empty tab stop on a wide screen. ---------- */
+document.querySelectorAll<HTMLElement>('[data-scroll-row]').forEach(row => {
+  if (!row.getAttribute('aria-label')) row.setAttribute('aria-label', row.dataset.scrollRow || 'Scroll sideways for more');
+  const fit = () => { row.tabIndex = row.scrollWidth > row.clientWidth + 2 ? 0 : -1; };
+  fit(); new ResizeObserver(fit).observe(row);
+  /* A card that peeks in from the edge counts as visible to the browser, so focusing its link would not scroll the row: bring the
+     whole card to the start when anything in it takes focus (smoothly when motion is allowed). */
+  row.addEventListener('focusin', e => { const item = (e.target as HTMLElement).closest('li'); if (item && row.scrollWidth > row.clientWidth + 2) item.scrollIntoView({ block: 'nearest', inline: 'start', behavior: root.getAttribute('data-motion') === 'on' ? 'smooth' : 'auto' }); });
 });

@@ -148,7 +148,10 @@ function run(main: El) {
         text = textLines(h2, { yPercent: 110, autoAlpha: 0, duration: D.reveal, stagger: D.line, ease: 'power4.out', delay: overline ? 0.12 : 0 }, () => restore([h2]));
         if (leads.length) tl.from(leads, { autoAlpha: 0, y: 16, duration: D.enter, stagger: D.item }, 0.3);
         if (ctas.length) tl.from(ctas, { autoAlpha: 0, y: 16, duration: D.enter, stagger: D.item }, 0.45);
-        if (body.length) tl.from(body, { autoAlpha: 0, y: (i: number) => leans && body[i].matches(':has(> .project-card)') ? 0 : 20, duration: D.enter, stagger: D.item }, 0.5);
+        /* A body item that is the other half of a split section (the portrait beside the point of view, a figure beside text) comes
+           in from its own side; a grid card only fades (its lean carries the movement); everything else rises. */
+        const side = (el: El) => { const parent = el.parentElement; return parent && parent.matches('.cory-split, [data-case-grid], [data-cq-aside]') && parent.children.length === 2 ? (parent.firstElementChild === el ? -1 : 1) : 0; };
+        if (body.length) tl.from(body, { autoAlpha: 0, x: (i: number) => side(body[i]) * 32 * dir, y: (i: number) => side(body[i]) || (leans && body[i].matches(':has(> .project-card)')) ? 0 : 20, duration: D.enter, stagger: D.item }, 0.5);
       },
       play(skip) { if (skip) { tl?.progress(1); text?.skip(); } else { tl?.play(); text?.play(); } },
     });

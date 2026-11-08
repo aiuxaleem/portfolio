@@ -51,7 +51,7 @@ const link = 'display: inline-flex; align-items: center; gap: var(--space-2); mi
         <a data-link href={s.all.href} style={link}><span>{s.all.label}</span><svg data-dir-icon width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
       </div>
       {s.key === 'cases' && <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{cases.map(c => <li><CaseCard entry={c} level={3} /></li>)}</ul></div>}
-      {s.key === 'projects' && <div data-cq><ul {...grid(projects.length)} style="display: grid; gap: var(--grid-gap);">{projects.map(p => <li><ProjectCard project={p} level={3} /></li>)}</ul></div>}
+      {s.key === 'projects' && <div data-cq><ul {...grid(projects.length)} data-scroll-row="Projects, scroll sideways for more" style="display: grid; gap: var(--grid-gap);">{projects.map(p => <li><ProjectCard project={p} level={3} /></li>)}</ul></div>}
       {s.key === 'writing' && <div data-cq><ul {...grid(writing.length)} style="display: grid; gap: var(--grid-gap);">{writing.map(w => <li><FeedCard item={w} level={3} /></li>)}</ul></div>}
       {s.key === 'video' && video && <div class="home-video"><VideoCard video={video} level={3} /></div>}
     </div>

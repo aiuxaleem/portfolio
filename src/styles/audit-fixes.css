@@ -49,3 +49,16 @@ details > summary:focus-visible { background: var(--action-ghost-hover); } /* th
   #guides [data-card-fill] > .sc-host-x > a:hover { transform: translateY(var(--lift-hover)) !important; box-shadow: var(--shadow-lg) !important; }
 }
 #guides [data-card-fill] > .sc-host-x > a:focus-visible { transform: translateY(var(--lift-hover)) !important; box-shadow: var(--shadow-lg) !important; }
+
+/* The calls to action carried over from the design (hero, closing panel, snapshots) take the modern look of ui/button.astro
+   (L-56): the inner highlight, the drifting gradient and the two-pixel lift for a primary, the glass and the link-coloured
+   edge for a secondary. Their inline styles need the weight. */
+[data-ds-button="primary"] { background-size: 160% 100% !important; background-position: 0% 50% !important; box-shadow: var(--shadow-brand), var(--highlight-inset) !important; }
+[data-ds-button="secondary"] { background: var(--surface-glass-strong) !important; box-shadow: var(--shadow-xs), var(--highlight-inset) !important; }
+[data-ds-button="primary"]:focus-visible { background-position: 100% 50% !important; box-shadow: var(--shadow-brand-hover), var(--highlight-inset) !important; }
+[data-ds-button="secondary"]:focus-visible { color: var(--text-link) !important; border-color: var(--text-link) !important; }
+@media (hover: hover) {
+  [data-ds-button="primary"]:hover { background-position: 100% 50% !important; box-shadow: var(--shadow-brand-hover), var(--highlight-inset) !important; }
+  [data-ds-button="secondary"]:hover { color: var(--text-link) !important; border-color: var(--text-link) !important; }
+  [data-ds-button="primary"]:hover, [data-ds-button="secondary"]:hover { transform: translateY(calc(2 * var(--lift-hover-sm))) !important; }
+}

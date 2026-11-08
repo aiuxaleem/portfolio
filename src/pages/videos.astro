@@ -24,7 +24,7 @@ const none = videos.length === 0;
   {!none && (
     <section class="cory-container" aria-label="Video list" style="padding-block-end: var(--section-y);">
       {videos.length > 2 && <VideoCard video={videos[0]} wide />}
-      <div data-cq><ul data-cq-grid style="display: grid; gap: var(--space-10) var(--grid-gap);">{(videos.length > 2 ? videos.slice(1) : videos).map(v => <li><VideoCard video={v} /></li>)}</ul></div>
+      <div data-cq><ul data-cq-grid data-scroll-row="Videos, scroll sideways for more" style="display: grid; gap: var(--space-10) var(--grid-gap);">{(videos.length > 2 ? videos.slice(1) : videos).map(v => <li><VideoCard video={v} /></li>)}</ul></div>
     </section>
   )}
 </PageLayout>

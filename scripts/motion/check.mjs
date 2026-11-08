@@ -283,6 +283,119 @@ for (const [label, o] of [['reduced motion (automation)', { motion: 'reduce' }],
 }
 console.log('depth: the portrait scene and the two-users line on Home, a project cover, and none under reduced motion');
 
+// 7j. Micro-interactions and sideways scrolling (owner request, 8 November 2026): the split halves come from their sides;
+//     a header link grows its underline on hover; the copy button shows a check; the "worked with" strip drifts sideways
+//     with the page and is wider than the screen; a row of cards on a phone scrolls sideways and snaps, is focusable only
+//     then, and the page itself never scrolls sideways; in fade mode a button's colour still answers hover over time.
+{
+  const { ctx, p } = await open('/'); await p.waitForTimeout(2600);
+  const sides = await p.evaluate(async () => { const split = document.querySelector('#about .cory-split'); if (!split) return null; scrollTo({ top: split.getBoundingClientRect().top + scrollY - innerHeight - 200, behavior: 'instant' }); await new Promise(r => setTimeout(r, 500)); const half = split.children[1]; const m = getComputedStyle(half).transform.match(/matrix\(([^)]+)\)/); const [x, y] = m ? m[1].split(',').slice(4).map(Number) : [0, 0]; return { owned: half.hasAttribute('data-motion-owned'), x, y, visibility: getComputedStyle(half).visibility }; });
+  out['micro sides'] = sides;
+  if (!sides) console.log('  note: no split section in the point of view for the side reveal');
+  else if (!sides.owned || Math.abs(sides.x) < 16 || sides.y !== 0 || sides.visibility !== 'hidden') fail(`sides: ${JSON.stringify(sides)} (the second half should wait hidden, off to its side, owned by the head)`);
+  await ctx.close();
+}
+{
+  const { ctx, p } = await open('/about');
+  const link = p.locator('.header-nav-link:not([aria-current])').first(); await p.mouse.move(2, 2); await p.waitForTimeout(300);
+  const before = await link.evaluate(e => getComputedStyle(e, '::after').transform); await link.hover(); await p.waitForTimeout(700);
+  const after = await link.evaluate(e => getComputedStyle(e, '::after').transform);
+  out['micro nav underline'] = { before, after };
+  if (!/matrix\(0/.test(before) || !/matrix\(1, 0, 0, 1, 0, 0\)|none/.test(after)) fail(`nav underline: ${before} then ${after} (should grow from 0 to full on hover)`);
+  const copy = p.locator('[data-email-copy] button').first(); await copy.scrollIntoViewIfNeeded();
+  await ctx.grantPermissions(['clipboard-write', 'clipboard-read']).catch(() => {});
+  await copy.click(); await p.waitForTimeout(300);
+  const copied = await p.evaluate(() => { const w = document.querySelector('[data-email-copy]'); return { state: w.dataset.state || null, check: getComputedStyle(w.querySelector('[data-icon-check]')).display, copyIcon: getComputedStyle(w.querySelector('[data-icon-copy]')).display, status: w.querySelector('[role=status]').textContent }; });
+  out['micro copy'] = copied;
+  if (copied.state !== 'copied' || copied.check !== 'block' || copied.copyIcon !== 'none') fail(`copy button: ${JSON.stringify(copied)} (should show the check while copied)`);
+  await p.waitForTimeout(2400);
+  const back = await p.evaluate(() => document.querySelector('[data-email-copy]').dataset.state || null);
+  if (back) fail(`copy button: still "${back}" after the status cleared`);
+  await ctx.close();
+}
+{
+  const { ctx, p } = await open('/'); await p.waitForTimeout(600);
+  const strip = await p.evaluate(async () => { const s = document.querySelector('[data-worked-strip]'); if (!s) return null; const band = s.closest('[aria-hidden="true"]'); const at = async f => { scrollTo({ top: band.getBoundingClientRect().top + scrollY - innerHeight * f, behavior: 'instant' }); await new Promise(r => setTimeout(r, 250)); return parseFloat(getComputedStyle(s).translate.split(' ')[0]) || 0; }; const a = await at(0.9), b = await at(0.1); return { a, b, wider: s.scrollWidth > innerWidth, wrap: getComputedStyle(s).flexWrap, copies: s.querySelectorAll('[data-strip-copy]').length, pageSideways: document.documentElement.scrollWidth > innerWidth }; });
+  out['sideways strip'] = strip;
+  if (!strip) fail('strip: the worked-with strip is missing');
+  else if (!(strip.b < strip.a) || !strip.wider || strip.wrap !== 'nowrap' || strip.pageSideways) fail(`strip: ${JSON.stringify(strip)} (should drift left as the page scrolls, stand in one line wider than the screen, never scroll the page sideways)`);
+  await ctx.close();
+}
+{
+  const { ctx, p } = await open('/', { w: 390, h: 844, touch: true }); await p.waitForTimeout(600);
+  const row = await p.evaluate(() => { const r = document.querySelector('[data-scroll-row]'); if (!r) return null; const s = getComputedStyle(r); return { display: s.display, overflowX: s.overflowX, snap: s.scrollSnapType, scrollable: r.scrollWidth > r.clientWidth + 2, tabIndex: r.tabIndex, label: r.getAttribute('aria-label'), pageSideways: document.documentElement.scrollWidth > innerWidth, cards: r.children.length }; });
+  out['sideways row 390'] = row;
+  if (!row) fail('row: no sideways row on Home');
+  else if (row.display !== 'flex' || row.overflowX !== 'auto' || !/x/.test(row.snap) || !row.scrollable || row.tabIndex !== 0 || !row.label || row.pageSideways) fail(`row at 390: ${JSON.stringify(row)}`);
+  // The keyboard reaches a card beyond the edge: focusing its link scrolls the row until the link is on screen.
+  const reach = await p.evaluate(async () => { const link = document.querySelector('[data-scroll-row] > li:nth-child(2) a'); if (!link) return null; const before = link.getBoundingClientRect(); link.focus(); await new Promise(r => setTimeout(r, 800)); const r = link.getBoundingClientRect(); return { offBefore: before.right > innerWidth, left: Math.round(r.left), right: Math.round(r.right), onScreen: r.left >= 0 && r.right <= innerWidth, focused: document.activeElement === link }; });
+  out['sideways row reach'] = reach;
+  if (!reach || !reach.onScreen || !reach.focused || !reach.offBefore) fail(`row reach: ${JSON.stringify(reach)} (focusing the second card should scroll it on screen)`);
+  await ctx.close();
+  const wide = await open('/'); await wide.p.waitForTimeout(600);
+  const r2 = await wide.p.evaluate(() => { const r = document.querySelector('[data-scroll-row]'); return { display: getComputedStyle(r).display, tabIndex: r.tabIndex, scrollable: r.scrollWidth > r.clientWidth + 2 }; });
+  out['sideways row 1440'] = r2;
+  if (r2.display !== 'grid' || r2.tabIndex !== -1 || r2.scrollable) fail(`row at 1440: ${JSON.stringify(r2)} (should be a grid and no tab stop)`);
+  await wide.ctx.close();
+}
+{
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' }); await ctx.route(u => !u.hostname.startsWith('127.0.0.1'), r => r.abort());
+  await ctx.addInitScript(() => { Object.defineProperty(navigator, 'webdriver', { get: () => false }); });
+  const p = await ctx.newPage(); await p.goto(O + '/about', { waitUntil: 'load' }); await p.waitForTimeout(400);
+  const r = await p.evaluate(() => { const b = document.querySelector('.ui-button-secondary, .ui-button'); const s = getComputedStyle(b); return { mode: document.documentElement.dataset.motion, duration: s.transitionDuration.split(',')[0].trim(), props: s.transitionProperty, strip: document.querySelector('[data-worked-strip]') ? getComputedStyle(document.querySelector('[data-worked-strip]')).flexWrap : 'none' }; });
+  out['micro fade mode'] = r;
+  if (r.mode !== 'fade' || parseFloat(r.duration) < 0.15 || /transform|translate/.test(r.props)) fail(`fade mode button: ${JSON.stringify(r)} (colour should still answer over time, nothing should move)`);
+  await ctx.close();
+}
+console.log('micro and sideways: the split sides, the nav underline, the copy check, the strip, the phone row, fade-mode colour');
+
+// 7k. The calls to action (owner request, 8 November 2026): a primary button carries the inner highlight and the glow,
+//     drifts its gradient and lifts two pixels on hover, keeps its label colour; a secondary takes the link colour on hover;
+//     the hero's primary breathes once after its rise; a primary below the fold breathes as it scrolls in; the same component
+//     in the admin shares the look (the sign-in page is the admin's one public page); under fade mode nothing moves.
+{
+  const { ctx, p } = await open('/'); await p.waitForTimeout(600);
+  const hero = p.locator('[data-hero] [data-hero-ctas] a').first();
+  const rest = await hero.evaluate(e => { const s = getComputedStyle(e); return { shadow: s.boxShadow, position: s.backgroundPosition, size: s.backgroundSize, color: s.color, transform: s.transform, anims: document.getAnimations().filter(a => a.effect?.target === e).map(a => a.animationName) }; });
+  await hero.hover(); await p.waitForTimeout(700);
+  const hov = await hero.evaluate(e => { const s = getComputedStyle(e); return { shadow: s.boxShadow, position: s.backgroundPosition, color: s.color, transform: s.transform }; });
+  out['cta hero'] = { rest, hover: hov };
+  if (!/inset/.test(rest.shadow) || !/160%/.test(rest.size)) fail(`cta: the hero primary lacks the inner highlight or the drifting gradient (${rest.shadow.slice(0, 80)} / ${rest.size})`);
+  if (!rest.anims.includes('cta-breath')) fail(`cta: the hero primary does not breathe after its rise (${rest.anims.join(',')})`);
+  if (hov.position === rest.position || hov.color !== rest.color || !/matrix\(1, 0, 0, 1, 0, -2/.test(hov.transform)) fail(`cta: on hover the gradient should drift, the label colour stay and the button lift 2 px (${rest.position} then ${hov.position}, ${rest.color} then ${hov.color}, ${hov.transform})`);
+  const below = await p.evaluate(async () => { const b = [...document.querySelectorAll('main .ui-button-primary, main [data-ds-button="primary"]')].find(e => e.getBoundingClientRect().top > innerHeight * 1.5); if (!b) return null; scrollTo({ top: b.getBoundingClientRect().top + scrollY - innerHeight * 0.7, behavior: 'instant' }); await new Promise(r => setTimeout(r, 300)); const a = document.getAnimations().find(x => x.effect?.target === b && x.animationName === 'cta-breath'); return { found: !!a, scroll: a ? !(a.timeline instanceof DocumentTimeline) : null, progress: a && a.currentTime && typeof a.currentTime === 'object' ? Math.round(a.currentTime.value) : null }; });
+  out['cta below'] = below;
+  if (!below) console.log('  note: no primary call to action below the fold on Home');
+  else if (!below.found || !below.scroll) fail(`cta: a primary below the fold should breathe on the scroll timeline (${JSON.stringify(below)})`);
+  await ctx.close();
+}
+{
+  const { ctx, p } = await open('/about'); await p.waitForTimeout(400);
+  const sec = p.locator('main .ui-button-secondary').first(); await sec.scrollIntoViewIfNeeded(); await p.mouse.move(2, 2); await p.waitForTimeout(300);
+  const a = await sec.evaluate(e => ({ color: getComputedStyle(e).color, border: getComputedStyle(e).borderColor, blur: getComputedStyle(e).backdropFilter })); await sec.hover(); await p.waitForTimeout(600);
+  const b = await sec.evaluate(e => ({ color: getComputedStyle(e).color, border: getComputedStyle(e).borderColor }));
+  out['cta secondary'] = { rest: a, hover: b };
+  if (a.color === b.color || a.border === b.border) fail(`cta: a secondary should take the link colour and edge on hover (${JSON.stringify({ a, b })})`);
+  await ctx.close();
+}
+{
+  const { ctx, p } = await open('/admin/login'); await p.waitForTimeout(300);
+  const r = await p.evaluate(() => { const b = document.querySelector('.ui-button-primary'); if (!b) return null; const s = getComputedStyle(b); return { shadow: /inset/.test(s.boxShadow), size: s.backgroundSize }; });
+  out['cta admin'] = r;
+  if (!r) console.log('  note: the admin sign-in page is not in this build (static build); the component is shared'); else if (!r.shadow || !/160%/.test(r.size)) fail(`cta admin: ${JSON.stringify(r)}`);
+  await ctx.close();
+}
+{
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' }); await ctx.route(u => !u.hostname.startsWith('127.0.0.1'), r => r.abort());
+  await ctx.addInitScript(() => { Object.defineProperty(navigator, 'webdriver', { get: () => false }); });
+  const p = await ctx.newPage(); await p.goto(O + '/', { waitUntil: 'load' }); await p.waitForTimeout(400);
+  const r = await p.evaluate(() => { const b = document.querySelector('[data-hero] [data-hero-ctas] a'); return { breath: document.getAnimations().some(a => a.effect?.target === b && a.animationName === 'cta-breath'), props: getComputedStyle(b).transitionProperty }; });
+  out['cta fade mode'] = r;
+  if (r.breath || /transform/.test(r.props)) fail(`cta in fade mode: ${JSON.stringify(r)} (no breath, no movement)`);
+  await ctx.close();
+}
+console.log('cta: the hero primary at rest and on hover, a primary below the fold on the scroll, a glass secondary, the admin, fade mode');
+
 console.log('flow: heads and bodies on 3 pages, the heading wipe with and without the script, cascades on 5 lists, the first view on 13 pages, the menu card, the phone menu, the theme in both settings, the travelling picture in both settings');
 
 await browser.close(); server.close();
