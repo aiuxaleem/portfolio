@@ -25,7 +25,7 @@ const items = posts.map(p => ({ tags: p.series ? [p.series] : [], status: p.seri
     </div>
     {posts.length > 0 && <ProjectFilters tags={series} total={posts.length} items={items} options={kinds} optionsLabel="Kind" tagsLabel="Series" noun="post" id="posts-filter" />}
   </section>
-  <section class="cory-container" aria-label="Posts" style="display: grid; gap: var(--space-8); padding-block-end: var(--section-y);">
+  <section id="posts" class="cory-container" aria-label="Posts" style="display: grid; gap: var(--space-8); padding-block-end: var(--section-y);">
     {posts.length === 0
       ? <div class="project-empty"><p class="project-empty-title">No posts are listed here yet.</p><p class="project-empty-body">New LinkedIn posts appear here once they are added. Until then, the latest are on LinkedIn.</p><div><Button variant="secondary" href={site.socials.linkedin} target="_blank" rel="noopener">Open LinkedIn<span class="cory-visually-hidden"> (opens in a new tab)</span></Button></div></div>
       : <div data-cq><ul data-project-list data-cq-grid style="display: grid; gap: var(--grid-gap);">{posts.map(p => <li><div data-project data-status={p.series ? 'series' : 'single'} data-tags={p.series || ''} style="block-size: 100%;"><LinkedInPost urn={p.urn} url={p.url} title={p.title} excerpt={p.excerpt} date={p.date} series={p.series} level={2} kicker={false} /></div></li>)}</ul></div>}

@@ -17,6 +17,8 @@ import { chrome } from '../../i18n/chrome';
 import { getImage } from 'astro:assets';
 import { pipelineImages } from '../../lib/snapshot-images';
 import { listedVideos, posterOf } from '../../lib/videos';
+import { listedPosts, postUrl } from '../../lib/posts';
+import { feedItems } from '../../lib/writing';
 
 interface Props { name: 'about' | 'content' | 'now' | 'about-hero' | 'about-direction' }
 const snap = { about, content, now, 'about-hero': aboutHero, 'about-direction': aboutDirection }[Astro.props.name];
@@ -38,6 +40,24 @@ if (Astro.props.name === 'content') {
       html = html.replace(/<span data-image-box="video-thumb"[^>]*><\/span>/, `<img src="${poster}" alt="" width="960" height="540" loading="lazy" decoding="async" style="position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover;" />`);
     }
   }
+}
+/* "In public" again (9 November 2026, L-57): the design's "Latest from the blog" card named one post and its LinkedIn
+   articles tile listed three by hand, so Home fell behind the Blog and Articles pages. The card shows the newest published
+   post (title, excerpt, address) and the tile the newest three articles, in the order the Articles page uses. */
+if (Astro.props.name === 'content') {
+  const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const post = (await listedPosts()).find(p => !p.data.fixture);
+  if (post) {
+    html = html
+      .replace(/<a href="\/blog\/component-spec-files"([^>]*>(?:(?!<\/a>)[\s\S])*?Latest from the blog)/, (_, rest: string) => `<a href="${postUrl(post)}"${rest}`)
+      .replace('<span class="sc-interp">Component spec files: the 8-section template</span>', `<span class="sc-interp">${esc(post.data.title)}</span>`)
+      .replace('<span class="sc-interp">The tiered spec format I use so designers, engineers and AI agents read the same source of truth.</span>', `<span class="sc-interp">${esc(post.data.excerpt || '')}</span>`)
+      .replace('<span class="sc-interp">Read the guide</span>', '<span class="sc-interp">Read the post</span>');
+  }
+  const articles = (await feedItems()).filter(i => i.type === 'article' && !(i as { fixture?: boolean }).fixture).slice(0, 3);
+  articles.forEach((a, n) => {
+    html = html.replace(new RegExp(`(<span class="sc-interp">0${n + 1}</span></span>\\s*<a data-link="" href=")[^"]*(" [^>]*><span style="flex: 0 1 auto;"><span class="sc-interp">)[^<]*(</span>)`), (_, p1: string, p2: string, p3: string) => `${p1}${esc(a.href)}${p2}${esc(a.title)}${p3}`);
+  });
 }
 /* The portrait in the About section comes through the build pipeline (src/lib/snapshot-images.ts). */
 html = await pipelineImages(html);

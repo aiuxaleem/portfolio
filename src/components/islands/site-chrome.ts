@@ -129,7 +129,8 @@ document.querySelectorAll<HTMLElement>('[data-email-copy]').forEach(wrap => {
    the keyboard only while it has something to scroll, so it is no empty tab stop on a wide screen. ---------- */
 document.querySelectorAll<HTMLElement>('[data-scroll-row]').forEach(row => {
   if (!row.getAttribute('aria-label')) row.setAttribute('aria-label', row.dataset.scrollRow || 'Scroll sideways for more');
-  const fit = () => { row.tabIndex = row.scrollWidth > row.clientWidth + 2 ? 0 : -1; };
+  /* A tab stop only while the row itself scrolls (overflow-x auto or scroll and content wider than the row); the stacked grid never is. */
+  const fit = () => { row.tabIndex = /(auto|scroll)/.test(getComputedStyle(row).overflowX) && row.scrollWidth > row.clientWidth + 2 ? 0 : -1; };
   fit(); new ResizeObserver(fit).observe(row);
   /* A card that peeks in from the edge counts as visible to the browser, so focusing its link would not scroll the row: bring the
      whole card to the start when anything in it takes focus (smoothly when motion is allowed). */

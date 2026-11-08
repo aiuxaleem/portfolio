@@ -35,6 +35,8 @@ h1, h2, h3, h4, .cory-metric { overflow-wrap: break-word; hyphens: manual; }
 
 table { table-layout: fixed; width: 100%; }
 pre, code { overflow-wrap: anywhere; white-space: pre-wrap; }
+/* A date is one piece: never "20 /" at a line's end and "Oct 2026" at the next (L-57). */
+time { white-space: nowrap; }
 img, video, svg { max-width: 100%; height: auto; display: block; }
 
 a { color: var(--text-link); text-decoration: none; transition: color var(--duration-base) var(--ease-out); }

@@ -35,5 +35,5 @@ export function readingTime(d: CaseStudy['data'], body = ''): string {
   const walk = (v: unknown) => { if (typeof v === 'string') words.push(v); else if (Array.isArray(v)) v.forEach(walk); else if (v && typeof v === 'object' && !(v instanceof Date)) Object.entries(v).forEach(([k, x]) => { if (k !== 'src' && k !== 'seo') walk(x); }); };
   walk(d); words.push(body);
   const count = words.join(' ').split(/\s+/).filter(Boolean).length;
-  return `${Math.max(1, Math.round(count / 200))} min read`;
+  return `${Math.max(1, Math.round(count / 200))}\u00A0min read`;
 }

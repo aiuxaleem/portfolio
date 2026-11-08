@@ -41,7 +41,7 @@
 .case-tldr { padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
 .case-numbered, .case-steps, .case-decisions { display: grid; gap: var(--space-3); }
 .case-numbered li { display: flex; gap: var(--space-3); align-items: baseline; }
-.case-numbered bdi { font-family: var(--font-mono); font-size: var(--text-mono); color: var(--text-subtle); }
+.case-numbered bdi { flex: none; white-space: nowrap; font-family: var(--font-mono); font-size: var(--text-mono); color: var(--text-subtle); }
 .case-steps li, .case-decisions li { display: flex; gap: var(--space-4); padding: var(--space-6); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); max-inline-size: none; }
 .case-decisions li { display: grid; gap: var(--space-2); }
 .case-steps h3, .case-decisions h3 { margin: 0; }

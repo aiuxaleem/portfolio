@@ -11,7 +11,7 @@ const Heading = `h${level}` as any;
 <article class:list={['project-card', wide && 'case-card-wide']}>
   <div class="project-card-media">{d.cover ? <FittedImage image={d.cover} widths={[400, 640, 960]} sizes={wide ? '(min-width: 1024px) 680px, 100vw' : '(min-width: 1024px) 560px, (min-width: 640px) 50vw, 100vw'} loading={first ? 'eager' : 'lazy'} fetchpriority={first ? 'high' : undefined} /> : <div data-cover-fallback="label" aria-hidden="true"><span>{['Case study', d.category].filter(Boolean).join(' · ')}</span></div>}</div>
   <div class="project-card-body">
-    <p class="case-kicker">{[d.index, d.category, readingTime(d, entry.body)].filter(Boolean).join(' · ')}</p>
+    <p class="case-kicker">{[d.index, d.category, readingTime(d, entry.body)].filter(Boolean).join('\u00A0· ')}</p>
     <Heading class="project-card-title"><a class="project-card-link" href={`/case-studies/${entry.id}`}>{d.title}</a></Heading>
     <p class="project-card-summary">{d.lead}</p>
     <span class="project-card-cta" aria-hidden="true">Read the case study <svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span>

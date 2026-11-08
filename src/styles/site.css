@@ -431,7 +431,8 @@ body:has(> .ai-field) [data-bg~="grid"]::before { display: none; }
 /* A row of cards on a narrow container scrolls sideways and snaps, with the next card peeking in (owner request, 8 November 2026,
    L-56: Home's projects, the videos). The page itself never scrolls sideways: only the row does, inside the gutter. The row is
    focusable only while it can scroll (islands/site-chrome.ts). */
-@container (max-width: 519px) {
+/* Only on a container of 320 px or more: at the 320 CSS px reflow width of WCAG 1.4.10 (400% zoom) the container is 288 px (the gutters take 32 px) and the rows stack, so no card ever sits beyond the edge (L-57). */
+@container (min-width: 320px) and (max-width: 519px) {
   [data-scroll-row] { display: flex !important; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); gap: var(--space-4) !important; margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); padding-block-end: var(--space-2); scrollbar-width: none; }
   [data-scroll-row]::-webkit-scrollbar { display: none; }
   [data-scroll-row] > li { flex: 0 0 84%; scroll-snap-align: start; min-inline-size: 0; }

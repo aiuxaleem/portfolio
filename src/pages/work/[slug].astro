@@ -23,7 +23,7 @@ const c = chrome.en;
 const { Content } = await render(project);
 const hasBody = !!(project.body && project.body.trim());
 const updates = updatesNewestFirst(d);
-const meta = [['Role', d.role], ['Timeline', timeline(d)], ['Team', d.team], ['Tools', d.stack.join(' · ') || undefined], ['Status', statusLabel[d.status]]].filter(([, v]) => v) as [string, string][];
+const meta = [['Role', d.role], ['Timeline', timeline(d)], ['Team', d.team], ['Tools', d.stack.join('\u00A0· ') || undefined], ['Status', statusLabel[d.status]]].filter(([, v]) => v) as [string, string][];
 const description = (d.seo.description || d.summary).slice(0, 165);
 const arrowOut = 'M7 7h10v10M7 17 17 7';
 ---

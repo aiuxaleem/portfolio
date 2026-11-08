@@ -56,7 +56,7 @@ export function readingTime(p: Post): string | undefined {
   const html = p.data.legacyPage ? LEGACY_BODIES[p.id] : p.body;
   if (!html) return undefined;
   const words = html.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
-  return `${Math.max(1, Math.round(words / 200))} min read`;
+  return `${Math.max(1, Math.round(words / 200))}\u00A0min read`;
 }
 
 /** Up to three other posts that share the most tags with this one. */

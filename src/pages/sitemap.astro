@@ -58,7 +58,7 @@ const arrow = 'M5 12h14M12 5l7 7-7 7';
     <section class="sitemap-group" aria-labelledby="sm-more">
       <h2 id="sm-more" class="sitemap-h2">About and more</h2>
       <ul class="sitemap-list">
-        {more.map(l => <li><a class="sitemap-link" href={l.href} lang={l.href === '/ar' ? 'ar' : undefined} dir={l.href === '/ar' ? 'rtl' : undefined}><span>{l.label}</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={arrow}></path></svg></a>{l.blurb && <p class="sitemap-blurb">{l.blurb}</p>}</li>)}
+        {more.map(l => <li><a class="sitemap-link" href={l.href}><span lang={l.href === '/ar' ? 'ar' : undefined} dir={l.href === '/ar' ? 'rtl' : undefined}>{l.label}</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={arrow}></path></svg></a>{l.blurb && <p class="sitemap-blurb">{l.blurb}</p>}</li>)}
       </ul>
       <h2 class="sitemap-h2" id="sm-feeds" style="margin-block-start: var(--space-6);">Feeds</h2>
       <ul class="sitemap-list" aria-labelledby="sm-feeds">

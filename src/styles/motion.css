@@ -290,7 +290,7 @@
     html[data-motion="on"] [data-worked-strip] > [data-strip-copy] { display: contents !important; } /* past its inline display: none */
     @keyframes strip-drift { from { translate: 0 0; } to { translate: calc(-33.333% * var(--dir-x, 1)) 0; } }
     /* A card in a sideways row does not lean or settle: the row, not the page, is its scroller. */
-    @container (max-width: 519px) { [data-scroll-row] > li > .project-card, [data-scroll-row] img { animation: none !important; } }
+    @container (min-width: 320px) and (max-width: 519px) { [data-scroll-row] > li > .project-card, [data-scroll-row] img { animation: none !important; } }
   }
 }
 

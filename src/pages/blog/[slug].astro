@@ -41,7 +41,7 @@ const topics = await topicsOf(post);
       {(d.published || d.updated) && (
         <p class="post-dates">
           {d.published && <span>Published <time datetime={iso(d.published)}>{formatDate(d.published)}</time></span>}
-          {d.updated && <span>Updated <time datetime={iso(d.updated)}>{formatDate(d.updated)}</time></span>}
+          {d.updated && (!d.published || iso(d.updated) !== iso(d.published)) && <span>Updated <time datetime={iso(d.updated)}>{formatDate(d.updated)}</time></span>}
         </p>
       )}
       {o && <p class="post-origin">Originally published on <a href={o.url} target="_blank" rel="noopener">{o.on}<span class="cory-visually-hidden"> (opens in a new tab)</span></a>{o.date && <>, <time datetime={iso(o.date)}>{formatDate(o.date)}</time></>}.</p>}

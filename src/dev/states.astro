@@ -496,6 +496,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <h2 style={h2}>Admin: a LinkedIn post from its link</h2>
             <p style={note}>The box on /admin/share, which a phone's share sheet opens with the link (docs/LINKEDIN_CAPTURE.md): empty; refused, with the link kept; and the editor's notice when a link was taken in.</p>
             <ShareBox uid={`${theme}-share`} note={`${theme} theme, empty`} />
+            <ShareBox uid={`${theme}-share-confirm`} note={`${theme} theme, from another site`} url="https://www.linkedin.com/posts/aiuxaleem_example-activity-7000000000000000000-AbCd" confirm />
             <ShareBox uid={`${theme}-share-refused`} note={`${theme} theme, refused`} url="https://example.com/not-a-post" error="That is not a link to a LinkedIn post or article. A post's link has /posts/ in it, an article's has /pulse/." />
             <div class="form-panel admin-note" role="status" data-tone="success"><AdminIcon name="ok" /><div><p>Saved as a draft from the link you shared. Check the title and the day, then publish.</p></div></div>
           </div>

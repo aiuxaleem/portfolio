@@ -19,7 +19,7 @@ const topics = await topicsOf(post);
       : <div data-cover-fallback="label" aria-hidden="true"><span>{['Blog post', d.category].filter(Boolean).join(' · ')}</span></div>}
   </div>
   <div class="project-card-body">
-    {(date || time) && <p class="case-kicker">{date && <>{!d.published && 'Updated '}<time datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time></>}{date && time && ' · '}{time}</p>}
+    {(date || time) && <p class="case-kicker">{date && <>{!d.published && 'Updated '}<time datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time></>}{date && time && '\u00A0· '}{time}</p>}
     <Heading class="project-card-title"><a class="project-card-link" href={postUrl(post)}>{d.title}</a></Heading>
     <p class="project-card-summary">{d.excerpt}</p>
     {topics.length > 0 && <ul class="project-card-tags" aria-label="Tags">{topics.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul>}

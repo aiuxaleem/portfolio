@@ -28,7 +28,7 @@ const hasBody = !!(entry.body && entry.body.trim());
 const toc = sections(d, hasBody);
 const shown = new Set(toc.map(s => s.id));
 const num = (id: string) => String(toc.findIndex(s => s.id === id) + 1).padStart(2, '0');
-const meta = [['Role', d.role], ['Company', d.confidential ? 'Confidential' : d.company], ['Timeline', d.timeline], ['Team', d.team], ['Tools', d.stack.join(' · ') || undefined], ['Platform', d.platform]].filter(([, v]) => v) as [string, string][];
+const meta = [['Role', d.role], ['Company', d.confidential ? 'Confidential' : d.company], ['Timeline', d.timeline], ['Team', d.team], ['Tools', d.stack.join('\u00A0· ') || undefined], ['Platform', d.platform]].filter(([, v]) => v) as [string, string][];
 const verified = d.outcomes.metrics.filter(m => m.verified);
 /* Counts of what was built are not outcomes. Until a measured outcome is verified, the section says what shipped and
    leads with who uses it, then the counts. */
@@ -41,7 +41,7 @@ const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
   <article>
     <header class="cory-container" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--space-12) var(--space-10);">
       <a data-link href="/case-studies" style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All case studies</span></a>
-      <p class="case-kicker">{[d.index, d.category].filter(Boolean).join(' · ') || 'Case study'}<span> · {readingTime(d, entry.body)}</span></p>
+      <p class="case-kicker">{[d.index, d.category].filter(Boolean).join('\u00A0· ') || 'Case study'}<span>{'\u00A0· '}{readingTime(d, entry.body)}</span></p>
       <h1 style="margin: 0; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">{d.title}</h1>
       <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">{d.lead}</p>
       {d.nda && (

@@ -38,8 +38,8 @@ const one = (v: number) => (Math.round(v * 10) / 10).toLocaleString('en-GB', { m
 const countryName = (code: string) => { if (!code) return 'Unknown'; try { return new Intl.DisplayNames(['en'], { type: 'region' }).of(code) || code; } catch { return code; } };
 const pageName = (p: { path: string; name?: string }) => p.name || (p.path === '/' ? 'Home' : p.path);
 const deviceName: Record<string, string> = { desktop: 'Desktop', phone: 'Phone', tablet: 'Tablet' };
-const kindName: Record<string, string> = { projects: 'Project', caseStudies: 'Case study', posts: 'Blog post', videos: 'Video', linkedinPosts: 'LinkedIn post', linkedinArticles: 'LinkedIn article', resources: 'Resource' };
-const kindIcon: Record<string, IconName> = { projects: 'projects', caseStudies: 'case-studies', posts: 'posts', videos: 'videos', linkedinPosts: 'linkedin-posts', linkedinArticles: 'linkedin-articles', resources: 'resources' };
+const kindName: Record<string, string> = { projects: 'Project', caseStudies: 'Case study', posts: 'Blog post', videos: 'Video', linkedinPosts: 'LinkedIn post', linkedinArticles: 'LinkedIn article', resources: 'Resource', aiTools: 'AI tool' };
+const kindIcon: Record<string, IconName> = { projects: 'projects', caseStudies: 'case-studies', posts: 'posts', videos: 'videos', linkedinPosts: 'linkedin-posts', linkedinArticles: 'linkedin-articles', resources: 'resources', aiTools: 'ai-tools' };
 const TARGETS = new Set(['SA', 'AE']);
 const FLOOR = 20; // no percentage on a smaller base
 const SHOWN = 6; // publishes listed before the fold
