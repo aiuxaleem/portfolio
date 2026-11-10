@@ -1,0 +1,78 @@
+---
+/* Card for one Claude skill (/skills, L-61). Two kinds:
+   - one of mine: a tile with its own actions (Download, Read the SKILL.md, the case study), so the card is not a stretched
+     link; the download says its size and format before the click;
+   - one from someone else: the AI tool card's recipe, one link (the source) and the whole card clickable, with the maker,
+     official or community, the licence and the one-line install.
+   The data attributes are what the filter island reads (islands/project-filters.ts). States: with and without a download,
+   with a note, a fixture with long strings. */
+import Button from '../ui/button.astro';
+import { type Skill, skillCategoryLabel, hostOf } from '../../lib/skills';
+
+interface Props { skill: Skill; level?: 2 | 3 }
+const { skill, level = 3 } = Astro.props;
+const d = skill.data;
+const Heading = `h${level}` as any;
+const host = hostOf(d.source);
+const letter = d.title.trim().charAt(0).toUpperCase();
+const arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"></path></svg>';
+const down = '<svg slot="icon-left" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"></path></svg>';
+---
+{d.mine
+  ? <article class="tile skill-card skill-mine">
+      <div class="skill-head">
+        <span class="skill-mark" aria-hidden="true">{letter}</span>
+        <div class="skill-name">
+          <Heading class="skill-title">{d.title}</Heading>
+          <p class="case-kicker"><bdi>{d.name}</bdi></p>
+        </div>
+      </div>
+      <p class="skill-summary">{d.summary}</p>
+      {d.note && <p class="skill-note">{d.note}</p>}
+      <p class="project-card-meta"><span class="ui-badge">{skillCategoryLabel[d.category]}</span>{d.license && <span class="ui-badge">{d.license}</span>}</p>
+      <div class="skill-actions">
+        {d.download
+          ? <span class="skill-download"><Button variant="secondary" href={d.download} download={`${d.name}.zip`}><Fragment set:html={down} />Download<span class="cory-visually-hidden"> {d.title}, a zip file{d.size && <>, {d.size}</>}</span></Button><span class="skill-size" aria-hidden="true">.zip{d.size && <>{'\u00A0·\u00A0'}{d.size}</>}</span></span>
+          : <span class="skill-unavailable">Download coming soon</span>}
+        {d.readme && <a class="skill-link" href={d.readme} target="_blank" rel="noopener">Read the SKILL.md first<span class="cory-visually-hidden"> of {d.title} (opens in a new tab)</span> <Fragment set:html={arrow} /></a>}
+        {d.caseStudy && <a class="skill-link" href={d.caseStudy}>Read the case study<span class="cory-visually-hidden"> about {d.title}</span></a>}
+      </div>
+    </article>
+  : <article class="project-card skill-card" data-project data-status={d.official ? 'official' : 'community'} data-tags={d.category} data-text={[d.title, d.name, d.maker, host, d.summary, ...d.tags].filter(Boolean).join(' ')}>
+      <div class="project-card-body">
+        <div class="skill-head">
+          <span class="skill-mark" aria-hidden="true">{letter}</span>
+          <div class="skill-name">
+            <Heading class="project-card-title"><a class="project-card-link" href={d.source} target="_blank" rel="noopener">{d.title}<span class="cory-visually-hidden"> (opens {host} in a new tab)</span></a></Heading>
+            <p class="case-kicker">{d.maker}</p>
+          </div>
+        </div>
+        <p class="project-card-summary">{d.summary}</p>
+        {d.note && <p class="skill-note">{d.note}</p>}
+        {d.install && <p class="skill-install"><span class="skill-install-label">Install</span><code dir="ltr" lang="en">{d.install}</code></p>}
+        <p class="project-card-meta"><span class="ui-badge" data-tone={d.official ? 'success' : undefined}>{d.official ? 'Official' : 'Community'}</span><span class="ui-badge">{skillCategoryLabel[d.category]}</span>{d.license && <span class="ui-badge">{d.license}</span>}</p>
+        <span class="project-card-cta" aria-hidden="true">Get it on <bdi>{host}</bdi> <Fragment set:html={arrow} /></span>
+      </div>
+    </article>}
+
+<style>
+  .skill-card { min-inline-size: 0; }
+  .skill-mine { display: grid; gap: var(--space-4); align-content: start; }
+  .skill-head { display: flex; align-items: center; gap: var(--space-3); min-inline-size: 0; }
+  .skill-name { display: grid; gap: 2px; min-inline-size: 0; }
+  .skill-name .case-kicker { overflow-wrap: anywhere; }
+  .skill-mark { flex-shrink: 0; display: grid; place-items: center; inline-size: var(--tap-target); block-size: var(--tap-target); border-radius: var(--radius-md); background: var(--gradient-ink); color: var(--on-ink-strong); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h4); }
+  .skill-title { margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
+  .skill-summary { margin: 0; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); }
+  .skill-note { margin: 0; padding-inline-start: var(--space-3); border-inline-start: 2px solid var(--border-default); font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-muted); }
+  .skill-install { margin: 0; display: grid; gap: var(--space-1); min-inline-size: 0; }
+  .skill-install-label { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
+  .skill-install code { display: block; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); background: var(--surface-sunken); border: 1px solid var(--border-subtle); font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--leading-mono); color: var(--text-strong); overflow-wrap: anywhere; }
+  .skill-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-5); margin-block-start: auto; }
+  .skill-download { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); }
+  .skill-size { font-family: var(--font-mono); font-size: var(--text-mono); color: var(--text-muted); white-space: nowrap; }
+  .skill-link { display: inline-flex; align-items: center; gap: var(--space-1); min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none; }
+  @media (hover: hover) { .skill-link:hover { text-decoration: underline; text-underline-offset: 3px; } }
+  .skill-link:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+  .skill-unavailable { display: inline-flex; align-items: center; min-block-size: var(--tap-target); font-size: var(--text-body-sm); color: var(--text-muted); }
+</style>

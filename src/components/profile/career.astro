@@ -8,19 +8,17 @@ const tenure = (roles: { start: string; end: string }[]) => { const starts = rol
 interface Props { level?: 2 | 3; highlights?: boolean; /** About: from 1024px each company sits beside its roles, so the timeline uses the page's width. */ wide?: boolean }
 const { level = 3, highlights = true, wide = false } = Astro.props;
 const Company = `h${level}` as any, RoleTag = `h${level + 1}` as any;
-/* Two columns read down then across: the first holds the newer half of the companies. */
-const rows = Math.ceil(careerByCompany().length / 2);
 ---
-<ol class:list={['career', wide && 'career-wide']} data-compact={highlights ? undefined : ''} style={`--career-rows: ${rows};`}>
+<ol class:list={['career', wide && 'career-wide']} data-compact={highlights ? undefined : ''}>
   {careerByCompany().map(group => (
     <li class="career-company">
       <Company>{group.company}</Company>
-      {group.roles.length > 1 && tenure(group.roles) && <p class="case-kicker career-tenure">{tenure(group.roles)} · {group.roles.length} roles</p>}
+      {group.roles.length > 1 && tenure(group.roles) && <p class="case-kicker career-tenure">{tenure(group.roles)}{' · '}{group.roles.length} roles</p>}
       <div class="career-roles">
       {group.roles.map(r => (
         <div class="career-role">
           <RoleTag>{r.role}</RoleTag>
-          {(period(r) || r.location) && <p class="case-kicker">{[period(r), r.location].filter(Boolean).join(' · ')}</p>}
+          {(period(r) || r.location) && <p class="case-kicker">{[period(r).replace(/ (\d{4})/g, '\u00A0$1'), r.location].filter(Boolean).join('\u00A0· ')}</p>}
           <p>{r.summary}</p>
           {highlights && r.highlights.length > 0 && <ul>{r.highlights.map(h => <li>{h}</li>)}</ul>}
         </div>

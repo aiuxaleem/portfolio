@@ -25,7 +25,8 @@ const { before, after, caption } = Astro.props;
   .before-after { margin: 0; display: grid; gap: var(--space-3); }
   .ba-stage { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
   .ba-pane { position: relative; aspect-ratio: var(--aspect-case); border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-sunken); border: 1px solid var(--border-subtle); }
-  .ba-pane img { inline-size: 100%; block-size: 100%; object-fit: cover; object-position: top left; }
+  /* Both pictures whole, top-left aligned so the slider compares the same corner (L-60: nothing uploaded is cut). */
+  .ba-pane img { inline-size: 100%; block-size: 100%; object-fit: contain; object-position: top left; }
   .ba-tag { position: absolute; inset-block-start: var(--space-3); padding: 5px 12px; border-radius: var(--radius-pill); background: var(--surface-card); color: var(--text-strong); border: 1px solid var(--border-default); font-size: var(--text-caption); font-weight: var(--weight-semibold); line-height: 1.2; }
   .ba-before .ba-tag { left: var(--space-3); }
   .ba-after .ba-tag { right: var(--space-3); }

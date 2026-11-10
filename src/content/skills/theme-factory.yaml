@@ -1,0 +1,13 @@
+title: Theme factory
+name: theme-factory
+mine: false
+maker: Anthropic
+official: true
+category: brand-and-visuals
+summary: "Applies one of ten preset colour and font themes, or a new one it builds, to slides, documents and landing pages."
+source: https://github.com/anthropics/skills/tree/main/skills/theme-factory
+license: Apache-2.0
+install: "/plugin marketplace add anthropics/skills, then /plugin install example-skills@anthropic-agent-skills"
+added: 2026-11-09
+order: 20
+tags: ["Themes", "Colour", "Type"]

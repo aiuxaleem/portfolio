@@ -1,0 +1,13 @@
+title: UI UX Pro Max
+name: ui-ux-pro-max
+mine: false
+maker: Next Level Builder
+official: false
+category: design-systems
+summary: "A searchable library of UI styles, palettes, font pairings and UX rules that Claude consults while it designs a screen or a system."
+source: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
+license: MIT
+install: "/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill, then /plugin install ui-ux-pro-max@ui-ux-pro-max-skill"
+added: 2026-11-09
+order: 20
+tags: ["Palettes", "Typography", "UX rules"]

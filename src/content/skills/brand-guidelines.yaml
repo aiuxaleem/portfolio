@@ -1,0 +1,13 @@
+title: Brand guidelines
+name: brand-guidelines
+mine: false
+maker: Anthropic
+official: true
+category: design-systems
+summary: "Applies Anthropic's own colours and type to anything Claude makes. Its real use for a designer is as a pattern for writing a brand skill of your own."
+source: https://github.com/anthropics/skills/tree/main/skills/brand-guidelines
+license: Apache-2.0
+install: "/plugin marketplace add anthropics/skills, then /plugin install example-skills@anthropic-agent-skills"
+added: 2026-11-09
+order: 10
+tags: ["Brand", "Template"]

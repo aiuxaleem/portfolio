@@ -66,6 +66,14 @@ export function pageChecks() {
     let boxed = false; for (let p = img; p && p !== document.body; p = p.parentElement) { const a = getComputedStyle(p).aspectRatio; if (a && a !== 'auto') { boxed = true; break; } }
     if (!(img.hasAttribute('width') && img.hasAttribute('height')) && !boxed) fails.push({ check: 'img-size', detail: `${src} has no width/height and no aspect-ratio box` });
     if (img.complete && img.naturalWidth === 0) fails.push({ check: 'img-broken', detail: `${src} failed to load` });
+    // 2.4 A content picture is never cut by its frame (owner instruction, 9 November 2026, L-60): drawn with object-fit cover into
+    //     a box of another shape, a picture loses its edges. The site shows every uploaded picture whole (ui/fitted-image.astro,
+    //     the gallery tiles, the before/after panes), so a cut here is a fault. A square portrait in a round 44px frame keeps its
+    //     shape and passes; a designed scene may opt out with data-crop="scene"; anything under 24px is left alone.
+    if (img.naturalWidth && img.naturalHeight && getComputedStyle(img).objectFit === 'cover' && !img.closest('[data-crop="scene"]')) {
+      const r = img.getBoundingClientRect();
+      if (r.width > 24 && r.height > 24) { const box = r.width / r.height, nat = img.naturalWidth / img.naturalHeight; if (Math.abs(box - nat) / nat > 0.03) fails.push({ check: 'img-cropped', detail: `${src} (${img.naturalWidth}x${img.naturalHeight}) is cut to a ${Math.round(r.width)}x${Math.round(r.height)} frame in ${where(img)}` }); }
+    }
   });
 
   // 2.9 Metadata
@@ -80,6 +88,13 @@ export function pageChecks() {
   if (theme !== 'light' && theme !== 'dark') fails.push({ check: 'theme', detail: 'data-theme is not set on <html>' });
   else if (!getComputedStyle(de).colorScheme.includes(theme)) fails.push({ check: 'color-scheme', detail: `color-scheme is "${getComputedStyle(de).colorScheme}" in ${theme} theme` });
   return fails;
+}
+
+/** Waits, up to four seconds, for every picture on the page to finish loading, so the picture checks measure real sizes
+    (the pages are scrolled through first, which starts the lazy ones). Runs in the page. */
+export function settleImages() {
+  const waiting = [...document.images].filter(i => !i.complete).map(i => new Promise(r => { i.addEventListener('load', r, { once: true }); i.addEventListener('error', r, { once: true }); }));
+  return Promise.race([Promise.all(waiting), new Promise(r => setTimeout(r, 4000))]).then(() => undefined);
 }
 
 /** Reads the focused element after a Tab press. A control passes only with a real outline (not a halo alone). */

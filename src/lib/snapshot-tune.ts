@@ -55,7 +55,12 @@ export function tuneSnapshot(html: string, lazy: string[] = [], newTab = '(opens
     /* The address link that carries a mail subject says so in hidden text, so its name differs from the footer's plain
        address link (WCAG 2.4.4: the same name for two destinations). */
     .replace(/<a\b[^>]*data-email[^>]*href="mailto:[^"?]*\?subject=([^"&]+)"[^>]*>[\s\S]*?<\/a>/g, (link, enc) => (link.includes('data-subject-said') ? link : link.replace(/<\/a>$/, `<span class="cory-visually-hidden" data-subject-said=""> (${subject}: ${decodeURIComponent(enc).replace(/&/g, '&amp;').replace(/</g, '&lt;')})</span></a>`)))
-    .replace(/<img\b[^>]*>/g, tag => (lazy.some(src => tag.includes(`src="${src}"`)) && !/\bloading=/.test(tag) ? tag.replace('<img', '<img loading="lazy" decoding="async"') : tag));
+    .replace(/<img\b[^>]*>/g, tag => (lazy.some(src => tag.includes(`src="${src}"`)) && !/\bloading=/.test(tag) ? tag.replace('<img', '<img loading="lazy" decoding="async"') : tag))
+    /* A status chip of the design with no dot of its own (Home's Now section says "Shipped" in a plain pill) gets the tone the
+       Now page's badge carries for the same word, and components.css draws the dot (L-59 l). */
+    .replace(/data-badge=""><span class="sc-interp">(Shipped|In progress)<\/span>/g, (_, word: string) => `data-badge="" data-tone="${word === 'Shipped' ? 'success' : 'brand'}"><span class="sc-interp">${word}</span>`)
+    /* The design's own certificate dialog goes: the certificates open in the page's image preview, with zoom (L-60). */
+    .replace(/<dialog aria-labelledby="cert-dlg-title"[\s\S]*?<\/dialog>/g, '');
 }
 
 /* The Skills section tools tile shows every chip (owner instruction, 2 November 2026, L-37): the two groups the owner named

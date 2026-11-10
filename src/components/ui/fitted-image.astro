@@ -1,9 +1,11 @@
 ---
-/* A picture in a frame of a set shape (a card, a page's cover) without losing what matters in it. When the picture's
-   shape is close to the frame's, it fills the frame and the cut keeps its focus point (the image's `focus`, set in the
-   admin; by default its top centre). When the shapes differ by more than 15% (a portrait still in a landscape card, a
-   wide banner), the picture is shown whole over a soft, blurred copy of itself, so nothing is cut. The frame is the
-   parent's box (.project-card-media, .project-cover); styles in components.css. */
+/* A picture in a frame of a set shape (a card, a page's cover, a gallery tile) is always shown whole (owner instruction,
+   9 November 2026, L-60: nothing uploaded is ever cut): it sits over a soft, blurred copy of itself, so a picture of another
+   shape fills the frame's bands with its own colours. Until L-60 a picture close to the frame's shape filled it and was cut at
+   its focus point (L-24); lib/images.ts keeps `shownWhole` as the one switch. The frame is the parent's box
+   (.project-card-media, .project-cover); styles in components.css.
+   With `preview`, the picture is a link to its full size that islands/image-preview.ts opens in the preview dialog
+   (ui/image-preview.astro); without JavaScript the link opens the file. Never on a card, whose one link is its page. */
 import { Image, getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import { shownWhole } from '../../lib/images';
@@ -16,10 +18,17 @@ interface Props {
   frame?: number;
   loading?: 'eager' | 'lazy';
   fetchpriority?: 'high';
+  /** The picture opens in the preview dialog (covers, figures, galleries). */
+  preview?: boolean;
+  /** What the preview names the picture; its alt text when absent. */
+  caption?: string;
 }
-const { image, widths, sizes, frame = 16 / 10, loading = 'lazy', fetchpriority } = Astro.props;
+const { image, widths, sizes, frame = 16 / 10, loading = 'lazy', fetchpriority, preview = false, caption } = Astro.props;
 const whole = shownWhole(image.src, frame);
 const backdrop = whole ? await getImage({ src: image.src, width: 48, format: 'webp' }) : undefined;
+const full = preview ? await getImage({ src: image.src, width: Math.min(image.src.width, 2000) }) : undefined;
 ---
 {backdrop && <span class="fitted-backdrop" aria-hidden="true" style={`background-image: url("${backdrop.src}");`}></span>}
-<Image src={image.src} alt={image.alt} widths={widths} sizes={sizes} loading={loading} fetchpriority={fetchpriority} decoding="async" class={whole ? 'fitted-whole' : undefined} style={!whole && image.focus ? `object-position: ${image.focus};` : undefined} />
+{full
+  ? <a class="image-preview-link" data-preview href={full.src} data-caption={caption} target="_blank" rel="noopener" aria-label={`View larger: ${image.alt || caption || 'picture'}`}><Image src={image.src} alt={image.alt} widths={widths} sizes={sizes} loading={loading} fetchpriority={fetchpriority} decoding="async" class={whole ? 'fitted-whole' : undefined} style={!whole && image.focus ? `object-position: ${image.focus};` : undefined} /></a>
+  : <Image src={image.src} alt={image.alt} widths={widths} sizes={sizes} loading={loading} fetchpriority={fetchpriority} decoding="async" class={whole ? 'fitted-whole' : undefined} style={!whole && image.focus ? `object-position: ${image.focus};` : undefined} />}

@@ -1,0 +1,13 @@
+title: Canvas design
+name: canvas-design
+mine: false
+maker: Anthropic
+official: true
+category: brand-and-visuals
+summary: "Makes posters and other static pieces as PNG or PDF, starting from a short written design philosophy rather than a template."
+source: https://github.com/anthropics/skills/tree/main/skills/canvas-design
+license: Apache-2.0
+install: "/plugin marketplace add anthropics/skills, then /plugin install example-skills@anthropic-agent-skills"
+added: 2026-11-09
+order: 10
+tags: ["Posters", "Visual design"]

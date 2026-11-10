@@ -46,7 +46,7 @@ const arrowOut = 'M7 7h10v10M7 17 17 7';
       </dl>
       <div class="project-cover" style={d.cover ? `aspect-ratio: ${coverFrame(d.cover.src)};` : undefined}>
         {d.cover
-          ? <FittedImage image={d.cover} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1280px) 1144px, 100vw" frame={coverFrame(d.cover.src)} loading="eager" fetchpriority="high" />
+          ? <FittedImage image={d.cover} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1280px) 1144px, 100vw" frame={coverFrame(d.cover.src)} loading="eager" fetchpriority="high" preview caption={d.title} />
           : <div data-cover-fallback="label" aria-hidden="true"><span>{['Project', d.tags[0]].filter(Boolean).join(' · ')}</span></div>}
       </div>
     </header>
@@ -57,7 +57,7 @@ const arrowOut = 'M7 7h10v10M7 17 17 7';
       <section class="cory-container" aria-labelledby="gallery-title" style="display: grid; gap: var(--space-6); padding-block: var(--space-10);">
         <h2 id="gallery-title" class="project-h2">Gallery</h2>
         <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
-          {d.gallery.map(g => <li><figure style="margin: 0; display: grid; gap: var(--space-3);"><div class="project-cover" style="aspect-ratio: var(--aspect-case);"><Image src={g.src} alt={g.alt} widths={[400, 640, 960]} sizes="(min-width: 640px) 50vw, 100vw" loading="lazy" decoding="async" /></div>{g.caption && <figcaption style="font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--leading-mono); color: var(--text-muted);">{g.caption}</figcaption>}</figure></li>)}
+          {d.gallery.map(g => <li><figure style="margin: 0; display: grid; gap: var(--space-3);"><div class="project-cover" style="aspect-ratio: var(--aspect-case);"><FittedImage image={g} widths={[400, 640, 960]} sizes="(min-width: 640px) 50vw, 100vw" preview caption={g.caption} /></div>{g.caption && <figcaption style="font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--leading-mono); color: var(--text-muted);">{g.caption}</figcaption>}</figure></li>)}
         </ul></div>
       </section>
     )}

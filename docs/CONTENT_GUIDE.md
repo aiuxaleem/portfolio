@@ -244,7 +244,9 @@ Admin, Career, Opportunity check: each job you are weighing, scored 1 to 5 again
 
 ## Image sizes
 
-Upload covers at 16:10, for example 3200 by 2000 pixels: they then fill every card. Under each image field the admin shows the whole picture (click it to set the focus point that stays in view where a frame cuts it) and the 16:10 cut; a picture far from 16:10 is shown whole on the site, over a soft copy of itself.
+**Claude skills (/skills):** each skill is a file in `src/content/skills/`, edited in the admin under Claude skills. For one of your own, put its zip in `public/skills/<name>.zip` (one folder inside, named as the skill, SKILL.md at its root; build it with a tool that writes forward slashes, not PowerShell 5.1's Compress-Archive) and its SKILL.md at `public/skills/<name>/SKILL.md`, then fill Download, Download size and SKILL.md in the editor. Read every file of a skill before you publish it: no keys, account IDs, contacts or private paths. For one from someone else, give the link where it is published, its licence as the repository states it and its install line as the maker documents it.
+
+Every picture is shown whole, never cut, in cards, thumbnails and covers (owner instruction, 9 November 2026): a picture whose shape differs from the 16:10 frame sits over a soft copy of itself. Upload covers at 16:10, for example 3200 by 2000 pixels, and they fill the frame edge to edge. Under each image field the admin shows the picture and the picture in a 16:10 frame as the site will show it. On a page, a cover, a figure or a gallery picture opens in the image preview on a click: the full picture, zoom in and out, Escape to close.
 
 
 Upload one good original. The build makes the smaller sizes and the WebP versions.

@@ -1,0 +1,11 @@
+title: Design system audit
+name: design-system-audit
+mine: true
+maker: Mohammad Abdul Aleem
+category: design-systems
+summary: A freight platform's design system as a Claude Code skill that audits a build against it and makes the safe fixes; it took contrast failures from 1,646 to 7 across 97 screens without changing behaviour.
+note: Written for one client's system, so it is shown through its case study rather than offered as a download.
+caseStudy: /case-studies/design-system-audit-skill
+added: 2026-11-09
+order: 30
+tags: [Design system, Audit, Accessibility, Claude Code]

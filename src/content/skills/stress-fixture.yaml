@@ -1,0 +1,15 @@
+title: A deliberately long one hundred and twenty character title used to test how every heading wraps across narrow s
+name: a-deliberately-long-skill-folder-name-to-test-wrapping-x1
+mine: false
+maker: https://example.com/an-unbroken-string-of-sixty-characters-x1
+official: false
+category: review-and-research
+summary: A deliberately long summary that fills the card to its limit so the layout can be checked at every width, with an unbroken token https://example.com/an-unbroken-string-of-sixty-x1
+note: A fixture note that also runs long, so the note style is checked beside the summary at narrow widths and in both themes.
+source: https://example.com/an-unbroken-string-of-sixty-characters-x1
+license: Apache-2.0
+install: npx an-unbroken-install-command-that-is-deliberately-long-to-test-wrapping-x1 --flag
+added: 2026-11-09
+order: 999
+tags: [One, Two, Three, Four, Five, Six, Seven, Eight, Nine]
+fixture: true

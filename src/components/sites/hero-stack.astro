@@ -102,8 +102,8 @@ const arrow = (d: string, size = 20) => `<svg data-dir-icon width="${size}" heig
   /* 9:5 makes the window, which runs past the card's foot and end, 16:10: the shape of the covers. */
   .hero-stack-stage { position: relative; display: block; margin-block: auto calc(-1 * var(--space-6)); aspect-ratio: 9 / 5; }
   .hero-stack-frame { position: absolute; inset-inline: 10% -6%; inset-block: 0 -8%; display: block; border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-card); border: 1px solid var(--on-ink-border-strong); box-shadow: var(--shadow-xl); transform: rotate(calc(-4deg * var(--dir-x))); transform-origin: 0 100%; }
-  .hero-stack-frame img { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; object-position: left top; }
-  .hero-stack-frame .hero-stack-picture { object-position: center 20%; }
+  .hero-stack-frame img { display: block; inline-size: 100%; block-size: 100%; object-fit: contain; object-position: center top; } /* whole, never cut (L-60) */
+  .hero-stack-frame .hero-stack-picture { object-position: center; background: var(--surface-sunken); }
   .hero-stack-frame { isolation: isolate; }
   .hero-stack-frame .fitted-backdrop { z-index: -1; }
   .hero-stack-frame img.hero-stack-whole { position: relative; object-fit: contain; object-position: center; }

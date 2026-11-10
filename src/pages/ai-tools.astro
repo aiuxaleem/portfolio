@@ -30,7 +30,7 @@ const stack = await aiToolCards();
         <Button variant="secondary" size="lg" href={`mailto:${site.email}?subject=${encodeURIComponent('AI tool suggestion')}`}>Suggest a tool</Button>
       </div>
       <dl class="ai-tools-stats">
-        <div><dt>Tools</dt><dd style={stat}>{tools.length}</dd></div>
+        <div><dt>Tools</dt><dd style={stat}>{tools.filter(t => !t.data.fixture).length}</dd></div>
         <div><dt>Categories</dt><dd style={stat}>{groups.filter(g => g.count > 0).length}</dd></div>
         {picks > 0 && <div><dt>I use</dt><dd style={stat}>{picks}</dd></div>}
       </dl>
@@ -42,7 +42,7 @@ const stack = await aiToolCards();
   <section id="tools" class="cory-container" aria-label="Tools" style="display: grid; gap: var(--space-12); padding-block-end: var(--section-y);">
     {tools.length === 0
       ? <div class="project-empty"><p class="project-empty-title">No tools are listed yet.</p><p class="project-empty-body">Tools appear here as they are added. Until then, the UX Library has the wider list of tools and references.</p><div><Button variant="secondary" href="/resources">Open the UX Library</Button></div></div>
-      : <div data-project-list class="ai-tools-groups">
+      : <div data-project-list data-page-size="12" class="ai-tools-groups">
           {groups.map(g => (
             <section class="ai-tools-group" aria-labelledby={`ai-${g.slug}`} data-filter-group>
               <div class="page-section-head">
@@ -53,6 +53,8 @@ const stack = await aiToolCards();
             </section>
           ))}
         </div>}
+    {/* The list shows twelve tools at a time, as the UX Library does, and this control adds the next twelve (islands/project-filters.ts, L-59 i). Without JavaScript every tool is listed and the control stays hidden. */}
+    {tools.length > 12 && <p data-project-more hidden style="margin: 0;"><Button variant="secondary" data-show-more>Show more</Button></p>}
   </section>
 </PageLayout>
 

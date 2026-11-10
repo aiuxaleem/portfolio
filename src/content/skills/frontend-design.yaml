@@ -1,0 +1,13 @@
+title: Frontend design
+name: frontend-design
+mine: false
+maker: Anthropic
+official: true
+category: design-to-code
+summary: "Steers the UI Claude builds toward a deliberate visual direction, typography included, so screens stop reading as templated defaults."
+source: https://github.com/anthropics/skills/tree/main/skills/frontend-design
+license: Apache-2.0
+install: "/plugin install frontend-design@claude-plugins-official"
+added: 2026-11-09
+order: 10
+tags: ["UI code", "Visual direction", "Typography"]

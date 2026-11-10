@@ -1,0 +1,13 @@
+title: Web artifacts builder
+name: web-artifacts-builder
+mine: false
+maker: Anthropic
+official: true
+category: design-to-code
+summary: "Builds multi-screen, stateful prototypes as Claude.ai artifacts with React, Tailwind CSS and shadcn/ui, for when a single HTML file is not enough."
+source: https://github.com/anthropics/skills/tree/main/skills/web-artifacts-builder
+license: Apache-2.0
+install: "/plugin marketplace add anthropics/skills, then /plugin install example-skills@anthropic-agent-skills"
+added: 2026-11-09
+order: 20
+tags: ["Prototyping", "React", "shadcn/ui"]

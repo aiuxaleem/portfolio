@@ -9,7 +9,7 @@ import zlib from 'node:zlib';
 import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { ROOT, VIEWPORTS, QUICK_VIEWPORTS, THEMES, serve, launch, routes, arg, open, revealAll } from '../lib.mjs';
-import { pageChecks, focusProbe } from './checks.mjs';
+import { pageChecks, focusProbe, settleImages } from './checks.mjs';
 
 const require = createRequire(import.meta.url);
 const AXE = fs.readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
@@ -91,6 +91,7 @@ async function worker() {
         if (fold && fold.bottom > fold.H) fail('first-screen', route.name, view, `the hero's action "${fold.label}" ends at ${fold.bottom}px, below a ${fold.H}px screen`);
       }
       await revealAll(page, height);
+      await page.evaluate(settleImages);
       for (const f of await page.evaluate(pageChecks)) fail(f.check, route.name, view, f.detail);
       await page.addScriptTag({ content: AXE });
       const violations = await page.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] }, resultTypes: ['violations'] })).violations.map(v => `${v.id} (${v.impact}): ${v.nodes.length} node(s), first: ${String(v.nodes[0].target[0]).slice(0, 80)}`));

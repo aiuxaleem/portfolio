@@ -1,0 +1,9 @@
+title: Fixture skill of mine with no download yet and a long name to test the tile
+name: fixture-skill-of-mine
+mine: true
+maker: Mohammad Abdul Aleem
+category: making-skills
+summary: Fixture for the tile of one of my skills without a download, a case study or a link, as a "coming soon" card.
+added: 2026-11-09
+order: 999
+fixture: true

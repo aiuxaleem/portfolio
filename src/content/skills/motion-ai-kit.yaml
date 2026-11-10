@@ -1,0 +1,14 @@
+title: Motion AI Kit
+name: motion
+mine: false
+maker: Motion
+official: true
+category: motion
+summary: "Animation best practice, search across Motion's documentation and CSS spring easing, so the motion Claude writes feels designed rather than default."
+note: Performance audits (MotionScore) need a paid Motion+ membership; the rest is free.
+source: https://github.com/motiondivision/ai-kit
+license: MIT
+install: npx motion-ai
+added: 2026-11-09
+order: 10
+tags: ["Animation", "Springs", "Performance"]

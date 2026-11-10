@@ -1,5 +1,6 @@
 /* Behaviour for page bodies that are still rendered from snapshots: hero work deck and certificate dialog on Home.
    Each block does nothing when its elements are not on the page. These move into their components as pages are componentised. */
+import { openImagePreview } from './image-preview';
 
 /* ---------- Hero work deck: three stacked cards; arrows bring the next one to the front ---------- */
 const stack = document.querySelector<HTMLElement>('[data-hero-stack]');
@@ -45,27 +46,10 @@ if (learning) {
   }
 }
 
-/* ---------- Certificate dialog: native <dialog>; focus moves in, Escape closes, focus returns to the opener ---------- */
-const dialog = document.querySelector<HTMLDialogElement>('dialog[aria-labelledby="cert-dlg-title"]');
-if (dialog) {
-  const title = dialog.querySelector<HTMLElement>('#cert-dlg-title');
-  const org = title?.parentElement?.querySelector('p');
-  const closeBtn = dialog.querySelector<HTMLButtonElement>('button');
-  const card = dialog.querySelector<HTMLElement>('[data-cert-card]');
-  const frame = card?.lastElementChild as HTMLElement | null;
-  let opener: HTMLElement | null = null;
-  document.querySelectorAll<HTMLButtonElement>('button[aria-haspopup="dialog"]').forEach(btn => btn.addEventListener('click', () => {
-    const item = btn.closest('li'); const thumb = btn.querySelector('img'); if (!item || !thumb || !frame) return;
-    const name = item.querySelector('h4')?.textContent?.trim() || '';
-    if (title) title.textContent = name;
-    if (org) org.textContent = item.querySelector('h4 + span')?.textContent?.trim() || '';
-    const img = document.createElement('img');
-    img.src = thumb.getAttribute('src')!.replace('/certs/', '/certs/full/'); img.alt = name; img.decoding = 'async';
-    img.style.cssText = 'display:block; inline-size:100%; max-block-size:calc(100svh - 14rem); object-fit:contain; background:var(--surface-sunken); border-radius:var(--radius-lg);';
-    frame.replaceChildren(img);
-    opener = btn; dialog.showModal(); closeBtn?.focus();
-  }));
-  closeBtn?.addEventListener('click', () => dialog.close());
-  dialog.addEventListener('click', e => { if (e.target === dialog) dialog.close(); });
-  dialog.addEventListener('close', () => opener?.focus());
-}
+/* ---------- Certificates: a click opens the picture in the page's image preview (L-60), full size, with zoom ---------- */
+document.querySelectorAll<HTMLButtonElement>('button[aria-haspopup="dialog"]').forEach(btn => btn.addEventListener('click', () => {
+  const item = btn.closest('li'); const thumb = btn.querySelector('img'); if (!item || !thumb) return;
+  const name = item.querySelector('h4')?.textContent?.trim() || thumb.alt || 'Certificate';
+  const org = item.querySelector('h4 + span')?.textContent?.trim() || '';
+  openImagePreview({ full: thumb.getAttribute('src')!.replace('/certs/', '/certs/full/'), thumb: thumb.currentSrc || thumb.src, alt: name, caption: org ? `${name} · ${org}` : name, opener: btn });
+}));

@@ -27,7 +27,11 @@ const out = {};
 const DYNAMIC = [/^\/assets\/certs\/full\//];
 out.publicFiles = walk(path.join(ROOT, 'public')).filter(f => { const p = '/' + path.relative(path.join(ROOT, 'public'), f).replace(/\\/g, '/'); const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); const re = new RegExp(`(?<!\\.\\.)(${esc(p)}|${esc(encodeURI(p))})`);
   return !DYNAMIC.some(d => d.test(p)) && !haystack.some(h => re.test(h.s)) && !/^\/(robots\.txt|favicon\.ico)$/.test(p); }).map(f => `${rel(f)} (${kb(f)} KB)`);
-out.srcAssets = walk(path.join(ROOT, 'src/assets')).filter(f => !named(path.basename(f), f => f.startsWith('dist/'))).map(f => `${rel(f)} (${kb(f)} KB)`);
+/* An image reached through import.meta.glob (the YouTube posters, src/lib/videos.ts) is never named in full by a source
+   file, but the build writes every image a page used as _astro/<stem>.<hash>.<ext>, so a stem among the built images counts
+   as used (L-59). */
+const builtStems = new Set(walk(path.join(ROOT, 'dist/_astro')).map(f => path.basename(f).split('.')[0]));
+out.srcAssets = walk(path.join(ROOT, 'src/assets')).filter(f => !named(path.basename(f), f => f.startsWith('dist/')) && !builtStems.has(path.basename(f).split('.')[0])).map(f => `${rel(f)} (${kb(f)} KB)`);
 out.snapshots = walk(path.join(ROOT, 'src/snapshots')).filter(f => !src.some(s => !s.includes('snapshots') && read(s).includes(`snapshots/${path.basename(f)}`))).map(f => `${rel(f)} (${kb(f)} KB)`);
 
 // CSS: a rule is unused when every selector in it needs a class or data attribute that appears in no template, script,

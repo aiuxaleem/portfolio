@@ -1,4 +1,5 @@
 ---
-/* Code block: scrolls sideways inside its own box and can be focused so it scrolls from the keyboard. Code stays LTR. */
+/* Code block: scrolls sideways inside its own box and can be focused so it scrolls from the keyboard. Code stays LTR.
+   The box around it draws a fade at the end edge while there is more to the right (blog.css, .post-code-box). */
 ---
-<pre class="post-code" tabindex="0" dir="ltr" lang="en"><slot /></pre>
+<div class="post-code-box"><pre class="post-code" tabindex="0" dir="ltr" lang="en"><slot /></pre></div>

@@ -34,10 +34,8 @@
 
   /* ---------- Cards: the picture grows a little inside its frame, the title takes the link colour, the arrow leans ---------- */
   .project-card { transition: transform var(--duration-spring-soft) var(--ease-spring-soft), box-shadow var(--duration-slow) var(--ease-out); }
-  .project-card-media img { transition: transform var(--duration-enter) var(--ease-out); }
   .project-card-title a, .project-card-link { transition: color var(--duration-base) var(--ease-out); }
   .project-card:has(.project-card-link:focus-visible) { transform: translateY(var(--lift-hover)); }
-  .project-card:has(.project-card-link:focus-visible) .project-card-media img { transform: scale(1.04); }
   .project-card:has(.project-card-link:focus-visible) .project-card-cta svg { transform: translateX(calc(3px * var(--dir-x))) scaleX(var(--dir-x)); }
 
   /* ---------- Text links with an arrow, and "back" links: the arrow moves the way it points ---------- */
@@ -67,7 +65,6 @@
   @media (hover: hover) {
     .ui-chip:not([aria-pressed="true"]):not([aria-current="page"]):not(:active):hover { transform: translateY(var(--lift-hover-sm)); }
     :is(.ui-button, [data-ds-button]):hover svg[data-dir-icon], :is(.ui-button, [data-ds-button]):hover [data-dir-icon] > svg { transform: translateX(calc(3px * var(--dir-x))) scaleX(var(--dir-x)); }
-    .project-card:hover .project-card-media img { transform: scale(1.04); }
     .project-card:hover .project-card-title a { color: var(--text-link); }
     [data-link]:hover > svg[data-dir-icon], .embed-card-link:hover > svg { transform: translateX(calc(3px * var(--dir-x))) scaleX(var(--dir-x)); }
     [data-link]:hover > svg:not([data-dir-icon]) { transform: translate(2px, -2px); }
@@ -131,12 +128,13 @@
 
   /* ---------- The scroll ---------- */
   @supports (animation-timeline: view()) {
-    /* Pictures settle into their frames as they come into view (scale, so the hover zoom still works). The frame names the
+    /* Pictures settle into their frames as they come into view: a fade, never a zoom, since a zoom inside a clipping frame cuts
+       the picture and nothing uploaded is ever cut (L-60). The frame names the
        timeline: a frame that clips (overflow hidden) is a scroll container, so the picture's own view() would never move
        (measured 6 November 2026: stuck at 47% for every cover). */
     :is(.project-card-media, .project-cover, .case-figure, .post-gallery) { view-timeline: --frame block; }
     :is(.project-card-media, .project-cover, .case-figure, .post-gallery) img { animation: settle linear both; animation-timeline: --frame; animation-range: entry 0% cover 45%; }
-    @keyframes settle { from { scale: 1.16; } to { scale: 1; } }
+    @keyframes settle { from { opacity: 0.35; } to { opacity: 1; } }
     /* Section headings are drawn in by a wipe that follows the scroll. */
     .page-section-head > :is(h2, .page-h2) { animation: wipe linear both; animation-timeline: view(); animation-range: entry 10% cover 30%; }
     [dir="rtl"] .page-section-head > :is(h2, .page-h2) { animation-name: wipe-rtl; }
@@ -189,10 +187,8 @@
     [data-two-users] .two-users-figure { --p: var(--parallax-mid); animation: depth-far linear both; animation-timeline: view(); }
     /* Section backgrounds: the dot band, the glows and the grid's glow sit furthest back. */
     [data-bg~="beam"]::after, [data-bg~="glow"]::before, [data-bg~="glow"]::after, [data-bg~="grid"]::after { --p: var(--parallax-far); animation: depth-far linear both; animation-timeline: view(); }
-    /* Covers on a project or case study page, and the figures in a case study: the picture is a little taller than its
-       frame and slides up through it as the frame crosses the screen (the frame clips it), after settling in as before. */
-    .project-cover > img:not(.fitted-whole) { position: absolute; inset-block-start: 0; inset-inline: 0; block-size: 112%; animation: settle linear both, cover-window linear both; animation-timeline: --frame, --frame; animation-range: entry 0% cover 45%, cover 0% cover 100%; }
-    @keyframes cover-window { from { translate: 0 0; } to { translate: 0 -10.7%; } }
+    /* The covers no longer slide through a clipped window (L-55): since L-60 nothing uploaded is cut, so a cover sits whole in its
+       frame and keeps only its settle on the frame's view timeline, above. */
   }
 
   /* ---------- The hero stack opens a little under the pointer ---------- */
@@ -305,4 +301,15 @@
   html[data-motion="fade"] main :is(section, header, div):has(> h1) > h1 + * + * ~ * { animation-delay: 320ms; }
   html[data-motion="fade"] [data-hero] [data-hero-roles] > li { animation: fade-in both; animation-duration: var(--duration-fade) !important; animation-delay: 360ms; }
   @keyframes fade-in { from { opacity: 0; } }
+}
+
+/* ---------- The image preview (ui/image-preview.astro, L-60): it fades in with its backdrop; with motion allowed it also
+   settles up a little. Closing is immediate (the native dialog), so nothing is left mid-animation behind a click. ---------- */
+dialog.image-preview[open] { animation: preview-fade var(--duration-fade) linear both; }
+dialog.image-preview[open]::backdrop { animation: preview-fade var(--duration-fade) linear both; }
+@keyframes preview-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: no-preference) {
+  dialog.image-preview[open] { animation: preview-in var(--duration-base) var(--ease-out) both; }
+  @keyframes preview-in { from { opacity: 0; translate: 0 var(--space-2); scale: 0.985; } to { opacity: 1; translate: 0 0; scale: 1; } }
+  .image-preview-image { transition: inline-size var(--duration-fast) var(--ease-out), block-size var(--duration-fast) var(--ease-out); }
 }

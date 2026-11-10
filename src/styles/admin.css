@@ -117,7 +117,7 @@ label.admin-check input:focus-visible { outline: var(--border-width-strong) soli
 /* A thumbnail shows the whole picture, never a cut of it (owner request, 25 October 2026); the shape preview under an
    image field shows the cut the site makes, with the focus point the field holds. */
 .admin-thumb img { inline-size: 100%; block-size: 100%; object-fit: contain; object-position: center; }
-.admin-thumb[data-shape] img { object-fit: cover; object-position: top center; }
+.admin-thumb[data-shape] img { object-fit: contain; object-position: center; background: var(--surface-sunken); } /* whole, as the site shows it since L-60 */
 .admin-thumb[data-failed] { display: grid; place-items: center; padding: var(--space-2); font-size: var(--text-caption); color: var(--text-subtle); text-align: center; }
 .admin-path { margin: 0; font-family: var(--font-mono); font-size: var(--text-mono-sm); line-height: var(--leading-mono); color: var(--text-body); overflow-wrap: anywhere; user-select: all; }
 

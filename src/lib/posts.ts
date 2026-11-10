@@ -61,7 +61,11 @@ export function readingTime(p: Post): string | undefined {
 
 /** Up to three other posts that share the most tags with this one. */
 export function related(post: Post, all: Post[]): Post[] {
-  return all.filter(p => p.id !== post.id)
+  const others = all.filter(p => p.id !== post.id);
+  const byTags = others
     .map(p => ({ p, shared: p.data.tags.filter(t => post.data.tags.includes(t)).length }))
-    .filter(x => x.shared > 0).sort((a, b) => b.shared - a.shared || when(b.p) - when(a.p) || a.p.id.localeCompare(b.p.id)).slice(0, 3).map(x => x.p);
+    .filter(x => x.shared > 0).sort((a, b) => b.shared - a.shared || when(b.p) - when(a.p) || a.p.id.localeCompare(b.p.id)).map(x => x.p);
+  /* One or two cards in a three-column row leave a gap, so the newest other posts fill the row (L-59 n). */
+  const rest = others.filter(p => !byTags.includes(p)).sort((a, b) => when(b) - when(a) || a.id.localeCompare(b.id));
+  return [...byTags, ...rest].slice(0, 3);
 }

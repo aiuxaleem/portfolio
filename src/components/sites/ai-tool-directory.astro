@@ -15,7 +15,7 @@ const items = tools.map(t => ({ tags: [t.data.category], status: t.data.cost }))
   {tools.length > 0 && <ProjectFilters tags={groups.map(g => g.slug)} tagLabels={aiCategoryLabel} tagsLabel="Category" total={tools.length} items={items} options={aiCostLabel} optionsLabel="Cost" noun="tool" id="ai-filter" search={{ label: 'Find a tool', placeholder: 'Name, site or use' }} />}
   {tools.length === 0
     ? <div class="project-empty"><p class="project-empty-title">No tools are listed yet.</p><p class="project-empty-body">Tools appear here as they are added. Until then, the UX Library has the wider list of tools and references.</p><div><Button variant="secondary" href="/resources">Open the UX Library</Button></div></div>
-    : <div data-project-list class="tooldir-groups">
+    : <div data-project-list data-page-size="12" class="tooldir-groups">
         {groups.map(g => (
           <section class="tooldir-group" aria-labelledby={`ai-${g.slug}`} data-filter-group>
             <div class="page-section-head">
@@ -26,6 +26,8 @@ const items = tools.map(t => ({ tags: [t.data.category], status: t.data.cost }))
           </section>
         ))}
       </div>}
+  {/* Twelve tools at a time, as the UX Library does; the control adds the next twelve (islands/project-filters.ts, L-59 i). Without JavaScript every tool is listed and the control stays hidden. */}
+  {tools.length > 12 && <p data-project-more hidden style="margin: 0;"><Button variant="secondary" data-show-more>Show more</Button></p>}
 </section>
 
 <style>

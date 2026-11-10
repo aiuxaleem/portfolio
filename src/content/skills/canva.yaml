@@ -1,0 +1,14 @@
+title: Canva skills
+name: canva
+mine: false
+maker: Canva
+official: true
+category: brand-and-visuals
+summary: "Edit Canva designs, get structured design feedback, check a design against a brand kit, and resize it for each social network."
+note: "Works through the Canva connector: connect it and sign in to Canva when asked."
+source: https://github.com/canva-sdks/canva-skills
+license: Apache-2.0
+install: "/plugin marketplace add canva-sdks/canva-skills, then /plugin install canva@canva-skills"
+added: 2026-11-09
+order: 30
+tags: ["Canva", "Brand kit", "Social"]

@@ -19,7 +19,7 @@ const host = hostOf(d.url);
   <div class="project-card-body">
     <p class="project-card-meta">{d.mine && <span class="ui-badge" data-tone="brand">Made by me</span>}<span class="ui-badge" style="gap: 6px;"><CategoryIcon category={d.category} size={14} />{categoryLabel[d.category]}</span><span class="ui-badge">{typeLabel[d.type]}</span><span class="ui-badge">{costLabel[d.cost]}</span></p>
     <Heading class="project-card-title"><a class="project-card-link" href={d.url} target="_blank" rel="noopener">{d.title}<span class="cory-visually-hidden"> (opens {host} in a new tab)</span></a></Heading>
-    <p class="case-kicker"><bdi>{host}</bdi>{'\u00A0· '}Added <time datetime={d.added.toISOString().slice(0, 10)}>{day(d.added)}</time></p>
+    <p class="case-kicker"><bdi>{host}</bdi>{'\u00A0· '}Added{' '}<time datetime={d.added.toISOString().slice(0, 10)}>{day(d.added)}</time></p>
     {d.description && <p class="project-card-summary">{d.description}</p>}
     {d.tags.length > 0 && <ul class="project-card-tags" aria-label="Topics">{d.tags.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul>}
     <span class="project-card-cta" aria-hidden="true">Visit resource <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10M7 17 17 7"></path></svg></span>

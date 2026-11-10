@@ -14,51 +14,15 @@ import aboutDirection from '../../snapshots/about-direction.json';
 import { rewriteLinks } from '../../lib/routes';
 import { tuneSnapshot, HOME_BELOW_FOLD } from '../../lib/snapshot-tune';
 import { chrome } from '../../i18n/chrome';
-import { getImage } from 'astro:assets';
 import { pipelineImages } from '../../lib/snapshot-images';
-import { listedVideos, posterOf } from '../../lib/videos';
-import { listedPosts, postUrl } from '../../lib/posts';
-import { feedItems } from '../../lib/writing';
+import { freshenInPublic } from '../../lib/home-tiles';
 
 interface Props { name: 'about' | 'content' | 'now' | 'about-hero' | 'about-direction' }
 const snap = { about, content, now, 'about-hero': aboutHero, 'about-direction': aboutDirection }[Astro.props.name];
 let html = tuneSnapshot(rewriteLinks(snap.html), HOME_BELOW_FOLD, chrome.en.newTab, chrome.en.subject);
-/* "In public": the design's video tile was a placeholder ("New video coming soon"). It shows the latest published video:
-   its title as a link to /videos, its poster when it has one, and "Latest video" in place of the placeholder badge. */
-if (Astro.props.name === 'content') {
-  const latest = (await listedVideos()).find(v => !v.data.fixture);
-  if (latest) {
-    const title = latest.data.title.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-    const placeholder = 'Designing AI products people trust';
-    /* The placeholder badge goes; the overline already says what the tile is. */
-    html = html.replace(/<span style="[^"]*"><div class="sc-host-x" style="display: contents;"><span [^>]*data-badge=""><span [^>]*><\/span><span class="sc-interp">New video coming soon<\/span><\/span><\/div><\/span>/, '');
-    html = html.replace(`<div data-cover-fallback="" aria-hidden="true"><span><span class="sc-interp">${placeholder}</span></span></div>`, '<div data-cover-fallback="label" aria-hidden="true"><span>Video on YouTube</span></div>');
-    html = html.replace(/(<div role="heading" aria-level="4"[^>]*>)<span class="sc-interp">Designing AI products people trust<\/span>(<\/div>)/, `$1<a href="/videos" data-link class="home-video-link" style="display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); color: var(--text-link); text-decoration: none;">${title}<svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>$2`);
-    const latestPoster = posterOf(latest);
-    if (latestPoster) {
-      const poster = (await getImage({ src: latestPoster, width: 960 })).src;
-      html = html.replace(/<span data-image-box="video-thumb"[^>]*><\/span>/, `<img src="${poster}" alt="" width="960" height="540" loading="lazy" decoding="async" style="position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover;" />`);
-    }
-  }
-}
-/* "In public" again (9 November 2026, L-57): the design's "Latest from the blog" card named one post and its LinkedIn
-   articles tile listed three by hand, so Home fell behind the Blog and Articles pages. The card shows the newest published
-   post (title, excerpt, address) and the tile the newest three articles, in the order the Articles page uses. */
-if (Astro.props.name === 'content') {
-  const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-  const post = (await listedPosts()).find(p => !p.data.fixture);
-  if (post) {
-    html = html
-      .replace(/<a href="\/blog\/component-spec-files"([^>]*>(?:(?!<\/a>)[\s\S])*?Latest from the blog)/, (_, rest: string) => `<a href="${postUrl(post)}"${rest}`)
-      .replace('<span class="sc-interp">Component spec files: the 8-section template</span>', `<span class="sc-interp">${esc(post.data.title)}</span>`)
-      .replace('<span class="sc-interp">The tiered spec format I use so designers, engineers and AI agents read the same source of truth.</span>', `<span class="sc-interp">${esc(post.data.excerpt || '')}</span>`)
-      .replace('<span class="sc-interp">Read the guide</span>', '<span class="sc-interp">Read the post</span>');
-  }
-  const articles = (await feedItems()).filter(i => i.type === 'article' && !(i as { fixture?: boolean }).fixture).slice(0, 3);
-  articles.forEach((a, n) => {
-    html = html.replace(new RegExp(`(<span class="sc-interp">0${n + 1}</span></span>\\s*<a data-link="" href=")[^"]*(" [^>]*><span style="flex: 0 1 auto;"><span class="sc-interp">)[^<]*(</span>)`), (_, p1: string, p2: string, p3: string) => `${p1}${esc(a.href)}${p2}${esc(a.title)}${p3}`);
-  });
-}
+/* "In public": the design's video tile, LinkedIn post card, blog card and article rows were frozen; they read the newest
+   published entries (lib/home-tiles.ts, shared with the Arabic Home: L-57, L-59). */
+if (Astro.props.name === 'content') html = await freshenInPublic(html, 'en');
 /* The portrait in the About section comes through the build pipeline (src/lib/snapshot-images.ts). */
 html = await pipelineImages(html);
 ---

@@ -104,44 +104,14 @@ document.querySelectorAll<HTMLElement>('[data-repeat]').forEach(group => {
 /* 11. A picture preview under a path field: shown while the path is one of the pictures the repository holds (the
    datalist the field offers), from the same route the Images page draws its thumbnails with. */
 const pictures = new Set([...document.querySelectorAll<HTMLOptionElement>('#image-list option')].map(o => o.value));
-/* Under an image field (11b), the whole picture and the picture as a 16:10 card cuts it: a click on the whole picture
-   writes the focus point into its field, the cut follows the field as it is typed, and a picture far from 16:10 is
-   shown whole with a note, as the site shows it (components/ui/fitted-image.astro). */
-const FOCUS = /^(100|\d{1,2})% (100|\d{1,2})%$/;
+/* Under an image field (11b), the whole picture and the picture in a 16:10 frame, whole, as the site's cards and stacks
+   show it since L-60 (components/ui/fitted-image.astro): nothing uploaded is cut, so there is no focus point to set. */
 document.querySelectorAll<HTMLElement>('[data-preview]').forEach(box => {
   const field = document.getElementById(box.dataset.preview!) as HTMLInputElement | null, imgs = [...box.querySelectorAll('img')];
   if (!field || !imgs.length) return;
-  const focus = box.dataset.focus ? document.getElementById(box.dataset.focus) as HTMLInputElement | null : null;
-  const pick = box.querySelector<HTMLElement>('[data-pick]'), mark = box.querySelector<HTMLElement>('.admin-focus-mark'), note = box.querySelector<HTMLElement>('[data-fit-note]');
-  /* Where the picture is drawn inside its box (it is shown whole, so it may not fill the box). */
-  const drawn = (img: HTMLImageElement) => {
-    const r = img.getBoundingClientRect(), scale = Math.min(r.width / img.naturalWidth, r.height / img.naturalHeight);
-    const w = img.naturalWidth * scale, h = img.naturalHeight * scale;
-    return { r, w, h, x: (r.width - w) / 2, y: (r.height - h) / 2 };
-  };
-  const paint = () => {
-    const v = focus?.value.trim() ?? '', at = FOCUS.test(v) ? v : '';
-    const img = imgs[0], whole = img.naturalWidth > 0 && Math.abs(Math.log(img.naturalWidth / img.naturalHeight / 1.6)) > Math.log(1.15);
-    box.querySelectorAll<HTMLElement>('[data-shape] img').forEach(i => { i.style.objectFit = whole ? 'contain' : ''; i.style.objectPosition = whole ? 'center' : at; });
-    if (note) note.hidden = !whole;
-    if (mark) {
-      mark.hidden = !at || !img.naturalWidth;
-      if (at && img.naturalWidth) { const [px, py] = at.split(' ').map(s => parseFloat(s) / 100); const d = drawn(img); mark.style.left = `${d.x + px * d.w}px`; mark.style.top = `${d.y + py * d.h}px`; }
-    }
-  };
-  const show = () => { const v = field.value.trim(); if (!pictures.has(v)) { box.hidden = true; return; } const src = '/admin/images/file?path=' + encodeURIComponent(v.replace(/^\.\.\/\.\.\/assets\//, '')) + '&size=thumb'; imgs.forEach(i => { if (i.getAttribute('src') !== src) i.src = src; }); box.hidden = false; paint(); };
+  const show = () => { const v = field.value.trim(); if (!pictures.has(v)) { box.hidden = true; return; } const src = '/admin/images/file?path=' + encodeURIComponent(v.replace(/^\.\.\/\.\.\/assets\//, '')) + '&size=thumb'; imgs.forEach(i => { if (i.getAttribute("src") !== src) i.src = src; }); box.hidden = false; };
   field.addEventListener('input', show); field.addEventListener('change', show);
-  imgs[0].addEventListener('load', paint);
   imgs.forEach(i => i.addEventListener('error', () => { box.hidden = true; }));
-  focus?.addEventListener('input', paint);
-  // The picture in the pick box is shown whole (object-fit: contain), so a click is measured against the drawn picture.
-  pick?.addEventListener('click', event => {
-    const img = imgs[0]; if (!focus || !img.naturalWidth) return;
-    const d = drawn(img), pct = (n: number) => Math.round(Math.min(100, Math.max(0, n * 100)));
-    focus.value = `${pct((event.clientX - d.r.left - d.x) / d.w)}% ${pct((event.clientY - d.r.top - d.y) / d.h)}%`;
-    focus.dispatchEvent(new Event('input', { bubbles: true }));
-  });
-  paint();
 });
 
 /* 12. Blur validation: the same error line the server draws (cloned from a template in the editor), under an empty

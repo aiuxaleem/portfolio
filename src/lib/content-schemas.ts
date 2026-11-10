@@ -22,7 +22,7 @@ export const flags = { draft: z.boolean().default(false), fixture: z.boolean().d
 export const alt = z.string().min(1, 'Alt text is required on every image');
 /** The point of a picture that stays in view wherever a frame cuts it: across then down, for example "50% 30%". Set in the
     admin by clicking the preview. Without it a cut keeps the top centre. */
-export const focus = z.string().regex(/^(100|d{1,2})% (100|d{1,2})%$/, 'Write the focus point as two percentages, across then down, for example 50% 30%.').optional();
+export const focus = z.string().regex(/^(100|\d{1,2})% (100|\d{1,2})%$/,'Write the focus point as two percentages, across then down, for example 50% 30%.').optional();
 export const seo = z.object({ title: z.string().max(70).optional(), description: z.string().max(170).optional() }).default({});
 export const link = z.object({ label: z.string(), href: z.string().url() });
 export const metric = z.object({
@@ -237,6 +237,51 @@ export const aiToolSchema = S({
     /* Tools I use myself are marked on the card. */
     pick: z.boolean().default(false),
     ...flags,
+  });
+
+/* Claude skills (/skills, owner request of 9 November 2026, L-61): skills worth knowing for designers, and the owner's own
+   skills with a download. One entry per skill; the page groups them by category. */
+export const SKILL_CATEGORIES = {
+  'design-to-code': 'Design to code',
+  'design-systems': 'Design systems',
+  'brand-and-visuals': 'Brand and visuals',
+  motion: 'Motion',
+  'review-and-research': 'Review and research',
+  'content-and-docs': 'Content and documents',
+  'making-skills': 'Making skills',
+} as const;
+export type SkillCategory = keyof typeof SKILL_CATEGORIES;
+export const skillSchema = S({
+    title: z.string().max(120),
+    /* The skill's folder name, the `name` in its SKILL.md front matter. */
+    name: z.string().max(64).regex(/^[a-z0-9][a-z0-9-]*$/, 'Lowercase letters, digits and hyphens, as in the SKILL.md name'),
+    /* One I wrote: shown under "Skills I built", with its download. */
+    mine: z.boolean().default(false),
+    maker: z.string().max(80),
+    /* Published by Anthropic or by the tool's own company (for example Figma for the Figma skills). */
+    official: z.boolean().default(false),
+    category: z.enum(keys(SKILL_CATEGORIES)),
+    /* What it does for a designer, in one or two sentences. Shown whole on the card. */
+    summary: z.string().max(240),
+    /* Where to get it: the repository or the maker's own page. */
+    source: z.string().url().max(300).optional(),
+    license: z.string().max(60).optional(),
+    /* The one-line install, as the maker documents it. */
+    install: z.string().max(200).optional(),
+    /* One of mine: the zip under public/skills/ and its size, and the SKILL.md a visitor can read first. */
+    download: z.string().regex(/^\/skills\/[a-z0-9-]+\.zip$/, 'A zip under /skills/, for example /skills/my-skill.zip').optional(),
+    size: z.string().max(20).optional(),
+    readme: z.string().regex(/^\/skills\/[a-z0-9-]+\/SKILL\.md$/, 'The SKILL.md under /skills/<name>/').optional(),
+    /* What a visitor should know before using it (written for my own site, needs a paid connector, files still to come). */
+    note: z.string().max(240).optional(),
+    caseStudy: z.string().regex(/^\/case-studies\/[a-z0-9-]+$/).optional(),
+    added: z.coerce.date(),
+    order: z.number().int().default(100),
+    tags: z.array(z.string()).default([]),
+    ...flags,
+  }).superRefine((d, ctx) => {
+    const v = d as { mine?: boolean; source?: string };
+    if (!v.mine && !v.source) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['source'], message: 'A skill from someone else needs the link to where it is published.' });
   });
 
 /* Site settings (src/content/site/config.json) and the profile data behind About, Resume, Now and the contact form

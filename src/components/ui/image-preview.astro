@@ -1,0 +1,47 @@
+---
+/* The image preview (owner request, 9 November 2026, L-60): one dialog on every public page (base-layout.astro), opened by
+   islands/image-preview.ts when a picture marked data-preview is clicked: a cover, a figure, a gallery tile, a certificate.
+   The full picture sits in a stage that scrolls (and drags) when zoomed; the bar holds the caption, zoom out, the level,
+   zoom in, fit, and close. Keys: + and - zoom, 0 fits, Escape closes (the native dialog); a double click zooms in at that
+   point. Closed, it renders nothing visible. On /_states the `inline` form draws each state in place: open, zoomed,
+   loading, error. Styles in components.css; the opening fade in motion.css. */
+interface Props {
+  /** Drawn in place as a div (the states page), not as the page's dialog. */ inline?: boolean;
+  state?: 'open' | 'zoomed' | 'loading' | 'error';
+  image?: { src: string; alt: string; width: number; height: number };
+  caption?: string;
+  level?: string;
+  id?: string;
+}
+const { inline = false, state, image, caption = '', level = 'Fit', id = 'image-preview' } = Astro.props;
+const Tag = inline ? 'div' : 'dialog';
+const icon = (d: string) => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const ICONS = {
+  out: '<path d="M5 12h14"></path>',
+  in: '<path d="M12 5v14M5 12h14"></path>',
+  fit: '<path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"></path>',
+  close: '<path d="M18 6 6 18M6 6l12 12"></path>',
+};
+const status = state === 'loading' ? 'Loading the full picture…' : state === 'error' ? 'The full picture could not be loaded. This is the smaller copy.' : '';
+---
+<Tag class:list={['image-preview', inline && 'image-preview-inline']} data-image-preview={inline ? undefined : ''} aria-labelledby={`${id}-caption`}>
+  <div class="image-preview-frame" data-state={state ?? 'closed'}>
+    <div class="image-preview-bar">
+      <p id={`${id}-caption`} class="image-preview-caption">{caption}</p>
+      <div class="image-preview-controls" role="group" aria-label="Zoom">
+        <button type="button" class="ui-icon-button ui-icon-button-ghost" data-zoom="out" aria-label="Zoom out" title="Zoom out (−)" disabled={state !== 'zoomed' || undefined} set:html={icon(ICONS.out)} />
+        <output class="image-preview-level" aria-label="Zoom level">{level}</output>
+        <button type="button" class="ui-icon-button ui-icon-button-ghost" data-zoom="in" aria-label="Zoom in" title="Zoom in (+)" set:html={icon(ICONS.in)} />
+        <button type="button" class="ui-icon-button ui-icon-button-ghost" data-zoom="fit" aria-label="Fit to the screen" title="Fit to the screen (0)" disabled={state !== 'zoomed' || undefined} set:html={icon(ICONS.fit)} />
+      </div>
+      <button type="button" class="ui-icon-button ui-icon-button-secondary" data-close aria-label="Close the preview" title="Close (Esc)" set:html={icon(ICONS.close)} />
+    </div>
+    <div class="image-preview-stage" tabindex="0" aria-label="The picture. Zoomed in, scroll or drag to move around it.">
+      {image
+        ? <img class="image-preview-image" src={image.src} alt={image.alt} width={image.width} height={image.height} decoding="async" style={state === 'zoomed' ? 'inline-size: 200%; max-inline-size: none;' : undefined} />
+        : <img class="image-preview-image" alt="" decoding="async" />}
+      <p class="image-preview-status" role="status">{status}</p>
+    </div>
+    <p class="image-preview-hint">Zoom with + and −, 0 fits the screen, Esc closes. Double-click the picture to zoom in there.</p>
+  </div>
+</Tag>

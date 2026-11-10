@@ -3,6 +3,7 @@
    lists exactly those. Figures in Outcomes appear only for metrics marked verified. */
 import { Image } from 'astro:assets';
 import FittedImage from '../../components/ui/fitted-image.astro';
+import PreviewLink from '../../components/ui/preview-link.astro';
 import { coverFrame } from '../../lib/images';
 import { render } from 'astro:content';
 import PageLayout from '../../layouts/page-layout.astro';
@@ -10,7 +11,7 @@ import ReadProgress from '../../components/content/read-progress.astro';
 import Button from '../../components/ui/button.astro';
 import EmailCopy from '../../components/layout/email-copy.astro';
 import BeforeAfter from '../../components/case-study/before-after.astro';
-import { listedCaseStudies, sections, readingTime } from '../../lib/case-studies';
+import { listedCaseStudies, sections, readingTime, caseNumber } from '../../lib/case-studies';
 import { mdxComponents } from '../../components/content/mdx-components';
 import { site } from '../../content/site';
 import { caseStudyLd, breadcrumbLd, ogImageFor } from '../../lib/seo';
@@ -41,7 +42,7 @@ const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
   <article>
     <header class="cory-container" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--space-12) var(--space-10);">
       <a data-link href="/case-studies" style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All case studies</span></a>
-      <p class="case-kicker">{[d.index, d.category].filter(Boolean).join('\u00A0· ') || 'Case study'}<span>{'\u00A0· '}{readingTime(d, entry.body)}</span></p>
+      <p class="case-kicker">{[await caseNumber(entry), d.category].filter(Boolean).join('\u00A0· ') || 'Case study'}<span>{'\u00A0· '}{readingTime(d, entry.body)}</span></p>
       <h1 style="margin: 0; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">{d.title}</h1>
       <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">{d.lead}</p>
       {d.nda && (
@@ -50,7 +51,7 @@ const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
       {meta.length > 0 && <dl class="project-meta">{meta.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>}
       <div class="project-cover" style={d.cover ? `aspect-ratio: ${coverFrame(d.cover.src)};` : undefined}>
         {d.cover
-          ? <FittedImage image={d.cover} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1280px) 1144px, 100vw" frame={coverFrame(d.cover.src)} loading="eager" fetchpriority="high" />
+          ? <FittedImage image={d.cover} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1280px) 1144px, 100vw" frame={coverFrame(d.cover.src)} loading="eager" fetchpriority="high" preview caption={d.title} />
           : <div data-cover-fallback="label" aria-hidden="true"><span>{['Case study', d.category].filter(Boolean).join(' · ')}</span></div>}
       </div>
     </header>
@@ -104,7 +105,7 @@ const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
               {paras(d.process.summary).map(p => <p>{p}</p>)}
               {d.process.steps.length > 0 && <ol class="case-steps">{d.process.steps.map((s, i) => <li><span class="case-step-num" aria-hidden="true"><bdi>{String(i + 1).padStart(2, '0')}</bdi></span><div><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol>}
               {d.process.beforeAfter && <BeforeAfter before={d.process.beforeAfter.before} after={d.process.beforeAfter.after} caption={d.process.beforeAfter.caption} />}
-              {d.process.images.map(g => <figure class="case-figure"><div class="project-cover" style={`aspect-ratio: ${g.src.width} / ${g.src.height};`}><Image src={g.src} alt={g.alt} widths={[640, 960, 1280]} sizes="(min-width: 1024px) 760px, 100vw" loading="lazy" decoding="async" /></div>{g.caption && <figcaption>{g.caption}</figcaption>}</figure>)}
+              {d.process.images.map(g => <figure class="case-figure"><div class="project-cover" style={`aspect-ratio: ${g.src.width} / ${g.src.height};`}><PreviewLink src={g.src} alt={g.alt} caption={g.caption}><Image src={g.src} alt={g.alt} widths={[640, 960, 1280]} sizes="(min-width: 1024px) 760px, 100vw" loading="lazy" decoding="async" /></PreviewLink></div>{g.caption && <figcaption>{g.caption}</figcaption>}</figure>)}
             </section>
           )}
           {shown.has('ai') && (

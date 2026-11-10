@@ -1,0 +1,13 @@
+title: Framer agent skills
+name: framer
+mine: false
+maker: Framer
+official: true
+category: design-to-code
+summary: "Connect Claude Code to a Framer project, so it can edit pages, manage the CMS and publish the site."
+note: "Framer now recommends its MCP connection, and this setup still works with it. No licence is published for the package."
+source: https://www.framer.com/llm
+install: "npx @framer/agent setup"
+added: 2026-11-09
+order: 40
+tags: ["Framer", "Website", "CMS"]

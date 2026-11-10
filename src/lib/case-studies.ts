@@ -10,6 +10,18 @@ export async function listedCaseStudies(): Promise<CaseStudy[]> {
   return all.sort((a, b) => Number(a.data.fixture) - Number(b.data.fixture) || a.data.order - b.data.order || a.id.localeCompare(b.id));
 }
 
+/** The number a case study shows in its kicker: its position among the published case studies as the site lists them
+    ("01" is the first on /case-studies), so the series reads in order wherever the cards appear (L-59 m). The entry's own
+    `index` field is kept for the owner's records and still numbers a fixture. `all` is the listed set without fixtures. */
+export function caseNumberIn(all: CaseStudy[], entry: CaseStudy): string | undefined {
+  if (entry.data.fixture) return entry.data.index;
+  const i = all.findIndex(c => c.id === entry.id);
+  return i < 0 ? entry.data.index : String(i + 1).padStart(2, '0');
+}
+export async function caseNumber(entry: CaseStudy): Promise<string | undefined> {
+  return caseNumberIn((await listedCaseStudies()).filter(c => !c.data.fixture), entry);
+}
+
 const has = (v: unknown): boolean => (Array.isArray(v) ? v.length > 0 : v && typeof v === 'object' ? Object.values(v).some(has) : !!v);
 
 /** The sections that have content, in page order. Drives both the page and its table of contents. */

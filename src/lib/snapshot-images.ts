@@ -25,7 +25,7 @@ export async function pipelineImages(html: string): Promise<string> {
   for (const { from, source, sizes } of jobs) {
     const widths = [480, 800, 1200, 1600].filter(w => w < source.width).concat(source.width);
     const img = await getImage({ src: source, format: 'webp', widths });
-    html = html.split(`<img src="${from}"`).join(`<img src="${img.src}" srcset="${img.srcSet.attribute}" sizes="${sizes}"`);
+    html = html.split(`<img src="${from}"`).join(`<img src="${img.src}" srcset="${img.srcSet.attribute}" sizes="${sizes}"${from.includes('author-portrait') ? ' data-crop="scene"' : ''}`); /* the portrait scene is a composed photo frame: the one picture allowed to fill its frame (L-60) */
   }
   return html;
 }

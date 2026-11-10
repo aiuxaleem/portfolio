@@ -1,0 +1,14 @@
+title: Web design guidelines
+name: web-design-guidelines
+mine: false
+maker: Vercel
+official: true
+category: review-and-research
+summary: "Reviews UI code against more than a hundred web interface rules on accessibility, performance and UX, and reports what breaks them."
+note: "Fetches the latest rules on every run, so it needs a network connection and its rules can change."
+source: https://github.com/vercel-labs/agent-skills/tree/main/skills/web-design-guidelines
+license: MIT
+install: npx skills add vercel-labs/agent-skills (adds the whole collection)
+added: 2026-11-09
+order: 20
+tags: ["Accessibility", "UI review", "Performance"]

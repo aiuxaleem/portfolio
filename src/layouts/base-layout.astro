@@ -1,5 +1,6 @@
 ---
 import AiField from '../components/layout/ai-field.astro';
+import ImagePreview from '../components/ui/image-preview.astro';
 import { siteOf, sitePath, SUB_SITES } from '../lib/sites';
 import '../styles/global.css';
 import { site } from '../content/site';
@@ -111,9 +112,11 @@ const field = !Astro.url.pathname.startsWith('/admin');
   <body>
     {field && <AiField />}
     <slot />
+    {field && <ImagePreview />}
     <script>
       import '../components/islands/site-chrome.ts';
       import '../components/islands/pointer.ts';
+      import '../components/islands/image-preview.ts';
     </script>
     <script>
       import '../components/islands/reveal.ts';

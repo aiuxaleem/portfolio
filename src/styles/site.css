@@ -103,6 +103,11 @@ image-slot:not([data-editable]):not([data-filled])::part(frame) { background: tr
 [data-cover-fallback] { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: flex-start; padding: var(--space-5); background: var(--gradient-ink); color: var(--on-ink-muted); pointer-events: none; }
 [data-cover-fallback]::after { content: ""; position: absolute; width: 70%; aspect-ratio: 1; inset-inline-end: -25%; inset-block-start: -35%; background: var(--glow-cyan); filter: blur(var(--blur-glow)); pointer-events: none; }
 [data-cover-fallback] > span { position: relative; font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--leading-mono); max-inline-size: 28ch; }
+/* A card or cover without a picture (L-59 c): the frame takes the page's own surface and reference grid instead of a block
+   of ink, so in the light theme the lead card of the Blog index is light and the label reads in the link colour. An embed's
+   frame keeps the ink: a video reads as a dark screen. */
+:is(.project-card-media, .project-cover) > [data-cover-fallback] { background-color: var(--surface-sunken); background-image: linear-gradient(var(--border-subtle) 1px, transparent 1px), linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px); background-size: 28px 28px; background-position: -1px -1px; color: var(--text-link); }
+:is(.project-card-media, .project-cover) > [data-cover-fallback]::after { opacity: 0.8; }
 [data-cover-fallback] > bdi { position: absolute; inset-inline-end: var(--space-4); inset-block-start: var(--space-2); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-metric-xl); line-height: var(--leading-none); letter-spacing: var(--tracking-tighter); color: var(--on-ink-fill); }
 
 /* Theme switch: one synchronized swap. Per-element colour transitions are suppressed while it happens. */
@@ -201,6 +206,10 @@ main[tabindex] { padding-block-start: 0 !important; }
 /* Case cover fallback: typographic cover in display type (until a real cover is dropped in) */
 [data-cover-fallback] > span { font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-snug); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); max-inline-size: 14ch; text-wrap: balance; }
 [data-cover-fallback="label"] > span { font-family: var(--font-mono); font-weight: var(--weight-medium); font-size: var(--text-mono); line-height: var(--leading-mono); letter-spacing: var(--tracking-wide); color: var(--on-ink-body); max-inline-size: 28ch; -webkit-line-clamp: 2; line-clamp: 2; }
+/* On the page-surface fallback of a card or cover (L-59 c) the words take the page's own colours: the label the link colour, a title the strong text. */
+:is(.project-card-media, .project-cover) > [data-cover-fallback] > span { color: var(--text-strong); }
+:is(.project-card-media, .project-cover) > [data-cover-fallback="label"] > span { color: var(--text-link); }
+:is(.project-card-media, .project-cover) > [data-cover-fallback] > bdi { color: var(--border-default); }
 [data-theme="dark"] .project-card-media:has([data-cover-fallback]) { border-block-end: 1px solid var(--border-subtle); }
 /* Dark theme, from the panel of 2 November 2026 (L-39). A sunken pill on the dark page is 1.04:1 against it (the scale has
    nothing darker than navy-950), so tags and inline code get a ring in the default border, and the filter chips, which are
@@ -293,7 +302,14 @@ body:has([data-site-switch]) [data-hero] { min-block-size: min(calc(100svh - var
 /* Balanced grid: 1 column, then 2 with an odd last card spanning the row, then 3. Never a lone orphan card. */
 [data-cq-balance] { grid-template-columns: minmax(0, 1fr); }
 @container (min-width: 600px) and (max-width: 959px) { [data-cq-balance] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } [data-cq-balance] > :last-child:nth-child(odd) { grid-column: 1 / -1; } }
-@container (min-width: 960px) { [data-cq-balance] { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; } }
+/* From 960px: thirds on a six-track grid. Exactly four cards take halves in two rows, and a last row of two takes halves,
+   so no card stands alone under a full row (L-59 n). A last row of one (seven, ten) keeps its third. */
+@container (min-width: 960px) {
+  [data-cq-balance] { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; }
+  [data-cq-balance] > * { grid-column: span 2; }
+  [data-cq-balance] > :first-child:nth-last-child(4), [data-cq-balance] > :first-child:nth-last-child(4) ~ * { grid-column: span 3; }
+  [data-cq-balance] > :nth-last-child(2):nth-child(3n + 1), [data-cq-balance] > :last-child:nth-child(3n + 2) { grid-column: span 3; }
+}
 
 /* Fit-content boxes (links, overline labels) never grow past their container: a long word then wraps instead of widening the page */
 :where(a, button, .cory-overline) { max-inline-size: 100%; }

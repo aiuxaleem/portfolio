@@ -1,0 +1,13 @@
+title: Skill creator
+name: skill-creator
+mine: false
+maker: Anthropic
+official: true
+category: making-skills
+summary: "Helps you write a skill of your own, test it, and tune its description so Claude picks it up at the right moment: a design checklist or your brand rules, for example."
+source: https://github.com/anthropics/skills/tree/main/skills/skill-creator
+license: Apache-2.0
+install: "/plugin install skill-creator@claude-plugins-official"
+added: 2026-11-09
+order: 10
+tags: ["Make a skill", "Testing"]

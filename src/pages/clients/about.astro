@@ -39,7 +39,7 @@ const stack = aboutCards({ method: '#clients-ai-title', principles: '#clients-pr
   <section class="page-section" data-surface="card" aria-labelledby="clients-ai-title">
     <div class="cory-container">
       <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Method</p><h2 id="clients-ai-title" class="page-h2">How I work with AI</h2></div>
-      <div data-cq><ol data-cq-grid style="display: grid; gap: var(--grid-gap);">{profile.aiWorkflow.map((s, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol></div>
+      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.aiWorkflow.map((s, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol></div>
       <div style="display: grid; gap: var(--space-3);">
         <h3 style="margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong);">Tools</h3>
         <ul class="tool-list">{profile.tools.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul>

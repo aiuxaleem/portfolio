@@ -1,0 +1,13 @@
+title: PowerPoint and document skills
+name: pptx
+mine: false
+maker: Anthropic
+official: true
+category: content-and-docs
+summary: "Create and edit slide decks, and with its siblings Word documents, PDFs and spreadsheets. They power Claude's own document features."
+source: https://github.com/anthropics/skills/tree/main/skills/pptx
+license: Apache-2.0
+install: "Built into Claude.ai. In Claude Code: /plugin install document-skills@anthropic-agent-skills"
+added: 2026-11-09
+order: 10
+tags: ["Slides", "Documents"]

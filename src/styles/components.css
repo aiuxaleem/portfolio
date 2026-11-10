@@ -5,6 +5,10 @@
 .ui-badge[data-tone]::before { content: ""; inline-size: 6px; block-size: 6px; margin-inline-end: 6px; border-radius: 50%; background: var(--text-subtle); }
 .ui-badge[data-tone="success"]::before { background: var(--green-500); }
 .ui-badge[data-tone="brand"]::before { background: var(--blue-500); }
+/* The design's own status chip (a snapshot section, `data-badge`) takes the same dot when snapshot-tune.ts gives it a tone (L-59 l); its gap is its own. */
+[data-badge][data-tone]::before { content: ""; inline-size: 6px; block-size: 6px; border-radius: 50%; background: var(--text-subtle); }
+[data-badge][data-tone="success"]::before { background: var(--green-500); }
+[data-badge][data-tone="brand"]::before { background: var(--blue-500); }
 /* Empty states used by the project list, the filters and the updates log. */
 .project-empty { display: grid; gap: var(--space-3); padding: var(--space-8); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
 .project-empty[hidden], .project-filters[hidden], .ui-button[hidden], .ui-chip[hidden] { display: none; }
@@ -25,7 +29,7 @@
 .project-meta dt { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
 .project-meta dd { margin: 0; font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-strong); overflow-wrap: anywhere; }
 .project-cover { position: relative; aspect-ratio: var(--aspect-video); border-radius: var(--radius-xl); overflow: hidden; background: var(--surface-sunken); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
-.project-cover img { inline-size: 100%; block-size: 100%; object-fit: cover; object-position: top center; }
+.project-cover img { inline-size: 100%; block-size: 100%; object-fit: contain; object-position: center; } /* whole, never cut (L-60) */
 /* A picture whose shape differs from its frame: shown whole over a soft, blurred copy of itself (ui/fitted-image.astro). */
 .fitted-backdrop { position: absolute; inset: -10%; background-size: cover; background-position: center; filter: blur(var(--blur-glow)); opacity: 0.55; pointer-events: none; }
 :is(.project-card-media, .project-cover) img.fitted-whole { position: relative; object-fit: contain; object-position: center; }
@@ -66,7 +70,7 @@ html [data-deck-kicker], html [data-deck-kicker] span { overflow-wrap: anywhere;
 /* Card used by the project list and the case study list (CLAUDE.md 2.7). */
 .project-card { position: relative; display: flex; flex-direction: column; block-size: 100%; border-radius: var(--radius-xl); background: var(--surface-glass-strong); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); overflow: hidden; transition: transform var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out); }
 .project-card-media { position: relative; aspect-ratio: var(--aspect-case); background: var(--surface-sunken); overflow: hidden; }
-.project-card-media img { inline-size: 100%; block-size: 100%; object-fit: cover; object-position: top center; }
+.project-card-media img { inline-size: 100%; block-size: 100%; object-fit: contain; object-position: center; } /* whole, never cut (L-60) */
 /* A picture in a card sits in a tinted frame with rounded top corners and a soft shadow: a screenshot reads as a screen,
    not a photo cropped at its edges. The frame's padding is the card body's 24px edge. */
 .project-card-media:has(> img), .project-card-media:has(> picture) { padding: var(--space-6) var(--space-6) 0; background: linear-gradient(180deg, var(--surface-sunken), var(--surface-card)); }
@@ -182,3 +186,41 @@ html [data-deck-kicker], html [data-deck-kicker] span { overflow-wrap: anywhere;
 /* Category bento: on a narrow screen the one-column tiles drop their description and "Open" line, so the whole grid
    stays a short scroll; the wide (fullest) tiles keep theirs. */
 @container (max-width: 599px) { [data-bento-cq] .cory-bento > li:not(.span-2) [data-tile-extra] { display: none !important; } [data-bento-cq] .cory-bento > li:not(.span-2) .project-related { padding: var(--space-5); } }
+
+/* Image preview (owner request, 9 November 2026, L-60): a link around a picture (ui/fitted-image.astro with `preview`,
+   ui/preview-link.astro) and the page's one dialog (ui/image-preview.astro, islands/image-preview.ts). The link fills its
+   frame, so the whole picture is the target; its focus ring draws inside the frame, which clips. */
+.image-preview-link { position: absolute; inset: 0; display: block; cursor: zoom-in; border-radius: inherit; }
+.image-preview-link:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: -4px; }
+.image-preview-link > img { position: relative; inline-size: 100%; block-size: 100%; }
+dialog.image-preview { inline-size: min(100vw - var(--space-8), 1280px); max-inline-size: none; block-size: min(100dvh - var(--space-8), 900px); max-block-size: none; margin: auto; padding: 0; border: 0; background: transparent; color: var(--text-body); }
+dialog.image-preview::backdrop { background: color-mix(in srgb, var(--navy-900) 72%, transparent); }
+.image-preview-inline { position: relative; display: block; inline-size: 100%; block-size: 100%; }
+html:has(dialog[data-image-preview][open]) { overflow: hidden; }
+.image-preview-frame { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; block-size: 100%; border-radius: var(--radius-2xl); background: var(--surface-card); border: 1px solid var(--border-default); box-shadow: var(--shadow-lg); overflow: hidden; }
+.image-preview-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); padding: var(--space-3) var(--space-4); border-block-end: 1px solid var(--border-subtle); }
+.image-preview-caption { margin: 0; flex: 1 1 12rem; min-inline-size: 0; font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-muted); overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+.image-preview-controls { display: flex; align-items: center; gap: var(--space-1); flex: none; margin-inline-start: auto; }
+.image-preview-level { min-inline-size: 4.5ch; text-align: center; font-family: var(--font-mono); font-size: var(--text-mono); color: var(--text-subtle); font-variant-numeric: tabular-nums; }
+.image-preview .ui-icon-button:disabled { opacity: var(--opacity-disabled); cursor: not-allowed; transform: none; }
+.image-preview-stage { position: relative; overflow: auto; display: grid; place-items: center; background: var(--surface-sunken); overscroll-behavior: contain; }
+.image-preview-stage:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: -4px; }
+.image-preview-frame[data-state="zoomed"] .image-preview-stage { place-items: start; cursor: grab; }
+.image-preview-stage.is-dragging { cursor: grabbing; user-select: none; }
+.image-preview-image { display: block; max-inline-size: 100%; max-block-size: 100%; object-fit: contain; }
+.image-preview-frame[data-state="zoomed"] .image-preview-image { max-inline-size: none; max-block-size: none; }
+.image-preview-status { position: absolute; inset-block-end: var(--space-3); inset-inline: var(--space-3); margin: 0; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); background: var(--surface-glass-strong); border: 1px solid var(--border-subtle); font-size: var(--text-body-sm); color: var(--text-body); display: none; }
+.image-preview-frame:is([data-state="loading"], [data-state="error"]) .image-preview-status { display: block; }
+.image-preview-hint { margin: 0; padding: var(--space-2) var(--space-4); font-size: var(--text-caption); line-height: var(--leading-normal); color: var(--text-subtle); border-block-start: 1px solid var(--border-subtle); }
+@media (hover: none) { .image-preview-hint { display: none; } }
+@media (max-width: 639px) {
+  dialog.image-preview { inline-size: 100vw; block-size: 100dvh; } /* the dialog only: the fixtures on /_states sit in their column */
+  .image-preview-frame { border-radius: 0; border: 0; }
+  /* The controls and Close take the first row, the caption its own row below them, so nothing is squeezed or cut. */
+  .image-preview-caption { font-size: var(--text-caption); order: 1; flex-basis: 100%; }
+  .image-preview-controls { margin-inline-start: 0; }
+  .image-preview-bar > [data-close] { margin-inline-start: auto; }
+}
+/* A picture in a post's body made a preview link by islands/image-preview.ts: the picture stays where it was, the cursor says it zooms, and the focus ring hugs it. */
+.image-preview-body-link { display: block; inline-size: fit-content; max-inline-size: 100%; cursor: zoom-in; border-radius: var(--radius-lg); }
+.image-preview-body-link:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 3px; }

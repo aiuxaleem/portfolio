@@ -267,9 +267,12 @@ console.log('fade mode: 3 pages as a person under reduced motion');
 }
 {
   const { ctx, p } = await open('/work/colaberry-design-system'); await p.waitForTimeout(600);
-  const r = await p.evaluate(async () => { const img = document.querySelector('main header .project-cover > img'); if (!img) return null; const read = () => parseFloat(getComputedStyle(img).translate.split(' ')[1] || '0') || 0; const frame = img.parentElement; const a = read(); scrollTo({ top: 400, behavior: 'instant' }); await new Promise(r => setTimeout(r, 250)); const b = read(); return { a, b, clipped: getComputedStyle(frame).overflow === 'hidden', taller: img.getBoundingClientRect().height > frame.getBoundingClientRect().height * 1.05, frameHeight: Math.round(frame.getBoundingClientRect().height) }; });
+  /* Since L-60 (owner instruction, 9 November 2026: nothing uploaded is ever cut) the cover is shown whole in its frame, so the
+     L-55 window that slid a 112% picture through a clipped frame no longer applies; the cover keeps its settle on the frame's
+     view timeline. Checked: the picture is whole (contain, no taller than its frame) and is animated on scroll. */
+  const r = await p.evaluate(async () => { const img = document.querySelector('main header .project-cover img'); if (!img) return null; const frame = img.closest('.project-cover'); const anims = document.getAnimations().filter(a => a.effect?.target === img).map(a => a.animationName); return { fit: getComputedStyle(img).objectFit, taller: img.getBoundingClientRect().height > frame.getBoundingClientRect().height * 1.01, anims, frameHeight: Math.round(frame.getBoundingClientRect().height) }; });
   out['depth cover'] = r;
-  if (!r) fail('depth: no cover picture on the project page'); else if (!(r.b < r.a) || !r.clipped || !r.taller) fail(`depth: the cover should slide up through its clipped frame (${r.a} then ${r.b}, clipped ${r.clipped}, taller ${r.taller})`);
+  if (!r) fail('depth: no cover picture on the project page'); else if (r.fit !== 'contain' || r.taller || !r.anims.includes('settle')) fail(`depth: the cover should be whole in its frame and settle on scroll (fit ${r.fit}, taller ${r.taller}, animations ${r.anims.join(',')})`);
   await ctx.close();
 }
 for (const [label, o] of [['reduced motion (automation)', { motion: 'reduce' }], ['reduced motion (a person)', { motion: 'reduce', person: true }]]) {

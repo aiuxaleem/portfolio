@@ -1,0 +1,13 @@
+title: LinkedIn board in the Aleem Design System
+name: linkedin-board-aleem-ds
+mine: true
+maker: Mohammad Abdul Aleem
+category: content-and-docs
+summary: Turns a reference infographic or a topic into a 1080 by 1350 LinkedIn board drawn from code in my design system, plus a post in your voice, both checked by scripts for overflow, legibility and post rules before anyone sees them.
+note: Needs Node with Playwright and Python with Pillow. Put your own photo and name in once; the fonts inside are under the SIL Open Font License.
+download: /skills/linkedin-board-aleem-ds.zip
+size: 85 KB
+readme: /skills/linkedin-board-aleem-ds/SKILL.md
+added: 2026-11-09
+order: 20
+tags: [LinkedIn, Infographic, Design system, Writing]

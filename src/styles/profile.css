@@ -18,8 +18,9 @@
 
 /* Career timeline: one block per company, roles inside. A rule on the inline-start edge, no fixed heights. */
 .career { display: grid; gap: var(--space-10); max-inline-size: var(--measure-body); }
-/* Without the highlight lists (the About page) the companies fill the container two to a row from 1024px; the resume keeps the reading column. */
-@media (min-width: 1024px) { .career[data-compact] { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(var(--career-rows, 3), auto); grid-auto-flow: column; gap: var(--space-8) var(--space-10); max-inline-size: none; } } /* newest first down the first column, then the second */
+/* Without the highlight lists (the website for hiring managers) the companies fill the container two to a row from 1024px, read
+   across then down, so "Newest first" holds row by row and the two columns end together (L-59 d); the resume keeps the reading column. */
+@media (min-width: 1024px) { .career[data-compact] { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8) var(--space-10); max-inline-size: none; } }
 /* The roles wrapper takes no box of its own, except in the wide timeline (About), where from 1024px the company name
    sits in a narrow column, held in view while its roles scroll past, and the roles keep a readable measure. */
 .career-roles { display: contents; }

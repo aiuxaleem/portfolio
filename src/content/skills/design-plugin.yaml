@@ -1,0 +1,13 @@
+title: Design plugin
+name: design
+mine: false
+maker: Anthropic
+official: true
+category: review-and-research
+summary: "Seven skills for design work: critique, accessibility review, UX copy, user research, research synthesis, developer handoff and design system upkeep."
+source: https://github.com/anthropics/knowledge-work-plugins/tree/main/design
+license: Apache-2.0
+install: "claude plugin marketplace add anthropics/knowledge-work-plugins, then claude plugin install design@knowledge-work-plugins"
+added: 2026-11-09
+order: 10
+tags: ["Critique", "Accessibility", "Research", "Handoff"]

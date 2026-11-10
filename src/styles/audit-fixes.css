@@ -62,3 +62,34 @@ details > summary:focus-visible { background: var(--action-ghost-hover); } /* th
   [data-ds-button="secondary"]:hover { color: var(--text-link) !important; border-color: var(--text-link) !important; }
   [data-ds-button="primary"]:hover, [data-ds-button="secondary"]:hover { transform: translateY(calc(2 * var(--lift-hover-sm))) !important; }
 }
+
+/* Decisions delegated by the owner on 9 November 2026 (docs/AUDIT_FINDINGS.md L-59). */
+/* (a) The About hero's facts, a snapshot section: label and value sit at the top of their cell, so a one-line value does not
+   float away from its label beside the four-line "Open to". */
+dl[data-cq-grid="4"] > div { align-content: start; }
+/* (b) One look for one kind of action: the design's "ink" pill (the In public section's "Subscribe on YouTube") is a secondary
+   action on a page surface, so it takes the secondary look of ui/button.astro. */
+[data-ds-button="ink"] { background: var(--surface-glass-strong) !important; color: var(--text-strong) !important; border-color: var(--border-interactive) !important; box-shadow: var(--shadow-xs), var(--highlight-inset) !important; }
+[data-ds-button="ink"]:focus-visible { color: var(--text-link) !important; border-color: var(--text-link) !important; background: var(--action-secondary-hover) !important; }
+@media (hover: hover) {
+  [data-ds-button="ink"]:hover { color: var(--text-link) !important; border-color: var(--text-link) !important; background: var(--action-secondary-hover) !important; transform: translateY(calc(2 * var(--lift-hover-sm))) !important; }
+}
+/* (b, continued) The closing card of the Services snapshot (also the clients' home) keeps legacy anchors with no variant
+   attribute; its call takes the ink-panel solid look every other ink panel uses. */
+section[data-contact] [data-stack] a[href*="cal.com"] { background: var(--on-ink-strong) !important; color: var(--navy-800) !important; box-shadow: var(--shadow-md) !important; border-color: transparent !important; }
+section[data-contact] [data-stack] a[href*="cal.com"]:focus-visible { box-shadow: var(--shadow-lg), var(--shadow-glow) !important; }
+@media (hover: hover) { section[data-contact] [data-stack] a[href*="cal.com"]:hover { color: var(--navy-800) !important; box-shadow: var(--shadow-lg), var(--shadow-glow) !important; } }
+/* The smallest phones (under 360 px wide, so a 568 px tall first screen): a hero's top padding and gaps tighten so its first
+   call to action ends within the first screen (CLAUDE.md 2.8). Measured at 320x568 on the fixture build before and after
+   (scratch fold-probe.mjs): the project page 586 to 546 px, Resources 616 to 552, AI tools 592 to 536, Experience 571 to 523,
+   the hiring home 557 to 509; About's eight-line lead still ends its button at 600 px, its top at 548 visible and tappable.
+   From 360 px up every hero's first action sits within the first screen without this rule. */
+@media (max-width: 359px) {
+  :is(.hero-split, .site-hero, main article > header.cory-container, section[aria-labelledby="about-title"], main > section:has(> .cory-split)) { padding-block-start: var(--space-6) !important; gap: var(--space-5) !important; }
+  :is(.hero-split, .site-hero, main article > header.cory-container, section[aria-labelledby="about-title"], main > section:has(> .cory-split)) :is([style*="gap: var(--space-6)"], [style*="gap: var(--space-8)"], .site-hero-words, .hero-split-words) { gap: var(--space-4) !important; }
+}
+/* (L-60) Nothing uploaded is cut: the frozen card covers of the Arabic Home (a snapshot) show the whole picture on the sunken surface. */
+main img:is([style*="object-fit:cover"], [style*="object-fit: cover"]):not([data-crop="scene"]) { object-fit: contain !important; object-position: center !important; background: var(--surface-sunken); }
+/* (L-61) English words set into the Arabic Home's tiles (lib/home-tiles.ts marks them lang="en" dir="ltr") read as a
+   left-aligned block of their own, not a ragged right edge inside the right-to-left page. */
+[dir="rtl"] span.sc-interp[lang="en"][dir="ltr"] { display: block; text-align: start; }

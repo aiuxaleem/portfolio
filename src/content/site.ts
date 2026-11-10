@@ -31,6 +31,7 @@ export const site = {
     { key: 'recent-work', label: 'Work', children: [
       { key: 'work', label: 'Projects', href: '/work', blurb: 'What I am building and what has shipped' },
       { key: 'case-studies', label: 'Case studies', href: '/case-studies', blurb: 'How the work was designed, and what changed' },
+      { key: 'skills', label: 'Claude skills', href: '/skills', blurb: 'Skills for designers, and mine to download' },
     ] },
     { key: 'my-resources', label: 'Writing', children: [
       { key: 'blog', label: 'Blog', href: '/blog', blurb: 'Guides and longer pieces written for this site' },
@@ -47,7 +48,7 @@ export const site = {
   cta: { label: "Let's talk", href: '/contact' },
   /** The footer's columns: every page a visitor may look for, grouped the way the header groups them. */
   footer: [
-    { label: 'Work', links: [{ label: 'Projects', href: '/work' }, { label: 'Case studies', href: '/case-studies' }] },
+    { label: 'Work', links: [{ label: 'Projects', href: '/work' }, { label: 'Case studies', href: '/case-studies' }, { label: 'Claude skills', href: '/skills' }] },
     { label: 'Writing', links: [{ label: 'Blog', href: '/blog' }, { label: 'Posts', href: '/posts' }, { label: 'Articles', href: '/articles' }, { label: 'My Videos', href: '/videos' }] },
     { label: 'Resources', links: [{ label: 'UX Library', href: '/resources' }, { label: 'AI tools', href: '/ai-tools' }] },
     { label: 'About and more', links: [{ label: 'About', href: '/about' }, { label: 'Resume', href: '/resume' }, { label: 'Now', href: '/now' }, { label: 'Services', href: '/services' }, { label: "Let's talk", href: '/contact' }] },
@@ -82,6 +83,7 @@ export function currentKey(pathname: string, legacy = parity): string {
   if (p === '/videos') return 'videos';
   if (p === '/resources') return 'resources';
   if (p === '/ai-tools') return 'ai-tools';
+  if (p === '/skills') return 'skills';
   if (p === '/contact') return 'contact';
   return '';
 }

@@ -1,0 +1,14 @@
+title: Adobe for creativity
+name: adobe-for-creativity
+mine: false
+maker: Adobe
+official: true
+category: brand-and-visuals
+summary: "Runs Creative Cloud work from a chat: batch photo edits, resizing for each platform, social variations, brand kits and Firefly boards."
+note: "Connects to Adobe's own server. Check which Adobe plan it needs before you rely on it."
+source: https://github.com/adobe/skills/tree/main/plugins/creative-cloud/adobe-for-creativity
+license: Apache-2.0
+install: "claude plugin install adobe-for-creativity@claude-plugins-official"
+added: 2026-11-09
+order: 40
+tags: ["Creative Cloud", "Photo", "Brand kit"]

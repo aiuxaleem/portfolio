@@ -53,6 +53,7 @@ export const GET: APIRoute = async ({ site: origin }) => {
     line('Videos', '/videos', 'recordings on designing AI products people can trust'),
     line('UX Library', '/resources', 'tools, references and reading for AI product design, with my own workflows and skills'),
     line('AI tools', '/ai-tools', 'AI tools for product designers, grouped by what they help with'),
+    line('Claude skills', '/skills', 'what Claude skills (SKILL.md) are, how to install one, published skills for designers, and my own skills to download'),
     line('Blog feed', '/rss.xml', 'RSS'),
     line('Writing feed', '/writing/rss.xml', 'RSS of the blog, posts and articles'),
     '',

@@ -2,7 +2,7 @@
    Every card is built from published content: case studies, projects, the profile, the AI tools, the UX Library. */
 import type { ImageMetadata } from 'astro';
 import { getCollection } from 'astro:content';
-import { listedCaseStudies, type CaseStudy } from './case-studies';
+import { listedCaseStudies, type CaseStudy, caseNumberIn } from './case-studies';
 import { listedProjects, statusLabel } from './projects';
 import { listedAiTools, aiCategoryCounts, aiCostLabel } from './ai-tools';
 import { listedResources, categoryCounts } from './resources';
@@ -43,8 +43,9 @@ function careerCard(href: string, cta: string): StackCard {
   return { kicker: 'Career', meta: first ? `${first} to now` : undefined, title: `${groups.length} companies since ${first}`, line: `Now ${now.role} at ${groups[0].company}, after ${groups.slice(1).map(g => g.company).join(', ')}.`, href, cta, points: groups.map(g => `${g.company} · ${span(g.roles)}`) };
 }
 
-export const caseCard = (c: CaseStudy): StackCard => ({
-  kicker: [c.data.index, c.data.category?.split(' · ')[0]].filter(Boolean).join(' · '),
+/** `all`: the listed case studies without fixtures, so the kicker's number is the card's place in the series (L-59 m). */
+export const caseCard = (c: CaseStudy, all?: CaseStudy[]): StackCard => ({
+  kicker: [all ? caseNumberIn(all, c) : c.data.index, c.data.category?.split(' · ')[0]].filter(Boolean).join(' · '),
   meta: c.data.timeline,
   title: c.data.title,
   line: c.data.lead,
@@ -56,13 +57,14 @@ export const caseCard = (c: CaseStudy): StackCard => ({
 
 /** The featured case studies, as on the main site's Home. */
 export async function featuredCases(): Promise<StackCard[]> {
-  return (await listedCaseStudies()).filter(c => !c.data.fixture && c.data.featured).slice(0, 3).map(caseCard);
+  const all = (await listedCaseStudies()).filter(c => !c.data.fixture);
+  return all.filter(c => c.data.featured).slice(0, 3).map(c => caseCard(c, all));
 }
 
 /** The three case studies after the newest (the newest is the wide card straight below the first screen). */
 export async function moreCases(): Promise<StackCard[]> {
   const all = (await listedCaseStudies()).filter(c => !c.data.fixture);
-  return (all.length > 3 ? all.slice(1) : all).slice(0, 3).map(caseCard);
+  return (all.length > 3 ? all.slice(1) : all).slice(0, 3).map(c => caseCard(c, all));
 }
 
 export async function projectCards(): Promise<StackCard[]> {

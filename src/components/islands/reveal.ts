@@ -22,23 +22,37 @@ if ((mode === 'on' || mode === 'fade') && 'IntersectionObserver' in window) {
   const all = [...new Set<Element>([...blocks, ...grouped])].filter(el => !el.hasAttribute(OWNED)) as HTMLElement[];
   // A block inside another revealing block moves with it.
   const items = all.filter(el => !all.some(other => other !== el && other.contains(el)));
-  const settle = (el: HTMLElement) => { delete el.dataset.revealState; delete el.dataset.revealLean; delete el.dataset.revealSide; el.style.removeProperty('--i'); };
+  const settle = (el: HTMLElement) => { pending.delete(el); delete el.dataset.revealState; delete el.dataset.revealLean; delete el.dataset.revealSide; el.style.removeProperty('--i'); };
+  const pending = new Set<HTMLElement>();
 
   // Step 2: the block reaches the screen and fades up.
+  const reveal = (el: HTMLElement, i = 0) => {
+    pending.delete(el); enter.unobserve(el);
+    if (el.hasAttribute(OWNED)) { settle(el); return; }
+    if (grouped.has(el)) el.style.setProperty('--i', String(i));
+    el.dataset.revealState = 'in';
+    // The state comes off when the fade ends, so the block's own hover transition applies again.
+    el.addEventListener('transitionend', e => { if (e.target === el && e.propertyName === 'opacity') settle(el); });
+    window.setTimeout(() => settle(el), 2000);
+  };
   const enter = new IntersectionObserver(entries => {
     const step = new Map<Element | null, number>();
     for (const entry of entries) {
       if (!entry.isIntersecting) continue;
       const el = entry.target as HTMLElement;
-      enter.unobserve(el);
-      if (el.hasAttribute(OWNED)) { settle(el); continue; }
-      if (grouped.has(el)) { const i = step.get(el.parentElement) ?? 0; step.set(el.parentElement, i + 1); el.style.setProperty('--i', String(i)); }
-      el.dataset.revealState = 'in';
-      // The state comes off when the fade ends, so the block's own hover transition applies again.
-      el.addEventListener('transitionend', e => { if (e.target === el && e.propertyName === 'opacity') settle(el); });
-      window.setTimeout(() => settle(el), 2000);
+      const i = grouped.has(el) ? step.get(el.parentElement) ?? 0 : 0; if (grouped.has(el)) step.set(el.parentElement, i + 1);
+      reveal(el, i);
     }
   }, { rootMargin: '0px 0px -10% 0px' });
+  /* The safety net (L-61): an observer reports a block only when it crosses into the screen between two frames, so a fast
+     scroll can carry a hidden block from below the screen to above it unseen, and it would stay hidden. While any block is
+     pending, each scroll checks that small set once a frame: a block on screen fades in, a block already above is shown. */
+  let queued = false;
+  const sweep = () => {
+    queued = false;
+    for (const el of [...pending]) { const r = el.getBoundingClientRect(); if (r.bottom <= 0) settle(el); else if (r.top < innerHeight * 0.9) reveal(el); }
+  };
+  addEventListener('scroll', () => { if (pending.size && !queued) { queued = true; requestAnimationFrame(sweep); } }, { passive: true });
 
   // Step 1: the block comes within three quarters of a screen below the fold and is hidden while still out of sight.
   // A block that is already on screen (first view, or reached by a jump) is left as it is.
@@ -54,6 +68,7 @@ if ((mode === 'on' || mode === 'fade') && 'IntersectionObserver' in window) {
       // The two halves of a split section come from their own sides (site.css, data-reveal-side); nothing else moves sideways.
       const parent = el.parentElement;
       if (parent?.matches('.cory-split, [data-case-grid], [data-cq-aside]') && parent.children.length === 2) el.dataset.revealSide = parent.firstElementChild === el ? 'start' : 'end';
+      pending.add(el);
       enter.observe(el);
     }
   }, { rootMargin: '0px 0px 75% 0px' });

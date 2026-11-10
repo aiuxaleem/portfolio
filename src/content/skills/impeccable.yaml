@@ -1,0 +1,14 @@
+title: Impeccable
+name: impeccable
+mine: false
+maker: Paul Bakaus
+official: false
+category: review-and-research
+summary: "A design vocabulary for Claude: commands to critique, audit and polish an interface and catch generic AI-looking results before they ship."
+note: "It installs a hook that runs outside Claude's approval, downloads a helper program and sends anonymous usage data unless you turn it off. Read its README first."
+source: https://github.com/pbakaus/impeccable
+license: Apache-2.0
+install: npx impeccable install
+added: 2026-11-09
+order: 30
+tags: ["Critique", "Polish", "Audit"]

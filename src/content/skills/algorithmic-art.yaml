@@ -1,0 +1,13 @@
+title: Algorithmic art
+name: algorithmic-art
+mine: false
+maker: Anthropic
+official: true
+category: brand-and-visuals
+summary: "Generative art with p5.js: seeded randomness and parameters you can explore, for patterns, backgrounds and visual studies."
+source: https://github.com/anthropics/skills/tree/main/skills/algorithmic-art
+license: Apache-2.0
+install: "/plugin marketplace add anthropics/skills, then /plugin install example-skills@anthropic-agent-skills"
+added: 2026-11-09
+order: 50
+tags: ["Generative", "p5.js"]
