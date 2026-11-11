@@ -1,0 +1,30 @@
+# Keeps Resources > Claude Skills (/claude-skills) up to date (L-63): every Monday it reads Anthropic's official plugin
+# directory, and commits src/content/feeds/claude-plugins.json only when the directory changed. The push makes Vercel build
+# the live site; the public copy follows at the next `npm run sync`. It runs only in the private repository (the public copy
+# is exported with this file but never runs it), and it can also be started by hand from the Actions tab.
+name: Refresh Claude Skills
+on:
+  schedule:
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  refresh:
+    if: github.repository == 'aiuxaleem/portfolio-private'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Read the official directory
+        run: node scripts/content/refresh-claude-skills.mjs
+      - name: Commit when it changed
+        run: |
+          if git diff --quiet -- src/content/feeds/claude-plugins.json; then echo "No change."; exit 0; fi
+          git config user.name "Mohammad Abdul Aleem"
+          git config user.email "187885873+aiuxaleem@users.noreply.github.com"
+          git add src/content/feeds/claude-plugins.json
+          git commit -m "content: refresh Claude Skills from Anthropic's official directory"
+          git push

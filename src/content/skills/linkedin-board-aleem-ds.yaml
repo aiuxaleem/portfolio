@@ -8,6 +8,9 @@ note: Needs Node with Playwright and Python with Pillow. Put your own photo and 
 download: /skills/linkedin-board-aleem-ds.zip
 size: 85 KB
 readme: /skills/linkedin-board-aleem-ds/SKILL.md
+prompts: ["Make a LinkedIn infographic about this", "Redesign this card in my style", "Make today's post graphic"]
+needs: ["Claude Code, or a setup that can run scripts", "Node with Playwright and Python with Pillow, installed once", "Your own photo and name in the template, set once"]
+gives: A 1080 by 1350 board as PNG and JPG, a post in your voice that passes a checker, an audit score out of ten, and a line in your queue log.
 added: 2026-11-09
 order: 20
 tags: [LinkedIn, Infographic, Design system, Writing]

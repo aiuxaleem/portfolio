@@ -224,3 +224,6 @@ html:has(dialog[data-image-preview][open]) { overflow: hidden; }
 /* A picture in a post's body made a preview link by islands/image-preview.ts: the picture stays where it was, the cursor says it zooms, and the focus ring hugs it. */
 .image-preview-body-link { display: block; inline-size: fit-content; max-inline-size: 100%; cursor: zoom-in; border-radius: var(--radius-lg); }
 .image-preview-body-link:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 3px; }
+/* A link inside a section's introduction sits in running text, so it is underlined, not told apart by colour alone (WCAG 1.4.1;
+   axe link-in-text-block on /claude-skills and /skills, L-63). */
+.page-section-head .project-filter-count a { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }

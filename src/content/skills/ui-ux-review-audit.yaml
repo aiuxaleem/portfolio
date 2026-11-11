@@ -7,6 +7,9 @@ summary: Reviews a screen, page, prototype, Figma file or live URL the way a lea
 download: /skills/ui-ux-review-audit.zip
 size: 2.8 KB
 readme: /skills/ui-ux-review-audit/SKILL.md
+prompts: ["Review this design", "Critique this screen", "Audit this UI", "Is this usable?", "What's wrong with this layout?"]
+needs: ["A screenshot, a Figma file or a live URL to review", "The brief, the audience and the core features, which the skill asks for first"]
+gives: An audit against twelve UX laws, the design-thinking lifecycle and handoff readiness, with the generic "design slop" named and a checklist to finish with.
 added: 2026-11-09
 order: 10
 tags: [UX laws, Design critique, Accessibility, Handoff]

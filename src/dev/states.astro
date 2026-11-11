@@ -39,6 +39,12 @@ import CategoryBento from '../components/resources/category-bento.astro';
 import { listedResources, categoryCounts } from '../lib/resources';
 import AiToolCard from '../components/cards/ai-tool-card.astro';
 import SkillCard from '../components/cards/skill-card.astro';
+import SkillShowcase from '../components/cards/skill-showcase.astro';
+import PluginCard from '../components/cards/plugin-card.astro';
+import { plugins as pluginsAll } from '../lib/claude-plugins';
+/* The directory card's states: one by Anthropic, one partner without a named maker, a new one, and a stress entry. */
+const pluginStress = { name: 'a-deliberately-long-plugin-name-to-test-wrapping-x1', title: 'A deliberately long one hundred and twenty character title used to test how every heading wraps across narrow s', description: 'A deliberately long description of three hundred and twenty characters, with an unbroken token https://example.com/an-unbroken-string-of-sixty-characters-x1 so that the card is checked at every width and in both themes, as the refresh clamps every description to this length and ends it on a whole word.', author: 'https://example.com/an-unbroken-string-of-sixty-characters-x1', official: false, category: 'design', link: 'https://example.com/an-unbroken-string-of-sixty-characters-x1', install: '/plugin install a-deliberately-long-plugin-name-to-test-wrapping-x1@claude-plugins-official', firstSeen: new Date().toISOString().slice(0, 10) };
+const pluginSample = [pluginsAll.find(p => p.official), pluginsAll.find(p => !p.official && !p.author), pluginStress].filter(Boolean) as typeof pluginsAll;
 import { listedSkills } from '../lib/skills';
 const skillsAll = await listedSkills();
 /* The skill card's states: one of mine with a download and a note, one of mine without a download (a fixture), one from someone else, and the stress fixture. */
@@ -328,6 +334,12 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
           </div>
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
+            <h2 style={h2}>My Claude Skills: the showcase</h2>
+            <p style={note}>One of the owner's skills on /skills (cards/skill-showcase.astro): with its download, what to say and what it needs; one shown through its case study; one without a download yet (a fixture).</p>
+            <div data-cq><ul style="display: grid; gap: var(--grid-gap); margin: 0; padding: 0; list-style: none;">{[skillsAll.find(x => x.data.mine && x.data.download && (x.data.prompts ?? []).length), skillsAll.find(x => x.data.mine && x.data.caseStudy), skillsAll.find(x => x.data.mine && x.data.fixture)].filter(Boolean).map((x, i) => <li><SkillShowcase skill={x!} id={`states-show-${theme}-${i}`} /></li>)}</ul></div>
+            <h2 style={h2}>Claude Skills: a directory card</h2>
+            <p style={note}>An entry of Anthropic's official directory on /claude-skills (cards/plugin-card.astro): by Anthropic, a partner whose maker the directory does not name, and the stress entry (a 120-character title, an unbroken description token, maker and install line, marked New).</p>
+            <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{pluginSample.map(p => <li><PluginCard plugin={p} /></li>)}</ul></div>
             <h2 style={h2}>Claude skill card</h2>
             <p style={note}>The two kinds on /skills (cards/skill-card.astro): one of mine as a tile with its download (size and format named), its SKILL.md and a note; one of mine without a download yet; one from someone else as a whole-card link with maker, official or community, licence and the one-line install; the stress fixture with a 120-character title, an unbroken install line and nine tags.</p>
             <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{skillSample.map(x => <li><SkillCard skill={x} level={3} /></li>)}</ul></div>

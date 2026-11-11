@@ -274,6 +274,11 @@ export const skillSchema = S({
     readme: z.string().regex(/^\/skills\/[a-z0-9-]+\/SKILL\.md$/, 'The SKILL.md under /skills/<name>/').optional(),
     /* What a visitor should know before using it (written for my own site, needs a paid connector, files still to come). */
     note: z.string().max(240).optional(),
+    /* One of mine, on My Claude Skills (L-63): what a visitor says to Claude to start it (from its SKILL.md triggers, never
+       invented), what it needs, and what it gives back. */
+    prompts: z.array(z.string().max(120)).max(6).default([]),
+    needs: z.array(z.string().max(160)).max(5).default([]),
+    gives: z.string().max(240).optional(),
     caseStudy: z.string().regex(/^\/case-studies\/[a-z0-9-]+$/).optional(),
     added: z.coerce.date(),
     order: z.number().int().default(100),

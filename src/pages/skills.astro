@@ -1,123 +1,53 @@
 ---
-/* /skills: Claude skills for designers (owner request, 9 November 2026, L-61). Part of "Work" in the header.
-   1. The first screen: what a skill is in one line, and the page's two jobs as its two actions.
-   2. What a skill is: three tiles and the folder a skill is (the anatomy), so a designer who has never seen SKILL.md can
-      follow the rest.
-   3. Skills I built: the owner's skills, each with its download (size and format named), its SKILL.md to read first, and
-      its case study where there is one.
-   4. How to install a skill: Claude.ai, Claude Code and the API, each as numbered steps with the source, then the safety
-      note (read a skill before installing it).
-   5. Skills worth knowing: published skills useful to designers, filtered by category and by official or community, each
-      card opening its source; maker, licence and the one-line install on the card.
-   Entries are the skills collection (src/content/skills, typed in content-schemas.ts), edited in the admin (Claude skills).
-   The install steps and the facts about skills come from the sources named under each step (checked 9 November 2026). */
+/* /skills: My Claude Skills (owner request, 10 November 2026, L-63; first built as one page with the market skills in L-61).
+   Only the skills the owner built, each shown so a visitor can use it straight away (cards/skill-showcase.astro): what it
+   does and gives back, what to say to start it, what it needs, the download and the steps for Claude.ai and Claude Code.
+   The skills from others, and the full guide to skills, are on Resources > Claude Skills (/claude-skills). */
 import PageLayout from '../layouts/page-layout.astro';
-import SkillCard from '../components/cards/skill-card.astro';
-import ProjectFilters from '../components/projects/project-filters.astro';
-import CodeBlock from '../components/content/code-block.astro';
+import SkillShowcase from '../components/cards/skill-showcase.astro';
 import Button from '../components/ui/button.astro';
 import ContactBlock from '../components/profile/contact-block.astro';
-import { listedSkills, skillCategoryCounts, skillCategoryLabel } from '../lib/skills';
-import { GUIDE } from '../lib/skills-guide';
+import { listedSkills } from '../lib/skills';
 
-const skills = await listedSkills();
-const mine = skills.filter(s => s.data.mine);
-const market = skills.filter(s => !s.data.mine);
-const groups = skillCategoryCounts(skills).filter(g => g.count > 0 || market.some(s => s.data.category === g.slug));
-const items = market.map(s => ({ tags: [s.data.category], status: s.data.official ? 'official' : 'community' }));
+const mine = (await listedSkills()).filter(s => s.data.mine);
 const downloads = mine.filter(s => s.data.download && !s.data.fixture).length;
 const num = (i: number) => String(i + 1).padStart(2, '0');
 const stat = 'margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); color: var(--text-strong); font-variant-numeric: tabular-nums;';
-const anatomy = `my-skill/
-  SKILL.md          name, description, then the instructions
-  references/       longer guides Claude opens only when needed
-  scripts/          code the skill can run
-  assets/           templates, fonts, images`;
-const frontMatter = `---
-name: my-skill
-description: What it does and when to use it. Claude reads this
-  line first and opens the rest only when a task matches it.
+const steps = [
+  { title: 'Download a skill', body: 'Each one is a small zip with one folder inside. Read its SKILL.md first: it is plain text, and it is everything the skill tells Claude.' },
+  { title: 'Add it to Claude', body: 'In Claude.ai, upload the zip under Customize > Skills. In Claude Code, unzip it into ~/.claude/skills. Each skill below shows the exact steps.' },
+  { title: 'Say what you want', body: 'Use one of the lines shown with each skill, or your own words. Claude opens the skill when your request matches what it is for.' },
+];
 ---
-
-# My skill
-The steps, rules and examples Claude follows.`;
----
-<PageLayout title="Claude skills for designers · AIUXAleem" description="What Claude skills (SKILL.md) are, how to install one in Claude.ai or Claude Code, the published skills worth knowing for designers, and the skills Mohammad Abdul Aleem built, free to download." page="skills" bg="grid" mainStyle="outline: none; overflow: clip;">
-  <section class="cory-container skills-hero" aria-labelledby="skills-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
-    <p class="cory-overline" style="margin: 0px;">Work · Claude skills</p>
-    <h1 id="skills-title" style="margin: 0px; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">Teach Claude how <span style="background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent;">you design</span>.</h1>
-    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">A skill is a folder with one file, SKILL.md, that tells Claude how to do a task your way: audit a screen, build on your design system, make a board in your style. Install it once and Claude uses it whenever the task comes up. Below: how skills work, the ones worth knowing, and mine, free to download.</p>
+<PageLayout title="My Claude Skills · AIUXAleem" description="Claude skills Mohammad Abdul Aleem built: a UI/UX audit, a LinkedIn board, a portfolio blog post. What each does, what to say to start it, and how to install it." page="skills" bg="grid" mainStyle="outline: none; overflow: clip;">
+  <section class="cory-container" aria-labelledby="skills-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <p class="cory-overline" style="margin: 0px;">Work · My Claude Skills</p>
+    <h1 id="skills-title" style="margin: 0px; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">Skills I built, <span style="background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent;">ready to use</span>.</h1>
+    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">A Claude skill is a folder of instructions that teaches Claude to do one task a set way. These are the ones I built for my own work: audits, boards, posts. Each is free; download it, add it to Claude and say one line.</p>
     <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
-      <Button variant="primary" size="lg" href="#mine">Get my skills</Button>
-      <Button variant="secondary" size="lg" href="#install">How to install a skill</Button>
+      <Button variant="primary" size="lg" href="#mine">See the skills</Button>
+      <Button variant="secondary" size="lg" href="/claude-skills">More Claude skills</Button>
     </div>
     <dl class="skills-stats">
-      <div><dt>Skills listed</dt><dd style={stat}>{skills.filter(s => !s.data.fixture).length}</dd></div>
-      <div><dt>Mine to download</dt><dd style={stat}>{downloads}</dd></div>
-      <div><dt>Works in</dt><dd class="skills-stat-words">Claude.ai, Claude Code, the API</dd></div>
+      <div><dt>Skills</dt><dd style={stat}>{mine.filter(s => !s.data.fixture).length}</dd></div>
+      <div><dt>Free to download</dt><dd style={stat}>{downloads}</dd></div>
+      <div><dt>Works in</dt><dd class="skills-stat-words">Claude.ai and Claude Code</dd></div>
     </dl>
   </section>
 
-  <section class="page-section" data-surface="card" aria-labelledby="what-title">
+  <section class="page-section" data-surface="card" aria-labelledby="how-title">
     <div class="cory-container" style="display: grid; gap: var(--space-8);">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">The idea</p><h2 id="what-title" class="page-h2">What a skill is</h2><p class="project-filter-count">{GUIDE.whatSource}</p></div>
-      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{GUIDE.what.map((w, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{w.title}</h3><p>{w.body}</p></div></li>)}</ol></div>
-      <div class="skills-anatomy">
-        <figure class="skills-figure"><figcaption>The folder</figcaption><CodeBlock><code>{anatomy}</code></CodeBlock></figure>
-        <figure class="skills-figure"><figcaption>The top of SKILL.md</figcaption><CodeBlock><code>{frontMatter}</code></CodeBlock></figure>
-      </div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">How it works</p><h2 id="how-title" class="page-h2">Three steps, once</h2><p class="project-filter-count">New to skills? <a href="/claude-skills#what-title">What a skill is</a> and <a href="/claude-skills#install">how to install one anywhere</a> are on Claude Skills.</p></div>
+      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{steps.map((s, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol></div>
     </div>
   </section>
 
   <section id="mine" class="page-section" aria-labelledby="mine-title">
     <div class="cory-container" style="display: grid; gap: var(--space-8);">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Made by me</p><h2 id="mine-title" class="page-h2">Skills I built</h2><p class="project-filter-count">Free to use. Download the zip, read its SKILL.md, then install it as below. Each one encodes how I work: the rules, the checks, the order of steps.</p></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Made by me</p><h2 id="mine-title" class="page-h2">The skills</h2><p class="project-filter-count">Each one encodes how I work: the rules, the checks, the order of steps. Before you add any skill, mine included, read its SKILL.md: a skill gives Claude instructions and code, so treat it like installing software.</p></div>
       {mine.length === 0
-        ? <div class="project-empty"><p class="project-empty-title">No skills of mine are listed yet.</p><p class="project-empty-body">They will appear here with a download as they are published.</p></div>
-        : <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{mine.map(s => <li><SkillCard skill={s} /></li>)}</ul></div>}
-    </div>
-  </section>
-
-  <section id="install" class="page-section" data-surface="card" aria-labelledby="install-title">
-    <div class="cory-container" style="display: grid; gap: var(--space-8);">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Set up</p><h2 id="install-title" class="page-h2">How to install a skill</h2><p class="project-filter-count">Pick where you use Claude. A downloaded skill is a zip with one folder inside; keep the folder whole.</p></div>
-      <div data-cq><ul data-cq-3 class="skills-install" style="display: grid; gap: var(--grid-gap);">
-        {GUIDE.install.map(w => (
-          <li class="tile skills-way">
-            <h3>{w.where}</h3>
-            {w.who && <p class="skills-way-who">{w.who}</p>}
-            <ol class="skills-steps">{w.steps.map(s => <li>{s}</li>)}</ol>
-            {w.code && <CodeBlock><code>{w.code}</code></CodeBlock>}
-            <p class="skills-source">Source: <a href={w.source.href} target="_blank" rel="noopener">{w.source.label}<span class="cory-visually-hidden"> (opens in a new tab)</span></a></p>
-          </li>
-        ))}
-      </ul></div>
-      <aside class="skills-safety" aria-labelledby="safety-title">
-        <h3 id="safety-title">Before you install anyone's skill, mine included</h3>
-        <p>{GUIDE.safety.body}</p>
-        <p class="skills-source">Source: <a href={GUIDE.safety.source.href} target="_blank" rel="noopener">{GUIDE.safety.source.label}<span class="cory-visually-hidden"> (opens in a new tab)</span></a></p>
-      </aside>
-    </div>
-  </section>
-
-  <section id="directory" class="page-section" aria-labelledby="directory-title">
-    <div class="cory-container" style="display: grid; gap: var(--space-8);">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Worth knowing</p><h2 id="directory-title" class="page-h2">Published skills for designers</h2><p class="project-filter-count">From Anthropic, from the makers of the tools designers use, and from the community. Each card opens the skill where it is published; check the licence there before you use it at work.</p></div>
-      {market.length > 0 && <ProjectFilters tags={groups.map(g => g.slug)} tagLabels={skillCategoryLabel} tagsLabel="Category" total={market.length} items={items} options={{ official: 'Official', community: 'Community' }} optionsLabel="Made by" noun="skill" id="skill-filter" search={{ label: 'Find a skill', placeholder: 'Name, maker or task' }} />}
-      {market.length === 0
-        ? <div class="project-empty"><p class="project-empty-title">No published skills are listed yet.</p><p class="project-empty-body">Anthropic's own collection is the place to start.</p></div>
-        : <div data-project-list class="skills-groups">
-            {groups.map(g => (
-              <section class="skills-group" aria-labelledby={`skills-${g.slug}`} data-filter-group>
-                <div class="page-section-head">
-                  <h3 id={`skills-${g.slug}`} class="project-h2">{g.label} <span class="skills-count">{g.count}</span></h3>
-                  <p class="project-filter-count">{g.blurb}</p>
-                </div>
-                <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{market.filter(s => s.data.category === g.slug).map(s => <li><SkillCard skill={s} level={3} /></li>)}</ul></div>
-              </section>
-            ))}
-          </div>}
-      <div class="project-empty" data-project-empty hidden><p class="project-empty-title">No skill matches these filters.</p><p class="project-empty-body">Clear the filters to see every skill.</p><div><Button variant="secondary" data-clear-filters>Clear filters</Button></div></div>
+        ? <div class="project-empty"><p class="project-empty-title">No skills of mine are listed yet.</p><p class="project-empty-body">Meanwhile, Claude Skills lists the best ones published by others.</p><div><Button variant="secondary" href="/claude-skills">See Claude Skills</Button></div></div>
+        : <div data-cq><ul class="skills-show-list">{mine.map((s, i) => <li><SkillShowcase skill={s} id={`skill-${i + 1}`} /></li>)}</ul></div>}
     </div>
   </section>
 
@@ -130,27 +60,5 @@ The steps, rules and examples Claude follows.`;
   .skills-stats dt { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
   .skills-stats dd { margin: 0; }
   .skills-stat-words { font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-strong); line-height: var(--leading-snug); max-inline-size: 18ch; }
-  .skills-anatomy { display: grid; gap: var(--grid-gap); grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
-  .skills-figure { margin: 0; display: grid; gap: var(--space-2); min-inline-size: 0; }
-  .skills-figure figcaption { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
-  .skills-install { margin: 0; padding: 0; list-style: none; }
-  .skills-way { display: grid; gap: var(--space-4); align-content: start; min-inline-size: 0; }
-  .skills-way h3 { margin: 0; font-size: var(--text-h3); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong); }
-  .skills-way-who { margin: 0; font-size: var(--text-body-sm); color: var(--text-muted); }
-  .skills-steps { margin: 0; padding-inline-start: var(--space-6); display: grid; gap: var(--space-2); list-style: decimal; }
-  .skills-steps li::marker { font-family: var(--font-mono); font-size: var(--text-mono); color: var(--text-subtle); }
-  .skills-steps li { font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); overflow-wrap: anywhere; }
-  .skills-source { margin: 0; display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--space-1); font-size: var(--text-body-sm); color: var(--text-muted); overflow-wrap: anywhere; }
-  .skills-source a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); color: var(--text-link); font-weight: var(--weight-semibold); }
-  .skills-safety { display: grid; gap: var(--space-2); padding: var(--space-5) var(--space-6); border-radius: var(--radius-lg); border: 1px solid var(--border-default); border-inline-start: 3px solid var(--border-focus); background: var(--surface-card); max-inline-size: var(--measure-lead); }
-  .skills-safety h3 { margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong); }
-  .skills-safety p { margin: 0; line-height: var(--leading-relaxed); color: var(--text-body); }
-  .skills-groups { display: grid; gap: var(--space-12); }
-  .skills-group { display: grid; gap: var(--space-5); }
-  .skills-count { font-family: var(--font-mono); font-size: var(--text-mono); font-weight: var(--weight-medium); color: var(--text-subtle); vertical-align: middle; }
-  .skills-group:not(:has(li:not([hidden]))) { display: none; }
+  .skills-show-list { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--grid-gap); }
 </style>
-
-<script>
-  import '../components/islands/project-filters.ts';
-</script>

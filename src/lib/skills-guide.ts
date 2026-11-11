@@ -52,7 +52,7 @@ export const GUIDE = {
     },
   ],
   safety: {
-    body: 'A skill gives Claude instructions and code, so treat it like installing software. Anthropic advises using skills only from sources you trust, and reading every file a skill bundles before you install it: the SKILL.md, its scripts and its images, watching for network calls or file access that do not match what it says it does. Each of my skills links its SKILL.md above so you can do exactly that.',
+    body: 'A skill gives Claude instructions and code, so treat it like installing software. Anthropic advises using skills only from sources you trust, and reading every file a skill bundles before you install it: the SKILL.md, its scripts and its images, watching for network calls or file access that do not match what it says it does. Each of my own skills, on My Claude Skills, links its SKILL.md so you can do exactly that.',
     source: { label: 'Claude Docs: Security considerations for Skills', href: DOCS },
   },
 };
