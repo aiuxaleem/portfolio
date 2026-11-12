@@ -19,20 +19,22 @@ export async function ogEntries(): Promise<OgEntry[]> {
   const pages: OgEntry[] = [
     { path: 'default', title: site.name, kicker: 'AI product design' },
     { path: 'home', title: 'I design AI products people can trust.', kicker: 'Hyderabad · GCC hours · KSA / UAE / remote' },
-    { path: 'work', title: 'Projects', kicker: 'My recent work' },
-    { path: 'case-studies', title: 'Case studies', kicker: 'My recent work' },
-    { path: 'blog', title: 'Blog', kicker: 'My resources' },
-    { path: 'posts', title: 'Short posts and running series.', kicker: 'My resources · LinkedIn posts' },
-    { path: 'articles', title: 'Longer pieces, published on LinkedIn.', kicker: 'My resources · LinkedIn articles' },
-    { path: 'videos', title: 'Videos', kicker: 'My videos' },
+    { path: 'work', title: 'Projects', kicker: 'Work · My Projects' },
+    { path: 'case-studies', title: 'Case studies', kicker: 'Work · My Case Studies' },
+    { path: 'skills', title: 'Skills I built, ready to use.', kicker: 'Work · My Claude Skills' },
+    { path: 'blog', title: 'Blog', kicker: 'Writing · Blog' },
+    { path: 'posts', title: 'Short posts and running series.', kicker: 'Writing · LinkedIn posts' },
+    { path: 'articles', title: 'Longer pieces, published on LinkedIn.', kicker: 'Writing · LinkedIn articles' },
+    { path: 'videos', title: 'Videos', kicker: 'Videos' },
     { path: 'resources', title: 'The UX library for AI product design.', kicker: 'Resources · UX Library' },
-    { path: 'ai-tools', title: 'AI tools for product designers.', kicker: 'Resources · AI Tools' },
+    { path: 'ai-tools', title: 'AI tools for product designers.', kicker: 'Resources · AI tools' },
+    { path: 'claude-skills', title: 'The Claude skills worth knowing.', kicker: 'Resources · Claude Skills' },
     { path: 'sitemap', title: 'Every page, in one place.', kicker: 'Sitemap' },
     { path: 'about', title: 'I make AI products people can rely on.', kicker: 'About' },
     { path: 'resume', title: site.name, kicker: 'Resume' },
     { path: 'now', title: 'What I am building and learning.', kicker: 'Now' },
     { path: 'contact', title: "Let's talk.", kicker: 'Contact' },
-    { path: 'services', title: 'Three ways to work together.', kicker: 'Services' },
+    { path: 'services', title: 'Three things I can do for your team.', kicker: 'Services' },
   ];
   const projects = (await listedProjects()).map(p => ({ path: `work/${p.id}`, title: p.data.title, kicker: 'Project' }));
   const cases = (await listedCaseStudies()).map(c => ({ path: `case-studies/${c.id}`, title: c.data.title, kicker: ['Case study', c.data.category].filter(Boolean).join(' · ') }));
@@ -40,6 +42,14 @@ export async function ogEntries(): Promise<OgEntry[]> {
   return [...pages, ...projects, ...cases, ...posts];
 }
 let known: Set<string> | undefined;
+/** What the generated share card shows, as its alt text: the card's title, then the name line under it. */
+export async function ogAltFor(pathname: string): Promise<string> {
+  const p = pathname.replace(/\.html$/, '').replace(/^\/|\/$/g, '');
+  const entries = await ogEntries();
+  const e = entries.find(x => x.path === (p === '' || p === 'ar' ? 'home' : p)) || entries.find(x => x.path === 'default')!;
+  const who = `${site.name}, ${profile.headline}`;
+  return e.title === site.name ? who : `${e.title.replace(/[.]$/, '')}: ${who}`;
+}
 /** The image for a pathname: its own generated image, or the default. */
 export async function ogImageFor(pathname: string): Promise<string> {
   const p = pathname.replace(/\.html$/, '').replace(/^\/|\/$/g, '');

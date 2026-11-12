@@ -30,7 +30,7 @@ const describedBy = (name: string, hint: boolean) => [hint && `${id}-${name}-hin
 
   <form action="/api/resources" method="post" hidden={state === 'success'} aria-labelledby={landmark ? `${id}-form-title` : undefined}>
     <h3 id={`${id}-form-title`} class="form-title">Suggest a resource</h3>
-    <p class="form-note">The name, link and category are needed. The rest is optional.</p>
+    <p class="form-note">The name, link and category are required. The rest is optional.</p>
 
     <div class="form-panel form-summary" data-form-summary tabindex="-1" role="alert" hidden={!invalid}>
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={alertIcon}></path></svg>

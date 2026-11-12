@@ -42,6 +42,9 @@ for (const f of html) {
   const hreflang = [...s.matchAll(/<link rel="alternate" hreflang="([^"]*)" href="([^"]*)"/g)].map(m => `${m[1]} ${m[2].replace(SITE, '') || '/'}`);
   const page = { route: r, lang, hreflang, noindex, title, titleLength: title?.length, descriptionLength: description?.length, canonical, og: {}, jsonLd: [] };
   if (!title) fail(r, 'title', 'missing'); else if (title.length > 65) warn(r, 'title-length', `${title.length} characters (search results cut at about 60)`);
+  /* A title never names its kind twice ("… · Case study · Case study · …", L-64): an entry's own SEO title must not carry
+     the kind the page template adds after it. */
+  if (title) { const parts = title.split(' · ').map(s => s.trim().toLowerCase()); const twice = parts.find((s, i) => parts.indexOf(s) !== i || (i > 0 && /case study$/.test(parts[i - 1]) && s === 'case study')); if (twice) fail(r, 'title-repeat', `"${title}" repeats "${twice}"`); }
   if (!description) fail(r, 'description', 'missing'); else if (description.length < 50 || description.length > 165) warn(r, 'description-length', `${description.length} characters (aim for 50 to 165)`);
   if (!canonical) fail(r, 'canonical', 'missing'); else if (!/^https:\/\//.test(canonical)) fail(r, 'canonical', `not absolute: ${canonical}`);
   else if (!noindex && canonical.startsWith(SITE) && canonical.replace(SITE, '').replace(/\/$/, '') !== r.replace(/\/$/, '')) fail(r, 'canonical', `points at ${canonical}`);

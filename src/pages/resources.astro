@@ -30,7 +30,7 @@ const counts = ([[filled.length, 'categories'], [real.length, 'resources'], [min
 const canSuggest = import.meta.env.COUNT_VISITS === '1';
 const notes = [
   { id: 'suggest-sent', ok: true, title: 'Suggestion received.', body: 'Thank you. I look at every suggestion before it goes on the page, so it will not appear straight away.' },
-  { id: 'suggest-refused', ok: false, title: 'The suggestion was not accepted.', body: 'The name, a full link starting with https:// and a category are needed. Fill them in and send it again.' },
+  { id: 'suggest-refused', ok: false, title: 'The suggestion was not accepted.', body: 'The name, a full link starting with https:// and a category are required. Fill them in and send it again.' },
   { id: 'suggest-later', ok: false, title: 'That is enough for one hour.', body: 'Five suggestions from one place within an hour is the limit. Thank you; send the rest later or by email.' },
   { id: 'suggest-failed', ok: false, title: 'The suggestion was not saved.', body: 'The site could not save it. Nothing was kept. Try again in a minute, or send it by email.' },
 ];
@@ -40,7 +40,7 @@ const updated = real.length ? real.reduce((d, r) => (r.data.added > d ? r.data.a
 const stat = 'margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); font-variant-numeric: tabular-nums;';
 const inkLink = 'display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-block-size: var(--tap-target); padding-block: var(--space-2); color: var(--on-ink-strong); text-decoration: none; font-weight: var(--weight-semibold); font-size: var(--text-body-md); border-block-start: 1px solid var(--on-ink-border);';
 ---
-<PageLayout title="UX Library · AIUXAleem" description="Tools, references and reading for AI product design, design systems and accessibility, plus my own AI workflows and Claude skills." page="resources" bg="grid" mainStyle="outline: none; overflow: clip;">
+<PageLayout title="UX Library · AIUXAleem" description="Tools, references and reading for AI product design, design systems and accessibility, plus Mohammad Abdul Aleem's own AI workflows and Claude skills." page="resources" bg="grid" mainStyle="outline: none; overflow: clip;">
   <section aria-labelledby="resources-title" style="position: relative; padding-block: var(--section-y) var(--space-10); overflow: clip;">
     <div class="cory-container cory-split" style="align-items: center;">
       <div style="display: grid; gap: var(--space-6); align-content: center;">

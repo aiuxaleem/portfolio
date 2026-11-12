@@ -4,7 +4,7 @@ mine: false
 maker: Figma
 official: true
 category: design-to-code
-summary: "Let an agent read and edit Figma files: build screens from your components and variables, generate a library from a codebase, and turn designs into code."
+summary: "Lets an agent read and edit Figma files: build screens from your components and variables, generate a library from a codebase, and turn designs into code."
 note: "In beta, under the Figma Developer Terms rather than an open-source licence. Some skills need edit access or a paid Figma plan."
 source: https://github.com/figma/mcp-server-guide
 license: Figma Developer Terms

@@ -26,7 +26,7 @@ const alertIcon = 'M12 8v4M12 16h.01';
 
   <form action={endpoint} method="post" hidden={state === 'success'} aria-labelledby={landmark ? `${id}-form-title` : undefined}>
     <h2 id={`${id}-form-title`} class="form-title">Send a message</h2>
-    <p class="form-note">Name, email and message are needed.</p>
+    <p class="form-note">Name, email and message are required.</p>
 
     <div class="form-panel form-summary" data-form-summary tabindex="-1" role="alert" hidden={!invalid}>
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={alertIcon}></path></svg>

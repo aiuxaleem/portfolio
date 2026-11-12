@@ -14,8 +14,8 @@ export async function listedProjects(): Promise<Project[]> {
   return all.sort((a, b) => Number(a.data.fixture) - Number(b.data.fixture) || a.data.order - b.data.order || a.data.title.localeCompare(b.data.title));
 }
 
-const month = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
-export const day = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+const month = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).replace('Sept', 'Sep');
+export const day = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).replace('Sept', 'Sep');
 
 /** "Jan 2025 to present", "Jan 2025 to Mar 2026", or nothing when no start date is known. */
 export function timeline(p: Project['data']): string | undefined {

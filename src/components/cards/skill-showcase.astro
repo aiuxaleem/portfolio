@@ -43,7 +43,7 @@ const arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" strok
             <Button variant="primary" href={d.download} download={`${d.name}.zip`}><Fragment set:html={down} />Download<span class="cory-visually-hidden"> {d.title}, a zip file{d.size && <>, {d.size}</>}</span></Button>
             <span class="skill-show-size" aria-hidden="true">.zip{d.size && <>{' · '}{d.size}</>}</span>
           </div>
-          {d.readme && <a class="skill-show-link" href={d.readme} target="_blank" rel="noopener">Read the SKILL.md first<span class="cory-visually-hidden"> of {d.title} (opens in a new tab)</span> <Fragment set:html={arrow} /></a>}
+          {d.readme && <a class="skill-show-link" href={d.readme} target="_blank" rel="noopener">Read the SKILL.md first<span class="cory-visually-hidden">: {d.title} (opens in a new tab)</span> <Fragment set:html={arrow} /></a>}
           <div class="skill-show-steps">
             <h4>In Claude.ai</h4>
             <ol><li>Keep the zip as it is.</li><li>Customize &gt; Skills, then + and Upload a skill.</li><li>Switch it on and say one of the lines shown here.</li></ol>

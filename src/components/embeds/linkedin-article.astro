@@ -3,7 +3,7 @@
    from LinkedIn at all. The whole card is one link. A cover is optional. */
 interface Props { url: string; title: string; excerpt?: string; date?: string; cover?: string; coverAlt?: string }
 const { url, title, excerpt, date, cover, coverAlt = '' } = Astro.props;
-const shown = date && !Number.isNaN(Date.parse(date)) ? new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : date;
+const shown = date && !Number.isNaN(Date.parse(date)) ? new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).replace('Sept', 'Sep') : date;
 ---
 <article class="embed embed-article project-card">
   {cover && <div class="project-card-media"><img src={cover} alt={coverAlt} loading="lazy" decoding="async" /></div>}

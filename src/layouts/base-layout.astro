@@ -5,7 +5,7 @@ import { siteOf, sitePath, SUB_SITES } from '../lib/sites';
 import '../styles/global.css';
 import { site } from '../content/site';
 import fonts from '../styles/fonts.json';
-import { ogImageFor, abs, languageAlternates } from '../lib/seo';
+import { ogImageFor, ogAltFor, abs, languageAlternates } from '../lib/seo';
 /* The motion script's address: islands/motion.ts bundled with GSAP into public/_m/ by scripts/perf/bundle-motion.mjs (before every build and dev start), named in the head below. */
 import motion from '../components/islands/motion.json';
 
@@ -41,6 +41,8 @@ const { ogType = 'website', jsonLd = [], manifest } = Astro.props;
 const image = abs(Astro.props.ogImage || await ogImageFor(Astro.url.pathname));
 /* The share title drops the site suffix; the site name is its own tag. */
 const shareTitle = title.replace(/ · AIUXAleem$/, '');
+/* The generated card's alt text says what the card shows; an image a page brings itself keeps the share title. */
+const shareAlt = Astro.props.ogImage ? shareTitle : await ogAltFor(Astro.url.pathname);
 /* Page view count: first-party, no cookie, sent after the page has loaded. Present only where the /api/hit route exists
    (the Vercel build and dev), never on pages marked noindex. Skipped in the owner's browser and for visitors who ask not
    to be tracked. */
@@ -71,13 +73,13 @@ const field = !Astro.url.pathname.startsWith('/admin');
     <meta property="og:image" content={image} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={shareTitle} />
+    <meta property="og:image:alt" content={shareAlt} />
     <meta property="og:locale" content={lang === 'ar' ? 'ar_AR' : 'en_US'} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={shareTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={image} />
-    <meta name="twitter:image:alt" content={shareTitle} />
+    <meta name="twitter:image:alt" content={shareAlt} />
     <link rel="alternate" type="application/rss+xml" title="AIUXAleem blog" href="/rss.xml" />
     <link rel="alternate" type="application/rss+xml" title="AIUXAleem writing" href="/writing/rss.xml" />
     {jsonLd.filter(Boolean).map(o => <script type="application/ld+json" set:html={JSON.stringify(o).replace(/</g, '\\u003c')} />)}

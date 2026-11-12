@@ -16,7 +16,7 @@ const last = page < pages ? page * posts.length : total, first = last - posts.le
 const title = `${tag ? `${tag} · Blog` : page > 1 ? `Blog, page ${page}` : 'Blog'} · AIUXAleem`;
 const description = tag
   ? `Posts tagged ${tag} on the AIUXAleem blog: guides and articles by Mohammad Abdul Aleem on design systems and AI product design.`
-  : `Guides and articles by Mohammad Abdul Aleem on design systems and designing AI products.${page > 1 ? ` Page ${page} of ${pages}.` : ''}`;
+  : `Guides by Mohammad Abdul Aleem on design systems and AI products: component spec files, AI-readable systems, designing for agents, and AI workflows.${page > 1 ? ` Page ${page} of ${pages}.` : ''}`;
 ---
 <PageLayout title={title} description={description} page="blog" bg="grid" mainStyle="outline: none; overflow: clip;" noindex={!!tag && posts.length === 0}>
   <section class="cory-container" aria-labelledby="blog-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">

@@ -8,7 +8,7 @@ import data from './site/profile.json';
 export const profile = profileSchema.parse(data);
 export type Role = (typeof profile.career)[number];
 
-const fmt = (ym: string) => new Date(`${ym}-01T00:00:00Z`).toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+const fmt = (ym: string) => new Date(`${ym}-01T00:00:00Z`).toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' }).replace('Sept', 'Sep');
 /** "Jan 2025 to present", "Jun 2022 to Jan 2024", or nothing when the start is unknown. */
 export const period = (r: { start: string; end: string }) => (r.start ? `${fmt(r.start)} to ${r.end ? fmt(r.end) : 'present'}` : '');
 export const monthLabel = (ym: string) => (ym ? new Date(`${ym}-01T00:00:00Z`).toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' }) : '');

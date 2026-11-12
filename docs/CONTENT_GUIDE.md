@@ -27,6 +27,7 @@ The editor runs on your own computer only. It is not on the live site. Publishin
 - **Every image needs alt text.** Describe the image for someone who cannot see it. The build stops if it is empty.
 - **No placeholders on a public page.** If a published entry still contains `[VERIFY]` or `[METRIC: ...]`, `npm run quality` fails and names the page. Keep an entry as a draft until its facts are confirmed.
 - **Numbers need a source.** A case study metric is shown as a figure only when its **Verified** box is ticked. Fill in **Source** (how and when it was measured) first.
+- **Titles in sentence case, and the kind only once.** Write "How I build one LinkedIn infographic a day", not "How I Build One LinkedIn Infographic a Day". An entry's SEO title is the title alone: the page adds "· Case study", "· Project" or "· Blog" itself, and `npm run quality` fails a title that names its kind twice.
 - **A testimonial needs permission.** It cannot be published until the permission box is ticked.
 
 ## Add a blog post

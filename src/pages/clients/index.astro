@@ -35,7 +35,7 @@ const rewrite = (html: string) => {
   const end = s.indexOf('</section>', head) + '</section>'.length;
   if (head < 0 || end < '</section>'.length) throw new Error('clients: hero not found');
   s = s.slice(0, head) + s.slice(end);
-  s = swap(s, 'Both. Companies hiring a senior or lead product designer in KSA or UAE, on-site or remote, can start with the resume. Teams with a product problem can bring me in for a scoped project, with me doing the work.', 'Both. Companies hiring a Lead or Principal product designer in KSA or the UAE have a website of their own, for hiring managers. Teams with a product problem can bring me in for a scoped project, with me doing the work.');
+  s = swap(s, 'Both. Companies hiring a senior or lead product designer in KSA or the UAE, on-site or remote, can start with the resume. Teams with a product problem can bring me in for a scoped project, with me doing the work.', 'Both. Companies hiring a Lead or Principal product designer in KSA or the UAE have a website of their own, for hiring managers. Teams with a product problem can bring me in for a scoped project, with me doing the work.');
   s = swap(s, "Tell me what you're building, or who you're hiring", "Tell me what you're building");
   return s;
 };

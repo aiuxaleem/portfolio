@@ -37,7 +37,7 @@ const steps = [
 
   <section class="page-section" data-surface="card" aria-labelledby="how-title">
     <div class="cory-container" style="display: grid; gap: var(--space-8);">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">How it works</p><h2 id="how-title" class="page-h2">Three steps, once</h2><p class="project-filter-count">New to skills? <a href="/claude-skills#what-title">What a skill is</a> and <a href="/claude-skills#install">how to install one anywhere</a> are on Claude Skills.</p></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">How it works</p><h2 id="how-title" class="page-h2">Three steps, once</h2><p class="project-filter-count">New to skills? Claude Skills explains <a href="/claude-skills#what-title">what a skill is</a> and <a href="/claude-skills#install">how to install one anywhere</a>.</p></div>
       <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{steps.map((s, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol></div>
     </div>
   </section>

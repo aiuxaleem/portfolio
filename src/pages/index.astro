@@ -20,7 +20,7 @@ import { site } from '../content/site';
 import { profile } from '../content/profile';
 import { personLd, websiteLd } from '../lib/seo';
 ---
-<BaseLayout title={`${site.brand} · ${profile.headline}`} description={site.positioning} page="home" langs="en ar" jsonLd={[personLd(), websiteLd()]}>
+<BaseLayout title={`${site.name}, ${profile.headline} · ${site.brand}`} description={site.positioning} page="home" langs="en ar" jsonLd={[personLd(), websiteLd()]}>
   <div id="dc-root">
     <div class="sc-host">
       <div class="sc-host" data-sc-name="Site Header"><SiteHeader lang="en" langs="en ar" /></div>

@@ -50,7 +50,7 @@ export const site = {
   /** The footer's columns: every page a visitor may look for, grouped the way the header groups them. */
   footer: [
     { label: 'Work', links: [{ label: 'My Projects', href: '/work' }, { label: 'My Case Studies', href: '/case-studies' }, { label: 'My Claude Skills', href: '/skills' }] },
-    { label: 'Writing', links: [{ label: 'Blog', href: '/blog' }, { label: 'Posts', href: '/posts' }, { label: 'Articles', href: '/articles' }, { label: 'My Videos', href: '/videos' }] },
+    { label: 'Writing', links: [{ label: 'Blog', href: '/blog' }, { label: 'Posts', href: '/posts' }, { label: 'Articles', href: '/articles' }, { label: 'Videos', href: '/videos' }] },
     { label: 'Resources', links: [{ label: 'UX Library', href: '/resources' }, { label: 'AI tools', href: '/ai-tools' }, { label: 'Claude Skills', href: '/claude-skills' }] },
     { label: 'About and more', links: [{ label: 'About', href: '/about' }, { label: 'Resume', href: '/resume' }, { label: 'Now', href: '/now' }, { label: 'Services', href: '/services' }, { label: "Let's talk", href: '/contact' }] },
   ],

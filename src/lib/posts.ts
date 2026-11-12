@@ -47,7 +47,7 @@ export async function usedTags(): Promise<{ tag: string; n: number }[]> {
 
 export const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 export const postUrl = (p: Post) => `/blog/${p.id}`;
-export const formatDate = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+export const formatDate = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).replace('Sept', 'Sep');
 
 /** The bodies of the posts still served from a legacy snapshot, so their reading time is counted like any other. */
 const LEGACY_BODIES: Record<string, string> = { 'component-spec-files': guide.main };

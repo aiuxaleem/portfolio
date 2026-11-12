@@ -47,3 +47,34 @@ Not changed, on purpose: the case study and project titles (content, the owner's
 - `npm run quality:quick`: PASSED, 0 failures, 448 views (6 November 2026).
 - Pixel comparison with the previous build: 97 of 106 shared sampled views differ, every one explained by the renamed header and footer on every page and by the content added; read as a list, not a pass (`docs/VERIFICATION_REPORT.md` section 16).
 - Read back from the build: 0 "UX Glossary", 0 "My Resources", 0 "Blogs", 0 "actually trust", 0 "feel trustworthy" on any public English page.
+
+## 5. Second pass: every page, and the metadata (11 November 2026, L-64)
+
+The owner: "you are an Senior UX writer, i need you to improve the overall writing across pages titles, paragraphs etc." and "meta data also". All 80 public English pages were read again from the production build (metadata, structured data, headings, leads, paragraphs, labels, states, image alt text and the share cards). The bar is unchanged: credible, specific, calm, written for hiring managers, never promotional; nothing invented. The long-form bodies of case studies, projects and posts are specific and in the owner's voice, so they were read for faults only.
+
+### Metadata
+
+| # | Where | Finding | Change |
+|---|---|---|---|
+| W-12 | Six case studies and one project | The entry's own SEO title carried its kind and the template added it again: "One kit, five brands · Case study · Case study · AIUXAleem", "Loan onboarding on a design system · Fintech case study · Case study", "Walk-in drive poster · Project · Work". | The kind is the template's alone. `check-seo.mjs` now fails a title that names a part twice (`title-repeat`), so an entry published from the admin cannot bring it back. |
+| W-13 | Project pages, /work | Titled "Work" while the menu calls them My Projects and the page heading is Projects. | "Projects · AIUXAleem"; each project "… · Project · AIUXAleem". |
+| W-14 | Home, About, Contact | The titles hiring managers search for carried the brand only ("AIUXAleem · Lead AI Product Designer", "About · AIUXAleem"). | "Mohammad Abdul Aleem, Lead AI Product Designer · AIUXAleem", "About Mohammad Abdul Aleem · AIUXAleem", "Contact Mohammad Abdul Aleem · AIUXAleem". |
+| W-15 | Share images | Every `og:image:alt` repeated the page title, which says nothing about the picture. Several share cards still carried the retired labels "My recent work", "My resources", "My videos" and "AI Tools", the Services card said "Three ways to work together." while the page says "Three things I can do for your team.", and the two skills pages had no card of their own. | The alt text says what the card shows (its title, then the name line under it); the labels follow the menu; the skills pages have their own cards. |
+| W-16 | Descriptions | Mixed person in search results ("What I can do for your team", "plus my own"), filler ("New recordings are listed here as they are published"), two descriptions under 90 characters, "KSA, UAE and anywhere", and three over 165. | Third person throughout, each one specific to its page and drawn from it, all between 50 and 165 characters. The footer and the structured data share the Home line. |
+| W-17 | Blog | Post titles in title case beside sentence case everywhere else; the component-spec guide's title lacked "Blog". | Sentence case ("How I build one LinkedIn infographic a day"); the guide is "… · Blog · AIUXAleem". |
+
+### Pages
+
+| # | Where | Finding | Change |
+|---|---|---|---|
+| W-18 | Footer, overlines | "My Videos" in the footer beside "Videos" in the header; overlines "My recent work · Projects" and "My videos" from before the menu changed. | "Videos"; "Work · Projects", "Work · Case studies". |
+| W-19 | Home, Services, the client website, the spec guide | Service names in title case ("AI Product Design", "Design System Build"); "consume" for what people do with a design system, where the rest of the site says "build from"; "KSA and UAE" beside "KSA and the UAE"; "doesn't feel trustworthy yet", the "feel" retired in W-5. | Sentence case; "build from"; "KSA and the UAE"; "people don't yet trust the product around it". |
+| W-20 | Home, "In public" | The lead put reels on LinkedIn while the panel beside it puts them on Instagram. | "Long-form videos on YouTube, short reels on Instagram, and articles and post series on LinkedIn." The heading names all three. |
+| W-21 | About, principles | Lists dropped into the middle of a clause between commas ("Every AI state, thinking, unsure, wrong, recovering, gets…", "Everything I know, design, systems, …, goes into…"); "the fastest way to make AI output readable by everyone", a claim no one can check; "Businesses that last"; the portrait's alt text "Portrait". | The list after a colon; "It also makes AI output usable by more people"; "The business around the product"; "Portrait: Mohammad Abdul Aleem". |
+| W-22 | Dates | British English short months now print "Sept", so posts and roles read "29 Sept 2026" and "Sept 2015" beside "Sep 2025" and "Sep to Oct 2026". | "Sep" everywhere (five formatters). |
+| W-23 | Blog topics | Two tags for one topic, "Laws of UX" and "UX laws". | "UX laws". The site's proper name, Laws of UX, stays where the text means the site. |
+| W-24 | Forms | "Name, email and message are needed." | "… are required.", the word every form uses. |
+| W-25 | Case studies | "Each case below is that method applied to a different kind of trust problem" (a hiring poster is not a trust problem); "the work people actually request". | "Each case study below applies that method to a different problem"; "the work people request most". |
+| W-26 | My Claude Skills, Claude Skills | A skill said twice that it is not offered as a download; directory picks opened with a command ("Let an agent…", "Edit Canva designs…") beside others that describe ("Steers…"); "Here: the ones I would hand a designer…"; a link's hidden text read "Read the SKILL.md first of …". | One sentence for the case-study skill; every pick describes what it does; plain sentences; "Read the SKILL.md first: <name> (opens in a new tab)". |
+
+Not changed, on purpose: case study, project and LinkedIn titles (the owner's content, and LinkedIn's own titles are what a reader finds there); the Arabic pages; "Let's talk", "Book a 15-min call" and "Email me" (W-9's hierarchy); a quoted prompt in a post.
