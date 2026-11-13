@@ -1,0 +1,16 @@
+title: "Primer"
+maker: "GitHub"
+kind: company
+summary: "GitHub's design system with React and Rails components, design tokens in Primer Primitives, Copilot accessibility guidance and an MCP server for AI tools."
+url: "https://primer.style/"
+platforms: [web]
+strengths: [accessibility, tokens, components, documentation]
+code: { url: "https://github.com/primer/react", license: "MIT" }
+figma: "https://www.figma.com/community/file/854767373644076713/primer-web"
+tokens: { label: "@primer/primitives", url: "https://github.com/primer/primitives" }
+ai:
+  - { label: "MCP server", url: "https://primer.style/product/getting-started/foundations/mcp/" }
+  - { label: "AI guidelines", url: "https://primer.style/accessibility/foundations/copilot-principles/" }
+accessibility: "WCAG 2.2 AA"
+added: 2026-11-13
+order: 35

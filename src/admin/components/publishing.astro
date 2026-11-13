@@ -1,6 +1,7 @@
 ---
-/* The publishing row at the top of the admin home: what is waiting to be published, beside what was published last.
-   Two tiles of the same bento grid the visitor numbers use (admin.css, .admin-bento). Unfinished work comes first on
+/* The publishing queue on the admin home: what is waiting to be published, and what was published last. One card with
+   two panels (Command centre, L-66); with JavaScript they become two tabs (islands/admin-shell.ts, part 15), the one with
+   work in it open first; without it both are listed. Beside the chart when it sits in the dashboard (level 3). Unfinished work comes first on
    the page (Zeigarnik): a visitor's suggestion before the owner's own drafts, newest first, eight rows at most with a
    line saying how many more. In a row the kind's icon sits beside the title and the facts sit under the title (law of
    proximity). States: with work; nothing waiting; the drafts could not be read.
@@ -10,8 +11,11 @@ import AdminIcon from './admin-icon.astro';
 import type { AdminIcon as IconName } from './admin-icons';
 import { when, type Recent, type Waiting } from '../lib/publishing';
 
-interface Props { waiting: Waiting[]; recent: Recent[]; /** Publishes beyond those listed that the visitor numbers name with their views. */ more?: number; /** The drafts could not be read. */ fault?: boolean; plain?: boolean; uid?: string }
-const { waiting, recent, more: moreNamed = 0, fault = false, plain = false, uid = 'pub' } = Astro.props;
+interface Props { waiting: Waiting[]; recent: Recent[]; /** Publishes beyond those listed that the visitor numbers name with their views. */ more?: number; /** The drafts could not be read. */ fault?: boolean; plain?: boolean; uid?: string; /** The heading level: 3 inside the dashboard. */ level?: 2 | 3 }
+const { waiting, recent, more: moreNamed = 0, fault = false, plain = false, uid = 'pub', level = 3 } = Astro.props;
+const H: any = `h${level}`;
+/* From the dashboard: what was published in this period with its views, in place of the last publishes from this admin. */
+const listed = Astro.slots.has('published');
 const Block: any = plain ? 'div' : 'section';
 const labelled = (id: string) => (plain ? {} : { 'aria-labelledby': `${uid}-${id}` });
 const SHOWN = 8;
@@ -21,16 +25,14 @@ const rest = [...waiting.slice(SHOWN).reduce((m, w) => m.set(w.kindPath, { label
 const words = { suggested: 'Sent in by a visitor, waiting for your review', new: 'New, not published', changes: 'Unpublished changes' } as const;
 const kindIcon = (path: string): IconName => (path in { projects: 1, 'case-studies': 1, posts: 1, videos: 1, 'linkedin-posts': 1, 'linkedin-articles': 1, resources: 1, site: 1, profile: 1 } ? (path as IconName) : 'published');
 ---
-<div class="admin-bento">
-  <ul class="cory-bento">
-    <li class="span-2">
-      <Block class="admin-card" {...labelled('waiting-title')}>
+<div class="admin-card admin-queue" data-pub-tabs={plain ? undefined : ''}>
+      <Block class="admin-queue-panel" data-pub-panel data-tab-label="Waiting" data-tab-count={String(waiting.length)} data-pub-first={waiting.length > 0 || fault || (!listed && recent.length === 0) ? '' : undefined} {...labelled('waiting-title')}>
         <div class="admin-card-head">
-          <h2 id={`${uid}-waiting-title`} class="dash-h2"><AdminIcon name="waiting" />Waiting to be published</h2>
+          <H id={`${uid}-waiting-title`} class="admin-queue-title"><AdminIcon name="waiting" />Waiting to be published</H>
           {waiting.length > 0 && <span class="ui-badge admin-state" data-state="changes">{waiting.length}<span class="cory-visually-hidden"> {waiting.length === 1 ? 'entry' : 'entries'}</span></span>}
         </div>
         {fault && <p class="form-note" role={plain ? undefined : 'alert'}><AdminIcon name="alert" size={16} />The drafts could not be read: the database did not answer. Reload to try again.</p>}
-        {!fault && waiting.length === 0 && <p class="form-note"><AdminIcon name="ok" size={16} />Nothing is waiting. Every saved change is on the site. Open a section and press Add, or edit an entry: a saved draft appears here.</p>}
+        {!fault && waiting.length === 0 && <p class="form-note"><AdminIcon name="ok" size={16} />Nothing is waiting. Every saved change is on the site. A draft you save appears here.</p>}
         {shown.length > 0 && (
           <ul class="admin-waiting">
             {shown.map(w => (
@@ -46,12 +48,11 @@ const kindIcon = (path: string): IconName => (path in { projects: 1, 'case-studi
         )}
         {more > 0 && <p class="form-note">{more} more: {rest.map(([path, r], i) => <Fragment>{i > 0 && ', '}<a data-link href={`/admin/${path}`}>{r.label}{r.n > 1 ? ` ${r.n}` : ''}</a></Fragment>)}.</p>}
       </Block>
-    </li>
-    <li class="span-2">
-      <Block class="admin-card" {...labelled('recent-title')}>
-        <div class="admin-card-head"><h2 id={`${uid}-recent-title`} class="dash-h2"><AdminIcon name="recent" />Recently published</h2></div>
-        {recent.length === 0 && <p class="form-note"><AdminIcon name="recent" size={16} />Nothing published from this admin yet. Open an entry and press Publish.</p>}
-        {recent.length > 0 && (
+      <Block class="admin-queue-panel" data-pub-panel data-tab-label="Published" data-pub-first={!(waiting.length > 0 || fault || (!listed && recent.length === 0)) ? '' : undefined} {...labelled('recent-title')}>
+        <div class="admin-card-head"><H id={`${uid}-recent-title`} class="admin-queue-title"><AdminIcon name="recent" />{listed ? 'What you published' : 'Recently published'}</H></div>
+        {listed && <slot name="published" />}
+        {!listed && recent.length === 0 && <p class="form-note"><AdminIcon name="recent" size={16} />Nothing published from this admin yet. Open an entry and press Publish.</p>}
+        {!listed && recent.length > 0 && (
           <ul class="admin-recent">
             {recent.map(r => (
               <li>
@@ -64,8 +65,6 @@ const kindIcon = (path: string): IconName => (path in { projects: 1, 'case-studi
             ))}
           </ul>
         )}
-        {moreNamed > 0 && <p class="form-note"><AdminIcon name="views" size={16} />{moreNamed} more under Visitors, with the views each brought.</p>}
+        {!listed && moreNamed > 0 && <p class="form-note"><AdminIcon name="views" size={16} />{moreNamed} more under Visitors, with the views each brought.</p>}
       </Block>
-    </li>
-  </ul>
 </div>

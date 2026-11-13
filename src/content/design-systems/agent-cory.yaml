@@ -1,0 +1,16 @@
+title: Agent Cory design system
+mine: true
+maker: Colaberry
+summary: "The brand and UI system for Agent Cory, Colaberry's AI admissions assistant: its marketing site, chat widget and ROI calculator, in light and dark, and in left-to-right and Arabic right-to-left layouts."
+platforms: [web, social]
+strengths: [components, theming, accessibility, content-and-voice]
+accessibility: WCAG 2.2 AA
+facts:
+  - { value: "29", label: "Components" }
+  - { value: "2", label: "UI kits" }
+  - { value: "25", label: "Templates" }
+madeWith: [Claude Design]
+note: "Built inside Colaberry, so its files are not public. I can walk you through it on a call."
+added: 2026-11-13
+order: 50
+tags: [Chat, Arabic, RTL]

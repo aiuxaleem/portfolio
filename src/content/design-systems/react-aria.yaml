@@ -1,0 +1,13 @@
+title: "React Aria"
+maker: "Adobe"
+kind: open-source
+summary: "Adobe's unstyled React components and hooks with built-in behaviour, accessibility and internationalisation, ready for your own styles."
+url: "https://react-aria.adobe.com"
+platforms: [web]
+strengths: [components, accessibility, forms]
+code: { url: "https://github.com/adobe/react-spectrum", license: "Apache-2.0" }
+ai:
+  - { label: "llms.txt", url: "https://react-aria.adobe.com/llms.txt" }
+  - { label: "MCP server", url: "https://react-aria.adobe.com/ai" }
+added: 2026-11-13
+order: 140

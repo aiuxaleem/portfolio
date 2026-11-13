@@ -7,6 +7,7 @@
    empty state). Page-body components that are still rendered from legacy snapshots are listed at the end as not yet covered. */
 import BaseLayout from '../layouts/base-layout.astro';
 import Button from '../components/ui/button.astro';
+import Logo from '../components/ui/logo.astro';
 import IconButton from '../components/ui/icon-button.astro';
 import EmailCopy from '../components/layout/email-copy.astro';
 import { stress } from '../fixtures/stress';
@@ -41,11 +42,20 @@ import AiToolCard from '../components/cards/ai-tool-card.astro';
 import SkillCard from '../components/cards/skill-card.astro';
 import SkillShowcase from '../components/cards/skill-showcase.astro';
 import PluginCard from '../components/cards/plugin-card.astro';
+import DesignSystemCard from '../components/cards/design-system-card.astro';
+import DesignSystemShowcase from '../components/cards/design-system-showcase.astro';
 import { plugins as pluginsAll } from '../lib/claude-plugins';
 /* The directory card's states: one by Anthropic, one partner without a named maker, a new one, and a stress entry. */
 const pluginStress = { name: 'a-deliberately-long-plugin-name-to-test-wrapping-x1', title: 'A deliberately long one hundred and twenty character title used to test how every heading wraps across narrow s', description: 'A deliberately long description of three hundred and twenty characters, with an unbroken token https://example.com/an-unbroken-string-of-sixty-characters-x1 so that the card is checked at every width and in both themes, as the refresh clamps every description to this length and ends it on a whole word.', author: 'https://example.com/an-unbroken-string-of-sixty-characters-x1', official: false, category: 'design', link: 'https://example.com/an-unbroken-string-of-sixty-characters-x1', install: '/plugin install a-deliberately-long-plugin-name-to-test-wrapping-x1@claude-plugins-official', firstSeen: new Date().toISOString().slice(0, 10) };
 const pluginSample = [pluginsAll.find(p => p.official), pluginsAll.find(p => !p.official && !p.author), pluginStress].filter(Boolean) as typeof pluginsAll;
 import { listedSkills } from '../lib/skills';
+import { listedDesignSystems } from '../lib/design-systems';
+const dsAll = await listedDesignSystems();
+/* The design system showcase's states (L-68): this site's live specimen, a project's cover with a line to paste, a private one, the
+   fixture with every field (a shared artifact, five facts) and the fixture with only the required fields (no picture). */
+const dsShowSample = [dsAll.find(x => x.data.here), dsAll.find(x => x.data.mine && x.data.project && x.data.prompt), dsAll.find(x => x.data.mine && !x.data.prompt && !x.data.fixture), dsAll.find(x => x.id === 'mine-stress-fixture'), dsAll.find(x => x.id === 'mine-fixture')].filter(Boolean) as typeof dsAll;
+/* The library card's states: one with every link, one with docs and code only, the partial fixture and the stress fixture. */
+const dsCardSample = [dsAll.find(x => !x.data.mine && !x.data.fixture && x.data.code && x.data.figma && x.data.tokens), dsAll.find(x => !x.data.mine && !x.data.fixture && !x.data.figma), dsAll.find(x => x.id === 'partial-fixture'), dsAll.find(x => x.id === 'stress-fixture')].filter(Boolean) as typeof dsAll;
 const skillsAll = await listedSkills();
 /* The skill card's states: one of mine with a download and a note, one of mine without a download (a fixture), one from someone else, and the stress fixture. */
 const skillSample = [skillsAll.find(x => x.data.mine && x.data.download && x.data.note), skillsAll.find(x => x.data.mine && x.data.fixture), skillsAll.find(x => !x.data.mine && !x.data.fixture && x.data.note), skillsAll.find(x => !x.data.mine && x.data.fixture)].filter(Boolean) as typeof skillsAll;
@@ -111,8 +121,10 @@ const c = chrome.en;
 const variants = ['primary', 'ink', 'secondary', 'ghost'] as const;
 const inkVariants = ['on-ink-solid', 'on-ink'] as const;
 const h2 = 'margin: 0; font-size: var(--text-h3); font-weight: var(--weight-bold); color: var(--text-strong);';
-/** Which half of the fixtures this page shows: the site's components, or the admin's pieces (/_states-admin). */
-const part = ((Astro.props as { part?: 'site' | 'admin' }).part ?? 'site');
+/** Which part of the fixtures this page shows: the site's components, the admin's pieces (/_states-admin), or the admin
+    dashboard's states (/_states-dashboard): eight dashboards on one page took about 15 minutes a view in the quality run and
+    crashed the browser at 844x390 (13 November 2026, L-66). */
+const part = ((Astro.props as { part?: 'site' | 'admin' | 'dashboard' }).part ?? 'site');
 const note = 'margin: 0; font-size: var(--text-body-sm); color: var(--text-muted);';
 const row = 'display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center;';
 import DashboardView from '../admin/components/dashboard.astro';
@@ -157,11 +169,11 @@ const prevTail = dashPrev.slice(-5);
 const dashPartial = { ...dashFull, totals: { ...dashFull.totals, target: 0 }, previous: { series: dashPrev, totals: { views: prevTail.reduce((a, d) => a + d.views, 0), visits: prevTail.reduce((a, d) => a + d.visits, 0), target: 2 } }, previousCovered: 5, countingSince: '2026-09-12', sources: [{ source: 'LinkedIn', visits: 0, hosts: [] }, { source: 'Direct or app', visits: 185, hosts: [] }], countries: [{ country: 'SA', visits: 0 }, { country: 'AE', visits: 0 }, { country: 'IN', visits: 120 }, { country: 'GB', visits: 65 }], publishes: [], patternDays: 20, lastVisit: undefined };
 const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countingSince: dashDays[2].day, previousCovered: 0, series: dashSeries.slice(0, 7).map(d => ({ ...d, views: 0, visits: 0 })), totals: { views: 0, visits: 0, target: 0 }, previous: null, pages: [], sections: [], sources: [], countries: [{ country: 'SA', visits: 0 }, { country: 'AE', visits: 0 }], devices: [], hours: Array(24).fill(0), weekdays: Array(7).fill(0), patternDays: 0, publishes: [] };
 ---
-<BaseLayout title={part === 'admin' ? 'Admin component states · AIUXAleem' : 'Component states · AIUXAleem'} description="Development page listing components in their states, in both themes, with stress content. Excluded from production and the sitemap." noindex>
+<BaseLayout title={part === 'admin' ? 'Admin component states · Aleem | AIUX' : part === 'dashboard' ? 'Dashboard states · Aleem | AIUX' : 'Component states · Aleem | AIUX'} description="Development page listing components in their states, in both themes, with stress content. Excluded from production and the sitemap." noindex>
   <main id="main" style="display: grid;">
     <div class="cory-container" style="padding-block: var(--space-12) var(--space-6); display: grid; gap: var(--space-3);">
       <p class="cory-overline" style="margin: 0;">Development</p>
-      <h1 style="margin: 0; font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter);">{part === 'admin' ? 'Admin component states' : 'Component states'}</h1>
+      <h1 style="margin: 0; font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter);">{part === 'admin' ? 'Admin component states' : part === 'dashboard' ? 'Dashboard states' : 'Component states'}</h1>
       <p style={note}>Every block below is shown twice: light theme, then dark. Hover, press and keyboard focus are live states: move the pointer over a control or press Tab.</p>
     </div>
     {(['light', 'dark'] as const).map(theme => (
@@ -189,6 +201,17 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <div style={row}>
               <IconButton variant="ghost" label="Ghost icon button"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg></IconButton>
               <IconButton variant="secondary" label="Secondary icon button"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></IconButton>
+            </div>
+          </div>
+
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
+            <h2 style={h2}>Logo</h2>
+            <p style={note}>The brand kit's logo (L-67) at the header's size and at its 20px minimum, the mark alone at its 24px minimum, and on an ink panel (the kit's white tile).</p>
+            <div style={row}>
+              <Logo size={28} />
+              <Logo size={20} />
+              <Logo variant="mark" size={24} />
+              <span class="cory-ink" style="display: inline-flex; align-items: center; gap: var(--space-4); padding: var(--space-4) var(--space-5); border-radius: var(--radius-lg);"><Logo size={32} onInk /><Logo variant="mark" size={24} onInk /></span>
             </div>
           </div>
 
@@ -343,6 +366,12 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <h2 style={h2}>Claude skill card</h2>
             <p style={note}>The two kinds on /skills (cards/skill-card.astro): one of mine as a tile with its download (size and format named), its SKILL.md and a note; one of mine without a download yet; one from someone else as a whole-card link with maker, official or community, licence and the one-line install; the stress fixture with a 120-character title, an unbroken install line and nine tags.</p>
             <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{skillSample.map(x => <li><SkillCard skill={x} level={3} /></li>)}</ul></div>
+            <h2 style={h2}>My Design Systems: the showcase</h2>
+            <p style={note}>One of the owner's systems on /my-design-systems (cards/design-system-showcase.astro): this site's own with its live tokens and counted token total; one with its project's cover and a line to copy; one built for a client (no line, a walkthrough offered); the fixture with every field (five facts, a shared artifact, an unbroken address in the line); the fixture with only the required fields (no picture).</p>
+            <div data-cq><ul style="display: grid; gap: var(--grid-gap); margin: 0; padding: 0; list-style: none;">{dsShowSample.map((x, i) => <li><DesignSystemShowcase system={x} id={`states-ds-${theme}-${i}`} /></li>)}</ul></div>
+            <h2 style={h2}>Design Systems: a library card</h2>
+            <p style={note}>A public system on /design-systems (cards/design-system-card.astro): with code, Figma kit, tokens and AI links; without a Figma kit; the partial fixture (docs only); the stress fixture (a 120-character name, every platform, three AI links, a long licence and accessibility line).</p>
+            <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{dsCardSample.map(x => <li><DesignSystemCard system={x} /></li>)}</ul></div>
             <h2 style={h2}>AI tool card and the AI Tools filter bar</h2>
             <p style={note}>Cards on <a data-link href="/ai-tools" style="color: var(--text-link);">/ai-tools</a>: one I use (marked), one I do not, the partial fixture (one-word name, no description, no tags) and the stress fixture (long name, unbroken address, nine tags). Then the filter bar with its search field and its twelve categories folded (more than six chips fold), in the empty-result state with "Clear filters".</p>
             <div data-cq><ul data-cq-grid="3" style="display: grid; gap: var(--grid-gap);">{aiToolSample.map(t => <li><AiToolCard tool={t} level={3} /></li>)}</ul></div>
@@ -429,16 +458,19 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
           </div>
         </div>)}
         {part === 'site' && <div data-states-testimonials><Testimonials placeholders id={`testimonials-${theme}`} /></div>}
-        {part === 'admin' && (<div class="cory-container" style="padding-block: var(--space-12); display: grid; gap: var(--space-10);">
+        {(part === 'admin' || part === 'dashboard') && (<div class="cory-container" style="padding-block: var(--space-12); display: grid; gap: var(--space-10);">
           <p class="cory-overline" style="margin: 0;">{theme} theme</p>
 
+          {part === 'admin' && <Fragment>
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Facts to check before launch</h2>
             <p style={note}>Notes kept in the profile data file. They are never shown on a public page.</p>
             <ul class="verify-list">{verifyNotes().map(n => <li><strong>{n.where}</strong><span>{n.note}</span></li>)}</ul>
           </div>
+          </Fragment>}
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
+          {part === 'dashboard' && <Fragment>
             <h2 style={h2}>Admin: dashboard</h2>
             <p style={note}>Shown on /admin after signing in (Vercel only). The publishing row: with work (a suggestion first, a long title, nine rows so the tile caps at eight), empty, and a fault. The visitor numbers: with numbers (four tiles with the change against the previous period, the chart with the previous period as a dashed line, publish markers and tick labels, what was published with the views since, what they read with the top pages folded, where they are and what they use, where they came from, when they visit), partial (an earlier period only partly in the log, so no change rows; no visits from LinkedIn or the target markets; nothing published; hours drawn but not yet weekdays), empty, and error. Hover a column for its figures; Escape hides the note.</p>
             <div data-lazy-block style="content-visibility: auto; contain-intrinsic-size: auto 900px;"><Publishing plain uid={`${theme}-pub`} waiting={pubFull.waiting} recent={pubFull.recent} /></div>
@@ -452,7 +484,9 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <div data-lazy-block style="content-visibility: auto; contain-intrinsic-size: auto 900px;"><DashboardView plain uid={`${theme}-partial`} data={theme === 'dark' ? { ...dashPartial, patternDays: 5 } : dashPartial} range={30} ranges={[7, 30, 90]} base="#main" /></div>
             <p style={note}>Empty: no visits in the period.</p>
             <div data-lazy-block style="content-visibility: auto; contain-intrinsic-size: auto 900px;"><DashboardView plain uid={`${theme}-empty`} data={dashEmpty} range={7} ranges={[7, 30, 90]} base="#main" /></div>
+          </Fragment>}
 
+          {part === 'admin' && <Fragment>
           <div class="states-static" style="display: grid; gap: var(--space-4);">
             <h2 style={h2}>Admin: Opportunity check verdicts</h2>
             <p style={note}>The verdict an opportunity's scores read as (src/admin/lib/opportunities.ts), each with its icon so it is never told by colour alone: all four at 4 or more with the offer in writing; scored but mixed; any area at 2 or below, named; not yet fully scored.</p>
@@ -503,7 +537,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             </div>
             <p style={note}>The sign-in page's panel beside the card (hidden under 1024px on the real page; shown here at every width), and the list's Removed status.</p>
             <div class="admin-signin-panel cory-ink" style="display: grid;">
-              <span class="admin-brand"><span class="admin-brand-mark" aria-hidden="true"></span><span>AIUXAleem</span></span>
+              <span class="admin-brand"><Logo size={32} onInk /></span>
               <div class="admin-signin-intro"><p class="cory-overline">Admin</p><p class="admin-signin-line">Everything on the site, edited in one place.</p><ul class="admin-signin-points"><li><span aria-hidden="true">01</span><span><strong>Drafts save here</strong><span>An edit is kept in the admin until you publish it. The site does not change.</span></span></li><li><span aria-hidden="true">02</span><span><strong>Publish writes to the site</strong><span>Publishing writes the entry into the site's files as one commit. It is live in about two minutes.</span></span></li><li><span aria-hidden="true">03</span><span><strong>Visitor numbers count without cookies</strong><span>Page views by day and the pages people read most, counted by the site itself.</span></span></li></ul></div>
               <p class="admin-signin-caption">Visitors never see this area. It is not linked from the public site.</p>
             </div>
@@ -518,10 +552,14 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
               <li><div class="admin-thumb"><img src="/assets/author-avatar.jpg" alt="" width="320" height="200" loading="lazy" decoding="async" /></div><p class="admin-path"><bdi>{stress.unbroken.slice(0, 40)}.jpg</bdi><span class="cory-visually-hidden"> at ../../assets/projects/{stress.unbroken.slice(0, 40)}.jpg</span></p><div><Button variant="secondary" size="sm" type="button"><AdminIcon name="copy" size={16} slot="icon-left" />Copy</Button></div></li>
             </ul>
           </div>
+          </Fragment>}
+          {part === 'dashboard' && <Fragment>
             <p style={note}>Error: the numbers could not be read.</p>
             <div data-lazy-block style="content-visibility: auto; contain-intrinsic-size: auto 900px;"><DashboardView plain uid={`${theme}-error`} error="The database did not answer. Nothing is lost: visits are still being recorded if the site itself is up." range={30} ranges={[7, 30, 90]} base="#main" /></div>
+          </Fragment>}
           </div>
 
+          {part === 'admin' && <Fragment>
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Admin: a LinkedIn post from its link</h2>
             <p style={note}>The box on /admin/share, which a phone's share sheet opens with the link (docs/LINKEDIN_CAPTURE.md): empty; refused, with the link kept; and the editor's notice when a link was taken in.</p>
@@ -553,6 +591,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
               </div>
             ))}
           </div>
+          </Fragment>}
 
         </div>)}
       </section>

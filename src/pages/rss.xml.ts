@@ -8,7 +8,7 @@ export const GET: APIRoute = async ({ site }) => {
   const base = String(site).replace(/\/$/, '');
   const posts = (await listedPosts()).filter(p => !p.data.fixture);
   return rss({
-    title: 'AIUXAleem blog: Mohammad Abdul Aleem', description: 'Guides and articles on design systems and AI product design.', site: `${base}/blog`, self: `${base}/rss.xml`,
+    title: 'Aleem | AIUX blog: Mohammad Abdul Aleem', description: 'Guides and articles on design systems and AI product design.', site: `${base}/blog`, self: `${base}/rss.xml`,
     items: posts.map(p => ({ title: p.data.title, link: base + postUrl(p), description: p.data.excerpt, date: p.data.published, category: p.data.category })),
   });
 };

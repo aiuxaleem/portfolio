@@ -12,7 +12,7 @@ const { now } = profile;
 const studying = (await getCollection('certifications', ({ data }) => !data.draft && !data.fixture && data.status === 'in-progress')).length;
 const none = now.building.length === 0 && studying === 0;
 ---
-<PageLayout title="Now · AIUXAleem" description="What Mohammad Abdul Aleem is working on and learning now: current product and design system work, and the certifications in progress." page="now" bg="grid" mainStyle="outline: none; overflow: clip;">
+<PageLayout title="Now · Aleem | AIUX" description="What Mohammad Abdul Aleem is working on and learning now: current product and design system work, and the certifications in progress." page="now" bg="grid" mainStyle="outline: none; overflow: clip;">
   <section class="cory-container" aria-labelledby="now-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
     <p class="cory-overline" style="margin: 0;">Now</p>
     <h1 id="now-title" style="margin: 0; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">What I am building and learning.</h1>

@@ -19,7 +19,7 @@
      the spring is for the site's own buttons and chips; the leaning icon is for both. */
   .ui-button, .ui-chip { transition-property: transform, box-shadow, background, filter, color; transition-duration: var(--duration-spring-soft), var(--duration-base), var(--duration-base), var(--duration-base), var(--duration-base); transition-timing-function: var(--ease-spring-soft), var(--ease-out), var(--ease-out), var(--ease-out), var(--ease-out); }
   /* The calls to action (L-56): the gradient drifts under the pointer at the slow pace, the border and label take the link colour at the base pace. */
-  .ui-button-primary, [data-ds-button="primary"] { transition-property: transform, box-shadow, background-position, color; transition-duration: var(--duration-spring-soft), var(--duration-base), var(--duration-slow), var(--duration-base); transition-timing-function: var(--ease-spring-soft), var(--ease-out), var(--ease-out), var(--ease-out); }
+  .ui-button-primary, [data-ds-button="primary"] { transition-property: transform, box-shadow, background-color, border-color, color; transition-duration: var(--duration-spring-soft), var(--duration-base), var(--duration-base), var(--duration-base), var(--duration-base); transition-timing-function: var(--ease-spring-soft), var(--ease-out), var(--ease-out), var(--ease-out); }
   .ui-button-secondary, [data-ds-button="secondary"] { transition-property: transform, box-shadow, background, border-color, color; transition-duration: var(--duration-spring-soft), var(--duration-base), var(--duration-base), var(--duration-base), var(--duration-base); transition-timing-function: var(--ease-spring-soft), var(--ease-out), var(--ease-out), var(--ease-out), var(--ease-out); }
   /* A primary call to action breathes once as it arrives: the glow swells and settles. In the first view it follows the
      hero's rise; below it, it follows the scroll as the button comes into view (view timelines). Never while disabled. */
@@ -30,6 +30,8 @@
   }
   .ui-button:active, .ui-chip:active { transition-duration: var(--duration-fast); transition-timing-function: var(--ease-out); }
   .ui-button svg, [data-ds-button] svg { transition: transform var(--duration-spring-soft) var(--ease-spring-soft); }
+  /* The travelling arrow (L-65): the well stretches toward the pointer on the soft spring, and the arrow steps forward. */
+  :is(a.ui-button-primary, a.ui-button-on-ink-solid, a[data-ds-button="primary"], a[data-ds-button="on-ink-solid"])::before { transition: clip-path var(--duration-spring-soft) var(--ease-spring-soft), -webkit-mask-position var(--duration-spring-soft) var(--ease-spring-soft), mask-position var(--duration-spring-soft) var(--ease-spring-soft); }
   :is(.ui-button, [data-ds-button]):focus-visible svg[data-dir-icon], :is(.ui-button, [data-ds-button]):focus-visible [data-dir-icon] > svg { transform: translateX(calc(3px * var(--dir-x))) scaleX(var(--dir-x)); }
 
   /* ---------- Cards: the picture grows a little inside its frame, the title takes the link colour, the arrow leans ---------- */
@@ -269,7 +271,7 @@
   [data-menu-open]:focus-visible svg path:nth-of-type(1) { translate: 0 -1.5px; }
   [data-menu-open]:focus-visible svg path:nth-of-type(3) { translate: 0 1.5px; }
   .form-field :is(input, textarea) { transition: border-color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out), background var(--duration-base) var(--ease-out); }
-  [data-email-copy][data-state="copied"] [data-icon-check] { animation: tick-in var(--duration-spring-pop) var(--ease-spring-pop) both; }
+  :is([data-email-copy], [data-copy])[data-state="copied"] [data-icon-check] { animation: tick-in var(--duration-spring-pop) var(--ease-spring-pop) both; }
   @media (hover: hover) {
     .header-nav-link:not([aria-current]):hover::after { transform: scaleX(1); }
     [data-menu-open]:hover svg path:nth-of-type(1) { translate: 0 -1.5px; }

@@ -1,0 +1,11 @@
+title: "Polaris"
+maker: "Shopify"
+kind: company
+summary: "Shopify's unified UI framework built on web components, used across App Home, Admin, Checkout, Customer accounts and POS, with Polaris tooling in the Shopify Dev MCP server."
+url: "https://shopify.dev/docs/api/polaris"
+platforms: [web]
+strengths: [components, documentation]
+ai:
+  - { label: "MCP server", url: "https://shopify.dev/docs/api/polaris/using-mcp" }
+added: 2026-11-13
+order: 40

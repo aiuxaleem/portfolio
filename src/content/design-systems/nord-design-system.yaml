@@ -1,0 +1,13 @@
+title: "Nord Design System"
+maker: "Nordhealth"
+kind: company
+summary: "Web components built with Lit, design tokens with light, dark and high-contrast themes, and templates behind Nordhealth's products."
+url: "https://nordhealth.design/"
+platforms: [web]
+strengths: [components, tokens, theming, multi-brand]
+tokens: { label: "@nordhealth/tokens", url: "https://www.npmjs.com/package/@nordhealth/tokens" }
+ai:
+  - { label: "llms.txt", url: "https://nordhealth.design/llms.txt" }
+  - { label: "Agent skills", url: "https://nordhealth.design/docs/developer/working-with-ai/skills/" }
+added: 2026-11-13
+order: 100

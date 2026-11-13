@@ -1,0 +1,14 @@
+title: "Chakra UI"
+maker: "Chakra"
+kind: open-source
+summary: "An accessible React component system styled through design tokens and recipes, with theming built into its styling engine."
+url: "https://chakra-ui.com"
+platforms: [web]
+strengths: [components, theming, tokens]
+code: { url: "https://github.com/chakra-ui/chakra-ui", license: "MIT" }
+figma: "https://figma.chakra-ui.com"
+ai:
+  - { label: "llms.txt", url: "https://chakra-ui.com/llms.txt" }
+  - { label: "MCP server", url: "https://chakra-ui.com/docs/get-started/ai/mcp-server" }
+added: 2026-11-13
+order: 155

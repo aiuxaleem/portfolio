@@ -1,0 +1,13 @@
+title: "shadcn/ui"
+maker: "shadcn (Vercel)"
+kind: open-source
+summary: "A collection of components copied into your project as source code, with a CLI and registry system for distributing them."
+url: "https://ui.shadcn.com"
+platforms: [web]
+strengths: [components, theming, ai-patterns]
+code: { url: "https://github.com/shadcn-ui/ui", license: "MIT" }
+ai:
+  - { label: "llms.txt", url: "https://ui.shadcn.com/llms.txt" }
+  - { label: "MCP server", url: "https://ui.shadcn.com/docs/mcp" }
+added: 2026-11-13
+order: 130

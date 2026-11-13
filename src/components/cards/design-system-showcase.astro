@@ -1,0 +1,139 @@
+---
+/* One of the owner's design systems on My Design Systems (/my-design-systems, L-68), shown so a visitor sees what is inside
+   and can build with it straight away:
+   - the picture: its cover, or its project's cover; for this site's own system (`here`) the live tokens instead, drawn from
+     the same custom properties the page is styled with, so the specimen can never be out of date;
+   - what it is, for whom, what is inside as counted in the system, and what it is strong in;
+   - beside that, "Build with it": a line to paste into a Claude chat (with a copy button, site-chrome.ts) when the system is
+     public, the artifact once it is shared, the docs, the code, the project and the case study. A system built inside a
+     company or for a client says so and offers a walkthrough in place of the line.
+   States: with a cover, with a project's cover, the live specimen, no picture, public with a line, private (no line). */
+import { getEntry } from 'astro:content';
+import FittedImage from '../ui/fitted-image.astro';
+import Button from '../ui/button.astro';
+import { type DesignSystem, strengthLabel, platformLabel, hostOf } from '../../lib/design-systems';
+import tokensCss from '../../styles/tokens.css?raw';
+
+interface Props { system: DesignSystem; id: string; first?: boolean }
+const { system, id, first = false } = Astro.props;
+const d = system.data;
+const project = d.project ? await getEntry('projects', d.project.replace('/work/', '')) : undefined;
+const cover = d.cover ?? project?.data.cover;
+const live = project?.data.links?.live, repo = d.code?.url ?? project?.data.links?.repo;
+const docs = d.url ?? live;
+/* This site's system: its token names counted from the source, light and dark. */
+const tokenCount = d.here ? new Set([...tokensCss.matchAll(/(--[a-z0-9-]+)\s*:/g)].map(m => m[1])).size : 0;
+const facts = d.here ? [{ value: String(tokenCount), label: 'Tokens, counted from the source' }, ...d.facts] : d.facts;
+const platforms = d.platforms.map(p => platformLabel[p]).join(', ');
+const arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"></path></svg>';
+const swatches = ['--action-solid', '--navy-800', '--blue-600', '--cyan-500', '--surface-card', '--text-strong'];
+---
+<article class="ds-show" aria-labelledby={`${id}-title`} data-media={cover || d.here ? 'yes' : 'no'}>
+  {d.here
+    ? <div class="ds-show-media ds-specimen" role="img" aria-label="This site's tokens, live: six colour swatches, the display and body type, and four corner radii">
+        <ul class="ds-swatches" aria-hidden="true">{swatches.map(s => <li><span style={`background: var(${s});`}></span><code>{s}</code></li>)}</ul>
+        <p class="ds-type" aria-hidden="true"><span class="ds-type-display">Aa</span><span class="ds-type-body">Display and body type, one scale</span></p>
+        <ul class="ds-radii" aria-hidden="true">{['--radius-sm', '--radius-md', '--radius-lg', '--radius-pill'].map(r => <li style={`border-radius: var(${r});`}></li>)}</ul>
+        <p class="ds-specimen-caption" aria-hidden="true">Colour, type and corner radii, read live from this site's tokens</p>
+      </div>
+    : cover && <div class="ds-show-media project-card-media"><FittedImage image={cover} widths={[480, 720, 960]} sizes="(min-width: 1280px) 520px, (min-width: 768px) 45vw, 100vw" loading={first ? 'eager' : 'lazy'} /></div>}
+  <div class="ds-show-about">
+    <div class="ds-show-name">
+      <h3 id={`${id}-title`}>{d.title}</h3>
+      <p class="case-kicker">{d.maker}{d.madeWith.length > 0 && <>{' · '}Made with {d.madeWith.join(', ')}</>}</p>
+    </div>
+    <p class="ds-show-summary">{d.summary}</p>
+    {facts.length > 0 && <dl class="ds-show-facts">{facts.map(f => <div><dt>{f.label}</dt><dd>{f.value}</dd></div>)}</dl>}
+    {(d.strengths.length > 0 || platforms || d.accessibility) && (
+      <p class="project-card-meta"><span class="cory-visually-hidden">Strong in: </span>{d.strengths.map(s => <span class="ui-badge">{strengthLabel[s]}</span>)}{platforms && <span class="ui-badge">{platforms}</span>}{d.accessibility && <span class="ui-badge" data-tone="success">{d.accessibility}</span>}</p>
+    )}
+  </div>
+  <div class="ds-show-use">
+    <h4>{d.prompt ? 'Build with it' : 'See it'}</h4>
+    {d.prompt
+      ? <>
+                    <div class="ds-show-prompt" data-copy data-copied="Copied. Paste it into a new Claude chat." data-fallback="Selected. Press Ctrl+C or Cmd+C to copy.">
+            <p data-copy-text>{d.prompt}</p>
+            <button type="button" class="email-copy-button" aria-label={`Copy the line for ${d.title}`} title="Copy the line">
+              <svg data-icon-copy width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V6a2 2 0 0 1 2-2h9"></path></svg>
+              <svg data-icon-check width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>
+            </button>
+            <span role="status" aria-live="polite" class="ds-show-status"></span>
+          </div>
+        </>
+      : <p class="ds-show-hint">{d.note ?? 'Built inside a company, so it is not public. I can walk you through it on a call.'}</p>}
+    <div class="ds-show-side">
+    {d.artifact && d.artifactShared && <Button variant="secondary" href={d.artifact} target="_blank" rel="noopener">Open it in Claude<span class="cory-visually-hidden">: {d.title}, a design system artifact (opens in a new tab)</span></Button>}
+    <ul class="ds-show-links">
+      {docs && <li><a href={docs} target="_blank" rel="noopener">Documentation<span class="cory-visually-hidden"> of {d.title} (opens {hostOf(docs)} in a new tab)</span> <Fragment set:html={arrow} /></a></li>}
+      {repo && <li><a href={repo} target="_blank" rel="noopener">Code{d.code?.license && <>{' · '}{d.code.license}</>}<span class="cory-visually-hidden"> of {d.title} (opens {hostOf(repo)} in a new tab)</span> <Fragment set:html={arrow} /></a></li>}
+      {d.project && <li><a href={d.project}>The project<span class="cory-visually-hidden">: {d.title}</span></a></li>}
+      {d.caseStudy && <li><a href={d.caseStudy}>The case study<span class="cory-visually-hidden"> about {d.title}</span></a></li>}
+      {!d.prompt && <li><a href="/contact">Ask for a walkthrough<span class="cory-visually-hidden"> of {d.title}</span></a></li>}
+    </ul>
+    </div>
+  </div>
+</article>
+
+<style>
+  .ds-show { display: grid; gap: var(--space-6); padding: var(--space-5); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); min-inline-size: 0; }
+  @container (min-width: 880px) {
+    .ds-show { padding: var(--space-8); column-gap: var(--space-8); grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: 'media about' 'use use'; align-items: start; }
+    .ds-show[data-media="no"] { grid-template-areas: 'about about' 'use use'; }
+    .ds-show-use { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); column-gap: var(--space-6); }
+    .ds-show-use > :not(.ds-show-side) { grid-column: 1; }
+    .ds-show-side { grid-column: 2; grid-row: 1 / span 3; }
+    .ds-show-media { grid-area: media; }
+    .ds-show-about { grid-area: about; }
+    .ds-show-use { grid-area: use; }
+  }
+  .ds-show-media { border-radius: var(--radius-lg); min-inline-size: 0; }
+  .ds-show-media.project-card-media { aspect-ratio: 16 / 10; }
+  .ds-specimen { display: grid; gap: var(--space-5); align-content: center; padding: var(--space-6); aspect-ratio: 16 / 10; background: var(--surface-sunken); border: 1px solid var(--border-subtle); }
+  .ds-swatches { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)); gap: var(--space-3); }
+  .ds-swatches li { display: grid; gap: var(--space-1); min-inline-size: 0; }
+  .ds-swatches span { display: block; block-size: 40px; border-radius: var(--radius-md); border: 1px solid var(--border-default); }
+  .ds-swatches code { font-family: var(--font-mono); font-size: var(--text-caption); color: var(--text-muted); overflow-wrap: anywhere; }
+  .ds-type { margin: 0; display: flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap; min-inline-size: 0; }
+  .ds-type-display { font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); color: var(--text-strong); }
+  .ds-type-body { font-size: var(--text-body-md); color: var(--text-body); overflow-wrap: anywhere; min-inline-size: 0; }
+  .ds-radii { margin: 0; padding: 0; list-style: none; display: flex; gap: var(--space-3); }
+  .ds-radii li { inline-size: 40px; block-size: 40px; background: var(--gradient-ink); border: 1px solid var(--border-default); }
+  .ds-specimen-caption { margin: 0; font-size: var(--text-caption); color: var(--text-muted); }
+  .ds-show-side { display: grid; gap: var(--space-3); align-content: start; min-inline-size: 0; }
+  .ds-show-about, .ds-show-use { display: grid; gap: var(--space-4); align-content: start; min-inline-size: 0; }
+  .ds-show-use { padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface-sunken); border: 1px solid var(--border-subtle); }
+  .ds-show-name { display: grid; gap: 2px; min-inline-size: 0; }
+  .ds-show-name h3 { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
+  .ds-show-name .case-kicker { overflow-wrap: anywhere; }
+  .ds-show-summary { margin: 0; font-size: var(--text-body-lg); line-height: var(--leading-relaxed); color: var(--text-body); max-inline-size: var(--measure-body); }
+  .ds-show-facts { margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 120px), 1fr)); gap: var(--space-4); }
+  .ds-show-facts > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 2px; min-inline-size: 0; }
+  .ds-show-facts dd { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); color: var(--text-strong); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .ds-show-facts dt { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); overflow-wrap: anywhere; }
+  .ds-show h4 { margin: 0; font-size: var(--text-caption); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-subtle); }
+  .ds-show-hint { margin: 0; font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-muted); }
+  .ds-show-prompt { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: var(--space-1) var(--space-2); padding: var(--space-3) var(--space-2) var(--space-3) var(--space-4); border-radius: var(--radius-md); background: var(--surface-card); border: 1px solid var(--border-default); color: var(--text-link); }
+  .ds-show-prompt p { margin: 0; align-self: center; font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--leading-mono); color: var(--text-strong); overflow-wrap: break-word; min-inline-size: 0; }
+  .ds-show-prompt .email-copy-button { display: inline-grid; place-items: center; inline-size: var(--tap-target); block-size: var(--tap-target); border: 0; border-radius: var(--radius-pill); background: transparent; color: inherit; cursor: pointer; transition: background var(--duration-base) var(--ease-out), transform var(--duration-fast) var(--ease-out); }
+  .ds-show-prompt .email-copy-button:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
+  .ds-show-status { grid-column: 1 / -1; font-size: var(--text-caption); color: var(--text-muted); }
+  .ds-show-status:empty { display: none; }
+  .ds-show-links { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 0 var(--space-5); }
+  .ds-show-links a { display: inline-flex; align-items: center; gap: var(--space-1); min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none; overflow-wrap: anywhere; }
+  @media (hover: hover) { .ds-show-links a:hover { text-decoration: underline; text-underline-offset: 3px; } }
+  .ds-show-links a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+  .ds-show-side .ds-show-links { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr)); }
+  /* The first link's words line up with the first line beside it, not its 44px box. */
+  .ds-show-side { margin-block-start: calc((1.5rem - var(--tap-target)) / 2); }
+  @container (min-width: 880px) {
+    .ds-show-side { grid-row: 2 / span 2; }
+    /* A card without a picture: the name across, the words on the left, what is inside on the right. */
+    .ds-show[data-media="no"] .ds-show-about { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); column-gap: var(--space-8); }
+    .ds-show[data-media="no"] .ds-show-name { grid-column: 1 / -1; }
+    .ds-show[data-media="no"] .ds-show-summary { grid-column: 1; grid-row: 2 / span 2; }
+    .ds-show[data-media="no"] :is(.ds-show-facts, .project-card-meta) { grid-column: 2; }
+  }
+  /* On a narrow card the panel loses its own box, so the line to copy is not three boxes deep. */
+  @container (max-width: 519px) { .ds-show { padding: var(--space-4); } .ds-show-use { padding: 0; background: none; border: 0; } }
+</style>

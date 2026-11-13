@@ -1,0 +1,7 @@
+title: "Mine fixture: a design system of mine with a deliberately long name and no picture, facts or line to paste, as stored ok"
+mine: true
+maker: "Fixture"
+summary: "One of mine with only the required fields and an unbroken string Supercalifragilisticexpialidocious-component-library, so the private state and the missing parts are checked."
+added: 2026-11-13
+order: 999
+fixture: true

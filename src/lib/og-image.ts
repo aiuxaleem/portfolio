@@ -1,6 +1,7 @@
 /* Open Graph images, drawn at build time (1200 x 630 PNG) with the site's own fonts and colours.
    Colours are read from src/styles/tokens.css, so the token file stays the one source of truth.
-   The layout follows the existing home card (public/assets/og-home.png): brand mark, title, name line, address, kicker. */
+   The layout follows the existing home card (public/assets/og-home.png): the logo, title, name line, address, kicker.
+   The logo is the brand kit's dark-ground file as it is (L-67): the kit never sets "aleem" in a font. */
 import fs from 'node:fs';
 import path from 'node:path';
 import satori from 'satori';
@@ -16,6 +17,11 @@ function token(name: string): string {
   if (!m) throw new Error(`og-image: token --${name} not found in tokens.css`);
   return m[1].trim().replace(/var\(--([\w-]+)\)/g, (_, n) => token(n));
 }
+/* The kit's logo on the card's navy gradient: its white file's colours (a white tile, a navy a, the gradient dot) beside the
+   white wordmark, made from the kit's dark file by swapping the tile's and the letter's fills. */
+const logoSvg = (() => { const s = fs.readFileSync(path.join(root, 'Aleem-Brand-Kit/Aleem-Brand-Kit/01-Logo/SVG/aleem-logo-dark.svg'), 'utf8'); const [tile, letter] = [...s.matchAll(/<path d="[^"]+" fill="(#[0-9A-F]{6})"\/>/g)]; if (!tile || !letter) throw new Error('og-image: the logo file changed shape'); return s.replace(tile[0], tile[0].replace(tile[1], token('white'))).replace(letter[0], letter[0].replace(letter[1], token('navy-800'))); })();
+const logo = 'data:image/svg+xml;base64,' + Buffer.from(logoSvg).toString('base64');
+const LOGO_H = 48, LOGO_W = Math.round((LOGO_H * 423.566) / 120);
 const font = (pkg: string, file: string) => fs.readFileSync(path.join(root, 'node_modules/@fontsource', pkg, 'files', file));
 const fonts = [
   { name: 'Plus Jakarta Sans', data: font('plus-jakarta-sans', 'plus-jakarta-sans-latin-800-normal.woff'), weight: 800 as const, style: 'normal' as const },
@@ -33,10 +39,7 @@ export async function renderOg({ title, kicker }: { title: string; kicker?: stri
   const strong = token('on-ink-strong'), body = token('on-ink-body'), muted = token('on-ink-muted');
   const tree = el({ position: 'relative', width: OG.width, height: OG.height, flexDirection: 'column', justifyContent: 'space-between', padding: '72px 80px', backgroundImage: token('gradient-ink'), color: strong, fontFamily: 'Plus Jakarta Sans' }, [
     el({ position: 'absolute', top: -220, right: -160, width: 760, height: 760, backgroundImage: token('glow-cyan') }),
-    el({ alignItems: 'center', gap: 16 }, [
-      el({ width: 36, height: 36, borderRadius: 9, backgroundImage: `linear-gradient(135deg, ${token('blue-500')} 0%, ${token('cyan-500')} 100%)` }),
-      el({ fontSize: 30, fontWeight: 800, letterSpacing: '-0.02em' }, site.brand),
-    ]),
+    el({ alignItems: 'center' }, [{ type: 'img', props: { src: logo, width: LOGO_W, height: LOGO_H } }]),
     el({ flexDirection: 'column', gap: 24 }, [
       el({ display: 'block', fontSize: titleSize(title), fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.035em', lineClamp: 4, wordBreak: 'break-word', maxWidth: 1040 }, title),
       el({ fontSize: 28, fontWeight: 500, color: body }, `${site.name} · ${profile.headline}`),

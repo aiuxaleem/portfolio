@@ -352,20 +352,22 @@ console.log('depth: the portrait scene and the two-users line on Home, a project
 }
 console.log('micro and sideways: the split sides, the nav underline, the copy check, the strip, the phone row, fade-mode colour');
 
-// 7k. The calls to action (owner request, 8 November 2026): a primary button carries the inner highlight and the glow,
-//     drifts its gradient and lifts two pixels on hover, keeps its label colour; a secondary takes the link colour on hover;
+// 7k. The calls to action (owner requests of 8 and 12 November 2026, L-56 and L-65): a primary button is a solid fill with the
+//     inner highlight, a pill whose link ends in the travelling arrow's well; on hover the fill deepens, the well opens toward
+//     the pointer, the label keeps its colour and the button lifts two pixels; a secondary is outlined and on hover its edge and fill change;
 //     the hero's primary breathes once after its rise; a primary below the fold breathes as it scrolls in; the same component
 //     in the admin shares the look (the sign-in page is the admin's one public page); under fade mode nothing moves.
 {
   const { ctx, p } = await open('/'); await p.waitForTimeout(600);
   const hero = p.locator('[data-hero] [data-hero-ctas] a').first();
-  const rest = await hero.evaluate(e => { const s = getComputedStyle(e); return { shadow: s.boxShadow, position: s.backgroundPosition, size: s.backgroundSize, color: s.color, transform: s.transform, anims: document.getAnimations().filter(a => a.effect?.target === e).map(a => a.animationName) }; });
+  const rest = await hero.evaluate(e => { const s = getComputedStyle(e); return { shadow: s.boxShadow, image: s.backgroundImage, fill: s.backgroundColor, radius: parseFloat(s.borderTopLeftRadius), height: e.getBoundingClientRect().height, well: getComputedStyle(e, '::before').clipPath, color: s.color, transform: s.transform, anims: document.getAnimations().filter(a => a.effect?.target === e).map(a => a.animationName) }; });
   await hero.hover(); await p.waitForTimeout(700);
-  const hov = await hero.evaluate(e => { const s = getComputedStyle(e); return { shadow: s.boxShadow, position: s.backgroundPosition, color: s.color, transform: s.transform }; });
+  const hov = await hero.evaluate(e => { const s = getComputedStyle(e); return { shadow: s.boxShadow, fill: s.backgroundColor, color: s.color, transform: s.transform, well: getComputedStyle(e, '::before').clipPath, width: e.getBoundingClientRect().width }; });
   out['cta hero'] = { rest, hover: hov };
-  if (!/inset/.test(rest.shadow) || !/160%/.test(rest.size)) fail(`cta: the hero primary lacks the inner highlight or the drifting gradient (${rest.shadow.slice(0, 80)} / ${rest.size})`);
+  if (!/inset/.test(rest.shadow) || rest.image !== 'none' || rest.radius < rest.height / 2 || rest.height < 55 || !/inset/.test(rest.well)) fail(`cta: the hero primary should be a solid pill with the inner highlight, 56 px tall, ending in the arrow's well (${rest.shadow.slice(0, 80)} / ${rest.image.slice(0, 40)} / ${rest.radius} / ${rest.height} / ${rest.well})`);
+  if (hov.well === rest.well) fail(`cta: on hover the arrow's well should open toward the pointer (${rest.well} then ${hov.well})`);
   if (!rest.anims.includes('cta-breath')) fail(`cta: the hero primary does not breathe after its rise (${rest.anims.join(',')})`);
-  if (hov.position === rest.position || hov.color !== rest.color || !/matrix\(1, 0, 0, 1, 0, -2/.test(hov.transform)) fail(`cta: on hover the gradient should drift, the label colour stay and the button lift 2 px (${rest.position} then ${hov.position}, ${rest.color} then ${hov.color}, ${hov.transform})`);
+  if (hov.fill === rest.fill || hov.color !== rest.color || !/matrix\(1, 0, 0, 1, 0, -2/.test(hov.transform)) fail(`cta: on hover the fill should deepen, the label colour stay and the button lift 2 px (${rest.fill} then ${hov.fill}, ${rest.color} then ${hov.color}, ${hov.transform})`);
   const below = await p.evaluate(async () => { const b = [...document.querySelectorAll('main .ui-button-primary, main [data-ds-button="primary"]')].find(e => e.getBoundingClientRect().top > innerHeight * 1.5); if (!b) return null; scrollTo({ top: b.getBoundingClientRect().top + scrollY - innerHeight * 0.7, behavior: 'instant' }); await new Promise(r => setTimeout(r, 300)); const a = document.getAnimations().find(x => x.effect?.target === b && x.animationName === 'cta-breath'); return { found: !!a, scroll: a ? !(a.timeline instanceof DocumentTimeline) : null, progress: a && a.currentTime && typeof a.currentTime === 'object' ? Math.round(a.currentTime.value) : null }; });
   out['cta below'] = below;
   if (!below) console.log('  note: no primary call to action below the fold on Home');
@@ -375,17 +377,17 @@ console.log('micro and sideways: the split sides, the nav underline, the copy ch
 {
   const { ctx, p } = await open('/about'); await p.waitForTimeout(400);
   const sec = p.locator('main .ui-button-secondary').first(); await sec.scrollIntoViewIfNeeded(); await p.mouse.move(2, 2); await p.waitForTimeout(300);
-  const a = await sec.evaluate(e => ({ color: getComputedStyle(e).color, border: getComputedStyle(e).borderColor, blur: getComputedStyle(e).backdropFilter })); await sec.hover(); await p.waitForTimeout(600);
-  const b = await sec.evaluate(e => ({ color: getComputedStyle(e).color, border: getComputedStyle(e).borderColor }));
+  const a = await sec.evaluate(e => ({ color: getComputedStyle(e).color, border: getComputedStyle(e).borderColor, fill: getComputedStyle(e).backgroundColor })); await sec.hover(); await p.waitForTimeout(600);
+  const b = await sec.evaluate(e => ({ color: getComputedStyle(e).color, border: getComputedStyle(e).borderColor, fill: getComputedStyle(e).backgroundColor }));
   out['cta secondary'] = { rest: a, hover: b };
-  if (a.color === b.color || a.border === b.border) fail(`cta: a secondary should take the link colour and edge on hover (${JSON.stringify({ a, b })})`);
+  if (a.border === b.border || a.fill === b.fill) fail(`cta: a secondary should change its edge and fill on hover (${JSON.stringify({ a, b })})`);
   await ctx.close();
 }
 {
   const { ctx, p } = await open('/admin/login'); await p.waitForTimeout(300);
-  const r = await p.evaluate(() => { const b = document.querySelector('.ui-button-primary'); if (!b) return null; const s = getComputedStyle(b); return { shadow: /inset/.test(s.boxShadow), size: s.backgroundSize }; });
+  const r = await p.evaluate(() => { const b = document.querySelector('.ui-button-primary'); if (!b) return null; const s = getComputedStyle(b); return { shadow: /inset/.test(s.boxShadow), image: s.backgroundImage }; });
   out['cta admin'] = r;
-  if (!r) console.log('  note: the admin sign-in page is not in this build (static build); the component is shared'); else if (!r.shadow || !/160%/.test(r.size)) fail(`cta admin: ${JSON.stringify(r)}`);
+  if (!r) console.log('  note: the admin sign-in page is not in this build (static build); the component is shared'); else if (!r.shadow || r.image !== 'none') fail(`cta admin: ${JSON.stringify(r)}`);
   await ctx.close();
 }
 {
@@ -397,7 +399,7 @@ console.log('micro and sideways: the split sides, the nav underline, the copy ch
   if (r.breath || /transform/.test(r.props)) fail(`cta in fade mode: ${JSON.stringify(r)} (no breath, no movement)`);
   await ctx.close();
 }
-console.log('cta: the hero primary at rest and on hover, a primary below the fold on the scroll, a glass secondary, the admin, fade mode');
+console.log('cta: the hero primary at rest and on hover, a primary below the fold on the scroll, an outlined secondary, the admin, fade mode');
 
 console.log('flow: heads and bodies on 3 pages, the heading wipe with and without the script, cascades on 5 lists, the first view on 13 pages, the menu card, the phone menu, the theme in both settings, the travelling picture in both settings');
 

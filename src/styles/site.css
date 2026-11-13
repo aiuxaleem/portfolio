@@ -176,7 +176,9 @@ main[tabindex] { padding-block-start: 0 !important; }
 [data-site-header] { container-type: inline-size; }
 @container (max-width: 959px) { [data-hdr-desktop] { display: none !important; } }
 @container (min-width: 960px) { [data-hdr-mobile] { display: none !important; } }
-@container (max-width: 419px) { [data-hdr-talk] { display: none !important; } }
+/* Let's talk joins the bar from 480px of header: between 420 and 479px it pushed the Menu button off the screen (measured on
+   12 November 2026 at 420 to 460px, L-67); below that the menu panel holds it. */
+@container (max-width: 479px) { [data-hdr-talk] { display: none !important; } }
 @container (max-width: 959px) { [data-hdr-talk][aria-hidden="true"] { display: none !important; } }
 /* Header labels never wrap: the contact button and the language name stay on one line. */
 [data-site-header] [data-hdr-talk] .ui-button, [data-site-header] .header-lang { white-space: nowrap; }
@@ -439,10 +441,10 @@ body:has(> .ai-field) [data-bg~="grid"]::before { display: none; }
 @media (forced-colors: active) { .ink-aurora, .ink-edge { display: none; } }
 
 /* The copy-email button shows a check while the address is on the clipboard (islands/site-chrome.ts sets data-state). */
-[data-email-copy] [data-icon-check] { display: none; }
-[data-email-copy][data-state="copied"] [data-icon-copy] { display: none; }
-[data-email-copy][data-state="copied"] [data-icon-check] { display: block; color: var(--text-success); }
-[data-email-copy][data-state="copied"] .email-copy-button { color: var(--text-success); }
+[data-email-copy] [data-icon-check], [data-copy] [data-icon-check] { display: none; }
+:is([data-email-copy], [data-copy])[data-state="copied"] [data-icon-copy] { display: none; }
+:is([data-email-copy], [data-copy])[data-state="copied"] [data-icon-check] { display: block; color: var(--text-success); }
+:is([data-email-copy], [data-copy])[data-state="copied"] .email-copy-button { color: var(--text-success); }
 
 /* A row of cards on a narrow container scrolls sideways and snaps, with the next card peeking in (owner request, 8 November 2026,
    L-56: Home's projects, the videos). The page itself never scrolls sideways: only the row does, inside the gutter. The row is

@@ -1,0 +1,13 @@
+title: "Atlassian Design System"
+maker: "Atlassian"
+kind: company
+summary: "Atlassian's design system: foundations, tokens and components, Rovo UI guidance for AI moments, and a public MCP server and CLI for agents."
+url: "https://atlassian.design/"
+platforms: [web]
+strengths: [ai-patterns, content-and-voice, tokens, components]
+ai:
+  - { label: "MCP server", url: "https://atlassian.design/get-started/with-ai" }
+  - { label: "AI patterns", url: "https://atlassian.design/rovo-ui" }
+  - { label: "llms.txt", url: "https://atlassian.design/llms.txt" }
+added: 2026-11-13
+order: 30

@@ -1,0 +1,249 @@
+{
+  "brand": [
+    {
+      "name": "Aleem Navy",
+      "token": "navy-800",
+      "hex": "#0B1F36",
+      "rgb": [
+        11,
+        31,
+        54
+      ],
+      "cmyk_approx": [
+        80,
+        43,
+        0,
+        79
+      ],
+      "use": "Primary ink: wordmark, headlines, the logo tile, dark sections."
+    },
+    {
+      "name": "Signal Blue",
+      "token": "blue-500",
+      "hex": "#258AFD",
+      "rgb": [
+        37,
+        138,
+        253
+      ],
+      "cmyk_approx": [
+        85,
+        45,
+        0,
+        1
+      ],
+      "use": "Gradient start, primary buttons, focus rings."
+    },
+    {
+      "name": "Signal Cyan",
+      "token": "cyan-500",
+      "hex": "#29BEDD",
+      "rgb": [
+        41,
+        190,
+        221
+      ],
+      "cmyk_approx": [
+        81,
+        14,
+        0,
+        13
+      ],
+      "use": "Gradient end. Pairs with Signal Blue; never on its own for text."
+    },
+    {
+      "name": "Cloud",
+      "token": "slate-50",
+      "hex": "#F4F5FA",
+      "rgb": [
+        244,
+        245,
+        250
+      ],
+      "cmyk_approx": [
+        2,
+        2,
+        0,
+        2
+      ],
+      "use": "Page ground in light mode."
+    },
+    {
+      "name": "White",
+      "token": "white",
+      "hex": "#FFFFFF",
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "cmyk_approx": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "use": "Cards and the knocked-out logo glyph."
+    },
+    {
+      "name": "Night",
+      "token": "navy-900",
+      "hex": "#06121F",
+      "rgb": [
+        6,
+        18,
+        31
+      ],
+      "cmyk_approx": [
+        81,
+        42,
+        0,
+        88
+      ],
+      "use": "Page ground in dark mode."
+    },
+    {
+      "name": "Ink Raised",
+      "token": "navy-700",
+      "hex": "#12304F",
+      "rgb": [
+        18,
+        48,
+        79
+      ],
+      "cmyk_approx": [
+        77,
+        39,
+        0,
+        69
+      ],
+      "use": "The logo tile on dark grounds; raised surfaces in dark mode."
+    },
+    {
+      "name": "Slate Body",
+      "token": "slate-700",
+      "hex": "#3B4253",
+      "rgb": [
+        59,
+        66,
+        83
+      ],
+      "cmyk_approx": [
+        29,
+        20,
+        0,
+        67
+      ],
+      "use": "Body text on light grounds."
+    },
+    {
+      "name": "Slate Muted",
+      "token": "slate-600",
+      "hex": "#525A6B",
+      "rgb": [
+        82,
+        90,
+        107
+      ],
+      "cmyk_approx": [
+        23,
+        16,
+        0,
+        58
+      ],
+      "use": "Secondary text and the logo descriptor on light grounds."
+    },
+    {
+      "name": "Link Blue",
+      "token": "blue-700",
+      "hex": "#1568D4",
+      "rgb": [
+        21,
+        104,
+        212
+      ],
+      "cmyk_approx": [
+        90,
+        51,
+        0,
+        17
+      ],
+      "use": "Links and small blue text (AA on white)."
+    },
+    {
+      "name": "Deep Cyan",
+      "token": "cyan-700",
+      "hex": "#0E7F9E",
+      "rgb": [
+        14,
+        127,
+        158
+      ],
+      "cmyk_approx": [
+        91,
+        20,
+        0,
+        38
+      ],
+      "use": "End of the deep gradient behind white labels; white text on it passes AA."
+    }
+  ],
+  "gradient": {
+    "name": "Signal gradient",
+    "from": "#258AFD",
+    "to": "#29BEDD",
+    "angle": "90deg (left to right)",
+    "css": "linear-gradient(90deg, #258AFD, #29BEDD)"
+  },
+  "scales": {
+    "navy-950": "#040C16",
+    "navy-900": "#06121F",
+    "navy-850": "#0E2440",
+    "navy-800": "#0B1F36",
+    "navy-700": "#12304F",
+    "navy-600": "#1B4068",
+    "navy-500": "#2A547F",
+    "navy-400": "#4C7197",
+    "navy-300": "#8197AF",
+    "navy-200": "#BCC7D5",
+    "navy-100": "#DEE4EC",
+    "blue-800": "#0F55B2",
+    "blue-700": "#1568D4",
+    "blue-600": "#1B79EC",
+    "blue-500": "#258AFD",
+    "blue-400": "#5AA7FE",
+    "blue-300": "#91C4FE",
+    "blue-200": "#C2DEFF",
+    "blue-100": "#E6F1FF",
+    "cyan-700": "#0E7F9E",
+    "cyan-800": "#095A70",
+    "cyan-600": "#169FC0",
+    "cyan-500": "#29BEDD",
+    "cyan-400": "#5FD0E8",
+    "cyan-300": "#95E1F0",
+    "cyan-200": "#C4EEF8",
+    "cyan-100": "#E6F8FC",
+    "white": "#FFFFFF",
+    "slate-50": "#F4F5FA",
+    "slate-100": "#ECEEF4",
+    "slate-150": "#E2E5EE",
+    "slate-200": "#D5D9E4",
+    "slate-300": "#B9BFCF",
+    "slate-400": "#939BAE",
+    "slate-500": "#6E7689",
+    "slate-550": "#636B7E",
+    "slate-600": "#525A6B",
+    "slate-700": "#3B4253",
+    "slate-800": "#262C3A",
+    "slate-900": "#151A26",
+    "green-700": "#0E7A4E",
+    "green-500": "#1FB877",
+    "green-100": "#DCF6EC",
+    "amber-700": "#7A4F00",
+    "amber-500": "#F5A524",
+    "amber-100": "#FDF0D9",
+    "red-700": "#B42318",
+    "red-500": "#E5484D",
+    "red-100": "#FBE3E4"
+  }
+}

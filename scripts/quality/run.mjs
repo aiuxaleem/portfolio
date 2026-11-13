@@ -16,6 +16,7 @@ const AXE = fs.readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
 const target = arg('target', 'dist');
 const quick = !!arg('quick', false);
 const PORT = 4400;
+const VIEW_LIMIT = 25; // minutes for one route at one size and theme
 const failures = [];
 const started = Date.now(), elapsed = since => Math.round((Date.now() - since) / 1000) + ' s';
 const fail = (check, route, view, detail) => failures.push({ check, route, view, detail });
@@ -81,8 +82,12 @@ async function worker() {
   while (next < jobs.length) {
     const { route, width, height, theme } = jobs[next++];
     const view = `${width}x${height} ${theme}`;
-    try {
-      const { ctx, page } = await open(browser, origin, route, { width, height, theme });
+    /* A view that is still running after VIEW_LIMIT minutes is a failure, not a wait: on 13 November 2026 a browser tab
+       crashed on /_states-admin and the run sat at 2,820 of 2,832 views for seven hours. */
+    let ctxOf, limitTimer;
+    const limit = new Promise((_, reject) => { limitTimer = setTimeout(() => reject(new Error(`still running after ${VIEW_LIMIT} minutes`)), VIEW_LIMIT * 60000); });
+    const work = (async () => {
+      const { ctx, page } = await open(browser, origin, route, { width, height, theme }); ctxOf = ctx;
       /* On a laptop or larger screen (at least 1024 by 650), the first screen holds the hero's main action (owner, 26 October
          2026: sections must sit correctly in a laptop's screen). Measured before the reveals scroll the page. */
       if (width >= 1024 && height >= 650) {
@@ -97,7 +102,11 @@ async function worker() {
       const violations = await page.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] }, resultTypes: ['violations'] })).violations.map(v => `${v.id} (${v.impact}): ${v.nodes.length} node(s), first: ${String(v.nodes[0].target[0]).slice(0, 80)}`));
       for (const v of violations) fail('axe', route.name, view, v);
       await ctx.close();
-    } catch (e) { fail('page-load', route.name, view, String(e.message).slice(0, 160)); }
+    })();
+    work.catch(() => {}); /* if the limit wins, the abandoned view may still fail later; that must not stop the run */
+    try { await Promise.race([work, limit]); }
+    catch (e) { fail('page-load', route.name, view, String(e.message).slice(0, 160)); await ctxOf?.close().catch(() => {}); }
+    finally { clearTimeout(limitTimer); }
     if (++done % 20 === 0 || done === jobs.length) console.log(`  ${done}/${jobs.length} views`);
   }
 }

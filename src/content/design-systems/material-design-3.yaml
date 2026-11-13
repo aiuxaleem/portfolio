@@ -1,0 +1,10 @@
+title: "Material Design 3"
+maker: "Google"
+kind: company
+summary: "Google's open-source design system for Android and the web, with guidance, components and a Figma kit built to pair with the Material Theme Builder plugin."
+url: "https://m3.material.io/"
+platforms: [android, web]
+strengths: [components, theming, tokens, motion]
+code: { url: "https://github.com/material-components/material-components-android", license: "Apache-2.0" }
+added: 2026-11-13
+order: 10

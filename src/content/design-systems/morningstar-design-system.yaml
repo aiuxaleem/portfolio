@@ -1,0 +1,9 @@
+title: "Morningstar Design System"
+maker: "Morningstar"
+kind: company
+summary: "Morningstar's design system: visual language, components, charts and writing guidelines, with a Figma design library."
+url: "https://designsystem.morningstar.com/"
+platforms: [web]
+strengths: [components, data-visualisation, content-and-voice]
+added: 2026-11-13
+order: 105

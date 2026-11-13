@@ -1,0 +1,16 @@
+title: Reel to LinkedIn post
+name: reel-to-linkedin-post
+mine: true
+maker: Mohammad Abdul Aleem
+category: content-and-docs
+summary: Turns a short-form video into a caption-accurate transcript, key frames for each step, a guide to where the tools it mentions live, and one LinkedIn post in your voice that keeps the reel's structure, never its words.
+note: Written for my own LinkedIn queue and post rules, so put your own file names in their place. The creator is never named in the post; the reply offers a credit line you can add.
+download: /skills/reel-to-linkedin-post.zip
+size: 13 KB
+readme: /skills/reel-to-linkedin-post/SKILL.md
+prompts: ["Turn this reel into a post", "Transcribe this and write a post", "Extract the frames and find these tools"]
+needs: ["A short video file with burned-in captions: a Reel, Short or TikTok", "Claude Code, or a setup that can run scripts", "ffmpeg, tesseract and Python with Pillow, pytesseract and numpy, installed once"]
+gives: A transcript from the captions, key frames per step with a storyboard, where to find each thing the reel names, and one post with a copy button that keeps LinkedIn's spacing.
+added: 2026-11-13
+order: 30
+tags: [LinkedIn, Video, Writing, Research]

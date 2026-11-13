@@ -1,0 +1,68 @@
+---
+/* /my-design-systems: Work > My Design Systems (owner request, 13 November 2026, L-68). The design systems the owner built,
+   most of them in Claude Design, each shown so a visitor sees what is inside and can build with it:
+   1. The first screen: what the page is, the two actions, and the count of systems and of the ones a visitor can use now.
+   2. How I build one: from brief to a system people and AI agents both read (the owner's own account of his process).
+   3. The systems (cards/design-system-showcase.astro), this site's own first, with its live tokens.
+   4. The call: a system for your team. The public systems he learns from are on Resources > Design Systems (/design-systems). */
+import PageLayout from '../layouts/page-layout.astro';
+import DesignSystemShowcase from '../components/cards/design-system-showcase.astro';
+import Button from '../components/ui/button.astro';
+import ContactBlock from '../components/profile/contact-block.astro';
+import { listedDesignSystems } from '../lib/design-systems';
+
+const mine = (await listedDesignSystems()).filter(s => s.data.mine);
+const real = mine.filter(s => !s.data.fixture);
+const usable = real.filter(s => s.data.prompt).length;
+const num = (i: number) => String(i + 1).padStart(2, '0');
+const stat = 'margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); color: var(--text-strong); font-variant-numeric: tabular-nums;';
+const steps = [
+  { title: 'Start from the brand and the brief', body: 'The logo, the audiences and what people need to make. The brief decides what the system must hold before anything is drawn.' },
+  { title: 'Tokens first, in Claude Design', body: 'Colour, type, space, radius and motion as named values in light and dark, with contrast measured before a component exists.' },
+  { title: 'Components and templates on top', body: 'Each part with its states and its rules, then the templates people ask a designer for most, all built from the tokens.' },
+  { title: 'Publish it for people and agents', body: 'Docs for people, plus a design system artifact, a skill or a prompt file per component, so an AI agent builds on the system too.' },
+];
+---
+<PageLayout title="My Design Systems · Aleem | AIUX" description="Design systems Mohammad Abdul Aleem built in Claude Design for people and AI agents: tokens, components, templates, and how to build with each in a Claude chat." page="my-design-systems" bg="grid" mainStyle="outline: none; overflow: clip;">
+  <section class="cory-container" aria-labelledby="mds-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <p class="cory-overline" style="margin: 0px;">Work · My Design Systems</p>
+    <h1 id="mds-title" style="margin: 0px; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">Design systems people and <span style="background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent;">AI agents</span> build on.</h1>
+    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">I build design systems in Claude Design: tokens first, then components and templates, published so a person and an AI agent read the same source. Here is each one, what is inside, and how to build with it in your own Claude chat.</p>
+    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+      <Button variant="primary" size="lg" href="#systems">See the systems</Button>
+      <Button variant="secondary" size="lg" href="/design-systems">Systems I learn from</Button>
+    </div>
+    <dl class="mds-stats">
+      <div><dt>Design systems</dt><dd style={stat}>{real.length}</dd></div>
+      <div><dt>Open to build with now</dt><dd style={stat}>{usable}</dd></div>
+      <div><dt>Made with</dt><dd class="mds-stat-words">Claude Design and Claude Code</dd></div>
+    </dl>
+  </section>
+
+  <section class="page-section" data-surface="card" aria-labelledby="how-title">
+    <div class="cory-container" style="display: grid; gap: var(--space-8);">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">How I build one</p><h2 id="how-title" class="page-h2">From brand to a system agents can read</h2><p class="project-filter-count">The same four steps behind every system below. The case studies show each step with its numbers.</p></div>
+      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{steps.map((s, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol></div>
+    </div>
+  </section>
+
+  <section id="systems" class="page-section" aria-labelledby="systems-title">
+    <div class="cory-container" style="display: grid; gap: var(--space-8);">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Made by me</p><h2 id="systems-title" class="page-h2">The systems</h2><p class="project-filter-count">The counts are taken from each system itself. For a public system, copy its line into a Claude chat that can read the web and change the last part to what you need. One built inside a company or for a client is shown through its project and case study.</p></div>
+      {mine.length === 0
+        ? <div class="project-empty"><p class="project-empty-title">No design systems of mine are listed yet.</p><p class="project-empty-body">Meanwhile, Design Systems lists the public ones worth studying.</p><div><Button variant="secondary" href="/design-systems">See Design Systems</Button></div></div>
+        : <div data-cq><ul class="mds-list">{mine.map((s, i) => <li><DesignSystemShowcase system={s} id={`system-${i + 1}`} first={i === 0} /></li>)}</ul></div>}
+    </div>
+  </section>
+
+  <ContactBlock id="contact" overline="Next step" title="Need a design system your team and its AI tools both read?" lead="I build systems that a designer, a developer and an AI agent can all work from: tokens, components, the rules, and the files that keep generated screens on the system. Book a 15-minute call, or send what your team needs." topic="project" />
+</PageLayout>
+
+<style>
+  .mds-stats { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-10); margin: 0; }
+  .mds-stats > div { display: grid; gap: var(--space-1); min-inline-size: 0; }
+  .mds-stats dt { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
+  .mds-stats dd { margin: 0; }
+  .mds-stat-words { font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-strong); line-height: var(--leading-snug); max-inline-size: 18ch; }
+  .mds-list { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--grid-gap); }
+</style>

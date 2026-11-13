@@ -1,0 +1,33 @@
+---
+/* The Aleem logo (owner's brand kit, 12 November 2026, L-67): the navy tile with the "a" whose bowl is a chat bubble, the
+   gradient dot that makes it "ai", and the "aleem" wordmark. The shapes are the kit's own outlines
+   (Aleem-Brand-Kit/01-Logo/SVG/aleem-logo.svg), never retyped in a font; only the colours come from tokens, so one drawing
+   serves the light page, the dark page (the kit's -dark colours: a navy-700 tile, a white wordmark) and the ink panels
+   (`onInk`: the kit's white file, a white tile with a navy "a", beside the white wordmark). `mark` draws the tile alone. The accessible name is "Aleem", the word the wordmark shows.
+   Minimum sizes from the kit: the mark 24px, the logo 20px tall. */
+import { nextId } from '../../lib/ids';
+interface Props { /** 'logo' (tile and wordmark) or 'mark' (the tile alone). */ variant?: 'logo' | 'mark'; /** Height in px. */ size?: number; /** On an ink panel: the dark-ground colours whatever the theme. */ onInk?: boolean; /** Decorative where words beside it already name the brand. */ decorative?: boolean; class?: string }
+const { variant = 'logo', size = 28, onInk = false, decorative = false, class: className } = Astro.props;
+const [, , vbW, vbH] = '0 0 423.566 120'.split(' ').map(Number);
+const width = variant === 'mark' ? vbH : vbW;
+/* One gradient id per drawing: a page shows the logo more than once. */
+const id = nextId('aleem-spark');
+---
+<svg class:list={['aleem-logo', className]} data-on-ink={onInk ? '' : undefined} xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${width} ${vbH}`} height={size} width={Math.round((size * width) / vbH)} {...(decorative ? { 'aria-hidden': 'true' } : { role: 'img', 'aria-label': 'Aleem' })} focusable="false">
+  <defs><linearGradient id={id} x1="0" y1="0" x2="1" y2="0"><stop offset="0" style="stop-color: var(--blue-500)" /><stop offset="1" style="stop-color: var(--cyan-500)" /></linearGradient></defs>
+  <path class="aleem-logo-tile" d="M27.27 0H92.73A27.27 27.27 0 0 1 120 27.27V92.73A27.27 27.27 0 0 1 92.73 120H27.27A27.27 27.27 0 0 1 0 92.73V27.27A27.27 27.27 0 0 1 27.27 0Z" />
+  <path class="aleem-logo-letter" d="M58.5 48.25A26 26 0 0 1 69.5 50.692V48.25H84.5V100.25H69.5V97.808A26 26 0 0 1 58.5 100.25H39A6.5 6.5 0 0 1 32.5 93.75V74.25A26 26 0 0 1 58.5 48.25ZM47.5 74.25A11 11 0 1 0 69.5 74.25A11 11 0 1 0 47.5 74.25Z" />
+  <circle cx="77" cy="31.75" r="9" fill={`url(#${id})`} />
+  {variant === 'logo' && <path class="aleem-logo-word" d="M177.752 46.496A25.352 25.352 0 0 1 203.104 71.848A25.352 25.352 0 0 1 177.752 97.2L157.085 97.2A4.685 4.685 0 0 1 152.4 92.515L152.4 71.848A25.352 25.352 0 0 1 177.752 46.496ZM163.555 71.848A14.197 14.197 0 1 0 191.949 71.848A14.197 14.197 0 1 0 163.555 71.848ZM191.949 46.496H203.104V97.2H191.949ZM215.375 25.2H226.53V97.2H215.375ZM280.784 88.144A25.352 25.352 0 1 1 286.715 71.848L275.561 71.848A14.197 14.197 0 1 0 272.239 80.974L280.784 88.144ZM241.589 66.27H286.715V77.425H241.589ZM338.181 88.144A25.352 25.352 0 1 1 344.113 71.848L332.958 71.848A14.197 14.197 0 1 0 329.636 80.974L338.181 88.144ZM298.986 66.27H344.113V77.425H298.986ZM353.594 66.777H364.749V97.2H353.594ZM353.594 66.777A20.282 20.282 0 0 1 394.158 66.777H383.003A9.127 9.127 0 0 0 364.749 66.777ZM383.003 66.777H394.158V97.2H383.003ZM383.003 66.777A20.282 20.282 0 0 1 423.566 66.777H412.411A9.127 9.127 0 0 0 394.158 66.777ZM412.411 66.777H423.566V97.2H412.411Z" />}
+</svg>
+
+<style is:global>
+  .aleem-logo { display: block; flex-shrink: 0; max-inline-size: 100%; block-size: auto; }
+  .aleem-logo .aleem-logo-tile { fill: var(--logo-tile); }
+  .aleem-logo .aleem-logo-letter { fill: var(--logo-letter); }
+  .aleem-logo .aleem-logo-word { fill: var(--logo-word); }
+  .aleem-logo[data-on-ink] .aleem-logo-tile { fill: var(--logo-tile-on-ink); }
+  .aleem-logo[data-on-ink] .aleem-logo-letter { fill: var(--logo-letter-on-ink); }
+  .aleem-logo[data-on-ink] .aleem-logo-word { fill: var(--logo-word-on-ink); }
+  @media (forced-colors: active) { .aleem-logo .aleem-logo-word { fill: CanvasText; } }
+</style>

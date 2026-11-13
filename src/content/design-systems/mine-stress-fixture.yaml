@@ -1,0 +1,22 @@
+title: Kit
+mine: true
+maker: "Fixture with every field"
+summary: "One of mine with every field filled: five facts, four strengths, every platform, a shared artifact and a long line to paste."
+platforms: [web, ios, android, desktop, email, print, social]
+strengths: [tokens, components, accessibility, ai-patterns]
+accessibility: "WCAG 2.2 AA"
+facts:
+  - { value: "1,234,567", label: "A long label for a counted thing" }
+  - { value: "20", label: "Components" }
+  - { value: "15", label: "Templates" }
+  - { value: "2", label: "Themes" }
+  - { value: "100%", label: "Pairs passing" }
+madeWith: [Claude Design, Claude Code, Figma MCP]
+artifact: "https://claude.ai/artifact/fixture"
+artifactShared: true
+code: { url: "https://example.com/code", license: MIT }
+url: "https://example.com/docs"
+prompt: "Read the design system at https://example.com/an-unbroken-path-segment-of-sixty-characters-abcdefghijklmn and build a settings page from its components only, in light and dark, with every state."
+added: 2026-11-13
+order: 998
+fixture: true

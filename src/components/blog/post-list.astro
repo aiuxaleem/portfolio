@@ -13,9 +13,9 @@ const href = (n: number) => (n === 1 ? '/blog' : `/blog/page/${n}`);
 const heading = tag ? `Posts tagged ${tag}` : 'Blog';
 /* Which posts this page holds, for the count line (every page but the last is full). */
 const last = page < pages ? page * posts.length : total, first = last - posts.length + 1;
-const title = `${tag ? `${tag} · Blog` : page > 1 ? `Blog, page ${page}` : 'Blog'} · AIUXAleem`;
+const title = `${tag ? `${tag} · Blog` : page > 1 ? `Blog, page ${page}` : 'Blog'} · Aleem | AIUX`;
 const description = tag
-  ? `Posts tagged ${tag} on the AIUXAleem blog: guides and articles by Mohammad Abdul Aleem on design systems and AI product design.`
+  ? `Posts tagged ${tag}: guides and articles by Mohammad Abdul Aleem on design systems and AI product design.`
   : `Guides by Mohammad Abdul Aleem on design systems and AI products: component spec files, AI-readable systems, designing for agents, and AI workflows.${page > 1 ? ` Page ${page} of ${pages}.` : ''}`;
 ---
 <PageLayout title={title} description={description} page="blog" bg="grid" mainStyle="outline: none; overflow: clip;" noindex={!!tag && posts.length === 0}>

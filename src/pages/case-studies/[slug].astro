@@ -37,7 +37,7 @@ const measured = verified.some(m => m.kind === 'outcome');
 const jsonLd = [caseStudyLd(entry, await ogImageFor(`/case-studies/${entry.id}`)), breadcrumbLd([['Case studies', '/case-studies'], [d.title, `/case-studies/${entry.id}`]])];
 const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
 ---
-<PageLayout hideCta title={`${d.seo.title || d.title} · Case study · AIUXAleem`} description={(d.seo.description || d.lead).slice(0, 165)} page="case" ogType="article" jsonLd={jsonLd} noindex={d.fixture} bg="grid" mainStyle="outline: none; overflow: clip;">
+<PageLayout hideCta title={`${d.seo.title || d.title} · Case study · Aleem | AIUX`} description={(d.seo.description || d.lead).slice(0, 165)} page="case" ogType="article" jsonLd={jsonLd} noindex={d.fixture} bg="grid" mainStyle="outline: none; overflow: clip;">
   <ReadProgress />
   <article>
     <header class="cory-container" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--space-12) var(--space-10);">

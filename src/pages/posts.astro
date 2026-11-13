@@ -14,7 +14,7 @@ const series = [...new Set(posts.map(p => p.series).filter(Boolean))] as string[
 const kinds = { series: 'Part of a series', single: 'Single post' };
 const items = posts.map(p => ({ tags: p.series ? [p.series] : [], status: p.series ? 'series' : 'single' }));
 ---
-<PageLayout title="LinkedIn posts · AIUXAleem" description="LinkedIn posts by Mohammad Abdul Aleem on AI product design, UX and design systems: short posts and running series, newest first." page="posts" bg="grid" mainStyle="outline: none; overflow: clip;">
+<PageLayout title="LinkedIn posts · Aleem | AIUX" description="LinkedIn posts by Mohammad Abdul Aleem on AI product design, UX and design systems: short posts and running series, newest first." page="posts" bg="grid" mainStyle="outline: none; overflow: clip;">
   <section class="cory-container" aria-labelledby="posts-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
     <p class="cory-overline" style="margin: 0px;">Writing · Posts</p>
     <h1 id="posts-title" style="margin: 0px; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">Short posts and running series.</h1>

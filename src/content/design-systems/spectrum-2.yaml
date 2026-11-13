@@ -1,0 +1,14 @@
+title: "Spectrum 2"
+maker: "Adobe"
+kind: company
+summary: "Adobe's design system, with React Spectrum and Spectrum Web Components on the web, tokens and component schemas as data, and an MCP server and agent skill."
+url: "https://spectrum.adobe.com/"
+platforms: [web]
+strengths: [tokens, components, accessibility, documentation]
+code: { url: "https://github.com/adobe/react-spectrum", license: "Apache-2.0" }
+tokens: { label: "spectrum-design-data", url: "https://github.com/adobe/spectrum-design-data" }
+ai:
+  - { label: "MCP server", url: "https://github.com/adobe/spectrum-design-data/tree/main/tools/design-data-mcp#readme" }
+  - { label: "Agent skill", url: "https://github.com/adobe/spectrum-design-data/tree/main/tools/design-data-skill" }
+added: 2026-11-13
+order: 45

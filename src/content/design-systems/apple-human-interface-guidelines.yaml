@@ -1,0 +1,12 @@
+title: "Human Interface Guidelines"
+maker: "Apple"
+kind: company
+summary: "Apple's design guidance for iOS, iPadOS, macOS, watchOS, tvOS and visionOS, with official UI kits for Figma and Sketch and a page on designing generative AI features."
+url: "https://developer.apple.com/design/human-interface-guidelines/"
+platforms: [ios, desktop]
+strengths: [patterns, mobile, documentation, content-and-voice]
+figma: "https://www.figma.com/community/file/1651309003795292092/ios-and-ipados-27"
+ai:
+  - { label: "AI guidelines", url: "https://developer.apple.com/design/human-interface-guidelines/generative-ai" }
+added: 2026-11-13
+order: 15

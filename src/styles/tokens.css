@@ -117,6 +117,24 @@
   --action-ink-active: var(--navy-900);
   --action-secondary-hover: var(--slate-50);
   --action-ghost-hover: var(--blue-100);
+  /* The solid call to action (owner request, 12 November 2026, L-65): white label on blue-700 is 5.3:1, on blue-800 6.9:1.
+     On the light page the fill is its own edge (5.3:1 against the page), so the rim is clear. */
+  --action-solid: var(--blue-700);
+  --action-solid-hover: var(--blue-800);
+  --action-solid-rim: transparent;
+  --action-solid-rim-hover: transparent;
+  /* The logo (brand kit, L-67): on light ground the navy tile and wordmark; on the dark page the kit's -dark colours (a
+     navy-700 tile, a white wordmark); on an ink panel's navy gradient the kit's white file (a white tile, a navy "a"),
+     where a navy tile would sink into the panel. */
+  --logo-tile: var(--navy-800);
+  --logo-letter: var(--white);
+  --logo-word: var(--navy-800);
+  --logo-tile-on-ink: var(--white);
+  --logo-letter-on-ink: var(--navy-800);
+  --logo-word-on-ink: var(--white);
+  /* Declared here, before the dark block, so the dark values below win on the root (the shadow scale further down is declared after it). */
+  --shadow-button: 0 1px 2px rgba(11, 31, 54, 0.10), 0 4px 12px rgba(21, 104, 212, 0.18); /* the solid call to action, at rest */
+  --shadow-button-hover: 0 2px 4px rgba(11, 31, 54, 0.12), 0 8px 20px rgba(21, 104, 212, 0.24);
 
   --focus-ring: rgba(37, 138, 253, 0.35);
   --accent-mint: var(--green-500);
@@ -172,6 +190,14 @@
   --action-ink-active: var(--navy-200);
   --action-secondary-hover: var(--navy-700);
   --action-ghost-hover: rgba(90, 167, 254, 0.14);
+  /* On navy the blue fill is only 2.95:1 against a card, so a one-pixel blue-500 rim carries the edge (4.56:1 on a card,
+     5.50:1 on the page); blue-400 on hover. */
+  --action-solid: var(--blue-700);
+  --action-solid-hover: color-mix(in srgb, var(--blue-700) 50%, var(--blue-600)); /* @kind color */ /* lighter on navy: white 4.69:1 */
+  --action-solid-rim: var(--blue-500);
+  --action-solid-rim-hover: var(--blue-400);
+  --logo-tile: var(--navy-700);
+  --logo-word: var(--white);
 
   --focus-ring: rgba(90, 167, 254, 0.45);
   --gradient-ink: linear-gradient(160deg, #12304F 0%, #0B1F36 100%); /* @kind color */ /* the light theme's own ink, so the ink object is theme-stable: 1.40:1 to 1.13:1 against the page; was navy-850 to navy-900, which ended in the page colour (L-39) */
@@ -185,6 +211,8 @@
   --shadow-brand: 0 12px 32px rgba(37, 138, 253, 0.40);
   --highlight-inset: inset 0 1px 0 rgba(255, 255, 255, 0.18); /* @kind other */ /* the one-pixel light along a button's top edge (8 November 2026, L-56) */
   --shadow-glow: 0 0 0 1px rgba(255,255,255,0.08), 0 0 48px rgba(41, 190, 221, 0.18);
+  --shadow-button: 0 1px 2px rgba(0, 0, 0, 0.40), 0 4px 12px rgba(37, 138, 253, 0.14); /* the solid call to action, at rest */
+  --shadow-button-hover: 0 2px 4px rgba(0, 0, 0, 0.45), 0 8px 20px rgba(37, 138, 253, 0.24);
 }
 
 /* Glass and the page's field (owner request, 25 October 2026; layout/ai-field.astro). Mixed from the theme's own surfaces
@@ -320,6 +348,7 @@
   --radius-xl: 24px;
   --radius-2xl: 32px;
   --radius-pill: 999px;
+  --radius-button: var(--radius-pill); /* every button and call to action (L-65, direction B: the pill with a travelling arrow) */
   --radius-tile: 22.7%; /* mascot tile corner ratio */
 
   /* --- Border widths --- */

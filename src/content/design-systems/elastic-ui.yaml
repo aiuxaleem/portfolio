@@ -1,0 +1,12 @@
+title: "Elastic UI (EUI)"
+maker: "Elastic"
+kind: company
+summary: "React component library and guidelines behind Elastic's products, with patterns, content guidance, data visualisation and the Borealis theme."
+url: "https://eui.elastic.co/"
+platforms: [web]
+strengths: [components, patterns, data-visualisation, theming]
+code: { url: "https://github.com/elastic/eui" }
+figma: "https://www.figma.com/community/file/1656321711577585144/elastic-ui-borealis"
+accessibility: "WCAG 2.1"
+added: 2026-11-13
+order: 95

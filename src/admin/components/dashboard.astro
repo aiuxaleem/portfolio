@@ -18,19 +18,26 @@
    base under 20, a zero drawn as no mark.
    States: default; empty (no views in the period); partial (no earlier period, an earlier period only partly covered,
    a breakdown with no rows, too few days for a pattern); error. Rendered on the server: no loading state.
-   On /_states the dashboard is shown several times: `plain` renders blocks with unique ids there. */
+   On /_states the dashboard is shown several times: `plain` renders blocks with unique ids there.
+   Command centre (L-66): the figures, then the chart beside the publishing queue (publishing.astro: what is waiting, and
+   what was published in this period with the views each brought, the second question beside the first), then the other
+   questions two by two, then the folds. */
 import AdminIcon from './admin-icon.astro';
 import BarList from './bar-list.astro';
 import Columns from './columns.astro';
 import type { Dashboard } from './dashboard-data';
 import type { AdminIcon as IconName } from './admin-icons';
+import Publishing from './publishing.astro';
+import type { Recent, Waiting } from '../lib/publishing';
 import AdminStyles from './admin-styles.astro'; /* last, so admin.css is bundled after global.css (L-40) */
 
-interface Props { data?: Dashboard; error?: string; range: number; ranges: readonly number[]; /** Where the range links point. */ base?: string; plain?: boolean; uid?: string }
+interface Props { data?: Dashboard; error?: string; range: number; ranges: readonly number[]; /** Where the range links point. */ base?: string; plain?: boolean; uid?: string; /** The publishing queue (the admin home); empty elsewhere. */ queue?: { waiting: Waiting[]; recent: Recent[]; more?: number; fault?: boolean } }
 const { data, error, range, ranges, base = '/admin', plain = false, uid = 'dash' } = Astro.props;
 const Block: any = plain ? 'div' : 'section';
 const Nav: any = plain ? 'div' : 'nav';
 const labelled = (id: string) => (plain ? {} : { 'aria-labelledby': `${uid}-${id}` });
+/* The publishing queue beside the chart (above the message when there are no numbers). */
+const q = Astro.props.queue ?? { waiting: [], recent: [] };
 
 const n = (v: number) => v.toLocaleString('en-GB');
 const short = (day: string) => new Date(day + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }).replace(' ', ' '); // a date never breaks across lines
@@ -38,11 +45,12 @@ const one = (v: number) => (Math.round(v * 10) / 10).toLocaleString('en-GB', { m
 const countryName = (code: string) => { if (!code) return 'Unknown'; try { return new Intl.DisplayNames(['en'], { type: 'region' }).of(code) || code; } catch { return code; } };
 const pageName = (p: { path: string; name?: string }) => p.name || (p.path === '/' ? 'Home' : p.path);
 const deviceName: Record<string, string> = { desktop: 'Desktop', phone: 'Phone', tablet: 'Tablet' };
-const kindName: Record<string, string> = { projects: 'Project', caseStudies: 'Case study', posts: 'Blog post', videos: 'Video', linkedinPosts: 'LinkedIn post', linkedinArticles: 'LinkedIn article', resources: 'Resource', aiTools: 'AI tool', skills: 'Claude skill' };
-const kindIcon: Record<string, IconName> = { projects: 'projects', caseStudies: 'case-studies', posts: 'posts', videos: 'videos', linkedinPosts: 'linkedin-posts', linkedinArticles: 'linkedin-articles', resources: 'resources', aiTools: 'ai-tools', skills: 'skills' };
+const kindName: Record<string, string> = { projects: 'Project', caseStudies: 'Case study', posts: 'Blog post', videos: 'Video', linkedinPosts: 'LinkedIn post', linkedinArticles: 'LinkedIn article', resources: 'Resource', aiTools: 'AI tool', skills: 'Claude skill', designSystems: 'Design system' };
+const kindIcon: Record<string, IconName> = { projects: 'projects', caseStudies: 'case-studies', posts: 'posts', videos: 'videos', linkedinPosts: 'linkedin-posts', linkedinArticles: 'linkedin-articles', resources: 'resources', aiTools: 'ai-tools', skills: 'skills', designSystems: 'design-systems' };
 const TARGETS = new Set(['SA', 'AE']);
 const FLOOR = 20; // no percentage on a smaller base
-const SHOWN = 6; // publishes listed before the fold
+/* Beside the chart the queue lists the first three publishes, so the two stay level; the rest are one press away. */
+const QUEUE_SHOWN = 3;
 const empty = !!data && data.totals.views === 0;
 const perVisit = (t: { views: number; visits: number }) => (t.visits ? t.views / t.visits : 0);
 const ago = (iso: string) => { const m = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000)); return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} d ago`; };
@@ -74,6 +82,7 @@ const tiles: { icon: IconName; label: string; value: string; delta: Delta; note?
   { icon: 'pages', label: 'Pages per visit', value: data.totals.visits ? one(perVisit(data.totals)) : '—', delta: ratioDelta },
   { icon: 'target', label: 'Target markets', value: n(data.totals.target), delta: delta(data.totals.target, prev?.target), note: targetNote },
 ] : [];
+const sparkOf = (icon: IconName): number[] | undefined => (icon === 'views' ? buckets.map(b => b.views) : icon === 'people' ? buckets.map(b => b.visits) : icon === 'pages' ? buckets.map(b => (b.visits ? b.views / b.visits : 0)) : undefined);
 const arrow: Record<Delta['dir'], IconName | undefined> = { up: 'up', down: 'down', flat: 'flat', none: undefined };
 type Publish = Dashboard['publishes'][number];
 /* What was published is named by its title; the slug stands in when the page has not looked one up. */
@@ -131,8 +140,8 @@ const devices = data ? data.devices.map(d => ({ label: deviceName[d.device] || d
   <div class="admin-section-head">
     <div class="admin-head-text">
       <h2 id={`${uid}-numbers-title`} class="dash-h2"><AdminIcon name="numbers" />Visitors</h2>
-      {data && <p class="form-note">{rangeNote} {compare}</p>}
-      {data?.lastVisit && <p class="form-note">Last view {ago(data.lastVisit.at)}: {countryName(data.lastVisit.country)}, <bdi>{pageName(data.lastVisit)}</bdi>.</p>}
+      {data && <p class="form-note">{rangeNote}{data.lastVisit && <Fragment> Last view {ago(data.lastVisit.at)}: {countryName(data.lastVisit.country)}, <bdi>{pageName(data.lastVisit)}</bdi>.</Fragment>}</p>}
+      {data && compare && <p class="form-note">{compare}</p>}
     </div>
     <Nav class="dash-range" aria-label={plain ? undefined : 'Period'}>
       <span class="project-filter-label">Period</span>
@@ -142,6 +151,7 @@ const devices = data ? data.devices.map(d => ({ label: deviceName[d.device] || d
     </Nav>
   </div>
 
+  {!data && <Publishing level={3} plain={plain} uid={`${uid}-pub`} {...q} />}
   {error && (
     <div class="form-panel" role={plain ? undefined : 'alert'}>
       <AdminIcon name="alert" />
@@ -164,6 +174,7 @@ const devices = data ? data.devices.map(d => ({ label: deviceName[d.device] || d
                 <dd class="dash-number">{t.value}</dd>
                 {compared && <dd class="dash-delta" data-dir={t.delta.dir}>{t.delta.text ? <Fragment>{arrow[t.delta.dir] && <AdminIcon name={arrow[t.delta.dir]!} size={14} />}<span>{t.delta.text}</span>{t.delta.note && <Fragment>{' '}<span class="dash-delta-vs">{t.delta.note}</span></Fragment>}</Fragment> : t.delta.note ? <span class="dash-delta-vs">{t.delta.note}</span> : <Fragment><span aria-hidden="true">—</span><span class="cory-visually-hidden">no change to show</span></Fragment>}</dd>}
                 {t.note && <dd class="dash-tile-note">{t.note}</dd>}
+                {(() => { const s = sparkOf(t.icon); if (!s || s.length < 2) return null; const top = Math.max(1, ...s); return <dd class="dash-spark" aria-hidden="true"><svg viewBox={`0 0 ${s.length * 3} 24`} preserveAspectRatio="none" focusable="false">{s.map((v, i) => <rect x={i * 3} y={24 - (v / top) * 24} width="2" height={(v / top) * 24} data-today={i === s.length - 1 ? '' : undefined} />)}</svg></dd>; })()}
               </div>
             ))}
           </dl>
@@ -180,8 +191,10 @@ const devices = data ? data.devices.map(d => ({ label: deviceName[d.device] || d
           </li>
         )}
 
+        {empty && <li class="span-4"><Publishing level={3} plain={plain} uid={`${uid}-pub`} {...q} /></li>}
         {!empty && (
           <li class="span-4">
+            <div class="dash-lead" data-with-queue>
             <div class="admin-card" data-dash-series>
               <div class="admin-card-head"><h3 class="admin-card-title"><AdminIcon name="chart" />Page views over time</h3><span class="form-note">{weekly ? 'by week' : 'by day'}{peakNote}</span></div>
               <Columns items={items} line={prevLine} lineLabel={weekly ? `the same days, ${data.days} days earlier` : `previous ${data.days} days`} label="this period" partialLabel={weekly ? 'this week so far' : 'today so far'} markNote={weekly ? 'a week in which you published something; the list and table below name it' : 'a day you published something; the list and table below name it'} tick={tick} weekly={weekly} />
@@ -195,11 +208,11 @@ const devices = data ? data.devices.map(d => ({ label: deviceName[d.device] || d
                   </table>
                 </div>
               </details>
-              {data.publishes.length > 0 && (
-                <div class="dash-published">
-                  <h4 class="dash-published-title"><AdminIcon name="published" size={18} />What you published</h4>
+            </div>
+            <div class="dash-queue"><Publishing level={3} plain={plain} uid={`${uid}-pub`} {...q}>{data.publishes.length > 0 && (
+                <div slot="published" class="dash-published">
                   <p class="form-note">In this period, with the views its page has had since.</p>
-                  <ul class="admin-recent">{pubRows.slice(0, SHOWN).map(({ p, again }) => (
+                  <ul class="admin-recent">{pubRows.slice(0, QUEUE_SHOWN).map(({ p, again }) => (
                     <li>
                       <AdminIcon name={pubIcon(p)} />
                       <div>
@@ -208,10 +221,10 @@ const devices = data ? data.devices.map(d => ({ label: deviceName[d.device] || d
                       </div>
                     </li>
                   ))}</ul>
-                  {data.publishes.length > SHOWN && (
+                  {data.publishes.length > QUEUE_SHOWN && (
                     <details class="dash-details dash-more">
-                      <summary><AdminIcon name="chevron" size={16} data-chevron /><span data-when-closed>Show {n(data.publishes.length - SHOWN)} more</span><span data-when-open>Show fewer</span></summary>
-                      <ul class="admin-recent">{pubRows.slice(SHOWN).map(({ p, again }) => (
+                      <summary><AdminIcon name="chevron" size={16} data-chevron /><span data-when-closed>Show {n(data.publishes.length - QUEUE_SHOWN)} more</span><span data-when-open>Show fewer</span></summary>
+                      <ul class="admin-recent">{pubRows.slice(QUEUE_SHOWN).map(({ p, again }) => (
                         <li>
                           <AdminIcon name={pubIcon(p)} />
                           <div>
@@ -223,7 +236,7 @@ const devices = data ? data.devices.map(d => ({ label: deviceName[d.device] || d
                     </details>
                   )}
                 </div>
-              )}
+              )}</Publishing></div>
             </div>
           </li>
         )}
@@ -290,6 +303,8 @@ const devices = data ? data.devices.map(d => ({ label: deviceName[d.device] || d
         )}
         {data?.ab && (data.ab.v1.visits > 0 || data.ab.v2.visits > 0) && (
           <li class="span-4">
+            <details class="resource-disclosure dash-fold">
+            <summary><AdminIcon name="ab-test" size={18} /><span data-disclosure-state>Version 1 and version 2: the A/B test of 24 and 25 October</span><AdminIcon name="chevron" size={16} data-chevron /></summary>
             <div class="admin-card" data-dash-ab>
               <h3 class="admin-card-title"><AdminIcon name="ab-test" />Version 1 and version 2</h3>
               <p class="form-note">The A/B test ran on 24 and 25 October 2026: new visitors who opened Home or Services on the main site were split evenly between the two versions. Version 2 was the two audience websites, one for hiring teams and one for clients, reached through two doors on Home. It ended when the bar of websites went up (every visitor chooses a website now); the visits counted while it ran stay readable here.</p>
@@ -303,6 +318,7 @@ const devices = data ? data.devices.map(d => ({ label: deviceName[d.device] || d
               </table></div>
               <p class="form-note">A share is shown once a version has {FLOOR} visits. Read the result only when both versions have well over {FLOOR}: with a few visits a difference is chance. The method is written up in the repository (docs/AB_TEST.md).</p>
             </div>
+            </details>
           </li>
         )}
         <li class="span-4">

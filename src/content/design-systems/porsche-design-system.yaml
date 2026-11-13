@@ -1,0 +1,14 @@
+title: "Porsche Design System"
+maker: "Dr. Ing. h.c. F. Porsche AG"
+kind: company
+summary: "Web components with React, Angular and Vue wrappers, tokens, stylesheets and patterns for Porsche digital products, now in version 4."
+url: "https://designsystem.porsche.com/v4/"
+platforms: [web]
+strengths: [components, tokens, theming, documentation]
+code: { url: "https://github.com/porsche-design-system/porsche-design-system", license: "Apache-2.0" }
+figma: "https://www.figma.com/@porsche"
+ai:
+  - { label: "Agent skills (experimental)", url: "https://designsystem.porsche.com/v4/skills/introduction/general/" }
+accessibility: "WCAG 2.2 AA"
+added: 2026-11-13
+order: 80

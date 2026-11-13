@@ -15,11 +15,15 @@
    13. A thumbnail on the Images page that cannot be loaded says so.
    14. From 1024px the side panel's list of sections scrolls on its own; while more sections sit below its edge, the foot
        draws a fade over the edge (admin.css), so the cut reads as a scroll and not as the end of the list.
+   15. The publishing queue on the dashboard (L-66): its two panels become two tabs, the one marked first open; arrow
+       keys, Home and End move between them.
    Every part is selector-guarded, so the file is a no-op on a page that has none of it (the sign-in page has 6 and 7 only). */
 const button = document.querySelector<HTMLButtonElement>('[data-admin-menu]'), panel = document.querySelector<HTMLElement>('[data-admin-panel]');
 if (button && panel) {
   const set = (open: boolean) => { button.setAttribute('aria-expanded', String(open)); if (open) panel.setAttribute('data-open', ''); else panel.removeAttribute('data-open'); };
   button.addEventListener('click', () => set(button.getAttribute('aria-expanded') !== 'true'));
+  /* The Menu in the phone bar (L-66) opens the same panel, at the top of the screen, and hands focus to its first section. */
+  document.querySelectorAll<HTMLButtonElement>('[data-admin-menu-proxy]').forEach(proxy => proxy.addEventListener('click', () => { set(true); window.scrollTo({ top: 0 }); panel.querySelector<HTMLElement>('a, button')?.focus(); }));
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') { set(false); button.focus(); } });
 }
 
@@ -130,9 +134,12 @@ if (errorTemplate) {
 /* 13. A thumbnail that cannot be loaded leaves words, not a blank box. */
 document.querySelectorAll<HTMLImageElement>('.admin-thumb img').forEach(img => img.addEventListener('error', () => { const box = img.parentElement; if (!box) return; img.remove(); box.dataset.failed = ''; box.textContent = 'Preview not available'; }));
 
-/* 14. The section list's scroll cue: the foot carries data-more-below while the list can scroll further down. */
+/* 14. The section list's scroll cue: the foot carries data-more-below while the list can scroll further down. The current
+   section is brought into the list's view first, so a page low in the list (Opportunity check) still shows where you are. */
 const sectionList = document.querySelector<HTMLElement>('.admin-nav'), sideFoot = document.querySelector<HTMLElement>('.admin-side-foot');
 if (sectionList && sideFoot) {
+  const current = sectionList.querySelector<HTMLElement>('[aria-current="page"]');
+  if (current && sectionList.scrollHeight > sectionList.clientHeight) { const top = current.offsetTop - sectionList.offsetTop; if (top + current.offsetHeight > sectionList.clientHeight) sectionList.scrollTop = top - sectionList.clientHeight / 2; }
   const paint = () => sideFoot.toggleAttribute('data-more-below', sectionList.scrollHeight - sectionList.clientHeight - sectionList.scrollTop > 2);
   sectionList.addEventListener('scroll', paint, { passive: true }); window.addEventListener('resize', paint); paint();
 }
@@ -146,3 +153,24 @@ document.querySelectorAll<HTMLInputElement>('[data-show-password]').forEach(box 
 /* 5. After a publish is refused the page comes back with a list of what to fix. Focus goes to that list, so it is the
    first thing read out and the first thing a keyboard reaches; each item in it links to its field. */
 document.getElementById('problems')?.focus({ preventScroll: false });
+
+/* 15. The publishing queue's tabs: a tablist made from the panels' headings; without JavaScript both panels are listed. */
+document.querySelectorAll<HTMLElement>('[data-pub-tabs]').forEach((card, c) => {
+  const panels = [...card.querySelectorAll<HTMLElement>(':scope > [data-pub-panel]')]; if (panels.length < 2) return;
+  const list = document.createElement('div'); list.setAttribute('role', 'tablist'); list.setAttribute('aria-label', 'Publishing');
+  const tabs = panels.map((panel, i) => {
+    const heading = panel.querySelector<HTMLElement>('.admin-queue-title'), tab = document.createElement('button');
+    tab.type = 'button'; tab.setAttribute('role', 'tab'); tab.id = `pub-tab-${c}-${i}`; panel.id ||= `pub-panel-${c}-${i}`;
+    tab.setAttribute('aria-controls', panel.id); panel.setAttribute('role', 'tabpanel'); panel.setAttribute('aria-labelledby', tab.id);
+    /* The tab's short name (Waiting, Published); the panel keeps its full heading for screen readers. */
+    if (heading) { const icon = heading.querySelector('svg')?.cloneNode(true); if (icon) tab.append(icon); tab.append(panel.dataset.tabLabel || heading.textContent!.trim()); }
+    /* The Waiting tab always says how many are waiting, so a draft is seen without opening it. */
+    if (panel.dataset.tabCount !== undefined) tab.append(` · ${panel.dataset.tabCount}`);
+    list.append(tab); return tab;
+  });
+  const pick = (i: number, focus = false) => tabs.forEach((t, k) => { const on = k === i; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; panels[k].hidden = !on; if (on && focus) t.focus(); });
+  list.addEventListener('keydown', e => { const i = tabs.indexOf(document.activeElement as HTMLButtonElement); if (i < 0) return; const to = e.key === 'ArrowRight' ? (i + 1) % tabs.length : e.key === 'ArrowLeft' ? (i - 1 + tabs.length) % tabs.length : e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : -1; if (to < 0) return; e.preventDefault(); pick(to, true); });
+  tabs.forEach((t, i) => t.addEventListener('click', () => pick(i)));
+  card.prepend(list); card.setAttribute('data-tabbed', '');
+  pick(Math.max(0, panels.findIndex(p => p.hasAttribute('data-pub-first'))));
+});

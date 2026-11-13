@@ -47,7 +47,7 @@ const facts: [string, string][] = [
   ['Based in', `${site.location}, on GCC hours. ${site.availability.label}`],
 ];
 ---
-<PageLayout title={`${profile.headline} · For hiring managers · AIUXAleem`} description={`For recruiters and hiring managers: ${site.name}, ${profile.headline}. Experience, case studies, certifications and the resume in one place.`} page="hiring" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
+<PageLayout title={`${profile.headline} · Aleem, for hiring managers`} description={`For recruiters and hiring managers: ${site.name}, ${profile.headline}. Experience, case studies, certifications and the resume in one place.`} page="hiring" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
   <SiteHero id="hiring" overline="For hiring managers" title={`A ${profile.headline} for your team.`} accent="AI Product Designer" lead={`I'm ${site.name}. ${profile.positioning}`} primary={{ label: c.call, href: site.calendarUrl, newTab: true }} secondary={{ label: resumeExternal ? 'View resume' : 'Download resume', href: site.resumeUrl, newTab: resumeExternal, download: !resumeExternal }}>
     <div slot="after" data-cq><dl data-cq-grid class="hiring-facts">{facts.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl></div>
     {featured.length > 0 && <HeroStack slot="art" id="hiring-stack" label="Selected work" noun="case study" cards={featured.map(c => caseCard(c, listed))} />}

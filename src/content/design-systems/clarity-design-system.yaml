@@ -1,0 +1,13 @@
+title: "Clarity Design System"
+maker: "Broadcom (originally VMware)"
+kind: company
+summary: "Angular components (@clr/angular) and AppFX add-ons for enterprise applications; the separate Clarity Core web components repository was archived in February 2026."
+url: "https://clarity.design/"
+platforms: [web]
+strengths: [components, forms, accessibility, documentation]
+code: { url: "https://github.com/vmware-clarity/ng-clarity", license: "MIT" }
+ai:
+  - { label: "llms.txt", url: "https://clarity.design/llms.txt" }
+  - { label: "Agent skills and AGENTS.md", url: "https://clarity.design/pages/ai" }
+added: 2026-11-13
+order: 120

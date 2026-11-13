@@ -1,0 +1,15 @@
+title: "Carbon Design System"
+maker: "IBM"
+kind: company
+summary: "IBM's open-source design system with React and web components, Figma kits, Carbon for AI guidance and a hosted MCP server for AI coding tools."
+url: "https://carbondesignsystem.com/"
+platforms: [web]
+strengths: [components, accessibility, ai-patterns, data-visualisation]
+code: { url: "https://github.com/carbon-design-system/carbon", license: "Apache-2.0" }
+figma: "https://www.figma.com/community/file/1157761560874207208"
+tokens: { label: "@carbon/themes", url: "https://github.com/carbon-design-system/carbon/tree/main/packages/themes" }
+ai:
+  - { label: "AI guidelines", url: "https://carbondesignsystem.com/guidelines/carbon-for-ai/" }
+  - { label: "MCP server", url: "https://www.carbondesignsystem.com/getting-started/carbon-mcp/overview" }
+added: 2026-11-13
+order: 25

@@ -1,0 +1,11 @@
+title: "GOV.UK Design System"
+maker: "Government Digital Service (UK)"
+kind: government
+summary: "Styles, components and patterns for UK government services, with GOV.UK Frontend as the code that implements them."
+url: "https://design-system.service.gov.uk/"
+platforms: [web]
+strengths: [components, patterns, accessibility, forms]
+code: { url: "https://github.com/alphagov/govuk-frontend", license: "MIT" }
+accessibility: "WCAG 2.2 AA"
+added: 2026-11-13
+order: 55

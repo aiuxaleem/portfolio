@@ -1,0 +1,11 @@
+title: "Gestalt"
+maker: "Pinterest"
+kind: company
+summary: "Pinterest's design system with public docs; its open-source React library reached end of life in November 2025 and no longer takes issues or pull requests."
+url: "https://gestalt.pinterest.systems/"
+platforms: [web]
+strengths: [accessibility, components, tokens]
+code: { url: "https://github.com/pinterest/gestalt", license: "Apache-2.0" }
+tokens: { label: "gestalt-design-tokens", url: "https://github.com/pinterest/gestalt/tree/master/packages/gestalt-design-tokens" }
+added: 2026-11-13
+order: 90

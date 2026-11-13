@@ -1,0 +1,12 @@
+title: "Salesforce Lightning Design System 2 (SLDS 2)"
+maker: "Salesforce"
+kind: company
+summary: "Salesforce's design system, generally available as SLDS 2 from Winter '26, with styling hooks for theming and agentic experience patterns for Agentforce."
+url: "https://www.lightningdesignsystem.com/"
+platforms: [web]
+strengths: [theming, patterns, ai-patterns, components]
+ai:
+  - { label: "AI patterns", url: "https://www.lightningdesignsystem.com/2e1ef8501/p/95c37a" }
+  - { label: "AI guidelines", url: "https://www.lightningdesignsystem.com/2e1ef8501/p/52a7c7-ai-and-slds-2" }
+added: 2026-11-13
+order: 50

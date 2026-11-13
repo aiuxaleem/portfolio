@@ -17,7 +17,7 @@ import HeroStack from '../../components/sites/hero-stack.astro';
 import { aboutCards } from '../../lib/site-stacks';
 const stack = aboutCards({ method: '#clients-ai-title', principles: '#clients-principles-title', expertise: '#clients-expertise-title' });
 ---
-<PageLayout title="About · AIUXAleem, for clients" description={`Who you work with: ${site.name}, ${profile.headline}. Principles, what he brings to a product team, and how he works with AI.`} page="about" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
+<PageLayout title="About · Aleem, for clients" description={`Who you work with: ${site.name}, ${profile.headline}. Principles, what he brings to a product team, and how he works with AI.`} page="about" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
   <SiteHero id="clients-about" overline="About" title="Who you'll work with." accent="work with" lead={`I'm ${site.name}, a ${profile.headline} with 13+ years across fintech and enterprise platforms, working from ${site.location} on GCC hours. ${profile.positioning}`} primary={{ label: c.call, href: site.calendarUrl, newTab: true }} secondary={{ label: 'See the case studies', href: '/case-studies' }}>
     <HeroStack slot="art" id="about-stack" label="About" noun="card" cards={stack} />
   </SiteHero>

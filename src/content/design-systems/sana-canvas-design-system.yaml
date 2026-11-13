@@ -1,0 +1,13 @@
+title: "Sana Canvas Design System"
+maker: "Workday"
+kind: company
+summary: "Workday's design system: tokens, web components in Canvas Kit, and guidelines for content, globalisation and AI experiences."
+url: "https://design.workday.com/design-system"
+platforms: [web]
+strengths: [tokens, components, ai-patterns, content-and-voice]
+code: { url: "https://github.com/Workday/canvas-kit", license: "Apache-2.0" }
+tokens: { label: "Workday/canvas-tokens (@workday/canvas-tokens-web)", url: "https://github.com/Workday/canvas-tokens" }
+ai:
+  - { label: "AI guidelines", url: "https://design.workday.com/design-system/guidelines/ai-guidelines/ai-experience-guidelines" }
+added: 2026-11-13
+order: 85

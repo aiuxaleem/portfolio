@@ -1,0 +1,16 @@
+title: Refactored by Colaberry
+mine: true
+maker: Colaberry
+summary: "A hybrid brand system for Refactored, Colaberry's data-education platform: a 2019 logo and palette rebuilt into tokens, components and a deployable landing site, with UX-law tokens and a contrast gate computed live."
+platforms: [web]
+strengths: [tokens, components, accessibility, multi-brand]
+accessibility: WCAG AA contrast
+facts:
+  - { value: "32", label: "Components" }
+  - { value: "62", label: "Contrast pairs checked in both themes" }
+  - { value: "5", label: "Brand payloads as data" }
+madeWith: [Claude Design]
+note: "Built inside Colaberry, so its files are not public. I can walk you through it on a call."
+added: 2026-11-13
+order: 60
+tags: [Rebrand, UX laws, Landing page]

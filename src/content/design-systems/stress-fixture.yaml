@@ -1,0 +1,19 @@
+title: "A deliberately long design system name that keeps going so the card's heading has to wrap across several lines in all ok"
+maker: "Stress fixture with a maker name long enough to wrap twice"
+kind: open-source
+summary: "Stress content: a long summary with an unbroken string Supercalifragilisticexpialidocious-design-tokens-registry-v2 and enough words to fill the card to the limit of what the summary allows, so the layout is checked."
+url: "https://example.com/an-unbroken-path-segment-of-sixty-characters-abcdefghijklmn"
+platforms: [web, ios, android, desktop, email, print, social]
+strengths: [tokens, components, accessibility, ai-patterns]
+code: { url: "https://example.com/code", license: "Apache-2.0 WITH LLVM-exception" }
+figma: "https://example.com/figma"
+tokens: { label: "Tokens package with a long name", url: "https://example.com/tokens" }
+ai:
+  - { label: "MCP server", url: "https://example.com/mcp" }
+  - { label: "llms.txt", url: "https://example.com/llms.txt" }
+  - { label: "AI patterns and guidance", url: "https://example.com/ai" }
+accessibility: "WCAG 2.2 AA and EN 301 549 with a long note"
+added: 2026-11-13
+order: 999
+tags: [One, Two, Three, Four, Five, Six, Seven, Eight, Nine]
+fixture: true

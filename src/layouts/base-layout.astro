@@ -40,7 +40,7 @@ const preload = [...fonts.preload.latin, ...(lang === 'ar' ? fonts.preload.arabi
 const { ogType = 'website', jsonLd = [], manifest } = Astro.props;
 const image = abs(Astro.props.ogImage || await ogImageFor(Astro.url.pathname));
 /* The share title drops the site suffix; the site name is its own tag. */
-const shareTitle = title.replace(/ · AIUXAleem$/, '');
+const shareTitle = title.replace(/ · Aleem \| AIUX$/, '');
 /* The generated card's alt text says what the card shows; an image a page brings itself keeps the share title. */
 const shareAlt = Astro.props.ogImage ? shareTitle : await ogAltFor(Astro.url.pathname);
 /* Page view count: first-party, no cookie, sent after the page has loaded. Present only where the /api/hit route exists
@@ -80,10 +80,12 @@ const field = !Astro.url.pathname.startsWith('/admin');
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={image} />
     <meta name="twitter:image:alt" content={shareAlt} />
-    <link rel="alternate" type="application/rss+xml" title="AIUXAleem blog" href="/rss.xml" />
-    <link rel="alternate" type="application/rss+xml" title="AIUXAleem writing" href="/writing/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title="Aleem | AIUX blog" href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title="Aleem | AIUX writing" href="/writing/rss.xml" />
     {jsonLd.filter(Boolean).map(o => <script type="application/ld+json" set:html={JSON.stringify(o).replace(/</g, '\\u003c')} />)}
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/aleem-favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#0B1F36" />
     {manifest && <link rel="manifest" href={manifest} />}
     {noindex && <meta name="robots" content="noindex, nofollow" />}

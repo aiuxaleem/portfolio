@@ -1,0 +1,16 @@
+title: "Pajamas Design System"
+maker: "GitLab"
+kind: company
+summary: "GitLab's open source design system: brand and product foundations, Vue components in GitLab UI, patterns including AI-human interaction, content and accessibility guidance."
+url: "https://design.gitlab.com/"
+platforms: [web]
+strengths: [tokens, components, ai-patterns, content-and-voice]
+code: { url: "https://gitlab.com/gitlab-org/gitlab-services/design.gitlab.com", license: "MIT" }
+figma: "https://www.figma.com/community/file/781156790581391771/"
+tokens: { label: "@gitlab/ui design tokens (JSON build)", url: "https://gitlab.com/gitlab-org/gitlab-services/design.gitlab.com/-/tree/main/packages/gitlab-ui/src/tokens/build/json" }
+ai:
+  - { label: "AI patterns", url: "https://design.gitlab.com/patterns/ai-human-interaction/" }
+  - { label: "AI chat patterns", url: "https://design.gitlab.com/patterns/duo-chat/" }
+accessibility: "WCAG 2.2 AA"
+added: 2026-11-13
+order: 70

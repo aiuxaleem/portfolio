@@ -1,0 +1,13 @@
+title: "Ant Design"
+maker: "Ant Group"
+kind: open-source
+summary: "Ant Group's enterprise-class React UI library and design language, built for back-office and data-heavy web applications."
+url: "https://ant.design"
+platforms: [web]
+strengths: [components, patterns, theming, documentation]
+code: { url: "https://github.com/ant-design/ant-design", license: "MIT" }
+ai:
+  - { label: "llms.txt", url: "https://ant.design/llms.txt" }
+  - { label: "MCP server", url: "https://ant.design/docs/react/mcp" }
+added: 2026-11-13
+order: 150

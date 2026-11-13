@@ -6,7 +6,7 @@
    - nothing is invented: unknown facts are written as [VERIFY] or [METRIC: ...], and the quality run fails a production page that still shows one */
 import { defineCollection, reference, z } from 'astro:content';
 import { glob } from 'astro/loaders';
-import { S, alt, flags, link, seo, projectSchema, caseStudySchema, postSchema, siteSchema, videoSchema, linkedinPostSchema, linkedinArticleSchema, skillSchema, resourceSchema, aiToolSchema } from './lib/content-schemas';
+import { S, alt, flags, link, seo, projectSchema, caseStudySchema, postSchema, siteSchema, videoSchema, linkedinPostSchema, linkedinArticleSchema, skillSchema, resourceSchema, aiToolSchema, designSystemSchema } from './lib/content-schemas';
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/projects' }),
@@ -94,4 +94,10 @@ const skills = defineCollection({
   schema: skillSchema,
 });
 
-export const collections = { projects, caseStudies, posts, videos, linkedinPosts, linkedinArticles, resources, aiTools, skills, certifications, testimonials, site };
+/* Design systems (L-68): the owner's own on /my-design-systems, the public ones on /design-systems. One YAML file per system. */
+const designSystems = defineCollection({
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/design-systems' }),
+  schema: ({ image }) => designSystemSchema(image),
+});
+
+export const collections = { projects, caseStudies, posts, videos, linkedinPosts, linkedinArticles, resources, aiTools, skills, designSystems, certifications, testimonials, site };

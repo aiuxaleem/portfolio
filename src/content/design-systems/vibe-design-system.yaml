@@ -1,0 +1,13 @@
+title: "Vibe Design System"
+maker: "monday.com"
+kind: company
+summary: "monday.com's React component library and CSS foundations, documented in Storybook with a playground, a free Figma file and an MCP server for AI tools."
+url: "https://vibe.monday.com/"
+platforms: [web]
+strengths: [components, documentation]
+code: { url: "https://github.com/mondaycom/vibe", license: "MIT" }
+figma: "https://www.figma.com/community/file/940242815162888749"
+ai:
+  - { label: "MCP server", url: "https://github.com/mondaycom/vibe/blob/master/packages/mcp/README.md" }
+added: 2026-11-13
+order: 115

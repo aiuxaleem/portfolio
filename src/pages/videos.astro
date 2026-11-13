@@ -11,7 +11,7 @@ import { videoLd } from '../lib/seo';
 const videos = await listedVideos();
 const none = videos.length === 0;
 ---
-<PageLayout title="Videos · AIUXAleem" description="Videos by Mohammad Abdul Aleem on designing AI products people can trust, from what UX design covers to book reviews. Each plays from YouTube when you press play." page="videos" jsonLd={videos.map(videoLd)} bg="grid" mainStyle="outline: none; overflow: clip;">
+<PageLayout title="Videos · Aleem | AIUX" description="Videos by Mohammad Abdul Aleem on designing AI products people can trust, from what UX design covers to book reviews. Each plays from YouTube when you press play." page="videos" jsonLd={videos.map(videoLd)} bg="grid" mainStyle="outline: none; overflow: clip;">
   <section class="cory-container" aria-labelledby="videos-title" style={`position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y)${none ? '' : ' var(--space-10)'};`}>
     <p class="cory-overline" style="margin: 0px;">My videos</p>
     <h1 id="videos-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">{none ? 'No videos here yet.' : 'Videos'}</h1>

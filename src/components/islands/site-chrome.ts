@@ -113,9 +113,9 @@ if (menu && menuOpener) {
 /* ---------- Skip link: move focus to <main> ---------- */
 document.querySelector('.skip-link')?.addEventListener('click', () => { const main = document.getElementById('main'); if (main) { main.setAttribute('tabindex', '-1'); main.focus({ preventScroll: false }); } });
 
-/* ---------- Email copy: idle -> copied, or select the address when the clipboard is blocked ---------- */
-document.querySelectorAll<HTMLElement>('[data-email-copy]').forEach(wrap => {
-  const link = wrap.querySelector<HTMLElement>('[data-email]'), button = wrap.querySelector('button'), status = wrap.querySelector('[role="status"]');
+/* ---------- Email copy, and a line to copy (My Design Systems): idle -> copied, or select the text when the clipboard is blocked ---------- */
+document.querySelectorAll<HTMLElement>('[data-email-copy], [data-copy]').forEach(wrap => {
+  const link = wrap.querySelector<HTMLElement>('[data-email], [data-copy-text]'), button = wrap.querySelector('button'), status = wrap.querySelector('[role="status"]');
   if (!link || !button || !status) return;
   let timer = 0;
   button.addEventListener('click', async () => {

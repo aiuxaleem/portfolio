@@ -31,6 +31,7 @@ export const site = {
     { key: 'recent-work', label: 'Work', children: [
       { key: 'work', label: 'My Projects', href: '/work', blurb: 'What I am building and what has shipped' },
       { key: 'case-studies', label: 'My Case Studies', href: '/case-studies', blurb: 'How the work was designed, and what changed' },
+      { key: 'my-design-systems', label: 'My Design Systems', href: '/my-design-systems', blurb: 'The systems I built, and how to build with them' },
       { key: 'skills', label: 'My Claude Skills', href: '/skills', blurb: 'The skills I built, and how to use them' },
     ] },
     { key: 'my-resources', label: 'Writing', children: [
@@ -42,6 +43,7 @@ export const site = {
     { key: 'resources-group', label: 'Resources', children: [
       { key: 'resources', label: 'UX Library', href: '/resources', blurb: 'Tools, references and reading for AI product design' },
       { key: 'ai-tools', label: 'AI tools', href: '/ai-tools', blurb: 'AI tools for designers, by what they help with' },
+      { key: 'design-systems', label: 'Design Systems', href: '/design-systems', blurb: 'The public design systems worth studying' },
       { key: 'claude-skills', label: 'Claude Skills', href: '/claude-skills', blurb: 'The best Claude skills for designers, kept up to date' },
     ] },
     { key: 'about', label: 'About', href: '/about' },
@@ -49,9 +51,9 @@ export const site = {
   cta: { label: "Let's talk", href: '/contact' },
   /** The footer's columns: every page a visitor may look for, grouped the way the header groups them. */
   footer: [
-    { label: 'Work', links: [{ label: 'My Projects', href: '/work' }, { label: 'My Case Studies', href: '/case-studies' }, { label: 'My Claude Skills', href: '/skills' }] },
+    { label: 'Work', links: [{ label: 'My Projects', href: '/work' }, { label: 'My Case Studies', href: '/case-studies' }, { label: 'My Design Systems', href: '/my-design-systems' }, { label: 'My Claude Skills', href: '/skills' }] },
     { label: 'Writing', links: [{ label: 'Blog', href: '/blog' }, { label: 'Posts', href: '/posts' }, { label: 'Articles', href: '/articles' }, { label: 'Videos', href: '/videos' }] },
-    { label: 'Resources', links: [{ label: 'UX Library', href: '/resources' }, { label: 'AI tools', href: '/ai-tools' }, { label: 'Claude Skills', href: '/claude-skills' }] },
+    { label: 'Resources', links: [{ label: 'UX Library', href: '/resources' }, { label: 'AI tools', href: '/ai-tools' }, { label: 'Design Systems', href: '/design-systems' }, { label: 'Claude Skills', href: '/claude-skills' }] },
     { label: 'About and more', links: [{ label: 'About', href: '/about' }, { label: 'Resume', href: '/resume' }, { label: 'Now', href: '/now' }, { label: 'Services', href: '/services' }, { label: "Let's talk", href: '/contact' }] },
   ],
 };
@@ -86,6 +88,8 @@ export function currentKey(pathname: string, legacy = parity): string {
   if (p === '/ai-tools') return 'ai-tools';
   if (p === '/skills') return 'skills';
   if (p === '/claude-skills') return 'claude-skills';
+  if (p === '/my-design-systems') return 'my-design-systems';
+  if (p === '/design-systems') return 'design-systems';
   if (p === '/contact') return 'contact';
   return '';
 }

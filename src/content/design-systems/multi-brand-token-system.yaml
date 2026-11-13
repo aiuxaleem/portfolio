@@ -1,0 +1,19 @@
+title: Multi-brand token system
+mine: true
+maker: Colaberry
+summary: "One component library under five brands. Each brand is a set of tokens stored as data, with its own type, colour and motion, and its contrast is measured live from the token data in light and dark."
+platforms: [web, email]
+strengths: [multi-brand, tokens, theming, accessibility]
+accessibility: WCAG 2.1 AA contrast
+facts:
+  - { value: "5", label: "Brands on one library" }
+  - { value: "8", label: "Complete systems" }
+  - { value: "80", label: "Contrast pairs measured" }
+  - { value: "11", label: "Colour roles per system" }
+madeWith: [Claude Design]
+project: /work/multi-brand-token-system
+caseStudy: /case-studies/multi-brand-component-system
+prompt: "Read the five-brand token system at https://github.com/aleemcolaberry/Colaberry_FiveBrands and build a sign-in screen, then show it in two of its brands."
+added: 2026-11-13
+order: 20
+tags: [Brands, JSON tokens, Contrast]

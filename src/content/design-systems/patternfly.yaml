@@ -1,0 +1,15 @@
+title: "PatternFly"
+maker: "Red Hat"
+kind: company
+summary: "Red Hat's open-source design system with HTML/CSS and React libraries, AI design guidelines, a ChatBot extension and an MCP server."
+url: "https://www.patternfly.org/"
+platforms: [web]
+strengths: [accessibility, ai-patterns, components, tokens]
+code: { url: "https://github.com/patternfly/patternfly-react", license: "MIT" }
+tokens: { label: "PatternFly design tokens", url: "https://www.patternfly.org/foundations-and-styles/design-tokens/all-design-tokens" }
+ai:
+  - { label: "AI guidelines", url: "https://www.patternfly.org/ai/overview" }
+  - { label: "MCP server", url: "https://www.patternfly.org/ai/ai-assisted-development/patternfly-mcp" }
+  - { label: "AI patterns", url: "https://www.patternfly.org/extensions/chatbot/overview" }
+added: 2026-11-13
+order: 75

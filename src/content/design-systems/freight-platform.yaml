@@ -1,0 +1,18 @@
+title: Freight platform design system
+mine: true
+maker: An AI freight platform, built at Colaberry
+summary: "Brand foundations, React components, templates and a control-tower UI kit for an AI freight platform, with components that show how an AI recommendation was made and a skill pack so Claude Code builds screens the way the system intends."
+platforms: [web]
+strengths: [components, ai-patterns, accessibility, theming]
+accessibility: WCAG 2.2 AA
+facts:
+  - { value: "43", label: "React components" }
+  - { value: "6", label: "Templates" }
+  - { value: "1", label: "Control-tower UI kit" }
+madeWith: [Claude Design, Claude Code]
+project: /work/freight-design-system
+caseStudy: /case-studies/freight-platform-rebrand
+note: "Built for a client's product, so its files are not public. The project and the case study show it, and I can walk you through the rest on a call."
+added: 2026-11-13
+order: 30
+tags: [AI disclosure, Skill pack, Dashboard]

@@ -85,11 +85,14 @@ if (want('names')) { const findings = [], per = {};
 
 // ---------------------------------------------------------------- contrast
 const CONTRAST = `(() => {
-  const parse = c => { const m = c.match(/rgba?\\(([^)]+)\\)/); if (!m) return null; const p = m[1].split(/[ ,/]+/).map(Number); return { r: p[0], g: p[1], b: p[2], a: p[3] === undefined ? 1 : p[3] }; };
+  /* rgb() and rgba(), and color(srgb r g b / a) with channels from 0 to 1, which is how the browser reports a color-mix() in
+     sRGB (the dark theme's button hover since L-65). Before 13 November 2026 such a fill was skipped, so the text was
+     measured against whatever sat behind the button. */
+  const parse = c => { let m = c.match(/rgba?\\(([^)]+)\\)/); if (m) { const p = m[1].split(/[ ,/]+/).map(Number); return { r: p[0], g: p[1], b: p[2], a: p[3] === undefined ? 1 : p[3] }; } m = c.match(/color\\(srgb ([^)]+)\\)/); if (!m) return null; const p = m[1].split(/[ /]+/).filter(Boolean).map(Number); return { r: p[0] * 255, g: p[1] * 255, b: p[2] * 255, a: p[3] === undefined ? 1 : p[3] }; };
   const over = (f, b) => ({ r: f.r * f.a + b.r * (1 - f.a), g: f.g * f.a + b.g * (1 - f.a), b: f.b * f.a + b.b * (1 - f.a), a: 1 });
   const lum = c => { const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f(c.r) + 0.7152 * f(c.g) + 0.0722 * f(c.b); };
   const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
-  const stops = img => [...img.matchAll(/rgba?\\([^)]+\\)/g)].map(m => parse(m[0])).filter(Boolean);
+  const stops = img => [...img.matchAll(/rgba?\\([^)]+\\)|color\\(srgb [^)]+\\)/g)].map(m => parse(m[0])).filter(Boolean);
   // Background behind an element: its own and its ancestors' colours and gradients, composited. Returns every colour
   // the text may sit on (a gradient gives one per stop), or null when an image is involved.
   window.__bg = el => { let layers = []; for (let e = el; e; e = e.parentElement) { const s = getComputedStyle(e); if (s.backgroundImage && s.backgroundImage !== 'none' && !/\\b\\d+px\\s*$/.test(s.backgroundSize.split(',')[0]) && s.webkitBackgroundClip !== 'text') { if (/url\\(/.test(s.backgroundImage)) return null; layers.push(stops(s.backgroundImage)); } const c = parse(s.backgroundColor); if (c && c.a > 0) { layers.push([c]); if (c.a === 1) break; } }

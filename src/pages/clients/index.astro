@@ -40,7 +40,7 @@ const rewrite = (html: string) => {
   return s;
 };
 ---
-<SnapshotPage snapshot={snapshot} title="Services for product teams · AIUXAleem" description="AI product design, design system builds and UX audits for product teams in the GCC and beyond: what you get, how it runs, and the proof." rewrite={rewrite} slotBefore={'<section aria-labelledby="offers-title"'} hideCta>
+<SnapshotPage snapshot={snapshot} title="Services for product teams · Aleem, for clients" description="AI product design, design system builds and UX audits for product teams in the GCC and beyond: what you get, how it runs, and the proof." rewrite={rewrite} slotBefore={'<section aria-labelledby="offers-title"'} hideCta>
   <SiteHero id="services" overline="For clients · What I offer" title="Three things I can do for your team." accent="team" lead={`I'm ${site.name}, a ${profile.headline} with 13+ years in enterprise UX and AI products. For teams with a product problem: what I do on a project, what you get, and the work that proves it.`} primary={{ label: 'Book a 15-min call', href: site.calendarUrl, newTab: true }} secondary={{ label: 'How I work', href: '#process-title' }}>
     <p slot="after" class="services-across"><a data-link href={SUB_SITES.job.live}>Hiring instead? Open the website for hiring managers</a></p>
     <HeroStack slot="art" id="services-stack" label="Services" noun="service" cards={services} />

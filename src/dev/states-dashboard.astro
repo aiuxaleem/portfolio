@@ -1,0 +1,7 @@
+---
+/* /_states-dashboard: the admin dashboard's states (the publishing row and the visitor numbers, full, partial, empty and
+   failed), in both themes. Split from /_states-admin on 13 November 2026: eight dashboards on one page took about 15 minutes
+   a view in the quality run and crashed the browser at 844x390. Served in dev and in quality builds only (astro.config.mjs). */
+import States from './states.astro';
+---
+<States part="dashboard" />

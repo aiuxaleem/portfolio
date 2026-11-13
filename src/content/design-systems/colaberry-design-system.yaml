@@ -1,0 +1,18 @@
+title: Colaberry Design System
+mine: true
+maker: Colaberry
+summary: "Colaberry's brand as a working system a marketer, a developer or an AI agent can build with: tokens, React components and templates for web, print and social, with a starting path for each kind of maker."
+platforms: [web, print, social]
+strengths: [tokens, components, documentation, accessibility]
+accessibility: WCAG 2.2 AA contrast
+facts:
+  - { value: "231", label: "Token values" }
+  - { value: "20", label: "React components" }
+  - { value: "15", label: "Templates" }
+madeWith: [Claude Design]
+project: /work/colaberry-design-system
+caseStudy: /case-studies/colaberry-design-system
+prompt: "Read the Colaberry Design System at https://aleemcolaberry.github.io/Colaberry-DS-School-Final/ and build an open-house event poster with its tokens, components and colour rules."
+added: 2026-11-13
+order: 10
+tags: [Templates, Marketing, React]

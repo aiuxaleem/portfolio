@@ -1,0 +1,14 @@
+title: "MUI (Material UI)"
+maker: "MUI"
+kind: open-source
+summary: "MUI's React component library implementing Google's Material Design, with a theming system and Figma and Sketch design kits."
+url: "https://mui.com/material-ui/"
+platforms: [web]
+strengths: [components, theming, documentation]
+code: { url: "https://github.com/mui/material-ui", license: "MIT" }
+figma: "https://mui.com/store/items/figma-react/"
+ai:
+  - { label: "llms.txt", url: "https://mui.com/material-ui/llms.txt" }
+  - { label: "MCP server", url: "https://mui.com/material-ui/getting-started/mcp/" }
+added: 2026-11-13
+order: 145

@@ -4,7 +4,7 @@ import type { NavItem } from '../content/site';
 
 export const chrome = {
   en: {
-    skip: 'Skip to content', homeAria: 'AIUXAleem home', display: 'Display settings', menu: 'Menu', openMenu: 'Open menu', closeMenu: 'Close menu',
+    skip: 'Skip to content', homeAria: 'Aleem AIUX, home', display: 'Display settings', menu: 'Menu', openMenu: 'Open menu', closeMenu: 'Close menu',
     toDark: 'Switch to dark theme', toLight: 'Switch to light theme', darkTip: 'Dark theme', lightTip: 'Light theme',
     langLabel: 'العربية', langLabelLang: 'ar', langHint: 'read this page in Arabic', langHintFallback: 'this page is English only, so this opens the closest Arabic page',
     langTip: 'Arabic', langTipFallback: 'English only. Opens the closest Arabic page.',
@@ -14,7 +14,7 @@ export const chrome = {
     rights: '© 2026 Mohammad Abdul Aleem · Hyderabad, India', privacy: 'Visits are counted without cookies. No address or personal detail is stored.', footerNav: 'Footer', sitemap: 'Sitemap', talk: "Let's talk",
   },
   ar: {
-    skip: 'تخطَّ إلى المحتوى', homeAria: 'الصفحة الرئيسية لـ AIUXAleem', display: 'إعدادات العرض', menu: 'القائمة', openMenu: 'افتح القائمة', closeMenu: 'أغلق القائمة',
+    skip: 'تخطَّ إلى المحتوى', homeAria: 'Aleem AIUX، الصفحة الرئيسية', display: 'إعدادات العرض', menu: 'القائمة', openMenu: 'افتح القائمة', closeMenu: 'أغلق القائمة',
     toDark: 'التبديل إلى الوضع الداكن', toLight: 'التبديل إلى الوضع الفاتح', darkTip: 'الوضع الداكن', lightTip: 'الوضع الفاتح',
     langLabel: 'English', langLabelLang: 'en', langHint: 'اقرأ هذه الصفحة بالإنجليزية', langHintFallback: 'اقرأ هذه الصفحة بالإنجليزية',
     langTip: 'English', langTipFallback: 'English',

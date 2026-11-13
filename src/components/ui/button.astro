@@ -1,7 +1,10 @@
 ---
 /* Button. Same rest-state values as the legacy design-system Button; hover, press and focus are CSS (not JavaScript),
    so hover only applies on devices that hover and keyboard focus always shows the outline (findings M-01, M-16).
-   Sizes: md (44px), lg (52px) and sm (the design's Button size="sm", used by row actions such as Copy: its label and padding, held at the 44px target).
+   Look (owner request, 12 November 2026, L-65, direction B): a pill; the primary a solid brand-blue fill with a white label
+   (5.3:1) and, on a link, a white well at its end with the arrow cut out of it, which stretches toward the pointer on hover;
+   the secondary an outline, the ghost a text link. No other icon discs.
+   Sizes: md (48px), lg (56px, heroes and closing panels) and sm (44px, row actions such as Copy).
    A disabled button keeps its shape, steps back to the disabled opacity, shows a not-allowed cursor and never lifts. */
 interface Props {
   variant?: 'primary' | 'ink' | 'secondary' | 'ghost' | 'on-ink' | 'on-ink-solid';
@@ -19,40 +22,76 @@ const attrs = href ? { href } : { type: 'button' };
 <Tag class:list={['ui-button', `ui-button-${variant}`, `ui-button-${size}`, fullWidth && 'ui-button-full']} {...attrs} {...rest}><span class="ui-button-label"><slot name="icon-left" /><slot /><slot name="icon-right" /></span></Tag>
 
 <style is:global>
-  .ui-button { position: relative; display: inline-flex; width: auto; align-items: center; justify-content: center; gap: 8px; padding: 11px 22px; min-height: 44px; font-size: var(--text-ui); font-family: var(--font-sans); font-weight: var(--weight-semibold); line-height: 1.2; letter-spacing: var(--tracking-ui); color: inherit; text-decoration: none; border-radius: var(--radius-pill); border: 1px solid transparent; cursor: pointer; white-space: normal; overflow-wrap: anywhere; transition: background var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out), filter var(--duration-base) var(--ease-out), transform var(--duration-fast) var(--ease-spring); }
+  .ui-button { position: relative; display: inline-flex; width: auto; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; min-height: 48px; font-size: var(--text-ui); font-family: var(--font-sans); font-weight: var(--weight-semibold); line-height: 1.2; letter-spacing: var(--tracking-ui); color: inherit; text-decoration: none; border-radius: var(--radius-button); border: 1px solid transparent; cursor: pointer; white-space: normal; overflow-wrap: anywhere; transition: background var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out), border-color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out), transform var(--duration-fast) var(--ease-spring); }
   /* The small size is narrower, not shorter: every target on the site keeps 44px (CLAUDE.md 2.4). */
-  .ui-button-sm { gap: 6px; padding: 8px 16px; min-height: 44px; font-size: var(--text-ui-sm); }
-  .ui-button-lg { gap: 10px; padding: 15px 30px; min-height: 52px; font-size: var(--text-ui-lg); }
+  .ui-button-sm { gap: 6px; padding: 10px 16px; min-height: 44px; font-size: var(--text-ui-sm); }
+  .ui-button-lg { gap: 10px; padding: 15px 26px; min-height: 56px; font-size: var(--text-ui-lg); }
   .ui-button-full { display: flex; width: 100%; }
   .ui-button-label { display: inline-flex; align-items: center; gap: 8px; }
   .ui-button-sm .ui-button-label { gap: 6px; }
   .ui-button-lg .ui-button-label { gap: 10px; }
-  .ui-button-primary { background: var(--gradient-brand-deep); background-size: 160% 100%; background-position: 0% 50%; color: var(--text-on-brand); box-shadow: var(--shadow-brand), var(--highlight-inset); }
+  .ui-button-primary { background: var(--action-solid); color: var(--text-on-brand); border-color: var(--action-solid-rim); box-shadow: var(--shadow-button), var(--highlight-inset); }
   .ui-button-ink { background: var(--action-ink); color: var(--surface-card); box-shadow: var(--shadow-sm); }
-  .ui-button-secondary { background: var(--surface-glass-strong); color: var(--text-strong); box-shadow: var(--shadow-xs), var(--highlight-inset); border-color: var(--border-interactive); }
+  .ui-button-secondary { background: var(--surface-card); color: var(--text-strong); border-color: var(--border-interactive); box-shadow: var(--shadow-xs); }
   /* The breath (motion.css) lives on this layer: a glow that fades in and out above the button, composited, never a repaint of the button. */
-  :is(.ui-button-primary, [data-ds-button="primary"])::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: var(--shadow-brand-hover), 0 0 0 8px color-mix(in srgb, var(--action-primary) 16%, transparent); opacity: 0; pointer-events: none; }
-  .ui-button-ghost { background: transparent; color: var(--text-link); }
+  :is(.ui-button-primary, [data-ds-button="primary"])::after { content: ""; position: absolute; inset: -1px; border-radius: inherit; box-shadow: var(--shadow-button-hover), 0 0 0 6px color-mix(in srgb, var(--action-primary) 16%, transparent); opacity: 0; pointer-events: none; }
+  /* The travelling arrow (L-65): every primary link ends in a well. Not on a download or a form button, whose own icon or
+     label says what happens. The well's box is reserved; at rest only its end circle shows, on hover and focus all of it. */
+  :is(a.ui-button-primary, a.ui-button-on-ink-solid, a[data-ds-button="primary"], a[data-ds-button="on-ink-solid"]):not([download]) {
+    --well: 34px; --well-stretch: 8px; padding-block: 6px; padding-inline-end: 7px;
+    --well-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E");
+  }
+  :is(a.ui-button-primary, a.ui-button-on-ink-solid, a[data-ds-button="primary"], a[data-ds-button="on-ink-solid"])[target="_blank"]:not([download]) {
+    --well-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M8 7h9v9'/%3E%3C/svg%3E");
+  }
+  :is(a.ui-button-primary, a.ui-button-on-ink-solid, a[data-ds-button="primary"], a[data-ds-button="on-ink-solid"]).ui-button-lg:not([download]), [data-ds-button][style*="min-height: 52px"]:is([data-ds-button="primary"], [data-ds-button="on-ink-solid"]):not([download]) { --well: 40px; padding-block: 7px; padding-inline-end: 8px; }
+  :is(a.ui-button-primary, a.ui-button-on-ink-solid).ui-button-sm:not([download]) { --well: 30px; padding-block: 6px; padding-inline-end: 6px; }
+  /* On a button wider than its content (a phone's full-width stack) the label stays in the middle and the well ends the pill. */
+  :is(a.ui-button-primary, a.ui-button-on-ink-solid):not([download]) > .ui-button-label { margin-inline: auto; }
+  :is(a.ui-button-primary, a.ui-button-on-ink-solid, a[data-ds-button="primary"], a[data-ds-button="on-ink-solid"]):not([download])::before {
+    content: ""; order: 2; flex: none; inline-size: calc(var(--well) + var(--well-stretch)); block-size: var(--well); margin-inline-start: calc(var(--well-stretch) * -1 + 12px);
+    border-radius: var(--radius-pill); background: var(--text-on-brand);
+    clip-path: inset(0 0 0 var(--well-stretch) round var(--radius-pill));
+    -webkit-mask: var(--well-icon) calc(var(--well-stretch) + var(--well) / 2 - 10px) 50% / 20px 20px no-repeat, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+    mask: var(--well-icon) calc(var(--well-stretch) + var(--well) / 2 - 10px) 50% / 20px 20px no-repeat, linear-gradient(#000 0 0); mask-composite: exclude;
+  }
+  :is(a.ui-button-on-ink-solid, a[data-ds-button="on-ink-solid"], section[data-contact] [data-stack] a[href*="cal.com"]):not([download])::before { background: var(--navy-800); }
+  [dir="rtl"] :is(a.ui-button-primary, a.ui-button-on-ink-solid, a[data-ds-button="primary"], a[data-ds-button="on-ink-solid"]):not([download])::before { transform: scaleX(-1); }
+  :is(a.ui-button-primary, a.ui-button-on-ink-solid, a[data-ds-button="primary"], a[data-ds-button="on-ink-solid"]):not([download]):focus-visible::before { clip-path: inset(0 0 0 0 round var(--radius-pill)); -webkit-mask-position: calc(var(--well-stretch) + var(--well) / 2 - 7px) 50%, 0 0; mask-position: calc(var(--well-stretch) + var(--well) / 2 - 7px) 50%, 0 0; }
+  @media (hover: hover) {
+    :is(a.ui-button-primary, a.ui-button-on-ink-solid, a[data-ds-button="primary"], a[data-ds-button="on-ink-solid"]):not([download]):hover::before { clip-path: inset(0 0 0 0 round var(--radius-pill)); -webkit-mask-position: calc(var(--well-stretch) + var(--well) / 2 - 7px) 50%, 0 0; mask-position: calc(var(--well-stretch) + var(--well) / 2 - 7px) 50%, 0 0; }
+  }
+  /* The well is a primary link's one icon: a leading icon gives way to it, so no call shows two. */
+  :is(a.ui-button-primary, a.ui-button-on-ink-solid):not([download]) > .ui-button-label > svg:first-child { display: none; }
+  /* The main call is one weight heavier than the call beside it, on a page and on an ink panel alike. */
+  :is(.ui-button-primary, .ui-button-on-ink-solid, [data-ds-button="primary"], [data-ds-button="on-ink-solid"]) { font-weight: var(--weight-bold) !important; }
+  /* On an ink panel the outlined call keeps an edge of at least 3:1 against the navy (white at 45%: 4.4:1 on navy-800). */
+  :is(.ui-button-on-ink, [data-ds-button="on-ink"]) { border-color: color-mix(in srgb, var(--on-ink-strong) 45%, transparent) !important; }
+  /* On a phone a full-width primary's label sits in the middle of the pill: the start gets the room the well takes at the end. */
+  @media (max-width: 519px) { :is(a.ui-button-primary, a.ui-button-on-ink-solid, a[data-ds-button="primary"], a[data-ds-button="on-ink-solid"]):not([download]) { padding-inline-start: calc(var(--well) + 12px + 10px + 8px) !important; } }
+  /* A form's send button spans the form on a phone, as its fields do. */
+  @media (max-width: 519px) { form [data-form-submit] { inline-size: 100%; } }
+  /* The ghost is a text link that is still a 44px target: its underline arrives on hover and focus. */
+  .ui-button-ghost { background: transparent; color: var(--text-link); padding-inline: 4px; min-height: 44px; text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 2px; text-underline-offset: 5px; }
   .ui-button-on-ink { background: var(--on-ink-fill); color: var(--on-ink-strong); border-color: var(--on-ink-border-strong); }
   .ui-button-on-ink-solid { background: var(--on-ink-strong); color: var(--navy-800); box-shadow: var(--shadow-md); }
   .ui-button:not(:disabled):not([aria-disabled="true"]):active { transform: scale(var(--press-scale)); }
   @media (hover: hover) {
     .ui-button:not(:disabled):not([aria-disabled="true"]):hover { transform: translateY(var(--lift-hover-sm)); }
     .ui-button-primary:not(:disabled):hover, .ui-button-secondary:not(:disabled):hover { transform: translateY(calc(2 * var(--lift-hover-sm))); }
-    /* No brightness filter on hover: it took the white label to about 4.0:1 at the cyan end (docs/AUDIT_FINDINGS.md L-05). */
-    .ui-button-primary:not(:disabled):hover { color: var(--text-on-brand); background-position: 100% 50%; box-shadow: var(--shadow-brand-hover), var(--highlight-inset); }
+    .ui-button-primary:not(:disabled):hover { color: var(--text-on-brand); background: var(--action-solid-hover); border-color: var(--action-solid-rim-hover); box-shadow: var(--shadow-button-hover), var(--highlight-inset); }
     .ui-button-ink:not(:disabled):hover { color: var(--surface-card); background: var(--action-ink-hover); box-shadow: var(--shadow-md); }
-    .ui-button-secondary:not(:disabled):hover { color: var(--text-link); border-color: var(--text-link); background: var(--action-secondary-hover); box-shadow: var(--shadow-sm), var(--highlight-inset); }
-    .ui-button-ghost:not(:disabled):hover { background: var(--action-ghost-hover); color: var(--text-link-hover); }
-    .ui-button-on-ink:not(:disabled):hover { color: var(--on-ink-strong); background: var(--on-ink-fill-hover); }
+    .ui-button-secondary:not(:disabled):hover { color: var(--text-strong); border-color: var(--text-strong); background: var(--action-secondary-hover); box-shadow: var(--shadow-sm); }
+    .ui-button-ghost:not(:disabled):hover { color: var(--text-link-hover); text-decoration-color: currentColor; }
+    .ui-button-on-ink:not(:disabled):hover { color: var(--on-ink-strong); background: var(--on-ink-fill-hover); border-color: var(--on-ink-strong); }
     .ui-button-on-ink-solid:not(:disabled):hover { color: var(--navy-800); box-shadow: var(--shadow-lg), var(--shadow-glow); }
   }
   /* Focus twins of the hover tints and shadows (CLAUDE.md 2.7). */
-  .ui-button-primary:not(:disabled):focus-visible { background-position: 100% 50%; box-shadow: var(--shadow-brand-hover), var(--highlight-inset); }
+  .ui-button-primary:not(:disabled):focus-visible { background: var(--action-solid-hover); border-color: var(--action-solid-rim-hover); box-shadow: var(--shadow-button-hover), var(--highlight-inset); }
   .ui-button-ink:not(:disabled):focus-visible { background: var(--action-ink-hover); box-shadow: var(--shadow-md); }
-  .ui-button-secondary:not(:disabled):focus-visible { color: var(--text-link); border-color: var(--text-link); background: var(--action-secondary-hover); box-shadow: var(--shadow-sm), var(--highlight-inset); }
-  .ui-button-ghost:not(:disabled):focus-visible { background: var(--action-ghost-hover); color: var(--text-link-hover); }
-  .ui-button-on-ink:not(:disabled):focus-visible { background: var(--on-ink-fill-hover); }
+  .ui-button-secondary:not(:disabled):focus-visible { border-color: var(--text-strong); background: var(--action-secondary-hover); box-shadow: var(--shadow-sm); }
+  .ui-button-ghost:not(:disabled):focus-visible { color: var(--text-link-hover); text-decoration-color: currentColor; }
+  .ui-button-on-ink:not(:disabled):focus-visible { background: var(--on-ink-fill-hover); border-color: var(--on-ink-strong); }
   .ui-button-on-ink-solid:not(:disabled):focus-visible { box-shadow: var(--shadow-lg), var(--shadow-glow); }
   /* Disabled: the shape stays, the colour steps back, nothing lifts or presses. */
   .ui-button:disabled, .ui-button[aria-disabled="true"] { opacity: var(--opacity-disabled); cursor: not-allowed; box-shadow: none; filter: none; }

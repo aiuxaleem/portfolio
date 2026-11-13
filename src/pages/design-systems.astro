@@ -1,0 +1,209 @@
+---
+/* /design-systems: Resources > Design Systems (owner request, 13 November 2026, L-68). The public design systems worth
+   studying, shown by what each teaches best:
+   1. The first screen: what the page is, its two actions, and how many systems publish code and Figma kits.
+   2. What a design system is made of: six layers, each with the systems that show it best (links to their docs).
+   3. Built for AI agents too: the systems that publish something for agents (an MCP server, an llms.txt, AI patterns).
+   4. The library: every system, with a filter by strength and kind and a search, twelve at a time.
+   5. Side by side: the same facts as a table, in a closed fold.
+   6. Further reading about design systems.
+   Every fact was read on the maker's own docs, repository or Figma page on the date shown (lib/design-systems.ts, CHECKED).
+   The owner's own systems are on Work > My Design Systems (/my-design-systems). */
+import PageLayout from '../layouts/page-layout.astro';
+import DesignSystemCard from '../components/cards/design-system-card.astro';
+import ProjectFilters from '../components/projects/project-filters.astro';
+import Button from '../components/ui/button.astro';
+import { listedDesignSystems, LAYERS, teaching, agentLinks, strengthLabel, kindLabel, hostOf, READING, CHECKED, checkedOn } from '../lib/design-systems';
+import { DS_STRENGTHS } from '../lib/content-schemas';
+
+const systems = (await listedDesignSystems()).filter(s => !s.data.mine);
+const real = systems.filter(s => !s.data.fixture);
+const forAgents = systems.filter(s => { const a = agentLinks(s); return a.mcp || a.llms || a.skills; });
+const strengths = Object.keys(DS_STRENGTHS).filter(k => systems.some(s => s.data.strengths.includes(k as never)));
+const items = systems.map(s => ({ tags: s.data.strengths as string[], status: s.data.kind }));
+const num = (i: number) => String(i + 1).padStart(2, '0');
+const stat = 'margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); color: var(--text-strong); font-variant-numeric: tabular-nums;';
+const arrow = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"></path></svg>';
+---
+<PageLayout title="Design Systems worth studying · Aleem | AIUX" description="The best public design systems, from Material and Carbon to GOV.UK and shadcn/ui: what each teaches best, and which publish code, Figma kits, tokens and help for AI agents." page="design-systems" bg="grid" mainStyle="outline: none; overflow: clip;">
+  <section class="cory-container" aria-labelledby="ds-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <p class="cory-overline" style="margin: 0px;">Resources · Design Systems</p>
+    <h1 id="ds-title" style="margin: 0px; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">The design systems <span style="background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent;">worth studying</span>.</h1>
+    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">The public systems I learn from, and what each one teaches best: tokens, components, accessibility, content, and the newest layer, patterns for AI. Every card links to the maker's own docs, code, Figma kit and tokens where they publish them.</p>
+    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+      <Button variant="primary" size="lg" href="#library">Browse the systems</Button>
+      <Button variant="secondary" size="lg" href="/my-design-systems">My design systems</Button>
+    </div>
+    <dl class="dsl-stats">
+      <div><dt>Design systems</dt><dd style={stat}>{real.length}</dd></div>
+      <div><dt>With public code</dt><dd style={stat}>{real.filter(s => s.data.code).length}</dd></div>
+      <div><dt>With an official Figma kit</dt><dd style={stat}>{real.filter(s => s.data.figma).length}</dd></div>
+      <div><dt>Facts checked</dt><dd class="dsl-stat-words"><time datetime={CHECKED}>{checkedOn()}</time></dd></div>
+    </dl>
+  </section>
+
+  <section id="layers" class="page-section" data-surface="card" aria-labelledby="layers-title">
+    <div class="cory-container" style="display: grid; gap: var(--space-8);">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">The anatomy</p><h2 id="layers-title" class="page-h2">What a design system is made of</h2><p class="project-filter-count">Six layers, from the ground up. Under each, the public systems that show it best, so you know where to look first.</p></div>
+      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">
+        {LAYERS.map((l, i) => {
+          const best = teaching(real, l);
+          return (
+            <li><div class="tile dsl-layer">
+              <bdi class="tile-num" aria-hidden="true">{num(i)}</bdi>
+              <h3>{l.title}</h3>
+              <p>{l.body}</p>
+              {best.length > 0 && <p class="dsl-study"><span class="dsl-study-label">Study</span>{best.map(s => <a href={s.data.url} target="_blank" rel="noopener">{s.data.title}<span class="cory-visually-hidden"> (opens {hostOf(s.data.url)} in a new tab)</span> <Fragment set:html={arrow} /></a>)}</p>}
+            </div></li>
+          );
+        })}
+      </ol></div>
+    </div>
+  </section>
+
+  {forAgents.length > 0 && (
+    <section id="agents" class="page-section" aria-labelledby="agents-title">
+      <div class="cory-container" style="display: grid; gap: var(--space-8);">
+        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">The second user</p><h2 id="agents-title" class="page-h2">Built for AI agents too</h2><p class="project-filter-count">A design system now has two readers: the person building a screen and the AI agent building it for them. These systems publish something an agent can read directly: an MCP server, which lets an AI tool look up the system's components and rules while it builds; an llms.txt, the docs as one plain file written for language models; or agent skills, packaged instructions an agent follows. AI patterns for people, such as Carbon for AI, are under the anatomy above.</p></div>
+        <div class="dsl-table-box dsl-agents" data-cq>
+          <table class="dsl-table" role="table">
+            <caption class="cory-visually-hidden">What each design system publishes for AI agents</caption>
+            <thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">System</th><th role="columnheader" scope="col">MCP server</th><th role="columnheader" scope="col">llms.txt</th><th role="columnheader" scope="col">Agent skills</th></tr></thead>
+            <tbody role="rowgroup">
+              {forAgents.map(s => { const a = agentLinks(s); return (
+                <tr role="row">
+                  <th role="rowheader" scope="row"><bdi>{s.data.title}</bdi><span class="dsl-maker">{s.data.maker}</span></th>
+                  {([['MCP server', a.mcp], ['llms.txt', a.llms], ['Agent skills', a.skills]] as const).map(([label, link]) => (
+                    <td role="cell"><span class="dsl-cell-label">{label}</span>{link ? <a href={link.url} target="_blank" rel="noopener">Open<span class="cory-visually-hidden"> the {label} of {s.data.title} (opens {hostOf(link.url)} in a new tab)</span> <Fragment set:html={arrow} /></a> : <span class="ds-no">No</span>}</td>
+                  ))}
+                </tr>
+              ); })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section id="library" class="page-section" data-surface="card" aria-labelledby="library-title">
+    <div class="cory-container" style="display: grid; gap: var(--space-8);">
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Everything</p><h2 id="library-title" class="page-h2">The library</h2><p class="project-filter-count">Each system in its maker's words, with what it is strong in. Filter by what you want to learn, or by who makes it.</p></div>
+      {systems.length === 0
+        ? <div class="project-empty"><p class="project-empty-title">No design systems are listed yet.</p><p class="project-empty-body">The UX Library lists the references I use meanwhile.</p><div><Button variant="secondary" href="/resources">See the UX Library</Button></div></div>
+        : <>
+            <ProjectFilters tags={strengths} tagLabels={strengthLabel} tagsLabel="Strong in" total={systems.length} items={items} options={kindLabel} optionsLabel="Made by" noun="design system" id="ds-filter" search={{ label: 'Find a system', placeholder: 'Name, maker or topic' }} />
+            <div data-cq><ul data-project-list data-page-size="12" data-cq-balance style="display: grid; gap: var(--grid-gap);">{systems.map(s => <li><DesignSystemCard system={s} /></li>)}</ul></div>
+            <p data-project-more hidden style="margin: 0;"><Button variant="secondary" data-show-more>Show more</Button></p>
+            <div class="project-empty" data-project-empty hidden><p class="project-empty-title">No system matches these filters.</p><p class="project-empty-body">Clear the filters to see every one.</p><div><Button variant="secondary" data-clear-filters>Clear filters</Button></div></div>
+          </>}
+
+      {systems.length > 0 && (
+        <details class="resource-disclosure dsl-compare">
+          <summary><span class="project-filter-label" style="flex-basis: auto; margin: 0;">Compare side by side</span><span data-disclosure-state>Code, Figma kit, tokens, help for agents and the accessibility standard of all {systems.length}</span><svg data-chevron width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></summary>
+          <div class="dsl-table-box" data-cq>
+            <table class="dsl-table" role="table">
+              <caption class="cory-visually-hidden">What each design system publishes</caption>
+              <thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">System</th><th role="columnheader" scope="col">Code</th><th role="columnheader" scope="col">Figma kit</th><th role="columnheader" scope="col">Tokens</th><th role="columnheader" scope="col">For AI agents</th><th role="columnheader" scope="col">Accessibility</th></tr></thead>
+              <tbody role="rowgroup">
+                {systems.map(s => (
+                  <tr role="row">
+                    <th role="rowheader" scope="row"><bdi>{s.data.title}</bdi></th>
+                    <td role="cell"><span class="dsl-cell-label">Code</span>{s.data.code ? <span class="ds-yes">{s.data.code.license ?? 'Yes'}</span> : <span class="ds-no">No</span>}</td>
+                    <td role="cell"><span class="dsl-cell-label">Figma kit</span>{s.data.figma ? <span class="ds-yes">{'Yes'}</span> : <span class="ds-no">No</span>}</td>
+                    <td role="cell"><span class="dsl-cell-label">Tokens</span>{s.data.tokens ? <span class="ds-yes">{'Yes'}</span> : <span class="ds-no">No</span>}</td>
+                    <td role="cell"><span class="dsl-cell-label">For AI agents</span>{s.data.ai.length > 0 ? <span class="ds-yes">{s.data.ai.map(a => a.label).join(', ')}</span> : <span class="ds-no">No</span>}</td>
+                    <td role="cell"><span class="dsl-cell-label">Accessibility</span>{s.data.accessibility ?? <span class="ds-no">Not stated</span>}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </details>
+      )}
+    </div>
+  </section>
+
+  {READING.length > 0 && (
+    <section id="reading" class="page-section" aria-labelledby="reading-title">
+      <div class="cory-container" style="display: grid; gap: var(--space-8);">
+        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Go deeper</p><h2 id="reading-title" class="page-h2">Further reading</h2><p class="project-filter-count">The standards, galleries and books I return to when I build a system. Building one for a team? See <a href="/my-design-systems">how I build mine</a>.</p></div>
+        <ul class="dsl-reading">
+          {READING.map(r => <li><a href={r.url} target="_blank" rel="noopener">{r.name}<span class="cory-visually-hidden"> (opens {hostOf(r.url)} in a new tab)</span> <Fragment set:html={arrow} /></a><p>{r.summary}</p></li>)}
+        </ul>
+        <div><Button variant="secondary" href="/my-design-systems">See my design systems</Button></div>
+      </div>
+    </section>
+  )}
+</PageLayout>
+
+<style>
+  .dsl-stats { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-10); margin: 0; }
+  .dsl-stats > div { display: grid; gap: var(--space-1); min-inline-size: 0; }
+  .dsl-stats dt { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
+  .dsl-stats dd { margin: 0; }
+  .dsl-stat-words { font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-strong); line-height: var(--leading-snug); }
+  .dsl-layer { display: grid; align-content: start; }
+  .dsl-study { display: flex; flex-direction: column; align-items: flex-start; margin-block-start: var(--space-2) !important; padding-block-start: var(--space-2); border-block-start: 1px solid var(--border-subtle); }
+  .dsl-study-label { inline-size: 100%; font-size: var(--text-caption); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-subtle); }
+  /* Inline blocks, so a name that wraps keeps its arrow after its last word; the padding keeps the 44px target. */
+  .dsl-study a, .dsl-reading a { display: inline-block; padding-block: 10px; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none; overflow-wrap: anywhere; }
+  @media (hover: hover) { :is(.dsl-study, .dsl-reading) a:hover { text-decoration: underline; text-underline-offset: 3px; } }
+  :is(.dsl-study, .dsl-reading) a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+  /* The fold's label and chevron on one line, what it compares on the next, so the label never breaks inside a word. */
+  .dsl-compare > summary { cursor: pointer; flex-wrap: wrap; row-gap: 0; }
+  .dsl-compare > summary .project-filter-label { flex: 1 1 auto; white-space: nowrap; }
+  .dsl-compare > summary [data-disclosure-state] { order: 3; flex-basis: 100%; padding-block-end: var(--space-2); }
+  .dsl-table-box { padding: 0 var(--space-5) var(--space-5); }
+  .dsl-table { inline-size: 100%; border-collapse: collapse; table-layout: auto; font-size: var(--text-body-sm); }
+  .dsl-table :is(th, td) { padding: var(--space-3) var(--space-3) var(--space-3) 0; text-align: start; vertical-align: middle; border-block-end: 1px solid var(--border-subtle); color: var(--text-body); overflow-wrap: anywhere; }
+  .dsl-agents { padding: 0; }
+  .dsl-agents .dsl-table thead th:not(:first-child) { inline-size: 9rem; }
+  /* The arrows come in as raw markup, which Astro's scoped selectors do not reach: hence :global. */
+  .dsl-table a :global(svg) { flex-shrink: 0; }
+  .dsl-table td { padding-inline-end: var(--space-4); }
+  .dsl-maker { display: block; font-size: var(--text-caption); font-weight: var(--weight-regular); color: var(--text-muted); }
+  .dsl-table a { display: inline-flex; align-items: center; gap: var(--space-1); min-block-size: var(--tap-target); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none; }
+  @media (hover: hover) { .dsl-table a:hover { text-decoration: underline; text-underline-offset: 3px; } }
+  .dsl-table a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+  .dsl-table thead th { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
+  .dsl-table tbody th { font-weight: var(--weight-semibold); color: var(--text-strong); }
+  .ds-yes { color: var(--text-strong); }
+  .ds-no { color: var(--text-muted); }
+  /* Under 640px of container the table becomes one card per system: the header row goes, and each cell shows its own column
+     name (.dsl-cell-label, read by screen readers too, so a cell is never a bare Yes). The roles keep it a table to screen
+     readers, which drop table semantics from rows shown as blocks. Wider, the label is not shown and the header row names
+     the columns. */
+  .dsl-cell-label { display: none; }
+  .dsl-table thead th { white-space: nowrap; }
+  /* The compare table: under 640px of container. The agents table has three short columns, so it stays a table, one line per
+     system with its header row printed once, down to 300px of container (the 320px screen). */
+  @container (max-width: 639px) {
+    .dsl-compare .dsl-table thead { display: none; }
+    .dsl-compare .dsl-cell-label { display: block; font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
+    .dsl-compare :is(.dsl-table, .dsl-table tbody, .dsl-table th, .dsl-table td) { display: block; }
+    .dsl-compare .dsl-table tr { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 6.5rem), 1fr)); gap: var(--space-1) var(--space-4); padding-block: var(--space-4); border-block-end: 1px solid var(--border-subtle); }
+    .dsl-compare .dsl-table tbody th { grid-column: 1 / -1; }
+    .dsl-compare .dsl-table :is(th, td) { border: 0; padding: 0; }
+    .dsl-compare .dsl-table td > :is(.ds-yes, .ds-no) { display: flex; align-items: center; min-block-size: var(--tap-target); }
+    .dsl-agents .dsl-table thead th { white-space: normal; overflow-wrap: normal; }
+    .dsl-agents .dsl-table thead th:not(:first-child) { inline-size: auto; }
+    .dsl-agents .dsl-table td { padding-inline-end: var(--space-3); }
+  }
+  @container (max-width: 299px) {
+    .dsl-agents .dsl-table thead { display: none; }
+    .dsl-agents .dsl-cell-label { display: block; font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
+    .dsl-agents :is(.dsl-table, .dsl-table tbody, .dsl-table th, .dsl-table td) { display: block; }
+    .dsl-agents .dsl-table tr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-1) var(--space-3); padding-block: var(--space-4); border-block-end: 1px solid var(--border-subtle); }
+    .dsl-agents .dsl-table tbody th { grid-column: 1 / -1; }
+    .dsl-agents .dsl-table :is(th, td) { border: 0; padding: 0; }
+    .dsl-agents .dsl-table td > .ds-no { display: flex; align-items: center; min-block-size: var(--tap-target); }
+  }
+  .dsl-reading { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-4) var(--grid-gap); grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+  .dsl-reading li { display: grid; gap: 2px; align-content: start; min-inline-size: 0; }
+  .dsl-reading p { margin: 0; font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-muted); }
+  :is(.dsl-study, .dsl-reading) a :global(svg) { display: inline; vertical-align: -1px; margin-inline-start: var(--space-1); }
+</style>
+
+<script>
+  import '../components/islands/project-filters.ts';
+</script>

@@ -1,0 +1,13 @@
+title: "Mantine"
+maker: "Vitaly Rtishchev and contributors"
+kind: open-source
+summary: "A fully featured React components library with hooks, form handling and dates packages, tested with axe and screen readers."
+url: "https://mantine.dev"
+platforms: [web]
+strengths: [components, forms, accessibility, documentation]
+code: { url: "https://github.com/mantinedev/mantine", license: "MIT" }
+ai:
+  - { label: "llms.txt", url: "https://mantine.dev/llms.txt" }
+  - { label: "MCP server", url: "https://mantine.dev/guides/llms/" }
+added: 2026-11-13
+order: 160

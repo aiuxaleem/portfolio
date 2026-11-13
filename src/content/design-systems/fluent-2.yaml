@@ -1,0 +1,14 @@
+title: "Fluent 2"
+maker: "Microsoft"
+kind: company
+summary: "Microsoft's design system with Figma UI kits for web, iOS and Android, Copilot UI kits, and guidance on responsible AI."
+url: "https://fluent2.microsoft.design/"
+platforms: [web, ios, android]
+strengths: [components, tokens, ai-patterns, content-and-voice]
+code: { url: "https://github.com/microsoft/fluentui", license: "MIT" }
+figma: "https://aka.ms/Fluent2Toolkits/Web/Figma"
+tokens: { label: "@fluentui/tokens", url: "https://github.com/microsoft/fluentui/tree/master/packages/tokens" }
+ai:
+  - { label: "AI guidelines", url: "https://fluent2.microsoft.design/responsible-AI" }
+added: 2026-11-13
+order: 20

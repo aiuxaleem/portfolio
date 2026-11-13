@@ -1,0 +1,10 @@
+title: "Base"
+maker: "Uber"
+kind: company
+summary: "Uber's design system for its products and services, with component accessibility guidance and Base Web, a React library whose public repo now gets limited engagement."
+url: "https://base.uber.com/"
+platforms: [web, ios, android]
+strengths: [components, accessibility, motion]
+code: { url: "https://github.com/uber/baseweb", license: "MIT" }
+added: 2026-11-13
+order: 110

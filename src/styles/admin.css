@@ -104,6 +104,15 @@ label.admin-check input:focus-visible { outline: var(--border-width-strong) soli
 @media (min-width: 1280px) { .admin-list thead th[data-col="edited"] { inline-size: 11rem; } .admin-list td[data-label="Last edited"] { white-space: nowrap; } }
 .admin-repeats, .admin-image { display: grid; gap: var(--space-4); min-inline-size: 0; }
 .admin-checkline { display: grid; gap: var(--space-1); }
+/* Tick boxes for a fixed list (forms.ts choices, L-68): the legend looks like every other field's label. */
+.admin-choices { margin: 0; padding: 0; border: 0; min-inline-size: 0; display: grid; gap: var(--space-1); }
+.admin-choices > legend { padding: 0; margin-block-end: var(--space-1); font-size: var(--text-label); font-weight: var(--weight-semibold); color: var(--text-strong); }
+.admin-choice-list { display: flex; flex-wrap: wrap; gap: 0 var(--space-5); }
+.admin-choices label.admin-check { font-size: var(--text-body-md); font-weight: var(--weight-regular); }
+/* The error mark sits outside the group, so the boxes do not move when it appears. */
+.admin-choices { position: relative; }
+.admin-choices[data-invalid]::before { content: ""; position: absolute; inset-block: 0; inset-inline-start: calc(var(--space-3) * -1); inline-size: 2px; border-radius: var(--radius-pill); background: var(--red-500); }
+.admin-choices label.admin-check input[aria-invalid="true"]::before { border-color: var(--red-500); }
 
 /* Images page. */
 /* The file field: a card surface with the browser's button drawn as a small secondary button (tokens only). */
@@ -129,7 +138,6 @@ label.admin-check input:focus-visible { outline: var(--border-width-strong) soli
 .admin-side { position: sticky; inset-block-start: 0; z-index: var(--z-sticky); background: var(--surface-card); border-block-end: 1px solid var(--border-subtle); min-inline-size: 0; }
 .admin-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--gutter); min-block-size: var(--header-height-compact); }
 .admin-brand { display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-body-lg); letter-spacing: var(--tracking-tight); color: var(--text-strong); text-decoration: none; }
-.admin-brand-mark { inline-size: var(--space-5); block-size: var(--space-5); border-radius: var(--radius-tile); background: var(--gradient-brand); flex-shrink: 0; }
 /* The brand's words never break; under 360px the bar has no room for the Admin badge beside the Menu button (the page's overline says Admin), as the public header drops its language label there (M-03) (L-45). */
 .admin-bar .admin-brand > span { white-space: nowrap; }
 @media (max-width: 359px) { .admin-bar .admin-brand .ui-badge { display: none; } }
@@ -152,24 +160,24 @@ html:not([data-admin-js]) .admin-menu-button { display: none; }
 @media (hover: hover) { .admin-nav a:not([aria-current="page"]):hover, .admin-side-link:hover { background: var(--action-ghost-hover); color: var(--text-strong); } }
 .admin-side-foot { display: grid; gap: 0; padding-block-start: var(--space-2); border-block-start: 1px solid var(--border-subtle); }
 .admin-side-foot form { padding: 0 var(--space-3); }
-.admin-main { display: grid; align-content: start; gap: var(--space-8); inline-size: 100%; max-inline-size: 76rem; margin-inline: auto; padding: var(--space-8) var(--gutter) var(--space-16); min-inline-size: 0; outline: none; }
-.admin-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-4) var(--space-6); padding-block-end: var(--space-6); border-block-end: 1px solid var(--border-subtle); }
-.admin-head-text { display: grid; gap: var(--space-2); min-inline-size: 0; flex: 1 1 20rem; }
+.admin-main { display: grid; align-content: start; gap: var(--space-6); inline-size: 100%; max-inline-size: 76rem; margin-inline: auto; padding: var(--space-8) var(--gutter) var(--space-16); min-inline-size: 0; outline: none; }
+.admin-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3) var(--space-6); }
+.admin-head-text { display: grid; gap: var(--space-1); min-inline-size: 0; flex: 1 1 20rem; }
 .admin-head-text > p { margin: 0; }
-.admin-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h1); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; }
+.admin-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; }
 .admin-head-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
 @media (min-width: 1024px) {
-  .admin-app { grid-template-columns: 17rem minmax(0, 1fr); }
+  .admin-app { grid-template-columns: 15rem minmax(0, 1fr); }
   /* The panel is as tall as the screen. Its sections (909px of them with every section listed) are taller than a 1280x800 or 1366x657 laptop screen, so the list of sections scrolls on its own and the foot (View the site, the theme, Sign out) stays in reach at the bottom (L-42; before, the whole panel scrolled and Sign out sat below the fold on every laptop size). */
   .admin-side { block-size: 100vh; block-size: 100dvh; display: flex; flex-direction: column; border-block-end: 0; border-inline-end: 1px solid var(--border-subtle); overflow: hidden; }
   .admin-bar { padding: var(--space-2) var(--space-5); flex-shrink: 0; }
-  .admin-menu-button { display: none; }
+  .admin-side .admin-menu-button { display: none; } /* beats .ui-button whichever stylesheet a page bundles last */
   .admin-panel, [data-admin-js] .admin-panel:not([data-open]) { display: flex; flex-direction: column; gap: var(--space-2); flex: 1 1 auto; min-block-size: 0; max-block-size: none; padding: var(--space-2) var(--space-3); border-block-start: 0; overflow: hidden; }
   .admin-nav { flex: 1 1 auto; min-block-size: 0; overflow-y: auto; overscroll-behavior: contain; }
   .admin-side-foot { position: relative; margin-block-start: auto; flex-shrink: 0; }
   /* While sections sit below the list's edge (the island sets the attribute), a fade over that edge says the list scrolls. */
   .admin-side-foot[data-more-below]::before { content: ""; position: absolute; inset-inline: 0; inset-block-end: 100%; block-size: var(--space-8); background: linear-gradient(to top, var(--surface-card), transparent); pointer-events: none; }
-  .admin-main { padding-block-start: var(--space-10); }
+  .admin-main { padding-block-start: var(--space-6); }
 }
 
 /* Sign-in: one card in the middle of the page, with no site menu around it. */
@@ -443,3 +451,122 @@ html:not([data-admin-js]) [data-needs-js] { display: none; }
 /* A link in a card that leaves the admin (the YouTube channel): 44px tall, with the leave icon, like View the site. */
 .admin-out-link { display: inline-flex; align-items: center; gap: var(--space-1); min-block-size: var(--tap-target); color: var(--text-link); font-weight: var(--weight-semibold); overflow-wrap: anywhere; }
 label.admin-check input:disabled { background: transparent; cursor: not-allowed; }
+
+/* ---------- Command centre (owner's choice, 12 November 2026, L-66) ----------
+   The frame: the account at the foot of the side panel, a breadcrumb and the test-branch chip in the top bar, and on a
+   phone a bar of the sections used most. The dashboard: the figures, the chart beside the publishing queue, the four
+   questions two by two. The lists: the search and the count on one line. The editor: from 1280px the Save and Publish
+   panel stands beside the fields and stays in view. */
+.admin-account { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3); margin-block: var(--space-1); border-radius: var(--radius-lg); background: var(--surface-sunken); }
+.admin-account form { padding: 0; }
+.admin-avatar { display: grid; place-items: center; inline-size: var(--space-8); block-size: var(--space-8); border-radius: var(--radius-pill); background: var(--action-solid); color: var(--text-on-brand); font-size: var(--text-caption); font-weight: var(--weight-extrabold); letter-spacing: var(--tracking-ui); }
+.admin-account-text { display: grid; min-inline-size: 0; line-height: var(--leading-snug); }
+.admin-account-name { font-size: var(--text-body-sm); font-weight: var(--weight-bold); color: var(--text-strong); }
+.admin-account-mail { font-size: var(--text-caption); color: var(--text-muted); overflow-wrap: anywhere; }
+.admin-crumb a { display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none; }
+.admin-crumb a svg { flex-shrink: 0; }
+@media (hover: hover) { .admin-crumb a:hover { text-decoration: underline; text-underline-offset: 4px; } }
+.admin-crumb a:focus-visible { text-decoration: underline; text-underline-offset: 4px; outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; border-radius: var(--radius-xs); }
+.admin-branch { display: flex; align-items: center; gap: var(--space-2); margin: 0; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); background: var(--surface-sunken); border-inline-start: 3px solid var(--text-link); font-size: var(--text-caption); color: var(--text-body); }
+.admin-branch svg { flex-shrink: 0; color: var(--text-link); }
+.admin-head-actions { justify-content: flex-end; }
+
+/* The phone bar: four targets across the foot of the screen, above the home indicator. Not on an editor, whose Save bar
+   holds that place; not from 1024px, where the side panel is always there. */
+.admin-tabbar { position: fixed; inset-inline: 0; inset-block-end: 0; z-index: var(--z-sticky); background: var(--surface-card); border-block-start: 1px solid var(--border-subtle); padding-block-end: env(safe-area-inset-bottom, 0px); padding-inline: max(var(--space-2), env(safe-area-inset-left, 0px)) max(var(--space-2), env(safe-area-inset-right, 0px)); }
+.admin-tabbar ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.admin-tabbar :is(a, button) { display: grid; justify-items: center; align-content: center; gap: 2px; inline-size: 100%; min-block-size: 56px; padding: var(--space-1); border: 0; background: transparent; color: var(--text-muted); font: inherit; font-size: var(--text-overline); font-weight: var(--weight-semibold); text-decoration: none; text-align: center; cursor: pointer; overflow-wrap: anywhere; }
+.admin-tabbar a[aria-current="page"] { color: var(--text-link); box-shadow: inset 0 2px 0 var(--text-link); }
+.admin-tabbar :is(a, button):focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: -4px; border-radius: var(--radius-md); color: var(--text-strong); }
+@media (hover: hover) { .admin-tabbar :is(a, button):hover { color: var(--text-strong); } }
+html:not([data-admin-js]) .admin-tabbar li:has([data-admin-menu-proxy]) { display: none; }
+html:not([data-admin-js]) .admin-tabbar ul { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.admin-app:has(.admin-tabbar) .admin-main { padding-block-end: calc(var(--space-16) + 56px + env(safe-area-inset-bottom, 0px)); }
+.admin-app:has(.admin-savebar) .admin-tabbar { display: none; }
+.admin-app:has(.admin-savebar) .admin-main { padding-block-end: var(--space-16); }
+@media (min-width: 1024px) { .admin-tabbar { display: none; } .admin-app:has(.admin-tabbar) .admin-main { padding-block-end: var(--space-16); } }
+
+/* The dashboard's section head: the period as one segmented control. */
+.dash-range ul { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: var(--radius-pill); background: var(--surface-sunken); border: 1px solid var(--border-subtle); }
+.dash-range .ui-chip { min-block-size: 38px; border-color: transparent; background: transparent; box-shadow: none; color: var(--text-body); }
+.dash-range .ui-chip[aria-current="page"] { background: var(--surface-card); color: var(--text-strong); border-color: var(--border-default); box-shadow: var(--shadow-xs); }
+.dash-range .ui-chip[aria-current="page"] svg { display: none; }
+.dash-range li { display: flex; }
+.dash-range li > .ui-chip { min-block-size: var(--tap-target); }
+
+/* The four figures: compact tiles, the number first, a small trend under the first two. */
+.dash-tiles > div { padding: var(--space-4) var(--space-5); gap: 2px; border-radius: var(--radius-lg); }
+.dash-tiles [data-icon-tile] { inline-size: var(--space-8); block-size: var(--space-8); border-radius: var(--radius-md); }
+.dash-tiles [data-icon-tile] svg { inline-size: 18px; block-size: 18px; }
+.dash-spark { margin: var(--space-2) 0 0; block-size: 24px; }
+.dash-spark svg { display: block; inline-size: 100%; block-size: 100%; }
+.dash-spark rect { fill: var(--text-link); }
+.dash-spark rect[data-today] { fill: var(--border-default); }
+
+/* The chart beside the queue: two parts to one from a 900px work area. */
+.dash-lead { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); align-items: start; }
+@container (min-width: 900px) { .dash-lead[data-with-queue] { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); } }
+.dash-queue { display: grid; min-inline-size: 0; }
+.dash-fold > summary { font-weight: var(--weight-semibold); }
+.dash-fold[open] > .admin-card { margin-block-start: var(--space-4); }
+
+/* The queue: one card, two panels; with JavaScript, two tabs. */
+.admin-queue { gap: var(--space-4); padding: var(--space-5); }
+.admin-queue-panel { display: grid; gap: var(--space-3); min-inline-size: 0; }
+.admin-queue-panel[hidden] { display: none; }
+.admin-queue-panel + .admin-queue-panel { padding-block-start: var(--space-4); border-block-start: 1px solid var(--border-subtle); }
+.admin-queue-title { display: flex; align-items: center; gap: var(--space-2); margin: 0; font-family: var(--font-display); font-size: var(--text-h4); font-weight: var(--weight-extrabold); line-height: var(--leading-snug); color: var(--text-strong); }
+.admin-queue-title svg { flex-shrink: 0; color: var(--text-link); }
+.admin-queue [role="tablist"] { display: flex; gap: var(--space-1); border-block-end: 1px solid var(--border-subtle); }
+.admin-queue [role="tab"] { display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); padding: 0 var(--space-3); border: 0; border-block-end: 2px solid transparent; margin-block-end: -1px; background: transparent; color: var(--text-muted); font: inherit; font-size: var(--text-body-sm); font-weight: var(--weight-semibold); cursor: pointer; }
+.admin-queue [role="tab"][aria-selected="true"] { color: var(--text-strong); border-block-end-color: var(--text-link); }
+.admin-queue [role="tab"]:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: -2px; border-radius: var(--radius-sm); }
+@media (hover: hover) { .admin-queue [role="tab"]:hover { color: var(--text-strong); } }
+.admin-queue[data-tabbed] .admin-queue-panel + .admin-queue-panel { padding-block-start: 0; border-block-start: 0; }
+.admin-queue[data-tabbed] .admin-queue-title { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.admin-queue[data-tabbed] .admin-queue-panel > .admin-card-head:not(:has(> :not(.admin-queue-title))) { display: none; }
+.admin-queue .admin-recent, .admin-queue .admin-waiting { gap: 0; }
+
+/* The lists: the search box and its count on one line; the table edge to edge in its card. */
+.admin-search { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-2); inline-size: 100%; max-inline-size: none; }
+@media (min-width: 640px) { .admin-search { grid-template-columns: minmax(0, 28rem) auto; align-items: end; column-gap: var(--space-4); } .admin-search > label { grid-column: 1 / -1; } .admin-search > .project-filter-count { margin: 0; align-self: center; } }
+.admin-toolbar { align-items: center; }
+
+/* The editor: the fields, and from a 1280px screen the Save and Publish panel beside them, in view the whole way down. */
+.admin-form-body { display: grid; gap: var(--space-6); min-inline-size: 0; }
+@media (min-width: 1280px) {
+  .admin-form:has(> .admin-savebar) { grid-template-columns: minmax(0, 1fr) 16rem; align-items: start; column-gap: var(--space-6); }
+  .admin-form > .admin-savebar { position: sticky; inset-block-start: var(--space-6); inset-block-end: auto; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: var(--space-4); padding: var(--space-5); border-radius: var(--radius-xl); }
+  .admin-form > .admin-savebar .admin-savebar-note { flex: 0 0 auto; }
+  .admin-form > .admin-savebar .admin-actions { flex-direction: column-reverse; align-items: stretch; }
+  .admin-form > .admin-savebar .admin-actions .ui-button { inline-size: 100%; }
+  html:has(.admin-form > .admin-savebar) { scroll-padding-block-end: var(--space-8); }
+}
+/* The Visitors head is one quiet block: its notes in the caption size, the period's name for screen readers only (the control says what it is). */
+.dash > .admin-section-head .form-note { font-size: var(--text-caption); line-height: var(--leading-normal); }
+.dash-range .project-filter-label { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* Round two (review, 12 November 2026). The four tiles: one structure, the number larger, the icon without its tile,
+   the trend at the foot of each tile that has one. */
+.dash-tiles > div { display: flex; flex-direction: column; }
+.dash-tiles .dash-number { font-size: var(--text-metric-md); }
+.dash-tiles [data-icon-tile] { inline-size: auto; block-size: auto; background: none; color: var(--text-link); border-radius: 0; }
+.dash-spark { margin-block-start: auto; padding-block-start: var(--space-3); }
+/* The bar lists: the number columns shrink to their figures, so every count sits at the card's edge and every bar runs
+   the label column's width. */
+.bar-list { table-layout: auto; }
+.bar-list td, .bar-list-head th:not(:first-child) { inline-size: 1%; }
+/* One Menu on a phone: with the bar at the foot, the top bar's Menu gives way to it (an editor keeps it: no bar there). */
+.admin-app:has(.admin-tabbar):not(:has(.admin-savebar)) .admin-menu-button { display: none; }
+@media (max-width: 639px) { .dash-tiles > div { padding: var(--space-3) var(--space-4); } .dash-tiles .dash-number { font-size: var(--text-metric-sm); } }
+.admin-main > .admin-branch { max-inline-size: none; }
+/* Round three (review, 12 November 2026). Row two level: the chart card takes the queue's height. */
+.dash-lead { align-items: stretch; }
+.dash-lead > [data-dash-series] { align-content: start; }
+/* The trend at the foot of every tile that has one, at one height, on a hairline. */
+.dash-tiles .dash-spark { margin-block-start: auto; block-size: 28px; padding-block-start: 0; border-block-end: 1px solid var(--border-subtle); }
+.dash-tiles .dash-tile-note + .dash-spark, .dash-tiles .dash-delta + .dash-spark { margin-block-start: auto; }
+/* In the queue each publish's views sit on a line of their own. */
+.dash-published .admin-waiting-meta > span:nth-child(n+3) { flex-basis: 100%; }
+/* Round four (review 8/10): in the cards two by two, a closing fold (Top 10 pages, the table) sits at the card's foot, so equal-height cards end on their link rather than on blank space. */
+.admin-bento li.span-2 > .admin-card { display: flex; flex-direction: column; }
+.admin-bento li.span-2 > .admin-card > .dash-details:last-child { margin-block-start: auto; }

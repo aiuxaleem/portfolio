@@ -2,6 +2,7 @@
 /* Site footer on the ink surface: optional call-to-action band, brand and positioning line, navigation, then a legal row with
    location, availability, email and social links. Markup and inline token styles match the legacy footer. */
 import Button from '../ui/button.astro';
+import Logo from '../ui/logo.astro';
 import EmailCopy from './email-copy.astro';
 import { site, resumeAttrs, resumeExternal, legacyChrome, parity, type NavItem } from '../../content/site';
 import { chrome, arNav } from '../../i18n/chrome';
@@ -40,7 +41,7 @@ const socialStyle = 'display: inline-flex; align-items: center; min-block-size: 
     )}
     <div style="display: flex; justify-content: space-between; gap: var(--space-8); flex-wrap: wrap;">
       <div style="display: grid; gap: var(--space-3); max-inline-size: var(--measure-lead);">
-        <a href={ar ? '/ar' : '/'} style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h4); color: var(--on-ink-strong); text-decoration: none;"><span aria-hidden="true" style="inline-size: var(--space-5); block-size: var(--space-5); border-radius: var(--radius-tile); background: var(--gradient-brand);"></span><span lang="en" dir="ltr" style="white-space: nowrap;">{site.brand}</span></a>
+        <a href={ar ? '/ar' : '/'} style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h4); color: var(--on-ink-strong); text-decoration: none;"><Logo size={32} onInk />{!sub && <span class="site-product site-product-on-ink" lang="en" dir="ltr">AIUX</span>}</a>
         <p style="margin: 0px; font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--on-ink-body);">{legacy ? c.bio : site.positioning}</p>
         {!legacy && <p style="margin: 0px; font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--on-ink-muted);">{sub === 'clients' ? site.location : `${site.location} · ${site.availability.label}`}</p>}
       </div>

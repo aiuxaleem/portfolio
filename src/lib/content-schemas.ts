@@ -289,6 +289,77 @@ export const skillSchema = S({
     if (!v.mine && !v.source) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['source'], message: 'A skill from someone else needs the link to where it is published.' });
   });
 
+/* Design systems (owner request, 13 November 2026, L-68): the owner's own on Work > My Design Systems (/my-design-systems),
+   and the public systems worth studying on Resources > Design Systems (/design-systems). One entry per system. Every fact is
+   read from the system's own docs, repository or artifact, never guessed: a field left out is not shown. */
+export const DS_STRENGTHS = {
+  tokens: 'Tokens',
+  components: 'Components',
+  patterns: 'Patterns',
+  accessibility: 'Accessibility',
+  'content-and-voice': 'Content and voice',
+  theming: 'Theming',
+  'multi-brand': 'Multi-brand',
+  motion: 'Motion',
+  'data-visualisation': 'Data visualisation',
+  forms: 'Forms',
+  mobile: 'Mobile',
+  documentation: 'Documentation',
+  governance: 'Governance',
+  'ai-patterns': 'AI patterns',
+} as const;
+export type DsStrength = keyof typeof DS_STRENGTHS;
+export const DS_KINDS = { company: 'Company', government: 'Government', 'open-source': 'Open-source library' } as const;
+export const DS_PLATFORMS = { web: 'Web', ios: 'iOS', android: 'Android', desktop: 'Desktop', email: 'Email', print: 'Print', social: 'Social' } as const;
+const https = z.string().url().max(300).refine(u => /^https:\/\//.test(u), 'Use a full address starting with https://');
+export const designSystemSchema = <I extends z.ZodTypeAny>(image: () => I) => S({
+    title: z.string().max(120),
+    /* One I built: shown on My Design Systems with what is inside and how to build with it. */
+    mine: z.boolean().default(false),
+    /* The system this site is built on: its card shows the live tokens in place of a picture, and its token count is read
+       from src/styles/tokens.css at build time. */
+    here: z.boolean().default(false),
+    /* Who makes it; for one of mine, who it is for. */
+    maker: z.string().max(80),
+    kind: z.enum(keys(DS_KINDS)).default('company'),
+    /* What it is and what stands out, in one or two plain sentences. Shown whole on the card. */
+    summary: z.string().max(260),
+    /* The documentation site. */
+    url: https.optional(),
+    platforms: z.array(z.enum(keys(DS_PLATFORMS))).default([]),
+    strengths: z.array(z.enum(keys(DS_STRENGTHS))).max(4, 'Choose four at most: the ones it is the best example of.').default([]),
+    code: z.object({ url: https, license: z.string().max(40).optional() }).optional(),
+    figma: https.optional(),
+    tokens: z.object({ label: z.string().max(80), url: https }).optional(),
+    /* What it offers people who build with AI agents: an MCP server, an llms.txt, AI patterns or guidance. */
+    ai: z.array(z.object({ label: z.string().max(80), url: https })).max(4, 'Four links at most.').default([]),
+    /* The accessibility standard it states, as it states it, for example WCAG 2.1 AA. */
+    accessibility: z.string().max(60).optional(),
+    /* One of mine: what is inside, as counted in the system itself (for example 231 token values), up to five. */
+    facts: z.array(z.object({ value: z.string().max(24), label: z.string().max(40) })).max(5, 'Five facts at most.').default([]),
+    madeWith: z.array(z.string().max(40)).max(6, 'Six at most.').default([]),
+    /* One of mine: the Design System artifact in Claude, shown only once it is shared so anyone with the link can open it. */
+    artifact: z.string().url().max(300).refine(u => /^https:\/\/claude\.ai\//.test(u), 'A claude.ai artifact link').optional(),
+    artifactShared: z.boolean().default(false),
+    /* One of mine: a line a visitor can paste into their own Claude chat to build with it. */
+    prompt: z.string().max(300).optional(),
+    project: z.string().regex(/^\/work\/[a-z0-9-]+$/).optional(),
+    caseStudy: z.string().regex(/^\/case-studies\/[a-z0-9-]+$/).optional(),
+    cover: z.object({ src: image(), alt, focus }).optional(),
+    note: z.string().max(240).optional(),
+    added: z.coerce.date(),
+    order: z.number().int().default(100),
+    tags: z.array(z.string()).default([]),
+    ...flags,
+  }).superRefine((d, ctx) => {
+    const v = d as { mine?: boolean; here?: boolean; url?: string; artifactShared?: boolean; artifact?: string } & Record<string, unknown>;
+    /* The fields for one of mine are shown only on My Design Systems: on a public system they would vanish without a word. */
+    if (!v.mine) for (const k of ['here', 'prompt', 'artifact', 'project', 'caseStudy', 'cover', 'note']) { const x = v[k]; if (x !== undefined && x !== '' && x !== false) ctx.addIssue({ code: z.ZodIssueCode.custom, path: [k], message: k === 'here' ? 'Only one of yours can be the system this site is built on: tick Made by me, or untick this.' : 'This is shown only for one of yours: tick Made by me, or leave it empty.' }); }
+    for (const k of ['facts', 'madeWith']) if (!v.mine && Array.isArray(v[k]) && (v[k] as unknown[]).length) ctx.addIssue({ code: z.ZodIssueCode.custom, path: [k], message: 'This is shown only for one of yours: tick Made by me, or leave it empty.' });
+    if (!v.mine && !v.url) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['url'], message: 'A public design system needs the link to its documentation.' });
+    if (v.artifactShared && !v.artifact) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['artifact'], message: 'Shared is ticked, so add the artifact link.' });
+  });
+
 /* Site settings (src/content/site/config.json) and the profile data behind About, Resume, Now and the contact form
    (src/content/site/profile.json). Both are single files, checked by the build and by the admin editor. */
 export const siteSchema = z.object({

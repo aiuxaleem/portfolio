@@ -13,3 +13,6 @@ tests/baseline-current/*.png
 .env*
 
 .env*
+
+# The brand kit as the owner downloaded it; its unpacked folder Aleem-Brand-Kit/ is the tracked copy (L-67).
+Aleem-Brand-Kit.zip

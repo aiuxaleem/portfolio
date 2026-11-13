@@ -1,0 +1,17 @@
+title: Aleem | AIUX
+mine: true
+here: true
+maker: This site
+summary: "The system this site is built on: semantic tokens for light and dark, one type scale, a motion stylesheet and a brand kit. Every page is checked against WCAG 2.2 AA in both themes at ten screen widths before it ships."
+platforms: [web]
+strengths: [tokens, theming, accessibility, motion]
+accessibility: WCAG 2.2 AA
+facts:
+  - { value: "2", label: "Themes, light and dark" }
+  - { value: "10", label: "Screen widths checked" }
+madeWith: [Claude Design, Claude Code]
+code: { url: "https://github.com/aiuxaleem/portfolio" }
+prompt: "Read the design tokens at https://github.com/aiuxaleem/portfolio/blob/main/src/styles/tokens.css and build a pricing card that uses only those tokens, in light and dark."
+added: 2026-11-13
+order: 5
+tags: [Tokens, Dark theme, Motion]

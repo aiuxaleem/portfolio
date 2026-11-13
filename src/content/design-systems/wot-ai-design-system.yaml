@@ -1,0 +1,17 @@
+title: WoT AI Design System
+mine: true
+maker: WorldOfTaxonomy
+summary: "A design system people and AI agents read from the same source, with a playground that turns a plain request into an interface made only from the system's components."
+platforms: [web]
+strengths: [tokens, components, ai-patterns, documentation]
+facts:
+  - { value: "203", label: "Tokens in six layers" }
+  - { value: "44", label: "Dark-theme overrides" }
+  - { value: "10", label: "Components" }
+  - { value: "19", label: "Documentation pages" }
+madeWith: [Claude Code, Figma MCP]
+project: /work/wot-ai-design-system
+prompt: "Read the WoT AI Design System at https://worldoftaxonomy-design-system1.vercel.app/ and build a search results page from its components only."
+added: 2026-11-13
+order: 40
+tags: [Playground, React, TypeScript]

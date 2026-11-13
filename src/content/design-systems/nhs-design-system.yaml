@@ -1,0 +1,11 @@
+title: "NHS design system"
+maker: "NHS England"
+kind: government
+summary: "Styles, components and patterns for NHS websites and services, part of the NHS digital service manual alongside its content guide, with NHS.UK frontend as the code."
+url: "https://service-manual.nhs.uk/design-system"
+platforms: [web]
+strengths: [components, patterns, accessibility, content-and-voice]
+code: { url: "https://github.com/nhsuk/nhsuk-frontend", license: "MIT" }
+accessibility: "WCAG 2.2"
+added: 2026-11-13
+order: 65

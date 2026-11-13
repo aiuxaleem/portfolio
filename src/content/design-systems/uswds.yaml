@@ -1,0 +1,12 @@
+title: "U.S. Web Design System (USWDS)"
+maker: "General Services Administration (U.S.)"
+kind: government
+summary: "Design principles, components, patterns, design tokens and utilities that help U.S. federal agencies build accessible, mobile-friendly websites."
+url: "https://designsystem.digital.gov/"
+platforms: [web]
+strengths: [tokens, components, patterns, accessibility]
+code: { url: "https://github.com/uswds/uswds" }
+figma: "https://www.figma.com/community/file/1440921849343185329/uswds-design-kit-beta"
+accessibility: "WCAG 2.1 AA"
+added: 2026-11-13
+order: 60
