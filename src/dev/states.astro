@@ -67,6 +67,8 @@ const aiToolsAll = await listedAiTools();
 const aiToolSample = [...aiToolsAll.filter(t => !t.data.fixture && t.data.pick).slice(0, 1), ...aiToolsAll.filter(t => !t.data.fixture && !t.data.pick).slice(0, 1), ...aiToolsAll.filter(t => t.data.fixture).sort((a, b) => a.id.localeCompare(b.id))];
 const resourceSample = [...resourcesAll.filter(r => !r.data.fixture).slice(0, 2), ...resourcesAll.filter(r => r.data.fixture).sort((a, b) => a.id.localeCompare(b.id))];
 import HomeFeeds from '../components/home/home-feeds.astro';
+import WorkBento from '../components/home/work-bento.astro';
+import InPublic from '../components/home/in-public.astro';
 import CaseDeck from '../components/home/case-deck.astro';
 import HeroStack from '../components/sites/hero-stack.astro';
 import FittedImage from '../components/ui/fitted-image.astro';
@@ -418,6 +420,18 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
           </div>
         </div>
         <HomeFeeds fixtures landmark={false} idPrefix={`states-${theme}`} />
+        <div class="cory-container" style="padding-block: var(--space-12) 0; display: grid; gap: var(--space-4);">
+          <h2 style={h2}>Home: the Work bento</h2>
+          <p style={note}>With fixtures first, so the stress content shows: a 120-character project, case study, system and skill, an unbroken string, missing covers, and case studies past the ones the hero deck shows. Then the empty state: every cell keeps its frame, its title and its line; counts, covers, the contents list and the line to say are left out.</p>
+        </div>
+        <WorkBento fixture={`states-${theme}`} />
+        <WorkBento fixture={`states-empty-${theme}`} empty />
+        <div class="cory-container" style="padding-block: var(--space-12) 0; display: grid; gap: var(--space-4);">
+          <h2 style={h2}>Home: In public</h2>
+          <p style={note}>With fixtures first (a 120-character video and post title, an unbroken string, a video with no poster or date), then empty: no channel set (each says it is opening soon and is not a link), no video and no post (each group says why and where to look).</p>
+        </div>
+        <InPublic fixture={`states-${theme}`} />
+        <InPublic fixture={`states-empty-${theme}`} empty />
         <div class="cory-container" style="padding-block: var(--space-12); display: grid; gap: var(--space-10);">
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">

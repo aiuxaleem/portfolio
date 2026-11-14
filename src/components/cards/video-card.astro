@@ -5,8 +5,9 @@ import { getImage } from 'astro:assets';
 import YouTube from '../embeds/youtube.astro';
 import { formatDuration, posterOf, type Video } from '../../lib/videos';
 import { formatDate } from '../../lib/posts';
+import { VIDEO_FORMATS } from '../../lib/content-schemas';
 
-interface Props { video: Video; level?: 2 | 3; /** The lead video of the page: the player beside the words where there is room. */ wide?: boolean }
+interface Props { video: Video; level?: 2 | 3 | 4; /** The lead video of the page: the player beside the words where there is room. */ wide?: boolean }
 const { video, level = 2, wide = false } = Astro.props;
 const d = video.data;
 const Heading = `h${level}` as any;
@@ -20,6 +21,7 @@ const valid = /^[\w-]{11}$/.test(d.youtubeId);
     {/* Without a date the line keeps its height, so titles in a row of cards line up. */}
     {!(d.published || d.duration) && <p class="case-kicker" aria-hidden="true">&nbsp;</p>}
     {(d.published || d.duration) && <p class="case-kicker">{d.published && <time datetime={d.published.toISOString().slice(0, 10)}>{formatDate(d.published)}</time>}{d.published && d.duration && ' · '}{formatDuration(d.duration)}</p>}
+    {d.format && <p class="project-card-meta"><span class="ui-badge" data-tone={d.format === 'ai-avatar' ? 'brand' : undefined}>{VIDEO_FORMATS[d.format]}</span></p>}
     <Heading class="project-card-title">{d.title}</Heading>
     {d.description && d.description.trim() !== d.title.trim() && <p class="project-card-summary">{d.description}</p>}
     {d.tags.length > 0 && <ul class="project-card-tags" aria-label="Tags">{d.tags.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul>}

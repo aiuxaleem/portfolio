@@ -117,6 +117,9 @@ export const postSchema = <I extends z.ZodTypeAny>(image: () => I) => S({
   });
 
 /* Videos and the LinkedIn posts and articles listed on Writing: one small YAML file each. */
+/** The kinds of video, as their cards name them (L-69). */
+export const VIDEO_FORMATS = { explainer: 'Explainer', 'ai-avatar': 'Presented by my AI avatar', talk: 'Talk', review: 'Book review', tutorial: 'Tutorial' } as const;
+export const VIDEO_FORMAT_KEYS = Object.keys(VIDEO_FORMATS) as [keyof typeof VIDEO_FORMATS, ...(keyof typeof VIDEO_FORMATS)[]];
 export const videoSchema = <I extends z.ZodTypeAny>(image: () => I) => S({
     title: z.string(),
     /* An 11-character YouTube id, or [VERIFY] while the real id is unknown. A made-up id cannot pass. */
@@ -126,6 +129,9 @@ export const videoSchema = <I extends z.ZodTypeAny>(image: () => I) => S({
     poster: z.object({ src: image(), alt, focus }).optional(),
     description: z.string().optional(),
     kind: z.enum(['long-form', 'short']).default('long-form'),
+    /* What kind of video it is, shown on its card (L-69). A video presented by an AI avatar says so: the viewer is told,
+       never left to guess. Optional: a video without one shows no label. */
+    format: z.enum(VIDEO_FORMAT_KEYS).optional(),
     tags: z.array(z.string()).default([]),
     featured: z.boolean().default(false),
     ...flags,
@@ -373,7 +379,7 @@ export const siteSchema = z.object({
   email: z.string().email(),
   calendarUrl: z.string().url(),
   resume: z.object({ path: z.string(), fallbackUrl: z.string().url().optional() }),
-  socials: z.object({ linkedin: z.string().url(), behance: z.string().url().optional(), youtube: z.string().url().optional(), github: z.string().url().optional() }),
+  socials: z.object({ linkedin: z.string().url(), behance: z.string().url().optional(), youtube: z.string().url().optional(), instagram: z.string().url().optional(), substack: z.string().url().optional(), github: z.string().url().optional() }),
   copyright: z.string(),
 });
 

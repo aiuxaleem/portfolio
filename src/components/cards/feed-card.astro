@@ -4,8 +4,8 @@
 import { type FeedItem, feedTypes } from '../../lib/writing';
 import { formatDate } from '../../lib/posts';
 
-interface Props { item: FeedItem; level?: 2 | 3; /** A compact row (the Articles page): no type badge, the title and its call on one line from 768px. */ row?: boolean }
-const { item, level = 2, row = false } = Astro.props;
+interface Props { item: FeedItem; level?: 2 | 3 | 4; /** A compact row (the Articles page): no type badge, the title and its call on one line from 768px. */ row?: boolean; /** Off where the card sits among others of mixed kinds (Home's In public): tag pills read as buttons there. */ tags?: boolean }
+const { item, level = 2, row = false, tags = true } = Astro.props;
 const Heading = `h${level}` as any;
 ---
 <article class:list={['project-card', row && 'feed-card-row']} data-project data-status={item.type} data-tags={item.tags.join('|')}>
@@ -18,7 +18,7 @@ const Heading = `h${level}` as any;
     </Heading>
     {item.date && <p class="case-kicker">{item.dateLabel && `${item.dateLabel} `}<time datetime={item.date.toISOString().slice(0, 10)}>{formatDate(item.date)}</time></p>}
     {item.excerpt && <p class="project-card-summary">{item.excerpt}</p>}
-    {item.tags.length > 0 && <ul class="project-card-tags" aria-label="Topics">{item.tags.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul>}
+    {tags && item.tags.length > 0 && <ul class="project-card-tags" aria-label="Topics">{item.tags.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul>}
     <span class="project-card-cta" aria-hidden="true">
       {item.external ? 'Read on LinkedIn' : 'Read the post'}
       <svg data-dir-icon={item.external ? undefined : ''} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d={item.external ? 'M7 7h10v10M7 17 17 7' : 'M5 12h14M12 5l7 7-7 7'}></path></svg>

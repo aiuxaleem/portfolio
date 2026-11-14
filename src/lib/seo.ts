@@ -72,7 +72,7 @@ export function personLd() {
     address: { '@type': 'PostalAddress', addressLocality: site.location.split(',')[0].trim(), addressCountry: 'IN' },
     worksFor: profile.career[0] ? { '@type': 'Organization', name: profile.career[0].company } : undefined,
     knowsAbout: profile.expertise.map(e => e.title),
-    sameAs: [site.socials.linkedin, site.socials.behance, site.socials.youtube].filter(Boolean),
+    sameAs: [site.socials.linkedin, site.socials.behance, site.socials.youtube, site.socials.instagram, site.socials.substack].filter(Boolean),
   });
 }
 export const websiteLd = () => ({ '@context': 'https://schema.org', '@type': 'WebSite', '@id': `${BASE}/#website`, url: BASE + '/', name: site.brand, description: site.positioning, inLanguage: 'en', publisher: { '@id': PERSON_ID } });

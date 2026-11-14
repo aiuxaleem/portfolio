@@ -22,8 +22,13 @@ export const resumePdf = fs.existsSync(resumeFile) ? config.resume.path : undefi
 export const resumeExternal = /^https?:/.test(resumeUrl);
 export const resumeAttrs = resumeExternal ? { target: '_blank', rel: 'noopener' } : { download: true };
 
+/** The profiles elsewhere. Every one but LinkedIn may be missing from the settings (Instagram is added in L-69 while
+    the owner sets up his handles), so the type says so and each use checks. */
+export interface Socials { linkedin: string; behance?: string; youtube?: string; instagram?: string; substack?: string; github?: string }
+
 export const site = {
   ...config,
+  socials: config.socials as Socials,
   resumeUrl,
   rss: '/rss.xml',
   nav: [

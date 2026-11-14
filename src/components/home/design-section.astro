@@ -1,30 +1,42 @@
 ---
-/* A section of a page exactly as designed in Claude Design. On Home: "Point of view" (about), "In public" (content)
-   and "Now" (now). On About: the opening (about-hero) and "Aspiration" (about-direction). The markup is the
+/* A section of a page exactly as designed in Claude Design. On Home: "Point of view" (about) and "Now" (now); In public
+   is built from the collections since L-69 (home/in-public.astro; the Arabic Home keeps the design's tiles). On About: the opening (about-hero) and "Aspiration" (about-direction). The markup is the
    design as the browser renders it, taken from a snapshot of the design's Home page (scripts/design/
    adopt-page-sections.mjs; docs/DESIGN_SYNC.md). When the page is built, links to design pages become the site's
    addresses, and the email, job title and resume link come from the site settings, as on every snapshot page.
    To change one of these sections, change it in Claude Design and take the snapshot again.
    The certificate pictures in "Now" open in a dialog: islands/page-behaviours.ts. */
-import content from '../../snapshots/home-content.json';
 import now from '../../snapshots/home-now.json';
 import about from '../../snapshots/home-about.json';
 import aboutHero from '../../snapshots/about-about-title.json';
 import aboutDirection from '../../snapshots/about-direction.json';
 import { rewriteLinks } from '../../lib/routes';
-import { tuneSnapshot, HOME_BELOW_FOLD } from '../../lib/snapshot-tune';
+import { tuneSnapshot, HOME_BELOW_FOLD, buildingOnly, LEARNING_MARK } from '../../lib/snapshot-tune';
+import Button from '../ui/button.astro';
 import { chrome } from '../../i18n/chrome';
 import { pipelineImages } from '../../lib/snapshot-images';
-import { freshenInPublic } from '../../lib/home-tiles';
 
-interface Props { name: 'about' | 'content' | 'now' | 'about-hero' | 'about-direction' }
-const snap = { about, content, now, 'about-hero': aboutHero, 'about-direction': aboutDirection }[Astro.props.name];
+interface Props { name: 'about' | 'now' | 'about-hero' | 'about-direction' }
+const snap = { about, now, 'about-hero': aboutHero, 'about-direction': aboutDirection }[Astro.props.name];
 let html = tuneSnapshot(rewriteLinks(snap.html), HOME_BELOW_FOLD, chrome.en.newTab, chrome.en.subject);
-/* "In public": the design's video tile, LinkedIn post card, blog card and article rows were frozen; they read the newest
-   published entries (lib/home-tiles.ts, shared with the Arabic Home: L-57, L-59). */
-if (Astro.props.name === 'content') html = await freshenInPublic(html, 'en');
 /* The portrait in the About section comes through the build pipeline (src/lib/snapshot-images.ts). */
 html = await pipelineImages(html);
+/* "Now" on Home shows what is being built; what is being learned, and every certificate, is on About (L-69). */
+if (Astro.props.name === 'now') html = buildingOnly(html);
+const [before, after] = html.includes(LEARNING_MARK) ? html.split(LEARNING_MARK) : [html, undefined];
 ---
-<Fragment set:html={html} />
+<Fragment set:html={before} />
+{after !== undefined && <>
+  <div class="now-learning">
+    <h3>Learning</h3>
+    <p>The certifications I am studying for, and the ones I hold, are on About.</p>
+    <Button variant="secondary" href="/about#certs-title">See the certifications</Button>
+  </div>
+  <Fragment set:html={after} />
+</>}
 {snap.css && <style is:inline set:html={snap.css}></style>}
+<style>
+  .now-learning { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4) var(--space-6); }
+  .now-learning h3 { flex: 1 0 100%; margin: 0; font-size: var(--text-h3); font-weight: var(--weight-bold); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); }
+  .now-learning p { margin: 0; max-inline-size: 52ch; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); }
+</style>

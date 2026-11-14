@@ -15,7 +15,7 @@ interface Props { lang?: 'en' | 'ar'; /** On /_states the section is shown once 
 const { lang = 'en', fixture } = Astro.props;
 const snap = lang === 'ar' ? skillsAr : skills;
 const html0 = fixture ? snap.html.replace(/^<section /, '<div ').replace(/<\/section>\s*$/, '</div>').replace(' id="skills"', ` id="skills-${fixture}"`).replace(' aria-labelledby="skills-title"', '').replace(' id="skills-title"', ` id="skills-title-${fixture}"`) : snap.html;
-const html = bentoTools(themeColours(html0));
+const html = bentoTools(themeColours(html0), lang === 'en');
 ---
 <Fragment set:html={html} />
 <style is:inline set:html={snap.css}></style>

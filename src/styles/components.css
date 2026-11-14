@@ -173,6 +173,22 @@ html [data-deck-kicker], html [data-deck-kicker] span { overflow-wrap: anywhere;
 .home-tools { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--grid-gap); }
 .home-tools-group { display: grid; align-content: start; gap: var(--space-3); min-inline-size: 0; padding: var(--space-5); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); }
 @media (min-width: 1024px) { .home-tools { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); } }
+/* Home: the tools in a closed fold inside their tile (L-69); the tile is the card, so the fold has no box of its own. */
+.home-tools-fold { background: transparent; border: 0; border-block-start: 1px solid var(--border-subtle); border-radius: 0; box-shadow: none; }
+.resource-disclosure.home-tools-fold > summary { padding-inline: 0; cursor: pointer; flex-wrap: wrap; row-gap: var(--space-1); }
+/* The label never shrinks (a narrow tile squeezed "Show" to two lines, gate 14 Nov 2026): on a phone the label and the chevron
+   share the first line and the names take the line under them; from 768 px it is one row. */
+.home-tools-fold > summary > span:first-child { flex-shrink: 0; white-space: nowrap; }
+.resource-disclosure.home-tools-fold > summary > [data-chevron] { order: 1; margin-inline-start: auto; }
+.resource-disclosure.home-tools-fold > summary > [data-disclosure-state] { order: 2; flex-basis: 100%; overflow-wrap: normal; }
+@media (min-width: 768px) {
+  .resource-disclosure.home-tools-fold > summary { flex-wrap: nowrap; }
+  .resource-disclosure.home-tools-fold > summary > [data-chevron] { order: 0; margin-inline-start: 0; }
+  .resource-disclosure.home-tools-fold > summary > [data-disclosure-state] { order: 0; flex-basis: auto; }
+}
+.home-tools-fold > .home-tools { padding-block-start: var(--space-4); }
+/* The closed fold is short, so the bento's least row height (180 px) would leave the tile half empty: the skills grid's rows take their content's height (every other tile is taller than the old least). */
+#skills .cory-bento:has(.home-tools-fold) { grid-auto-rows: minmax(min-content, auto); }
 /* Home Now: the button that opens the rest of the learning grid. */
 .now-more { margin: var(--space-6) 0 0; }
 #now ul.cory-bento > li[hidden] { display: none !important; } /* beats the snapshot cards' inline display */

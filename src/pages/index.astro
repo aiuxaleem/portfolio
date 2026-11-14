@@ -1,8 +1,12 @@
 ---
 /* Home. Nine sections follow the owner's design in Claude Design (design/claude-design/Version 1/AIUXAleem Home.dc.html) with their
-   markup intact (hero, teams worked with, point of view, beyond the canvas, skills, in public, now, the services teaser, the closing panel), wired to site settings, the profile file and the case studies
-   collection. Projects come from the collection. Writing and videos are in the design's In public section, which links to /posts and /videos, so Home does not list them a second time.
-   The design's own Projects section is not here: the projects on Home are the ones in the collection. */
+   markup intact (hero, teams worked with, point of view, beyond the canvas, skills, in public, now, the closing panel), wired to site settings, the profile file and the case studies
+   collection. Writing and videos are in the design's In public section, which links to /posts and /videos, so Home does not list them a second time.
+   Work is a bento of the four Work pages, Design Systems highlighted (owner request, 14 November 2026, L-69: work-bento.astro);
+   it replaced the three project cards. The services teaser left Home in L-69: /services and the For clients website carry it,
+   and the closing panel is the last thing a visitor meets. Now keeps its Building half; Learning is on About.
+   In public is built from the collections (in-public.astro). Beyond the canvas sits between Point of view and Two users, so
+   the page's two statements of belief are not back to back. */
 import BaseLayout from '../layouts/base-layout.astro';
 import SiteHeader from '../components/layout/site-header.astro';
 import SiteFooter from '../components/layout/site-footer.astro';
@@ -13,8 +17,8 @@ import BeyondTheCanvas from '../components/home/beyond-the-canvas.astro';
 import TwoUsers from '../components/home/two-users.astro';
 import Skills from '../components/home/skills.astro';
 import DesignSection from '../components/home/design-section.astro';
-import HomeFeeds from '../components/home/home-feeds.astro';
-import ServicesTeaser from '../components/home/services-teaser.astro';
+import WorkBento from '../components/home/work-bento.astro';
+import InPublic from '../components/home/in-public.astro';
 import Closing from '../components/home/closing.astro';
 import { site } from '../content/site';
 import { profile } from '../content/profile';
@@ -28,14 +32,13 @@ import { personLd, websiteLd } from '../lib/seo';
       <main id="main" data-page="home" tabindex="-1" style="position: relative; z-index: var(--z-raised); outline: none;">
         <Hero />
         <WorkedWith />
-        <HomeFeeds show={['projects']} />
+        <WorkBento />
         <DesignSection name="about" />
-        <TwoUsers />
         <BeyondTheCanvas />
+        <TwoUsers />
         <Skills />
-        <DesignSection name="content" />
+        <InPublic skip={["/blog/designing-for-two-users"]} />
         <DesignSection name="now" />
-        <ServicesTeaser />
         <Closing />
       </main>
       <div class="sc-host" data-sc-name="Site Footer"><SiteFooter lang="en" hideCta /></div>

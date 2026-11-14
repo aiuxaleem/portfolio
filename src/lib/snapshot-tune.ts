@@ -12,6 +12,8 @@ import { profile } from '../content/profile';
 export const HOME_BELOW_FOLD = ['/assets/media/portrait-home.webp', '/assets/media/reel-thumb.webp', '/assets/author-avatar.jpg'];
 
 const LEGACY_EMAIL = 'hello@aiuxaleem.com';
+/* The design's pages link the first YouTube channel; they follow the address in the site settings (L-69: the owner moved to a new channel). */
+const LEGACY_YOUTUBE = 'https://www.youtube.com/@aiuxaleem';
 const LEGACY_RESUME = 'https://drive.google.com/uc?export=download&amp;id=1cmkjeMQc1S9gIePpRh29T4nFkBBe3izm';
 /* Job title, as the legacy English pages wrote it, and what replaces it. The legacy Arabic pages already say "lead product
    designer", so their wording is left alone. */
@@ -30,7 +32,7 @@ const TITLES: [string, string][] = [
 const RESUME_LABELS: [string, string][] = [['Download resume', 'View resume'], ['Resume (PDF)', 'View resume'], ['تحميل السيرة الذاتية', 'عرض السيرة الذاتية'], ['السيرة الذاتية (PDF)', 'عرض السيرة الذاتية']];
 
 export function tuneSnapshot(html: string, lazy: string[] = [], newTab = '(opens in a new tab)', subject = 'subject'): string {
-  let out = themeColours(html.split(LEGACY_EMAIL).join(site.email));
+  let out = themeColours(html.split(LEGACY_EMAIL).join(site.email).split(LEGACY_YOUTUBE).join(site.socials.youtube ?? LEGACY_YOUTUBE));
   for (const [from, to] of TITLES) out = out.split(from).join(to);
   /* The resume link: the legacy pages linked a direct download. A link to another site cannot be a download, so it opens in a new tab. */
   /* Its label says what it does: "View resume" for a link to another site, "Download resume" for a file on this one. */
@@ -77,7 +79,7 @@ export function themeColours(src: string): string {
     .split('background: var(--blue-100); color: var(--blue-600)').join('background: var(--action-ghost-hover); color: var(--action-primary-hover)');
 }
 
-export function bentoTools(src: string): string {
+export function bentoTools(src: string, fold = false): string {
   const sec = src.indexOf('id="skills'); if (sec < 0) return src;
   const at = src.indexOf('<h4', sec); if (at < 0) return src;
   const liStart = src.lastIndexOf('<li', src.lastIndexOf('<h3', at)); if (liStart < 0) return src;
@@ -88,5 +90,40 @@ export function bentoTools(src: string): string {
   const tile = src.slice(liStart, liEnd)
     .replace('<div style="display: grid; gap: var(--space-6);">', '<div class="home-tools">')
     .replace(/<div style="display: grid; gap: var\(--space-3\);">/g, '<div class="home-tools-group">');
-  return src.slice(0, liStart) + tile + src.slice(liEnd);
+  return src.slice(0, liStart) + (fold ? foldTools(tile) : tile) + src.slice(liEnd);
+}
+
+/* On the English Home the two groups of tools sit in a closed fold under the tile's heading (L-69): twenty-six chips were
+   the longest unbroken list on the page (Hick's law), and a hiring manager scanning the skills needs the cards above
+   them first. The summary names the first three tools and how many more, so the fold says what it holds. */
+const CHEVRON = '<svg data-chevron width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>';
+function foldTools(tile: string): string {
+  const at = tile.indexOf('<div class="home-tools">'); if (at < 0) return tile;
+  let depth = 0, end = -1;
+  const re = /<div\b|<\/div>/g; re.lastIndex = at;
+  for (let m; (m = re.exec(tile));) { depth += m[0] === '</div>' ? -1 : 1; if (depth === 0) { end = m.index + 6; break; } }
+  if (end < 0) return tile;
+  const names = [...tile.slice(at, end).matchAll(/<li class="skl-[^"]*"[\s\S]*?<span lang="en" dir="ltr"[^>]*>([\s\S]*?)<\/li>/g)].map(m => m[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()).filter(Boolean);
+  if (names.length < 4) return tile;
+  const summary = `<summary><span>Show the tools</span><span data-disclosure-state>${names.slice(0, 3).join(', ')} and ${names.length - 3}\u00a0more</span>${CHEVRON}</summary>`;
+  return tile.slice(0, at) + `<details class="resource-disclosure home-tools-fold">${summary}` + tile.slice(at, end) + '</details>' + tile.slice(end);
+}
+
+/** Home's "Now" keeps its Building half (L-69): the Learning half repeated the certifications that About lists in full,
+    and was the longest block of Home on a phone. The Learning block and the certificate dialog it opened are cut; a
+    marker is left where Learning stood, so the page can put one link to About there. Returns the html unchanged when
+    the design's Learning block is not found. */
+export const LEARNING_MARK = '<!--learning-->';
+export function buildingOnly(src: string): string {
+  const h3 = src.indexOf('<span class="sc-interp">Learning</span></h3>'); if (h3 < 0) return src;
+  const open = '<div style="display: grid; gap: var(--space-6);">';
+  const start = src.lastIndexOf(open, h3); if (start < 0) return src;
+  let depth = 0, end = -1;
+  const re = /<div\b|<\/div>/g; re.lastIndex = start;
+  for (let m; (m = re.exec(src));) { depth += m[0] === '</div>' ? -1 : 1; if (depth === 0) { end = m.index + 6; break; } }
+  if (end < 0) return src;
+  let out = src.slice(0, start) + LEARNING_MARK + src.slice(end);
+  const d0 = out.indexOf('<dialog'), d1 = out.indexOf('</dialog>', d0);
+  if (d0 >= 0 && d1 > d0 && out.slice(d0, d1).includes('cert-dlg')) out = out.slice(0, d0) + out.slice(d1 + 9);
+  return out;
 }

@@ -1,0 +1,220 @@
+---
+/* Work on Home (owner request, 14 November 2026, L-69): the four pages of the Work menu as one bento, in place of the
+   three project cards. Design Systems is the highlighted cell (von Restorff): the ink panel across the whole first row,
+   its words beside a small sample of this site's own design system drawn live from the tokens. Projects (with two covers),
+   Case studies and Claude skills share the row under it.
+   Every number and name is read from the collections, so the bento can never say more than the pages hold.
+   Each cell is a card with one link, its page (CLAUDE.md 2.7): the title is the link and its ::after covers the card.
+   Pictures are decorative here (alt="", the names are in the text) and shown whole (L-60).
+   Layout by container width: one column; from 600 px two (Design Systems and Projects across both, Case studies and
+   Claude skills side by side); from 960 px four (Design Systems across, then Projects over two, then the other two).
+   The case studies list names the ones after the hero deck's, so no title is shown twice on the page.
+   States: every cell keeps its frame with an empty collection (a count of zero is not shown, the line under the title
+   says what the page holds) and with missing covers (the covers row is left out). Shown on /_states with fixtures. */
+import FittedImage from '../ui/fitted-image.astro';
+import { listedProjects } from '../../lib/projects';
+import { listedCaseStudies } from '../../lib/case-studies';
+import { listedDesignSystems } from '../../lib/design-systems';
+import { listedSkills } from '../../lib/skills';
+import { site } from '../../content/site';
+
+interface Props {
+  /** On /_states: fixtures shown, ids made unique, and the section is not a landmark. */
+  fixture?: string;
+  /** On /_states: show the cells as an empty site would. */
+  empty?: boolean;
+}
+const { fixture, empty = false } = Astro.props;
+/* On /_states the fixtures come first, so the stress content is what the cells show. */
+const keep = <T extends { data: { fixture: boolean } }>(list: T[]) => (empty ? [] : fixture ? [...list.filter(x => x.data.fixture), ...list.filter(x => !x.data.fixture)] : list.filter(x => !x.data.fixture));
+
+const projects = keep(await listedProjects());
+const shippedFirst = [...projects.filter(p => p.data.status !== 'in-progress'), ...projects.filter(p => p.data.status === 'in-progress')];
+const covers = shippedFirst.filter(p => p.data.cover).slice(0, 2);
+const shipped = projects.filter(p => p.data.status === 'shipped').length;
+const cases = keep(await listedCaseStudies());
+/* The hero deck already shows the featured case studies, so the contents list names the next ones (no title twice). */
+const inDeck = new Set(cases.filter(c => c.data.featured).slice(0, 3).map(c => c.id));
+const nextCases = cases.filter(c => !inDeck.has(c.id)).slice(0, 3);
+const systems = keep(await listedDesignSystems()).filter(s => s.data.mine);
+const mySkills = keep(await listedSkills()).filter(s => s.data.mine);
+const newestSkill = [...mySkills].sort((a, b) => b.data.added.getTime() - a.data.added.getTime()).find(s => s.data.prompts.length > 0);
+const downloads = mySkills.filter(s => s.data.download).length;
+/* As My Design Systems counts them: a system is open to build with when it has its line to paste into Claude. */
+const usable = systems.filter(s => s.data.prompt).length;
+const swatches = ['--action-solid', '--blue-600', '--cyan-500', '--navy-800', '--surface-card', '--text-strong'];
+
+const blurb = Object.fromEntries(site.nav.flatMap((g: any) => g.children ?? []).map((l: any) => [l.href, l.blurb]));
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+const id = (s: string) => (fixture ? `${s}-${fixture}` : s);
+const Tag: any = fixture ? 'div' : 'section';
+const arrow = '<svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>';
+/* Lucide drawings at the site's stroke, one per page. */
+const icons = {
+  systems: '<path d="M11 17a4 4 0 0 1-8 0V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2Z"/><path d="M16.7 13H19a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H7"/><path d="M7 17h.01"/><path d="m11 8 2.3-2.3a2.4 2.4 0 0 1 3.404.004L18.6 7.6a2.4 2.4 0 0 1 .026 3.434L9.9 19.8"/>',
+  projects: '<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>',
+  cases: '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
+  skills: '<path d="M12 7V3"/><path d="M12 21v-4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M3 12h4"/><path d="M17 12h4"/><circle cx="12" cy="12" r="2"/>',
+};
+const icon = (k: keyof typeof icons) => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[k]}</svg>`;
+---
+<Tag id={id('work')} data-section={fixture ? undefined : ''} aria-labelledby={fixture ? undefined : id('work-title')} class="wb">
+  <div class="cory-container wb-inner">
+    <div class="wb-head" data-reveal="">
+      <p class="cory-overline" style="margin: 0px;">Work</p>
+      <h2 id={id('work-title')} class="wb-title">Four ways into my work</h2>
+      <p class="wb-lead">What shipped, how it was designed, the design systems underneath and the Claude skills I wrote for others to use.</p>
+    </div>
+    <div class="wb-cq">
+      <ul class="wb-grid" role="list">
+        <li class="wb-cell wb-cell-ds">
+          <article class="project-card wb-card wb-ds cory-ink">
+            <div class="wb-body">
+              <p class="wb-kicker"><span class="wb-icon" set:html={icon('systems')} /><span>{systems.length > 0 ? `${plural(systems.length, 'system', 'systems')}${usable ? `, ${usable} open to build with` : ''}` : 'Design systems'}</span></p>
+              <h3 class="project-card-title wb-name"><a class="project-card-link" href="/my-design-systems">My Design Systems</a></h3>
+              <p class="wb-line">Design systems people and AI agents build on, each with what is inside and how to build with it in a Claude chat.</p>
+              <div class="wb-specimen" role="img" aria-label="A sample of this site's own design system, drawn live from its tokens: six colours, the display type, four corner radii, a button and a status badge">
+                <p class="wb-spec-note" aria-hidden="true">A sample, read live from this site's tokens</p>
+                <ul class="wb-swatches" aria-hidden="true">{swatches.map(s => <li style={`background: var(${s});`}></li>)}</ul>
+                <div class="wb-spec-row" aria-hidden="true">
+                  <span class="wb-aa">Aa</span><span class="wb-radii">{['xs', 'md', 'xl', 'pill'].map(r => <i style={`border-start-start-radius: var(--radius-${r});`}></i>)}</span>
+                </div>
+                <div class="wb-spec-row wb-parts" aria-hidden="true">
+                  <span class="wb-btn wb-btn-solid">Primary</span>
+                  <span class="wb-badge"><i></i>Shipped</span>
+                </div>
+              </div>
+              <span class="project-card-cta wb-cta" aria-hidden="true">See the systems <Fragment set:html={arrow} /></span>
+            </div>
+          </article>
+        </li>
+        <li class="wb-cell wb-cell-projects">
+          <article class="project-card wb-card">
+            <div class="wb-body wb-split">
+              <div class="wb-text">
+                <p class="wb-kicker"><span class="wb-icon" set:html={icon('projects')} /><span>{projects.length > 0 ? `${plural(projects.length, 'project', 'projects')}${shipped ? `, ${shipped} shipped` : ''}` : 'Projects'}</span></p>
+                <h3 class="project-card-title wb-name"><a class="project-card-link" href="/work">My Projects</a></h3>
+                <p class="wb-line">{blurb['/work']}</p>
+              </div>
+              {covers.length > 0 && <ul class="wb-covers" aria-hidden="true">{covers.map(p => <li class="project-cover wb-cover"><FittedImage image={{ src: p.data.cover!.src, alt: '' }} frame={16 / 9} widths={[240, 360, 480]} sizes="(min-width: 1280px) 260px, (min-width: 600px) 40vw, 45vw" /></li>)}</ul>}
+              <span class="project-card-cta" aria-hidden="true">See the projects <Fragment set:html={arrow} /></span>
+            </div>
+          </article>
+        </li>
+        <li class="wb-cell">
+          <article class="project-card wb-card">
+            <div class="wb-body">
+              <p class="wb-kicker"><span class="wb-icon" set:html={icon('cases')} /><span>{cases.length > 0 ? plural(cases.length, 'case study', 'case studies') : 'Case studies'}</span></p>
+              <h3 class="project-card-title wb-name"><a class="project-card-link" href="/case-studies">My Case Studies</a></h3>
+              <p class="wb-line">{blurb['/case-studies']}</p>
+              {nextCases.length > 0 && <div class="wb-also"><p>Also on the case studies page</p><ul class="wb-index">{nextCases.map(c => <li>{c.data.title}</li>)}</ul></div>}
+              <span class="project-card-cta" aria-hidden="true">Read the case studies <Fragment set:html={arrow} /></span>
+            </div>
+          </article>
+        </li>
+        <li class="wb-cell">
+          <article class="project-card wb-card">
+            <div class="wb-body">
+              <p class="wb-kicker"><span class="wb-icon" set:html={icon('skills')} /><span>{mySkills.length > 0 ? `${plural(mySkills.length, 'skill', 'skills')}${downloads ? `, ${downloads} to download` : ''}` : 'Claude skills'}</span></p>
+              <h3 class="project-card-title wb-name"><a class="project-card-link" href="/skills">My Claude Skills</a></h3>
+              <p class="wb-line">{blurb['/skills']}</p>
+              {newestSkill && <figure class="wb-say"><figcaption>Say to Claude</figcaption><blockquote>{newestSkill.data.prompts[0]}</blockquote></figure>}
+              <span class="project-card-cta" aria-hidden="true">Use the skills <Fragment set:html={arrow} /></span>
+            </div>
+          </article>
+        </li>
+      </ul>
+    </div>
+  </div>
+</Tag>
+
+<style>
+  .wb { padding-block: var(--section-y); }
+  .wb-inner { display: grid; gap: var(--space-10); }
+  .wb-head { display: grid; gap: var(--space-3); }
+  .wb-title { margin: 0; max-inline-size: 24ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
+  .wb-lead { margin: 0; max-inline-size: 34em; font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-body); }
+
+  .wb-cq { container-type: inline-size; }
+  .wb-grid { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--grid-gap); }
+  .wb-cell { display: grid; min-inline-size: 0; }
+  @container (min-width: 600px) {
+    .wb-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .wb-cell-ds, .wb-cell-projects { grid-column: 1 / -1; }
+  }
+  @container (min-width: 960px) {
+    .wb-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .wb-cell-ds { grid-column: 1 / -1; }
+    .wb-cell-projects { grid-column: span 2; }
+  }
+
+  .wb-card { block-size: 100%; }
+  .wb-body { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-6); flex: 1 1 auto; min-inline-size: 0; }
+  .wb-kicker { margin: 0; display: flex; align-items: center; gap: var(--space-2); font-family: var(--font-mono); font-size: var(--text-mono-sm); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-subtle); overflow-wrap: anywhere; }
+  .wb-icon { display: inline-grid; place-items: center; inline-size: 32px; block-size: 32px; flex-shrink: 0; border-radius: var(--radius-md); background: var(--surface-sunken); border: 1px solid var(--border-subtle); color: var(--text-link); }
+  .wb-name { overflow-wrap: anywhere; }
+  .wb-line { margin: 0; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); overflow-wrap: anywhere; }
+
+  /* Projects: words on the left, the covers on the right from 600 px of card. */
+  .wb-split { container-type: inline-size; }
+  .wb-text { display: flex; flex-direction: column; gap: var(--space-3); min-inline-size: 0; }
+  .wb-covers { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); margin-block-start: var(--space-2); }
+  .wb-cover { border-radius: var(--radius-md); box-shadow: none; }
+
+  /* Case studies: the first three, numbered as a contents list. */
+  .wb-index { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-2); font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-body); }
+  .wb-also { display: grid; gap: var(--space-2); }
+  .wb-also > p { margin: 0; font-size: var(--text-caption); color: var(--text-subtle); }
+  .wb-index li { padding-block-start: var(--space-2); border-block-start: 1px solid var(--border-subtle); overflow-wrap: anywhere; }
+
+  /* Claude skills: a line a visitor can say, from the newest skill's own triggers. */
+  .wb-say { margin: 0; display: grid; gap: var(--space-2); justify-items: start; }
+  .wb-say figcaption { font-size: var(--text-caption); color: var(--text-subtle); }
+  .wb-say blockquote { margin: 0; padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-xs); background: var(--surface-sunken); border: 1px solid var(--border-subtle); font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--leading-normal); color: var(--text-strong); overflow-wrap: anywhere; }
+  .wb-say blockquote::before { content: "\201C"; }
+  .wb-say blockquote::after { content: "\201D"; }
+
+  /* Design Systems: the ink panel, theme-stable; its words in the on-ink colours. */
+  .wb-ds { background: var(--gradient-ink); border-color: var(--on-ink-border); border-radius: var(--radius-xl); }
+  .wb-ds .wb-body { gap: var(--space-4); padding: var(--space-8); }
+  .wb-ds .wb-kicker { color: var(--on-ink-link); }
+  .wb-ds .wb-icon { background: var(--on-ink-fill); border-color: var(--on-ink-border-strong); color: var(--on-ink-link); }
+  .wb-ds .wb-name, .wb-ds .wb-name a { color: var(--on-ink-strong); }
+
+  .wb-ds .wb-line { color: var(--on-ink-body); }
+  .wb-ds .wb-cta { color: var(--on-ink-link); }
+  .wb-ds .wb-name { font-size: var(--text-fluid-h2); }
+  .wb-ds .wb-line { font-size: var(--text-fluid-lead); max-inline-size: 40ch; }
+  .wb-specimen { display: flex; flex-direction: column; gap: var(--space-5); padding: var(--space-5); border-radius: var(--radius-lg); background: var(--on-ink-fill); border: 1px solid var(--on-ink-border); }
+  .wb-spec-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); min-inline-size: 0; }
+  .wb-parts { justify-content: flex-start; gap: var(--space-3); padding-block-start: var(--space-4); border-block-start: 1px solid var(--on-ink-border); }
+  .wb-btn { display: inline-flex; align-items: center; min-block-size: 44px; padding-inline: var(--space-5); border-radius: var(--radius-button); border: 1px solid var(--on-ink-border-strong); font-size: var(--text-ui-sm); font-weight: var(--weight-semibold); color: var(--on-ink-strong); }
+  .wb-btn-solid { background: var(--action-solid); border-color: transparent; box-shadow: var(--highlight-inset); }
+  .wb-badge { display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-1) var(--space-3); border-radius: var(--radius-pill); background: var(--on-ink-fill); font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--on-ink-strong); }
+  .wb-badge i { inline-size: 8px; block-size: 8px; border-radius: var(--radius-pill); background: var(--green-500); }
+  .wb-spec-note { margin: 0; font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--on-ink-muted); }
+  .wb-swatches { margin: 0; padding: 0; list-style: none; display: flex; }
+  .wb-swatches li { inline-size: 48px; block-size: 48px; border-radius: var(--radius-pill); border: 2px solid var(--on-ink-border-strong); }
+  .wb-swatches li + li { margin-inline-start: -10px; }
+  .wb-type { display: flex; align-items: center; gap: var(--space-4); }
+  .wb-aa { font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-metric-md); line-height: 1; color: var(--on-ink-strong); }
+  .wb-radii { display: flex; gap: var(--space-2); }
+  .wb-radii i { inline-size: 28px; block-size: 28px; border-block-start: 2px solid var(--on-ink-link); border-inline-start: 2px solid var(--on-ink-link); }
+  .wb-ds .wb-cta { margin-block-start: auto; }
+
+  @media (hover: hover) {
+    .wb-ds:hover .wb-name a { color: var(--on-ink-strong); }
+  }
+  .wb-ds:has(.project-card-link:focus-visible) .wb-name a { color: var(--on-ink-strong); }
+  .wb-ds .project-card-link:focus-visible { outline-color: var(--on-ink-strong); }
+  /* Last, so it wins over the rules above on source order: a narrow ink card keeps the other cards' padding. */
+  .wb-ds { container-type: inline-size; }
+  @container (max-width: 519px) { .wb-ds .wb-body { padding: var(--space-6); } }
+  /* A wide ink card: the words on the left, the sample on the right (law of common region: one card, two halves). */
+  @container (min-width: 760px) {
+    .wb-ds .wb-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-auto-rows: auto; column-gap: var(--space-10); align-content: start; }
+    .wb-ds .wb-body > * { grid-column: 1; }
+    .wb-ds .wb-body > .wb-specimen { grid-column: 2; grid-row: 1 / span 4; align-self: center; }
+    .wb-ds .wb-cta { margin-block-start: var(--space-2); }
+  }
+</style>

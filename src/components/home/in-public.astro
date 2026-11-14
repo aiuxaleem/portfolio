@@ -1,0 +1,168 @@
+---
+/* In public on Home (owner request, 14 November 2026, L-69): a showcase of the newest videos and posts, with the
+   channels they come from. It replaces the design's In public tiles, which were frozen in a snapshot. Everything is read
+   from the collections and the site settings, so a new video or post shows here as soon as it is published.
+   - Channels: YouTube, LinkedIn, Instagram and the Substack podcast, each with what goes there and its address from the site settings
+     (Settings > Profiles elsewhere in the admin). A channel without an address is one line under them, opening soon,
+     and the heading names only the channels that are open.
+   - Latest videos: three in a row, the one marked "Show on the home page" first. A video says what kind it is
+     (explainer, talk, review, tutorial), and one presented by the owner's AI avatar says so on its card.
+   - Latest posts and articles: the newest LinkedIn post, LinkedIn article and blog post, without tags, leaving out
+     posts another section of Home links to.
+   States: a group with nothing in it keeps its heading and says why it is empty and where to look; fixtures first on
+   /_states, and an empty state there. Videos load only when played (CLAUDE.md 2.9). */
+import VideoCard from '../cards/video-card.astro';
+import FeedCard from '../cards/feed-card.astro';
+import { listedVideos } from '../../lib/videos';
+import { feedItems } from '../../lib/writing';
+import { site, type Socials } from '../../content/site';
+
+interface Props {
+  /** On /_states: fixtures first, ids made unique, and the section is not a landmark. */
+  fixture?: string;
+  /** On /_states: show it as an empty site would, with no channels set. */
+  empty?: boolean;
+  /** Posts another section of the page already links to, so none is offered twice. */
+  skip?: string[];
+}
+const { fixture, empty = false, skip = [] } = Astro.props;
+const order = <T,>(list: T[], isFixture: (x: T) => boolean) => (empty ? [] : fixture ? [...list.filter(isFixture), ...list.filter(x => !isFixture(x))] : list.filter(x => !isFixture(x)));
+
+/* The video marked "Show on the home page" in the admin leads, then the newest. */
+const videos = order(await listedVideos(), v => v.data.fixture);
+const shownVideos = [...videos.filter(v => v.data.featured), ...videos.filter(v => !v.data.featured)].slice(0, 3);
+/* Three of different kinds where there are (the newest LinkedIn post, LinkedIn article and blog post), so one story is
+   not told three times; then the newest of the rest. Posts another section links to are left out. */
+const writing = order(await feedItems(), w => w.fixture);
+const offered = writing.filter(w => !skip.includes(w.href));
+/* Two titles tell the same story when they share two or more long words (a blog post and the LinkedIn article made from
+   it): only the first of them is shown. */
+const longWords = (t: string) => new Set(t.toLowerCase().match(/[a-z]{6,}/g) ?? []);
+const sameStory = (a: string, b: string) => { const x = longWords(a); return [...longWords(b)].filter(w => x.has(w)).length >= 2; };
+const latest: typeof offered = [];
+const pick = (fits: (w: (typeof offered)[number]) => boolean) => offered.find(w => fits(w) && !latest.includes(w) && !latest.some(l => sameStory(l.title, w.title)));
+for (const type of ['linkedin', 'article', 'blog']) { const w = pick(x => x.type === type); if (w) latest.push(w); }
+while (latest.length < 3) { const w = pick(() => true); if (!w) break; latest.push(w); }
+latest.sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
+const linkedinPosts = writing.filter(w => w.type === 'linkedin').length;
+const linkedinArticles = writing.filter(w => w.type === 'article').length;
+const socials: Partial<Socials> = empty ? {} : site.socials;
+
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+/* The handle as the address shows it: @name on YouTube and Instagram, the profile path on LinkedIn. */
+const handle = (url?: string) => { if (!url) return ''; try { const p = new URL(url).pathname.replace(/\/+$/, '').split('/').filter(Boolean); const last = p.at(-1) ?? ''; return last.startsWith('@') ? last : p[0] === 'in' ? `in/${last}` : `@${last}`; } catch { return ''; } };
+const glyph = {
+  youtube: '<path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/>',
+  linkedin: '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/>',
+  instagram: '<rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/>',
+  substack: '<path d="M16.85 18.58a9 9 0 1 0-9.7 0"/><path d="M8 14a5 5 0 1 1 8 0"/><circle cx="12" cy="11" r="1"/><path d="M13 17a1 1 0 1 0-2 0l.5 4.5a.5.5 0 1 0 1 0Z"/>',
+};
+const channels = [
+  { key: 'youtube' as const, name: 'YouTube', url: socials.youtube, what: 'Explainers and longer videos on designing AI products.', count: videos.length ? `${plural(videos.length, 'video', 'videos')} on this site` : '', action: 'Subscribe on YouTube' },
+  { key: 'linkedin' as const, name: 'LinkedIn', url: socials.linkedin, what: 'Posts, post series and articles.', count: linkedinPosts + linkedinArticles ? [linkedinPosts && plural(linkedinPosts, 'post', 'posts'), linkedinArticles && plural(linkedinArticles, 'article', 'articles')].filter(Boolean).join(' and ') + ' on this site' : '', action: 'Follow on LinkedIn' },
+  { key: 'instagram' as const, name: 'Instagram', url: socials.instagram, what: 'Short reels: one idea, one minute.', count: '', action: 'Follow on Instagram' },
+  { key: 'substack' as const, name: 'Substack', url: socials.substack, what: 'An audio podcast on designing AI products, as episodes come out.', count: '', action: 'Listen on Substack' },
+];
+/* Only channels with an address are offered, and the heading names only those: a channel being set up is one line under
+   them, never a promise in the heading (L-69). */
+const live = channels.filter(c => c.url);
+const pending = channels.filter(c => !c.url);
+const listed = (names: string[]) => (names.length < 2 ? names.join('') : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`);
+const named = listed(['YouTube', 'Instagram', 'LinkedIn', 'Substack'].filter(n => live.some(c => c.name === n)));
+/* What is shared, from the channels that are open. */
+const kinds = listed(['videos', 'posts', ...(socials.substack ? ['an audio podcast'] : [])]);
+const id = (s: string) => (fixture ? `${s}-${fixture}` : s);
+const Tag: any = fixture ? 'div' : 'section';
+const arrow = '<svg data-dir-icon width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>';
+const external = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"></path></svg>';
+---
+<Tag id={id('content')} data-section={fixture ? undefined : ''} aria-labelledby={fixture ? undefined : id('content-title')} class="ip">
+  <div class="cory-container ip-inner">
+    <div class="ip-head" data-reveal="">
+      <p class="cory-overline" style="margin: 0px;">In public</p>
+      <h2 id={id('content-title')} class="ip-title">{named ? `What I share on ${named}` : 'Videos and posts, on their way'}</h2>
+      <p class="ip-lead">{kinds[0].toUpperCase() + kinds.slice(1)} on designing AI products people can trust, shared as I learn. Follow along where you already are.</p>
+    </div>
+
+    <div class="ip-cq">
+      {live.length > 0 && <ul class="ip-channels" data-count={live.length} role="list" aria-label="Channels">
+        {live.map(c => (
+          <li>
+            <article class="project-card ip-channel" data-channel={c.key}>
+              <div class="ip-channel-top">
+                <span class="ip-glyph" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={glyph[c.key]} /></span>
+                <span class="ip-handle">{handle(c.url)}</span>
+              </div>
+              <h3 class="project-card-title ip-name"><a class="project-card-link" href={c.url} target="_blank" rel="noopener">{c.name}<span class="cory-visually-hidden">: {c.action} (opens in a new tab)</span></a></h3>
+              <p class="ip-what">{c.what}</p>
+              {c.count && <p class="ip-count">{c.count}</p>}
+              <span class="project-card-cta" aria-hidden="true">{c.action} <Fragment set:html={external} /></span>
+            </article>
+          </li>
+        ))}
+      </ul>}
+      {pending.length > 0 && <p class="ip-pending">{pending.map(c => <span class="ip-pending-item"><span class="ip-glyph ip-glyph-sm" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={glyph[c.key]} /></span><span><strong>{c.name}</strong> is opening soon. {c.what}</span></span>)}</p>}
+    </div>
+
+    <div class="ip-group">
+      <div class="ip-group-head">
+        <h3 id={id('content-videos')} class="ip-group-title">Latest videos</h3>
+        {shownVideos.length > 0 && <a data-link class="ip-all" href="/videos"><span>All videos</span><Fragment set:html={arrow} /></a>}
+      </div>
+      {shownVideos.length > 0
+        ? <div data-cq><ul {...(shownVideos.length === 2 ? { 'data-cq-grid': '' } : { 'data-cq-balance': '' })} data-scroll-row="Latest videos, scroll sideways for more" role="list" class="ip-grid">{shownVideos.map(v => <li><VideoCard video={v} level={4} /></li>)}</ul></div>
+        : <div class="project-empty"><p class="project-empty-title">The first videos are on the way.</p><p class="project-empty-body">{socials.youtube ? <>They will be on <a href={socials.youtube} target="_blank" rel="noopener">YouTube<span class="cory-visually-hidden"> (opens in a new tab)</span></a> first, then here.</> : 'They will show here as soon as they are published.'}</p></div>}
+    </div>
+
+    <div class="ip-group">
+      <div class="ip-group-head">
+        <h3 id={id('content-posts')} class="ip-group-title">Latest posts and articles</h3>
+        {latest.length > 0 && <a data-link class="ip-all" href="/blog"><span>Everything to read</span><Fragment set:html={arrow} /></a>}
+      </div>
+      {latest.length > 0
+        ? <div data-cq><ul data-cq-balance data-scroll-row="Latest posts and articles, scroll sideways for more" role="list" class="ip-grid">{latest.map(w => <li><FeedCard item={w} level={4} tags={false} /></li>)}</ul></div>
+        : <div class="project-empty"><p class="project-empty-title">Nothing is published yet.</p><p class="project-empty-body">Posts and articles show here as soon as they are published.</p></div>}
+    </div>
+  </div>
+</Tag>
+
+<style>
+  .ip { padding-block: var(--section-y); }
+  .ip-inner { display: grid; gap: var(--space-12); }
+  .ip-head { display: grid; gap: var(--space-3); }
+  .ip-title { margin: 0; max-inline-size: 24ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
+  .ip-lead { margin: 0; max-inline-size: 34em; font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-body); }
+
+  .ip-cq { container-type: inline-size; }
+  .ip-channels { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--grid-gap); }
+  .ip-channels > li { display: grid; min-inline-size: 0; }
+  /* Thirds, with two or exactly four as halves (L-59: no card alone under a full row). */
+  @container (min-width: 720px) { .ip-channels { grid-template-columns: repeat(3, minmax(0, 1fr)); } .ip-channels:is([data-count="2"], [data-count="4"]) { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ip-channels[data-count="1"] { grid-template-columns: minmax(0, 1fr); } }
+  .ip-channel { gap: var(--space-3); padding: var(--space-6); }
+  .ip-channel-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
+  .ip-glyph { display: inline-grid; place-items: center; inline-size: 44px; block-size: 44px; flex-shrink: 0; border-radius: var(--radius-md); background: var(--gradient-ink); color: var(--on-ink-strong); }
+  .ip-handle { font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--text-subtle); overflow-wrap: anywhere; }
+  .ip-name { overflow-wrap: anywhere; }
+  .ip-what { margin: 0; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); }
+  .ip-count { margin: 0; font-size: var(--text-caption); color: var(--text-subtle); }
+  /* On a narrow screen a channel is one short card: its mark, name, handle and action; what goes there is left to the
+     channel itself (Hick's law: three choices, one line each). */
+  @container (max-width: 719px) { .ip-channel { padding: var(--space-5); gap: var(--space-2); } .ip-what, .ip-channel .ip-count { display: none; } }
+  .ip-pending { margin: var(--space-4) 0 0; display: grid; gap: var(--space-2); font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-body); }
+  .ip-pending-item { display: flex; align-items: center; gap: var(--space-3); min-inline-size: 0; overflow-wrap: anywhere; }
+  .ip-pending strong { color: var(--text-strong); font-weight: var(--weight-semibold); }
+  .ip-glyph-sm { inline-size: 32px; block-size: 32px; border-radius: var(--radius-sm); }
+
+  .ip-group { display: grid; gap: var(--space-6); }
+  .ip-group-head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4) var(--space-6); flex-wrap: wrap; }
+  .ip-group-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-snug); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; }
+  .ip-all { display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none; }
+  .ip-grid { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--grid-gap); }
+  .ip-grid > li { display: grid; min-inline-size: 0; }
+  /* One row, one look (CLAUDE.md 2.7): every video's link sits at the foot of its card, so the three line up whatever
+     each card holds; a post's teaser keeps to three lines (its full text is one click away), so a card without one is
+     not left looking empty beside it. */
+  .ip-grid :global(.video-card-body) { flex: 1 1 auto; }
+  .ip-grid :global(.video-card-body > .embed-card-link) { margin-block-start: auto; }
+  .ip-grid :global(.project-card .project-card-summary) { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
+</style>
