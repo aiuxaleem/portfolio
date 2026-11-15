@@ -6,7 +6,7 @@ import { listedCaseStudies, type CaseStudy, caseNumberIn } from './case-studies'
 import { listedProjects, statusLabel } from './projects';
 import { listedAiTools, aiCategoryCounts, aiCostLabel } from './ai-tools';
 import { listedResources, categoryCounts } from './resources';
-import { profile, period, careerByCompany } from '../content/profile';
+import { profile, careerByCompany } from '../content/profile';
 import { site } from '../content/site';
 
 export interface StackCard {
@@ -55,11 +55,6 @@ export const caseCard = (c: CaseStudy, all?: CaseStudy[]): StackCard => ({
   focus: c.data.cover?.focus,
 });
 
-/** The featured case studies, as on the main site's Home. */
-export async function featuredCases(): Promise<StackCard[]> {
-  const all = (await listedCaseStudies()).filter(c => !c.data.fixture);
-  return all.filter(c => c.data.featured).slice(0, 3).map(c => caseCard(c, all));
-}
 
 /** The three case studies after the newest (the newest is the wide card straight below the first screen). */
 export async function moreCases(): Promise<StackCard[]> {

@@ -32,7 +32,11 @@ const TITLES: [string, string][] = [
 const RESUME_LABELS: [string, string][] = [['Download resume', 'View resume'], ['Resume (PDF)', 'View resume'], ['تحميل السيرة الذاتية', 'عرض السيرة الذاتية'], ['السيرة الذاتية (PDF)', 'عرض السيرة الذاتية']];
 
 export function tuneSnapshot(html: string, lazy: string[] = [], newTab = '(opens in a new tab)', subject = 'subject'): string {
-  let out = themeColours(html.split(LEGACY_EMAIL).join(site.email).split(LEGACY_YOUTUBE).join(site.socials.youtube ?? LEGACY_YOUTUBE));
+  /* The design's old channel: the address, then the short form shown as a link's words (youtube.com/@…), which the
+     Arabic Home's closing panel prints (QA 15 Nov 2026). */
+  const youtube = site.socials.youtube ?? LEGACY_YOUTUBE;
+  const shortForm = (u: string) => u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+  let out = themeColours(html.split(LEGACY_EMAIL).join(site.email).split(LEGACY_YOUTUBE).join(youtube).split(shortForm(LEGACY_YOUTUBE) + '<').join(shortForm(youtube) + '<'));
   for (const [from, to] of TITLES) out = out.split(from).join(to);
   /* The resume link: the legacy pages linked a direct download. A link to another site cannot be a download, so it opens in a new tab. */
   /* Its label says what it does: "View resume" for a link to another site, "Download resume" for a file on this one. */

@@ -1,7 +1,7 @@
 ---
 /* /claude-skills: Resources > Claude Skills (owner request, 10 November 2026, L-63). The best Claude skills for designers,
    kept up to date:
-   1. The first screen: what the page is, its two jobs as its two actions, and when the directory was last checked.
+   1. The first screen: what the page is, its two jobs as its two actions, and when the directory last changed (the weekly check writes the file only when something changed).
    2. What a skill is: three tiles and the folder a skill is.
    3. Picks for designers: skills checked by hand (maker, licence, install line from the maker's own page), by category.
    4. New in the directory: what Anthropic's official directory gained in the last 30 days, found by the weekly refresh.
@@ -53,7 +53,7 @@ The steps, rules and examples Claude follows.`;
       <div><dt>Picks for designers</dt><dd style={stat}>{picks.filter(s => !s.data.fixture).length}</dd></div>
       <div><dt>In the official directory</dt><dd style={stat}>{plugins.length}</dd></div>
       {newPlugins.length > 0 && <div><dt>New this month</dt><dd style={stat}>{newPlugins.length}</dd></div>}
-      <div><dt>Directory checked</dt><dd class="cs-stat-words"><time datetime={directory.checked}>{checkedOn()}</time></dd></div>
+      <div><dt>Directory last changed</dt><dd class="cs-stat-words"><time datetime={directory.checked}>{checkedOn()}</time></dd></div>
     </dl>
   </section>
 
@@ -88,7 +88,7 @@ The steps, rules and examples Claude follows.`;
     <div class="cory-container" style="display: grid; gap: var(--space-8);">
       <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Checked every week</p><h2 id="new-title" class="page-h2">New in the official directory</h2><p class="project-filter-count">What Anthropic's directory gained in the last 30 days. Listed as the directory describes them; I have not reviewed each one.</p></div>
       {newPlugins.length === 0
-        ? <div class="project-empty"><p class="project-empty-title">Nothing new in the last 30 days.</p><p class="project-empty-body">The directory was last checked on <time datetime={directory.checked}>{checkedOn()}</time>, and is checked again every Monday. Everything it lists is below.</p><div><Button variant="secondary" href="#directory">Browse the directory</Button></div></div>
+        ? <div class="project-empty"><p class="project-empty-title">Nothing new in the last 30 days.</p><p class="project-empty-body">The directory last changed on <time datetime={directory.checked}>{checkedOn()}</time>; it is checked for changes every Monday. Everything it lists is below.</p><div><Button variant="secondary" href="#directory">Browse the directory</Button></div></div>
         : <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{newPlugins.slice(0, 12).map(p => <li><PluginCard plugin={p} /></li>)}</ul></div>}
     </div>
   </section>

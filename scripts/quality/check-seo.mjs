@@ -91,6 +91,8 @@ const urls = [...sm.matchAll(/<loc>([^<]*)<\/loc>/g)].map(m => m[1].replace(SITE
 const sitemap = { urls: urls.length, list: urls };
 // A quality build (--fixtures) keeps fixture pages in the sitemap on purpose, so the sitemap rules apply to production builds only.
 const fixturesBuild = process.argv.includes('--fixtures');
+/* The owner's area and the endpoints are never listed, on any build (the Vercel build listed seven admin pages until 15 Nov 2026). */
+for (const u of urls) if (/^\/(admin|api)(\/|$)/.test(u)) fail(u, 'sitemap', 'an admin page or endpoint is listed');
 if (!fixturesBuild) for (const u of urls) { if (/_states|fixture|stress/.test(u)) fail(u, 'sitemap', 'a dev or fixture page is listed'); const p = pages.find(p => p.route === u); if (!p) fail(u, 'sitemap', 'listed but not built'); else if (p.noindex) fail(u, 'sitemap', 'a noindex page is listed'); }
 /* The audience websites (docs/SITES.md) list their pages in sitemaps of their own (/job/sitemap.xml, /clients/sitemap.xml),
    on their own addresses; the main sitemap must not list them. */

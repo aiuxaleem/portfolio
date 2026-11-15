@@ -8,7 +8,9 @@ import { profile } from '../../content/profile';
 import { HOME_BELOW_FOLD } from '../../lib/snapshot-tune';
 import { freshenInPublic } from '../../lib/home-tiles';
 /* "In public" reads the newest video, LinkedIn post and blog post, as the English Home does (L-59). */
-const main = await freshenInPublic(snapshot.main, 'ar');
+/* The design's heading says both design systems are open source; the freight platform's files are a client's and are not
+   public (src/content/design-systems/freight-platform.yaml), so it says one is (QA 15 Nov 2026). */
+const main = (await freshenInPublic(snapshot.main)).replace('نظاما تصميم، كلاهما مفتوح المصدر.', 'نظاما تصميم: أحدهما مفتوح المصدر.');
 ---
 <SnapshotPage snapshot={{ ...snapshot, main }} title={`${site.brand} · ${profile.headline}`} description={site.positioning} lazyImages={HOME_BELOW_FOLD} />
 <script>

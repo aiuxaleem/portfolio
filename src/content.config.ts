@@ -4,9 +4,9 @@
    - `draft: true` entries never build in production
    - `fixture: true` marks a stress-test entry (CLAUDE.md 2.3): shown on /_states, never in production
    - nothing is invented: unknown facts are written as [VERIFY] or [METRIC: ...], and the quality run fails a production page that still shows one */
-import { defineCollection, reference, z } from 'astro:content';
+import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
-import { S, alt, flags, link, seo, projectSchema, caseStudySchema, postSchema, siteSchema, videoSchema, linkedinPostSchema, linkedinArticleSchema, skillSchema, resourceSchema, aiToolSchema, designSystemSchema } from './lib/content-schemas';
+import { S, alt, flags, projectSchema, caseStudySchema, postSchema, siteSchema, videoSchema, linkedinPostSchema, linkedinArticleSchema, skillSchema, resourceSchema, aiToolSchema, designSystemSchema } from './lib/content-schemas';
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/projects' }),

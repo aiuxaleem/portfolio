@@ -23,6 +23,9 @@ let html = tuneSnapshot(rewriteLinks(snap.html), HOME_BELOW_FOLD, chrome.en.newT
 html = await pipelineImages(html);
 /* "Now" on Home shows what is being built; what is being learned, and every certificate, is on About (L-69). */
 if (Astro.props.name === 'now') html = buildingOnly(html);
+/* The design's sentence put the five skills after "these three:", so it read as if they were the three; the three are the
+   app, the platform and the business named before it. Same words, placed so it cannot be misread (QA 15 Nov 2026). */
+if (Astro.props.name === 'about-direction') html = html.replace('everything I know goes into these three: design, systems, accessibility, AI and leading teams.', 'everything I know (design, systems, accessibility, AI and leading teams) goes into these three.');
 const [before, after] = html.includes(LEARNING_MARK) ? html.split(LEARNING_MARK) : [html, undefined];
 ---
 <Fragment set:html={before} />

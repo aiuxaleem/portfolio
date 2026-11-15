@@ -61,6 +61,9 @@ const inSitemap = page => {
   if (withStates) return true;
   /* The audience websites (docs/SITES.md) have sitemaps of their own, on their own hosts. */
   if (/^\/(job|clients)(\/|$)/.test(new URL(page).pathname)) return false;
+  /* The owner's area and the endpoints are rendered by the server, so there is no built file whose noindex could be read:
+     on the Vercel build all seven admin pages reached the live sitemap (QA 15 Nov 2026). They never belong in it. */
+  if (/^\/(admin|api)(\/|$)/.test(new URL(page).pathname)) return false;
   const route = new URL(page).pathname.replace(/\/$/, '');
   // With the Vercel adapter the built pages are under dist/client.
   const file = ['dist', 'dist/client'].flatMap(d => [`${d}${route || '/index'}.html`, `${d}${route}/index.html`]).find(f => fs.existsSync(f));

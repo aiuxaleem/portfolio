@@ -9,12 +9,12 @@ Nothing is read from LinkedIn. The link, and whatever words the sharing app send
 Once: install the admin as an app.
 
 1. Open `https://aiuxaleem-portfolio-app.vercel.app/admin` in Chrome on the phone and sign in.
-2. From Chrome's menu choose **Install app** (on some phones **Add to Home screen**). The app is called **AIUXAleem Admin** and uses the site's mark as its icon.
+2. From Chrome's menu choose **Install app** (on some phones **Add to Home screen**). The app is called **Aleem Admin** and uses the site's mark as its icon.
 
 Every post after that:
 
 1. Under your post in the LinkedIn app, tap **Share**, then **Share via**.
-2. Choose **AIUXAleem Admin**.
+2. Choose **Aleem Admin**.
 3. The admin opens on the post's editor with the link and the day filled in. Type the title (the first line of the post works well), then **Publish**.
 
 If the LinkedIn app sends the post's words along with the link, the title and an excerpt are filled in from them: the first line becomes the title, the next whole sentences (up to 240 characters) the excerpt. Whether it does is a one-time test on your phone: share one post and see what arrives. If you are signed out, the sign-in page opens first and the share is kept through it.
@@ -45,11 +45,14 @@ Fields: `url` (needed; it may also sit inside `text`, as a share sheet sends it)
 | --- | --- |
 | `200` `{ "ok": true, "state": "draft", "kind": "linkedin-posts", "slug": "...", "edit": "/admin/linkedin-posts/..." }` | Saved as a draft for the editor. |
 | `200` `{ "ok": true, "state": "exists", ... }` | The post or article is already here; nothing was added. |
-| `200` `{ "ok": true, "state": "published", "slug": "...", "commit": "<sha>", "page": "/posts" }` | With `"publish": true`: written into the content files as one commit on `main`; the site rebuilds. Needs a title. |
+| `200` `{ "ok": true, "state": "published", "slug": "...", "commit": "<sha>", "page": "/posts" }` | With `"publish": true`: written into the content files as one commit on the branch the host publishes to (`GITHUB_BRANCH`, `main` on the live site); the site rebuilds. Needs a title. |
 | `422` `{ "ok": false, "problems": [{ "field": "url", "message": "..." }] }` | Not a LinkedIn post or article link, or something to fix before publishing. |
 | `401` | No key, or the wrong one. |
 | `409` | The entry changed in the repository while the request ran; send it again. |
 | `503` | The database is not set up on the host. |
+| `400` | The body could not be read as JSON or as a form. |
+| `500` | The database or GitHub failed during the request; nothing new was kept, try again in a minute. |
+| `405` | A method other than POST. |
 
 An iPhone Shortcut: **Receive** URLs and text from the share sheet, then **Get Contents of URL** with the method POST, a JSON body of `url` (and `text`), and the `Authorization` header. One tap in the share sheet then does what section 1 does on Android.
 

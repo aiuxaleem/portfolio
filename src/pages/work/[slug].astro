@@ -1,7 +1,6 @@
 ---
 /* /work/[slug]: one project. Every block except the title, summary and status is optional and is left out when its
    field is empty (CLAUDE.md 2.6, partial state). Updates are listed newest first. */
-import { Image } from 'astro:assets';
 import FittedImage from '../../components/ui/fitted-image.astro';
 import { coverFrame } from '../../lib/images';
 import { render } from 'astro:content';
@@ -36,7 +35,7 @@ const arrowOut = 'M7 7h10v10M7 17 17 7';
       <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">{d.summary}</p>
       {(d.links.live || d.links.repo || d.caseStudy) && (
         <div data-hero-ctas style="display: flex; gap: var(--space-3) var(--space-5); flex-wrap: wrap; align-items: center;">
-          {d.links.live && <Button variant="primary" size="lg" href={d.links.live} target="_blank" rel="noopener">Live site<span class="cory-visually-hidden"> (opens in a new tab)</span><svg slot="icon-right" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={arrowOut}></path></svg></Button>}
+          {d.links.live && <Button variant="primary" size="lg" href={d.links.live} target="_blank" rel="noopener">Live site<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>}
           {d.links.repo && <Button variant="secondary" size="lg" href={d.links.repo} target="_blank" rel="noopener">View on GitHub<span class="cory-visually-hidden"> (opens in a new tab)</span><svg slot="icon-right" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={arrowOut}></path></svg></Button>}
           {d.caseStudy && <a data-link href={`/case-studies/${d.caseStudy}`} style="display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;">Read the case study<svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>}
         </div>

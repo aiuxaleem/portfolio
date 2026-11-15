@@ -86,6 +86,10 @@ Answers:
 | `429` | Five suggestions from one address within an hour is the limit. |
 | `403` | The request did not come from the site. |
 | `503` | The database is not set up on the host. |
+| `400` | The body could not be read as JSON or as a form. |
+| `500` | The database or GitHub failed during the request; nothing was kept, try again in a minute. |
+
+A form posted without JavaScript gets none of these as text: it is sent back to `/resources` with the outcome in the address (`#suggest-sent`, `#suggest-refused`, `#suggest-later`, `#suggest-failed`), which the page shows as a message.
 
 A form posted without JavaScript (`application/x-www-form-urlencoded`, no `Accept: application/json`) gets a `303` back to the page instead, at the note that fits: `/resources#suggest-sent`, `#suggest-refused`, `#suggest-later` or `#suggest-failed`.
 
@@ -105,10 +109,10 @@ Content-Type: application/json
 
 - `slug` is optional: without it the address is made from the title.
 - Without `"publish": true` the resource is saved as a draft under that address, exactly as **Save draft** in the editor does, and the answer gives the editor's link: `{ "ok": true, "state": "draft", "slug": "figma", "edit": "/admin/resources/figma" }`.
-- With `"publish": true` the resource is checked with the same rules as the build, written into `src/content/resources/<slug>.yaml` as one commit on `main`, and the site rebuilds. The answer is `{ "ok": true, "state": "published", "slug": "figma", "commit": "<sha>", "page": "/resources" }`. Publishing a slug that already exists updates that file.
+- With `"publish": true` the resource is checked with the same rules as the build, written into `src/content/resources/<slug>.yaml` as one commit on the branch the host publishes to (`GITHUB_BRANCH`, `main` on the live site), and the site rebuilds. The answer is `{ "ok": true, "state": "published", "slug": "figma", "commit": "<sha>", "page": "/resources" }`. Publishing a slug that already exists updates that file.
 - `"draft": true` in the body keeps a published resource off the site (the same as the editor's "Keep off the public site" box).
 - No rate limit and no spam trap apply to a request with the key. The same field rules do: a refused field comes back as `422` with `problems`.
-- `409` means the file changed in the repository while the request ran: read it again and resend. `503` means `GITHUB_TOKEN` is missing on the host, so nothing can be published.
+- `409` means one of two things, and the message says which. Either an unpublished draft of the same resource is open in the admin, and the request would have replaced it: finish or discard the draft in the admin, or resend with `"replaceDraft": true` to replace it on purpose. Or the file changed in the repository while the request ran: read it again and resend. `503` means `GITHUB_TOKEN` is missing on the host, so nothing can be published.
 
 A ready-made call from a terminal:
 
@@ -118,7 +122,7 @@ curl -X POST https://aiuxaleem.com/api/resources \
   -d '{"title":"Figma","url":"https://www.figma.com/","category":"prototyping","type":"tool","cost":"freemium","description":"Collaborative design and prototyping in the browser.","publish":true}'
 ```
 
-Replace the host with `http://localhost:4321` against a development server. There, publishing goes to the branch named by `GITHUB_BRANCH` in `.env.local`, never to `main`.
+Replace the host with `http://localhost:4321` against a development server. There, publishing goes to the branch named by `GITHUB_BRANCH` in `.env.local`, and to `main` when that is not set: nothing on the server refuses `main`. Use a throwaway branch for tests, and check the admin shows the test-branch line before publishing.
 
 ### Settings the API needs on the host
 

@@ -1,7 +1,6 @@
 /* SEO helpers: which pages get a generated Open Graph image, and the JSON-LD objects.
    Nothing here invents a fact: every value comes from site settings, the profile file or a content entry, and a
    property is left out when its source is empty. */
-import { getCollection } from 'astro:content';
 import { site } from '../content/site';
 import { profile } from '../content/profile';
 import { listedPosts, postUrl, type Post } from './posts';
@@ -109,12 +108,6 @@ export function videoLd(video: Video) {
   });
 }
 export const breadcrumbLd = (items: [string, string][]) => ({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: items.map(([name, p], i) => ({ '@type': 'ListItem', position: i + 1, name, item: abs(p) })) });
-
-/** Everything that may be published, for feeds. */
-export const publishedLinkedin = async () => ({
-  articles: await getCollection('linkedinArticles', ({ data }) => !data.draft && !data.fixture),
-  posts: await getCollection('linkedinPosts', ({ data }) => !data.draft && !data.fixture),
-});
 
 /* Pages that exist in English and Arabic. Each gets hreflang links to both, so search engines treat them as one page in
    two languages. Add a path here when its Arabic page is added under src/pages/ar/. */

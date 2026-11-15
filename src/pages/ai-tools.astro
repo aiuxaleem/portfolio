@@ -49,7 +49,7 @@ const stack = await aiToolCards();
                 <h2 id={`ai-${g.slug}`} class="project-h2">{g.label} <span class="ai-tools-count">{g.count}</span></h2>
                 <p class="project-filter-count">{g.blurb}</p>
               </div>
-              <div data-cq><ul data-cq-grid data-cq-3 style="display: grid; gap: var(--grid-gap);">{tools.filter(t => t.data.category === g.slug).sort((a, b) => Number(b.data.pick) - Number(a.data.pick)).map(t => <li><AiToolCard tool={t} level={3} /></li>)}</ul></div>
+              <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{tools.filter(t => t.data.category === g.slug).sort((a, b) => Number(b.data.pick) - Number(a.data.pick)).map(t => <li><AiToolCard tool={t} level={3} /></li>)}</ul></div>
             </section>
           ))}
         </div>}
