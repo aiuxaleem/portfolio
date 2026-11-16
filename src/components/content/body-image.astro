@@ -1,0 +1,17 @@
+---
+/* A picture placed in an MDX body with Markdown (![alt](../../assets/...)): the same <img> as before, with a srcset and
+   sizes for the reading column (CLAUDE.md 2.4), so a phone takes a file near its own width and not the full upload (the
+   infographics of one post sent 3,200 px files to a 320 px screen: mobile test, 15 November 2026, L-73). data-full keeps
+   the whole file for the image preview, which opens it at full size (islands/image-preview.ts). A picture given by
+   address, not imported, is drawn as written. */
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+type Props = { src: ImageMetadata | string; alt?: string; title?: string; width?: number; height?: number };
+const { src, alt = '', title } = Astro.props;
+const local = typeof src === 'object' && src !== null && 'width' in src;
+const widths = local ? [...new Set([480, 800, 1200, 1600].filter(w => w < src.width).concat(Math.min(src.width, 2400)))] : [];
+const full = local ? (await getImage({ src, format: 'webp' })).src : '';
+---
+{local
+  ? <Image src={src} alt={alt} title={title} widths={widths} sizes="(min-width: 860px) 780px, 100vw" loading="lazy" decoding="async" data-full={full} />
+  : <img src={src as string} alt={alt} title={title} loading="lazy" decoding="async" />}

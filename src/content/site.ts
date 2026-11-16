@@ -59,7 +59,7 @@ export const site = {
     { label: 'Work', links: [{ label: 'My Projects', href: '/work' }, { label: 'My Case Studies', href: '/case-studies' }, { label: 'My Design Systems', href: '/my-design-systems' }, { label: 'My Claude Skills', href: '/skills' }] },
     { label: 'Writing', links: [{ label: 'Blog', href: '/blog' }, { label: 'Posts', href: '/posts' }, { label: 'Articles', href: '/articles' }, { label: 'Videos', href: '/videos' }] },
     { label: 'Resources', links: [{ label: 'UX Library', href: '/resources' }, { label: 'AI tools', href: '/ai-tools' }, { label: 'Design Systems', href: '/design-systems' }, { label: 'Claude Skills', href: '/claude-skills' }] },
-    { label: 'About and more', links: [{ label: 'About', href: '/about' }, { label: 'Resume', href: '/resume' }, { label: 'Now', href: '/now' }, { label: 'Services', href: '/services' }, { label: "Let's talk", href: '/contact' }] },
+    { label: 'About and more', links: [{ label: 'About', href: '/about' }, { label: 'Resume', href: '/resume' }, { label: 'Now', href: '/now' }, { label: 'Services', href: '/services' }, { label: "Let's talk", href: '/contact' }, { label: 'Sitemap', href: '/sitemap' }] },
   ],
 };
 

@@ -36,7 +36,7 @@ const swatches = ['--action-solid', '--navy-800', '--blue-600', '--cyan-500', '-
         <ul class="ds-radii" aria-hidden="true">{['--radius-sm', '--radius-md', '--radius-lg', '--radius-pill'].map(r => <li style={`border-radius: var(${r});`}></li>)}</ul>
         <p class="ds-specimen-caption" aria-hidden="true">Colour, type and corner radii, read live from this site's tokens</p>
       </div>
-    : cover && <div class="ds-show-media project-card-media"><FittedImage image={cover} widths={[480, 720, 960]} sizes="(min-width: 1280px) 520px, (min-width: 768px) 45vw, 100vw" loading={first ? 'eager' : 'lazy'} /></div>}
+    : cover && <div class="ds-show-media project-card-media"><FittedImage image={cover} widths={[480, 720, 960]} sizes="(min-width: 1280px) 440px, (min-width: 930px) 37vw, 90vw" loading={first ? 'eager' : 'lazy'} /></div>}
   <div class="ds-show-about">
     <div class="ds-show-name">
       <h3 id={`${id}-title`}>{d.title}</h3>

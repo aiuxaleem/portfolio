@@ -102,6 +102,9 @@
 .form-field select { inline-size: 100%; min-block-size: 44px; padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font-family: var(--font-sans); font-size: var(--text-ui); line-height: var(--leading-normal); }
 .form-field select:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; border-color: var(--border-focus); }
 .form-field select:disabled { cursor: not-allowed; background: var(--surface-sunken); }
+/* On a touch screen a field's text is 16 px: iOS Safari zooms the whole page when a field under 16 px takes focus (mobile test,
+   15 November 2026, L-73). A mouse and keyboard keep the 15 px of --text-ui. */
+@media (pointer: coarse) { .form-field :is(input, textarea, select) { font-size: var(--text-body-md); } }
 /* A note shown only when the address points at it: the reply to a form sent without JavaScript. */
 [data-target-note]:not(:target) { display: none; }
 /* Short fields side by side where there is room; one under another on a phone. */

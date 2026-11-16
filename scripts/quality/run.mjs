@@ -75,12 +75,24 @@ const origin = `http://127.0.0.1:${PORT}`;
 const browser = await launch();
 const list = routes(target);
 const viewports = quick ? QUICK_VIEWPORTS : VIEWPORTS;
+/* Scheduling (15 November 2026, L-73): two views of one route never run at the same time, the long development pages
+   (/_states, /_states-admin, /_states-dashboard; /_states is 76,000 px tall on a phone) share one lane so only one of their
+   views runs at a time, and they are queued first, so their views spread over the whole run and run beside the short pages. Queued last and taken three at a time, three phone views of /_states ran together and each took more
+   than 25 minutes, where one alone takes 5.5 (scratch timing, 15 November 2026). Every view and check is unchanged. */
+const heavy = r => /^\/_states/.test(r.path);
 const jobs = [];
-for (const route of list) for (const [width, height] of viewports) for (const theme of THEMES) jobs.push({ route, width, height, theme });
-let next = 0, done = 0;
+for (const route of [...list.filter(heavy), ...list.filter(r => !heavy(r))]) for (const [width, height] of viewports) for (const theme of THEMES) jobs.push({ route, width, height, theme });
+const total = jobs.length, running = new Set();
+let done = 0;
+const lane = r => (heavy(r) ? '/_states*' : r.path);
+const take = () => { const i = jobs.findIndex(j => !running.has(lane(j.route))); return i < 0 ? (jobs.length ? 'wait' : null) : jobs.splice(i, 1)[0]; };
 async function worker() {
-  while (next < jobs.length) {
-    const { route, width, height, theme } = jobs[next++];
+  for (;;) {
+    const job = take();
+    if (job === null) return;
+    if (job === 'wait') { await new Promise(r => setTimeout(r, 500)); continue; }
+    const { route, width, height, theme } = job;
+    running.add(lane(route));
     const view = `${width}x${height} ${theme}`;
     /* A view that is still running after VIEW_LIMIT minutes is a failure, not a wait: on 13 November 2026 a browser tab
        crashed on /_states-admin and the run sat at 2,820 of 2,832 views for seven hours. */
@@ -106,8 +118,8 @@ async function worker() {
     work.catch(() => {}); /* if the limit wins, the abandoned view may still fail later; that must not stop the run */
     try { await Promise.race([work, limit]); }
     catch (e) { fail('page-load', route.name, view, String(e.message).slice(0, 160)); await ctxOf?.close().catch(() => {}); }
-    finally { clearTimeout(limitTimer); }
-    if (++done % 20 === 0 || done === jobs.length) console.log(`  ${done}/${jobs.length} views`);
+    finally { clearTimeout(limitTimer); running.delete(lane(route)); }
+    if (++done % 20 === 0 || done === total) console.log(`  ${done}/${total} views`);
   }
 }
 await Promise.all([worker(), worker(), worker()]);

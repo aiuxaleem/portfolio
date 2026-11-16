@@ -74,7 +74,7 @@ if (dialog) {
   document.querySelectorAll<HTMLImageElement>('.prose img').forEach(pic => {
     if (pic.closest('a, button, .project-card, [data-stack-card]')) return;
     const link = document.createElement('a');
-    link.className = 'image-preview-body-link'; link.href = pic.currentSrc || pic.src; link.dataset.preview = '';
+    link.className = 'image-preview-body-link'; link.href = pic.dataset.full || pic.currentSrc || pic.src; /* data-full: the whole file (content/body-image.astro), not the phone-sized one */ link.dataset.preview = '';
     link.setAttribute('aria-label', `View larger: ${pic.alt || 'picture'}`);
     pic.replaceWith(link); link.append(pic);
   });

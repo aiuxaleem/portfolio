@@ -1,7 +1,7 @@
-title: Agent Cory design system
+title: AgentCory design system
 mine: true
 maker: Colaberry
-summary: "The brand and UI system for Agent Cory, Colaberry's AI admissions assistant: its marketing site, chat widget and ROI calculator, in light and dark, and in left-to-right and Arabic right-to-left layouts."
+summary: "The brand and UI system for AgentCory, Colaberry's AI admissions assistant: its marketing site, chat widget and ROI calculator, in light and dark, and in left-to-right and Arabic right-to-left layouts."
 platforms: [web, social]
 strengths: [components, theming, accessibility, content-and-voice]
 accessibility: WCAG 2.2 AA

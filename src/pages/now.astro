@@ -6,8 +6,9 @@ import PageLayout from '../layouts/page-layout.astro';
 import Button from '../components/ui/button.astro';
 import Certifications from '../components/profile/certifications.astro';
 import { profile, monthLabel } from '../content/profile';
-/* A tone dot beside a status that uses the Work page's words; any other word keeps the neutral dot. */
-const tone = (status: string) => (status === 'Shipped' ? 'success' : status === 'In progress' ? 'brand' : 'neutral');
+/* A status's tone matches Home's Now section for the same word (the design, CLAUDE.md 5.2): work still moving is blue,
+   shipped work is green (L-59), and any other word keeps the neutral dot (L-72). */
+const tone = (status: string) => (status === 'Shipped' ? 'success' : /^(In progress|In production|Ongoing|Building)$/.test(status) ? 'brand' : 'neutral');
 const { now } = profile;
 const studying = (await getCollection('certifications', ({ data }) => !data.draft && !data.fixture && data.status === 'in-progress')).length;
 const none = now.building.length === 0 && studying === 0;
