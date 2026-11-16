@@ -11,6 +11,7 @@
     "dev": "astro dev",
     "prebuild": "node scripts/content/youtube-posters.mjs && node scripts/perf/bundle-motion.mjs",
     "build": "astro build",
+    "postbuild": "node scripts/build/vercel-case-routes.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "legacy": "node scripts/serve.mjs legacy 4321",
