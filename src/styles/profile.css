@@ -50,11 +50,17 @@
 .cert-list .ui-badge { justify-self: start; align-self: start; }
 /* The resume lists certifications as rows, not cards: name, issuer and date, the state and the Verify link on one line. */
 .cert-list-compact { grid-template-columns: 1fr; gap: 0; max-inline-size: var(--measure-body); }
-.cert-list-compact > li, .page-section[data-surface="card"] .cert-list-compact > li { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name badge" "meta verify"; column-gap: var(--space-4); row-gap: var(--space-1); padding: var(--space-3) 0; border-radius: 0; background: transparent; border: 0; border-block-end: 1px solid var(--border-subtle); box-shadow: none; }
+.cert-list-compact > li, .page-section[data-surface="card"] .cert-list-compact > li { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "badge" "name" "meta" "verify"; column-gap: var(--space-4); row-gap: var(--space-1); padding: var(--space-3) 0; border-radius: 0; background: transparent; border: 0; border-block-end: 1px solid var(--border-subtle); box-shadow: none; }
 .cert-list-compact > li > .cert-name { grid-area: name; }
 .cert-list-compact > li > .cert-meta { grid-area: meta; }
-.cert-list-compact > li > .ui-badge { grid-area: badge; justify-self: end; }
-.cert-list-compact > li > .embed-card-link { grid-area: verify; justify-self: end; }
+.cert-list-compact > li > .ui-badge { grid-area: badge; justify-self: start; }
+.cert-list-compact > li > .embed-card-link { grid-area: verify; justify-self: start; }
+/* The badge sits above the name on a phone and beside it from 520 px: beside it, the name had 104 px on a phone with large
+   system text and broke "Introduction" in the middle (mobile test, 16 November 2026, L-74). */
+@media (min-width: 520px) {
+  .cert-list-compact > li, .page-section[data-surface="card"] .cert-list-compact > li { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name badge" "meta verify"; }
+  .cert-list-compact > li > :is(.ui-badge, .embed-card-link) { justify-self: end; }
+}
 
 /* Facts strip under an intro. */
 .facts { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: var(--space-4) var(--space-6); padding-block: var(--space-5); border-block: 1px solid var(--border-subtle); }
@@ -118,6 +124,11 @@
 .form-panel { display: flex; gap: var(--space-3); align-items: flex-start; padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); border-inline-start: 3px solid var(--text-danger); }
 .form-panel > svg { flex-shrink: 0; margin-block-start: 2px; color: var(--text-danger); }
 .form-panel > div { display: grid; gap: var(--space-2); min-inline-size: 0; }
+/* Where the panel is narrow (a 320 px phone) its icon sits above the words, which then have the panel's width, and the words
+   break at spaces first: beside the icon they had 140 px and "name@example.com." broke as "name@example.c / om."
+   (mobile review, 16 November 2026, L-74). */
+.form-panel { flex-wrap: wrap; overflow-wrap: break-word; }
+.form-panel > div { flex: 1 1 12rem; }
 .form-panel p, .form-panel li { margin: 0; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); }
 .form-panel ul { display: grid; gap: 0; padding-inline-start: var(--space-5); list-style: revert; }
 .form-panel a { color: var(--text-link); font-weight: var(--weight-semibold); text-decoration: underline; text-underline-offset: 0.22em; }

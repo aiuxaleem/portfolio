@@ -1,0 +1,89 @@
+---
+/* What an approved, signed-in visitor sees on /private-work (docs/PRIVATE_WORK.md): who is signed in, the NDA projects that
+   have private links, each with its links (they open in a new tab, the host shown so the visitor knows where each goes)
+   and the page it belongs to, and Sign out. States: with links; signed in but no links yet (says why and offers the case
+   studies); the links could not be read (says so, keeps Sign out); a project whose page has left the site (its title
+   only, no page link); a link without a note. Built from the site's tokens and components (button, ui-badge, project-empty).
+   On /_states `fixed` keeps Sign out from posting. */
+import Button from '../ui/button.astro';
+import { SESSION_DAYS } from '../../lib/private-work';
+
+interface Group { title: string; kind: string; href: string; links: { label: string; url: string; note: string }[] }
+interface Props { name: string; company: string; groups: Group[]; /** The links could not be read. */ fault?: boolean; uid?: string; level?: 2 | 3; fixed?: boolean }
+const { name, company, groups, fault = false, uid = 'pw', level = 2, fixed = false } = Astro.props;
+const H: any = `h${level}`;
+const host = (url: string) => { try { return new URL(url).host.replace(/^www\./, ''); } catch { return url; } };
+const arrowOut = 'M7 7h10v10M7 17 17 7';
+---
+<div class="pw-signed">
+  <p class="pw-who"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M5 21a7 7 0 0 1 14 0"></path></svg><span>Signed in as <bdi>{name}</bdi>{company && <Fragment>, <bdi>{company}</bdi></Fragment>}. These links are shared with you in confidence: please keep them to yourself.</span></p>
+
+  {fault && (
+    <div class="form-panel" role="alert">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4M12 16h.01"></path></svg>
+      <div><p class="form-panel-title">The links could not be loaded.</p><p>The site did not answer just now. You are still signed in: reload the page in a minute.</p></div>
+    </div>
+  )}
+
+  {!fault && groups.length === 0 && (
+    <div class="project-empty">
+      <p class="project-empty-title">No private links here yet.</p>
+      <p class="project-empty-body">I add them project by project. Until then, the case studies show the work and the decisions behind it.</p>
+      <div><Button variant="secondary" href="/case-studies">See the case studies</Button></div>
+    </div>
+  )}
+
+  {groups.length > 0 && (
+    <ul class="pw-groups">
+      {groups.map((g, i) => (
+        <li class="pw-group">
+          <div class="pw-group-head">
+            <H id={`${uid}-group-${i}`} class="pw-group-title">{g.title}</H>
+            <span class="ui-badge">{g.kind}</span>
+          </div>
+          <ul class="pw-links" aria-labelledby={`${uid}-group-${i}`}>
+            {g.links.map(l => (
+              <li>
+                <a class="pw-link" href={l.url} target="_blank" rel="noopener noreferrer"><span class="pw-link-text"><span class="pw-link-label">{l.label}</span><span class="pw-link-host">{host(l.url)}</span></span><span class="cory-visually-hidden"> (opens in a new tab)</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={arrowOut}></path></svg></a>
+                {l.note && <p class="pw-link-note">{l.note}</p>}
+              </li>
+            ))}
+          </ul>
+          {g.href && <a data-link class="pw-page-link" href={g.href}>{g.kind === 'Project' ? 'See the project page' : 'Read the case study'}<svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>}
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <form method={fixed ? undefined : 'post'} action={fixed ? undefined : '/private-work/leave'} class="pw-leave" data-once={fixed ? undefined : ''}>
+    <Button variant="secondary" type={fixed ? 'button' : 'submit'} data-busy-label="Signing out…">Sign out</Button>
+    <p class="form-note">Signs this browser out. To come back after that you need a new sign-in link, so sign out only on a shared computer. Otherwise this browser stays signed in for {SESSION_DAYS} days from when you used the link.</p>
+  </form>
+</div>
+
+<style>
+  .pw-signed { display: grid; gap: var(--space-8); min-inline-size: 0; }
+  .pw-who { margin: 0; display: flex; gap: var(--space-3); align-items: flex-start; max-inline-size: var(--measure-body); font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); }
+  .pw-who svg { flex-shrink: 0; margin-block-start: 3px; color: var(--text-link); }
+  .pw-who span { min-inline-size: 0; overflow-wrap: anywhere; }
+  .pw-groups { display: grid; gap: var(--grid-gap); margin: 0; padding: 0; list-style: none; }
+  .pw-group { display: grid; gap: var(--space-4); min-inline-size: 0; padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
+  .pw-group-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); min-inline-size: 0; }
+  .pw-group-title { margin: 0; min-inline-size: 0; font-family: var(--font-display); font-size: var(--text-h3); font-weight: var(--weight-extrabold); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; }
+  .pw-links { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+  .pw-links > li { display: grid; gap: var(--space-2); min-inline-size: 0; }
+  .pw-link { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-block-size: var(--tap-target); padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-link); text-decoration: none; transition: border-color var(--duration-base) var(--ease-out), background var(--duration-base) var(--ease-out); }
+  .pw-link svg { flex-shrink: 0; }
+  .pw-link-text { display: grid; gap: var(--space-1); min-inline-size: 0; }
+  .pw-link-label { font-weight: var(--weight-semibold); overflow-wrap: anywhere; }
+  .pw-link-host { font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--text-muted); overflow-wrap: anywhere; }
+  .pw-link:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; border-color: var(--text-strong); background: var(--action-secondary-hover); }
+  @media (hover: hover) { .pw-link:hover { border-color: var(--text-strong); background: var(--action-secondary-hover); } }
+  .pw-link-note { margin: 0; max-inline-size: var(--measure-body); font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-muted); overflow-wrap: anywhere; }
+  .pw-page-link { display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none; }
+  .pw-leave { display: grid; gap: var(--space-3); justify-items: start; max-inline-size: var(--measure-body); }
+</style>
+
+<script>
+  import '../islands/private-work-form.ts';
+</script>

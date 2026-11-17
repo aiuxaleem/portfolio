@@ -28,6 +28,10 @@ process.env.COUNT_LOCAL ||= '1';
 const entry = ['dist/server/entry.mjs', '.vercel/output/_functions/entry.mjs'].map(f => path.join(root, f)).find(f => fs.existsSync(f));
 if (!entry) { console.error(`No server build under ${root} (dist/server or .vercel/output/_functions). Run ADMIN_APP=1 npm run build first.`); process.exit(1); }
 const { default: handler } = await import(pathToFileURL(entry).href);
+/* On Vercel a request that throws fails alone; here one stray rejection inside the server bundle (a fetch it makes to an
+   address without a port, seen on 16 November 2026) ended the whole process and every admin check after it. It is logged
+   and the server keeps serving, as the host would. */
+process.on('unhandledRejection', err => console.error('unhandled rejection in the server bundle (served on):', err?.message ?? err, err?.cause?.code ?? ''));
 const client = path.join(root, 'dist/client');
 const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.avif': 'image/avif', '.woff2': 'font/woff2', '.ico': 'image/x-icon', '.xml': 'application/xml', '.txt': 'text/plain' };
 const server = http.createServer((req, res) => {

@@ -11,6 +11,8 @@ import ReadProgress from '../../components/content/read-progress.astro';
 import Button from '../../components/ui/button.astro';
 import EmailCopy from '../../components/layout/email-copy.astro';
 import BeforeAfter from '../../components/case-study/before-after.astro';
+import NdaNotice from '../../components/private-work/nda-notice.astro';
+import { privateWorkHref } from '../../lib/private-work';
 import { listedCaseStudies, sections, readingTime, caseNumber } from '../../lib/case-studies';
 import { mdxComponents } from '../../components/content/mdx-components';
 import { site } from '../../content/site';
@@ -31,6 +33,9 @@ const shown = new Set(toc.map(s => s.id));
 const num = (id: string) => String(toc.findIndex(s => s.id === id) + 1).padStart(2, '0');
 const meta = [['Role', d.role], ['Company', d.confidential ? 'Confidential' : d.company], ['Timeline', d.timeline], ['Team', d.team], ['Tools', d.stack.join('\u00A0· ') || undefined], ['Platform', d.platform]].filter(([, v]) => v) as [string, string][];
 const verified = d.outcomes.metrics.filter(m => m.verified);
+/* A date stays on one line (CLAUDE.md 2.3, L-57): "5 October 2026" in a result's source note broke after the 5 on a 320 px phone
+   (mobile review, 16 November 2026, L-74). The spaces inside a day, month and year become no-break spaces. */
+const keepDates = (t: string) => t.replace(/\b(\d{1,2}) (January|February|March|April|May|June|July|August|September|October|November|December) (\d{4})\b/g, '$1\u00A0$2\u00A0$3').replace(/\b(January|February|March|April|May|June|July|August|September|October|November|December) (\d{4})\b/g, '$1\u00A0$2');
 /* Counts of what was built are not outcomes. Until a measured outcome is verified, the section says what shipped and
    leads with who uses it, then the counts. */
 const measured = verified.some(m => m.kind === 'outcome');
@@ -40,15 +45,13 @@ const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
 <PageLayout hideCta title={`${d.seo.title || d.title} · Case study · Aleem | AIUX`} description={(d.seo.description || d.lead).slice(0, 165)} page="case" ogType="article" jsonLd={jsonLd} noindex={d.fixture} bg="grid" mainStyle="outline: none; overflow: clip;">
   <ReadProgress />
   <article>
-    <header class="cory-container" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--space-12) var(--space-10);">
+    <header data-article-head class="cory-container" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--space-12) var(--space-10);">
       <a data-link href="/case-studies" style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All case studies</span></a>
       <p class="case-kicker">{[await caseNumber(entry), d.category].filter(Boolean).join('\u00A0· ') || 'Case study'}<span>{'\u00A0· '}{readingTime(d, entry.body)}</span></p>
       <h1 style="margin: 0; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">{d.title}</h1>
       <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">{d.lead}</p>
-      {d.nda && (
-        <p class="case-nda"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg><span><strong>Under NDA.</strong> {d.ndaNote || 'Some details are changed or left out to respect a confidentiality agreement.'}</span></p>
-      )}
-      {meta.length > 0 && <dl class="project-meta">{meta.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>}
+      {d.nda && <NdaNotice note={d.ndaNote} access={privateWorkHref(`case-studies/${entry.id}`)} />}
+      {meta.length > 0 && <dl class="project-meta">{meta.map(([k, v]) => <div data-wide={String(v).length > 40 ? '' : undefined}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>}
       <div class="project-cover" style={d.cover ? `aspect-ratio: ${coverFrame(d.cover.src)};` : undefined}>
         {d.cover
           ? <FittedImage image={d.cover} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1280px) 1144px, 100vw" frame={coverFrame(d.cover.src)} loading="eager" fetchpriority="high" preview caption={d.title} />
@@ -67,7 +70,7 @@ const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
         <div class="case-body">
           {shown.has('summary') && (
             <section id="summary" class="case-section case-tldr" aria-labelledby="summary-title">
-              <p class="cory-overline">{num('summary')} · 30-second read</p>
+              <p class="cory-overline">{num('summary')} · 30-&#8288;second read</p>
               <h2 id="summary-title" class="project-h2">In short</h2>
               <ul>{d.tldr.map(t => <li>{t}</li>)}</ul>
             </section>
@@ -133,7 +136,7 @@ const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
               <p class="cory-overline">{num('outcomes')} · {measured ? 'Outcomes' : 'Results'}</p>
               <h2 id="outcomes-title" class="project-h2">{measured ? 'Outcomes and impact' : 'What shipped, and who uses it'}</h2>
               {!measured && paras(d.outcomes.summary).map(p => <p>{p}</p>)}
-              {verified.length > 0 && <ul class="case-metrics">{verified.map(m => <li><bdi class="cory-metric">{m.value}</bdi><span>{m.label}</span>{m.source && <small>{m.source}</small>}</li>)}</ul>}
+              {verified.length > 0 && <ul class="case-metrics">{verified.map(m => <li><bdi class="cory-metric">{m.value}</bdi><span>{m.label}</span>{m.source && <small>{keepDates(m.source)}</small>}</li>)}</ul>}
               {measured && paras(d.outcomes.summary).map(p => <p>{p}</p>)}
               {d.quote && <blockquote class="case-quote">{d.quote}</blockquote>}
             </section>

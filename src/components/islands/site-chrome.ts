@@ -89,10 +89,14 @@ if (menu && menuOpener) {
     outside().forEach(el => el.removeAttribute('inert'));
     if (restore) menuOpener.focus();
   };
+  /* The page behind becomes inert just after the open menu has painted: setting inert restyles the whole page (136 to
+     185 ms with a phone's processor on About), which made the tap wait 290 to 510 ms for its first frame (INP, mobile test,
+     16 November 2026, L-74). Focus is inside the menu at once and Tab stays there (the trap below), so nothing behind it
+     can be reached in between. */
   const open = () => {
     menu.hidden = false; menuOpener.setAttribute('aria-expanded', 'true'); root.style.overflow = 'hidden';
-    outside().forEach(el => el.setAttribute('inert', ''));
     (menu.querySelector<HTMLElement>('[data-menu-close]') || menu).focus();
+    requestAnimationFrame(() => setTimeout(() => { if (!menu.hidden) outside().forEach(el => el.setAttribute('inert', '')); }));
   };
   menuOpener.addEventListener('click', open);
   menu.querySelector('[data-menu-close]')?.addEventListener('click', () => close());

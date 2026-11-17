@@ -16,7 +16,7 @@
    14. From 1024px the side panel's list of sections scrolls on its own; while more sections sit below its edge, the foot
        draws a fade over the edge (admin.css), so the cut reads as a scroll and not as the end of the list.
    15. The publishing queue on the dashboard (L-66): its two panels become two tabs, the one marked first open; arrow
-       keys, Home and End move between them.
+       keys, Home and End move between them. The access requests (/admin/access) use the same tabs, named by data-tabs-label.
    Every part is selector-guarded, so the file is a no-op on a page that has none of it (the sign-in page has 6 and 7 only). */
 const button = document.querySelector<HTMLButtonElement>('[data-admin-menu]'), panel = document.querySelector<HTMLElement>('[data-admin-panel]');
 if (button && panel) {
@@ -50,6 +50,8 @@ document.querySelectorAll<HTMLInputElement>('[data-filter-rows]').forEach(input 
     else if (searching) { searching = false; for (const f of folds) { f.hidden = false; f.open = wasOpen.get(f) ?? true; } }
     if (count) count.textContent = q ? `Showing ${shown} of ${rows.length} ${rows.length === 1 ? noun : nouns}` : `${rows.length} ${rows.length === 1 ? noun : nouns}`;
     if (empty) empty.hidden = shown > 0; table.closest<HTMLElement>('[data-filter-table]')?.toggleAttribute('hidden', shown === 0);
+    /* A list drawn as tabs (the access requests) shows every tab's matches while a search is on (admin.css, data-searching). */
+    table.toggleAttribute('data-searching', !!q);
   };
   input.addEventListener('input', run);
   document.querySelector('[data-filter-clear]')?.addEventListener('click', () => { input.value = ''; run(); input.focus(); });
@@ -74,6 +76,8 @@ document.querySelectorAll<HTMLFormElement>('form[data-busy]').forEach(form => fo
   /* Removing an entry deletes its file from the repository: it asks first, in the same way. A button may carry its own
      question (data-confirm) when what it removes is not a file of the site. */
   if (pressed?.getAttribute('value') === 'delete' && !confirm(pressed.getAttribute('data-confirm') || 'Remove this entry from the site? Its file is deleted from the repository and any draft with it. This cannot be undone from here.')) { event.preventDefault(); return; }
+  /* Any other button with a question of its own (Decline and Revoke on the access requests) asks it the same way. */
+  if (pressed?.hasAttribute('data-confirm') && pressed.getAttribute('value') !== 'delete' && !confirm(pressed.getAttribute('data-confirm')!)) { event.preventDefault(); return; }
   form.setAttribute('aria-busy', 'true');
   form.querySelectorAll<HTMLButtonElement>('button[type="submit"]').forEach(b => b.setAttribute('aria-disabled', 'true'));
   const label = pressed?.querySelector<HTMLElement>('.ui-button-label');
@@ -157,7 +161,7 @@ document.getElementById('problems')?.focus({ preventScroll: false });
 /* 15. The publishing queue's tabs: a tablist made from the panels' headings; without JavaScript both panels are listed. */
 document.querySelectorAll<HTMLElement>('[data-pub-tabs]').forEach((card, c) => {
   const panels = [...card.querySelectorAll<HTMLElement>(':scope > [data-pub-panel]')]; if (panels.length < 2) return;
-  const list = document.createElement('div'); list.setAttribute('role', 'tablist'); list.setAttribute('aria-label', 'Publishing');
+  const list = document.createElement('div'); list.setAttribute('role', 'tablist'); list.setAttribute('aria-label', card.dataset.tabsLabel || 'Publishing');
   const tabs = panels.map((panel, i) => {
     const heading = panel.querySelector<HTMLElement>('.admin-queue-title'), tab = document.createElement('button');
     tab.type = 'button'; tab.setAttribute('role', 'tab'); tab.id = `pub-tab-${c}-${i}`; panel.id ||= `pub-panel-${c}-${i}`;

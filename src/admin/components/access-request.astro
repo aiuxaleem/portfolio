@@ -1,0 +1,56 @@
+---
+/* One visitor's request to see the private work, in the list on /admin/access (docs/PRIVATE_WORK.md): who asked, from
+   where, what they would like to see, when they agreed to keep it confidential, its status in words and an icon, what
+   happened to its sign-in link, how many browsers are signed in with it, and the actions its status allows (Approve,
+   Decline, Send a new link, Revoke access), each a small form of its own that posts to the page. Decline and Revoke ask
+   first (islands/admin-shell.ts). Times are Gulf time (when(), lib/publishing.ts), as everywhere in the admin.
+   States: waiting, approved (link not used yet, used, expired), declined, revoked; partial (no role, no reason, no link
+   yet); asked before from the same email address. On /_states `fixed` draws the actions as plain buttons that post nothing. */
+import AdminIcon from './admin-icon.astro';
+import type { AdminIcon as IconName } from './admin-icons';
+import Button from '../../components/ui/button.astro';
+import { when } from '../lib/publishing';
+import { STATUS, canDo, KEEP_DAYS, type AccessRequest, type Decision } from '../lib/private-work';
+
+interface Props { r: AccessRequest; level?: 3 | 4; fixed?: boolean; uid?: string; /** "Now", for the link's state; the fixtures pass their own. */ now?: number }
+const { r, level = 3, fixed = false, uid = 'req', now = Date.now() } = Astro.props;
+const H: any = `h${level}`;
+const status = STATUS[r.status];
+const link = r.lastLink;
+const linkLine = !link ? (r.status === 'approved' ? 'None made yet. Press Send a new link.' : '')
+  : link.usedAt ? `Made ${when(link.createdAt)}, used ${when(link.usedAt)}`
+  : new Date(link.expiresAt).getTime() > now ? `Made ${when(link.createdAt)}, not used yet; works until ${when(link.expiresAt)}`
+  : `Made ${when(link.createdAt)}, expired unused ${when(link.expiresAt)}`;
+const every: { action: Decision; label: string; icon: IconName; busy: string; confirm?: string }[] = [
+  { action: 'approve', label: r.status === 'waiting' ? 'Approve' : 'Approve again', icon: 'ok', busy: 'Approving…' },
+  { action: 'decline', label: 'Decline', icon: 'close', busy: 'Declining…', confirm: `Decline ${r.name}'s request? Nothing is sent to them, and the request is deleted after ${KEEP_DAYS} days.` },
+  { action: 'newlink', label: 'Send a new link', icon: 'publish', busy: 'Sending…' },
+  { action: 'revoke', label: 'Revoke access', icon: 'hidden', busy: 'Revoking…', confirm: `Revoke ${r.name}'s access? Every browser they signed in with is signed out at once, and their unused link stops working.` },
+];
+const actions = every.filter(a => canDo(r.status, a.action));
+const who = [r.role, r.company].filter(Boolean);
+---
+<li class="access-item" data-filter-row data-status={r.status}>
+  <div class="access-item-head">
+    <H id={`${uid}-${r.id}-name`} class="access-name"><bdi>{r.name}</bdi></H>
+    <span class="ui-badge admin-state" data-state={r.status === 'waiting' ? 'changes' : undefined}><AdminIcon name={status.icon} size={14} />{status.label}</span>
+  </div>
+  {who.length > 0 && <p class="access-who">{who.map((w, i) => <Fragment>{i > 0 && ' · '}<bdi>{w}</bdi></Fragment>)}</p>}
+  <p class="access-mail"><a href={`mailto:${r.email}`}><AdminIcon name="suggested" size={16} /><bdi>{r.email}</bdi><span class="cory-visually-hidden"> (write to {r.name})</span></a></p>
+  {r.reason && <div class="access-reason"><p class="access-reason-label">Would like to see</p><p>{r.reason}</p></div>}
+  <dl class="access-facts">
+    <div><dt>Asked</dt><dd>{when(r.createdAt)}</dd></div>
+    <div><dt>Agreed to keep it confidential</dt><dd>{when(r.consentedAt)}</dd></div>
+    {r.decidedAt && <div><dt>{status.label}</dt><dd>{when(r.decidedAt)}</dd></div>}
+    {linkLine && <div><dt>Sign-in link</dt><dd>{linkLine}</dd></div>}
+    {r.status === 'approved' && <div><dt>Signed in now</dt><dd>{r.sessions === 0 ? 'No browser' : r.sessions === 1 ? '1 browser' : `${r.sessions} browsers`}</dd></div>}
+    {r.earlier > 0 && <div><dt>Other requests from this email</dt><dd>{r.earlier}</dd></div>}
+  </dl>
+  {actions.length > 0 && (
+    <div class="admin-actions access-actions" role="group" aria-labelledby={`${uid}-${r.id}-name`}>
+      {actions.map(a => fixed
+        ? <Button variant="secondary" size="sm" type="button"><AdminIcon name={a.icon} size={16} slot="icon-left" />{a.label}<span class="cory-visually-hidden">: {r.name}</span></Button>
+        : <form method="post" data-busy><input type="hidden" name="id" value={r.id} /><Button variant="secondary" size="sm" type="submit" name="action" value={a.action} data-busy-label={a.busy} data-confirm={a.confirm}><AdminIcon name={a.icon} size={16} slot="icon-left" />{a.label}<span class="cory-visually-hidden">: {r.name}</span></Button></form>)}
+    </div>
+  )}
+</li>

@@ -117,10 +117,11 @@ html[data-theme-switching] *, html[data-theme-switching] *::before, html[data-th
 [data-cq] { container-type: inline-size; }
 @container (min-width: 520px) { [data-cq-grid] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
 @container (min-width: 860px) { [data-cq-grid="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; } }
-@container (min-width: 720px) { [data-cq-3] { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; } }
-/* Three columns in a 720 to 779px container (a tablet of about 768px) leave an AI tool's name 123 to 142px beside its letter tile, and "NotebookLM"
-   needs 138px at the card title size: in that band only, the name takes the next size of the scale and stays whole (L-47, 3 November 2026). */
-@container (min-width: 720px) and (max-width: 779px) { [data-cq-3] .ai-tool .project-card-title { font-size: var(--text-h4); } }
+/* A row of three follows the card-row rule (L-59): one column, halves from 600 px of container with the odd last card across
+   the row, thirds from 960 px. Thirds from 720 px gave a tablet of 768 px cards of 183 px of text, about 22 characters a line
+   (CLAUDE.md 2.8; mobile review, 16 November 2026, L-74). */
+@container (min-width: 600px) and (max-width: 959px) { [data-cq-3] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } [data-cq-3] > :last-child:nth-child(odd) { grid-column: 1 / -1; } }
+@container (min-width: 960px) { [data-cq-3] { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; } }
 @container (min-width: 760px) { [data-case-grid] { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) !important; } }
 @container (max-width: 359px) { [data-cq-pad] { padding: var(--space-4) !important; } }
 
@@ -194,6 +195,14 @@ main[tabindex] { padding-block-start: 0 !important; }
 }
 
 @media (max-width: 639px) { [data-hero-ctas] :is(button, a), [data-cta-row] :is(button, a) { white-space: normal !important; text-align: center; } }
+/* A phone on its side (under 768 px wide and under 600 px tall): the screen is short, so the hero's buttons sit side by side
+   at their own width (stacked full width they took 634 px each and most of the first screen) and an article's head starts
+   closer to the header (the title began 258 px down a 375 px screen; mobile review, 16 November 2026, L-74). */
+@media (max-width: 767px) and (orientation: landscape) and (not (min-height: 600px)) and (min-aspect-ratio: 3/2) {
+  [data-hero-ctas] { flex-direction: row; flex-wrap: wrap; align-items: center !important; }
+  [data-hero-ctas] :is(button, a) { inline-size: auto; }
+  [data-article-head] { padding-block-start: var(--space-6) !important; }
+}
 
 /* ---- Home revamp additions ---- */
 /* Nested theme scope: a subtree can be light inside a dark page (the hero demo tile). Values mirror :root. */
@@ -377,6 +386,14 @@ body:has(> .ai-field) [data-bg~="grid"]::before { display: none; }
 [data-stack-card] > a { overflow: hidden; }
 @media (hover: hover) { [data-stack-card][data-pos="0"]:hover { transform: translateY(var(--lift-hover-lg)); box-shadow: var(--shadow-xl); } }
 [data-stack-card][data-pos="0"]:has(a:focus-visible) { transform: translateY(var(--lift-hover-lg)); box-shadow: var(--shadow-xl); }
+/* A stack of up to five picks (L-76): the cards past the third wait behind it, unseen, in its pose. */
+[data-stack-card]:not([data-pos="0"], [data-pos="1"], [data-pos="2"]) { z-index: 0; transform: translate(calc(-9% * var(--dir-x)), -13%) rotate(calc(-6deg * var(--dir-x))) scale(0.86); opacity: 0; pointer-events: none; }
+/* Swipe (islands/stack-swipe.ts, L-76): a sideways drag is the card's, a vertical one the page's. The front card follows the
+   finger with no delay and turns a little with it; thrown, it leaves to that side and fades, then takes its place at the back. */
+[data-stack-card] { touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+[data-stack-card][data-pos="0"][data-drag] { transition: none; transform: translateX(var(--drag-x, 0px)) rotate(var(--drag-r, 0deg)); cursor: grabbing; }
+[data-stack-card][data-pos="0"][data-fly] { transform: translateX(var(--drag-x, 0px)) rotate(var(--drag-r, 0deg)); opacity: 0; transition: transform var(--duration-base) var(--ease-out), opacity var(--duration-base) var(--ease-out); }
+[data-stack-card] img { -webkit-user-drag: none; }
 
 /* Tool logos: one monochrome file per theme (Simple Icons CDN); the initial beneath shows if a logo is missing */
 [data-theme="dark"] [data-logo-light]:not([data-logo-light="off"]), :root:not([data-theme="dark"]) [data-logo-dark]:not([data-logo-dark="off"]) { display: none; }

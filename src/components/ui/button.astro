@@ -18,8 +18,14 @@ interface Props {
 const { variant = 'primary', size = 'md', href, fullWidth = false, ...rest } = Astro.props;
 const Tag: any = href ? 'a' : 'button';
 const attrs = href ? { href } : { type: 'button' };
+/* A link that opens a new tab says so with the ↗ sign (L-56): the primary in its well (the CSS below), every other kind with the
+   same drawing after its label, unless the caller gives its own icon. It was left to each page, so "View resume" showed it on
+   Home and not on Case studies or the 404 page (mobile review, 16 November 2026, L-74). */
+const newTab = !!href && rest.target === '_blank' && variant !== 'primary' && variant !== 'on-ink-solid';
+const body = newTab ? await Astro.slots.render('default') : '';
+const autoArrow = newTab && !Astro.slots.has('icon-right') && !/<svg/i.test(body);
 ---
-<Tag class:list={['ui-button', `ui-button-${variant}`, `ui-button-${size}`, fullWidth && 'ui-button-full']} {...attrs} {...rest}><span class="ui-button-label"><slot name="icon-left" /><slot /><slot name="icon-right" /></span></Tag>
+<Tag class:list={['ui-button', `ui-button-${variant}`, `ui-button-${size}`, fullWidth && 'ui-button-full']} {...attrs} {...rest}><span class="ui-button-label"><slot name="icon-left" />{newTab ? <Fragment set:html={body} /> : <slot />}<slot name="icon-right" />{autoArrow && <svg width={size === 'lg' ? 20 : 18} height={size === 'lg' ? 20 : 18} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"></path></svg>}</span></Tag>
 
 <style is:global>
   .ui-button { position: relative; display: inline-flex; width: auto; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; min-height: 48px; font-size: var(--text-ui); font-family: var(--font-sans); font-weight: var(--weight-semibold); line-height: 1.2; letter-spacing: var(--tracking-ui); color: inherit; text-decoration: none; border-radius: var(--radius-button); border: 1px solid transparent; cursor: pointer; white-space: normal; overflow-wrap: anywhere; transition: background var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out), border-color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out), transform var(--duration-fast) var(--ease-spring); }
@@ -67,8 +73,12 @@ const attrs = href ? { href } : { type: 'button' };
   :is(.ui-button-primary, .ui-button-on-ink-solid, [data-ds-button="primary"], [data-ds-button="on-ink-solid"]) { font-weight: var(--weight-bold) !important; }
   /* On an ink panel the outlined call keeps an edge of at least 3:1 against the navy (white at 45%: 4.4:1 on navy-800). */
   :is(.ui-button-on-ink, [data-ds-button="on-ink"]) { border-color: color-mix(in srgb, var(--on-ink-strong) 45%, transparent) !important; }
-  /* On a phone a full-width primary's label sits in the middle of the pill: the start gets the room the well takes at the end. */
-  @media (max-width: 519px) { :is(a.ui-button-primary, a.ui-button-on-ink-solid, a[data-ds-button="primary"], a[data-ds-button="on-ink-solid"]):not([download]) { padding-inline-start: calc(var(--well) + 12px + 10px + 8px) !important; } }
+  /* On a phone a full-width primary's label sits near the middle of the pill: the start gets the well's width, about the room
+     the well takes at the end. It was the well plus 30 px, which left a label 146 px at 320 px, so "Read the case studies"
+     (179 px) wrapped onto two cramped lines on seven pages (mobile review, 16 November 2026, L-74); now 188 px, 10 px off
+     the middle; and 24 px since the second review the same day, which leaves 204 px, so "Subscribe on YouTube" and "Open on
+     Google Drive" stay on one line too (the label sits 18 px left of the middle, balanced by the well at its end). */
+  @media (max-width: 519px) { :is(a.ui-button-primary, a.ui-button-on-ink-solid, a[data-ds-button="primary"], a[data-ds-button="on-ink-solid"]):not([download]) { padding-inline-start: var(--space-6) !important; } }
   /* A form's send button spans the form on a phone, as its fields do. */
   @media (max-width: 519px) { form [data-form-submit] { inline-size: 100%; } }
   /* The ghost is a text link that is still a 44px target: its underline arrives on hover and focus. */

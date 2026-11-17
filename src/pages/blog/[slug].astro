@@ -32,7 +32,7 @@ const topics = await topicsOf(post);
 <PageLayout hideCta title={`${d.seo.title || d.title} · Blog · Aleem | AIUX`} description={(d.seo.description || d.excerpt).slice(0, 165)} page="blog" ogType="article" jsonLd={jsonLd} noindex={d.fixture} canonical={d.canonical || o?.url} bg="grid" mainStyle="outline: none; overflow: clip;">
   <ReadProgress />
   <article>
-    <header class="cory-container cory-container-narrow" style="position: relative; display: grid; gap: var(--space-5); padding-block: var(--space-12) var(--space-8);">
+    <header data-article-head class="cory-container cory-container-narrow" style="position: relative; display: grid; gap: var(--space-5); padding-block: var(--space-12) var(--space-8);">
       <a data-link href="/blog" class="post-back"><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All posts</span></a>
       <p class="case-kicker">{[d.category, readingTime(post)].filter(Boolean).join(' · ')}</p>
       <h1 style="margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); overflow-wrap: anywhere; text-wrap: balance;">{d.title}</h1>

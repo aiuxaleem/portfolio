@@ -1,5 +1,5 @@
 {
- "checked": "2026-11-10",
+ "checked": "2026-11-16",
  "source": "https://github.com/anthropics/claude-plugins-official",
  "plugins": [
   {
@@ -99,17 +99,6 @@
    "category": "productivity",
    "link": "https://www.airwallex.com/docs",
    "install": "/plugin install airwallex-agentos@claude-plugins-official",
-   "firstSeen": null
-  },
-  {
-   "name": "airwallex-dev",
-   "title": "Airwallex dev",
-   "description": "Build Airwallex payment integrations in your own codebase. Generates the checkout, card-element, onboarding, and subscription-billing code for an Airwallex integration and wires it into your project: Hosted Payment Page, Drop-in and Split Card elements, connected-account KYC onboarding, and Billing Hosted Checkout for…",
-   "author": "Airwallex",
-   "official": false,
-   "category": "development",
-   "link": "https://www.airwallex.com/docs",
-   "install": "/plugin install airwallex-dev@claude-plugins-official",
    "firstSeen": null
   },
   {
@@ -2753,17 +2742,6 @@
    "firstSeen": null
   },
   {
-   "name": "sap-fiori-mcp-server",
-   "title": "SAP fiori MCP server",
-   "description": "MCP server for SAP Fiori development tools for Claude Code. Build and modify SAP Fiori applications with AI assistance.",
-   "author": "SAP SE",
-   "official": false,
-   "category": "development",
-   "link": "https://github.com/SAP/open-ux-tools/tree/main/packages/fiori-mcp-server",
-   "install": "/plugin install sap-fiori-mcp-server@claude-plugins-official",
-   "firstSeen": null
-  },
-  {
    "name": "sap-hana-cli",
    "title": "SAP hana CLI",
    "description": "150+ SAP HANA database tools for AI assistants. Query tables, import/export data, profile data quality, compare schemas, manage backups, monitor performance, and more. Connects to SAP HANA Cloud and on-premise databases.",
@@ -2784,6 +2762,17 @@
    "link": "https://help.sap.com/docs/MDK",
    "install": "/plugin install sap-mdk-server@claude-plugins-official",
    "firstSeen": null
+  },
+  {
+   "name": "sap-ux-fiori-tools",
+   "title": "SAP UX fiori tools",
+   "description": "MCP server and skills for SAP Fiori development. Build, modify, and test SAP Fiori Elements applications with AI assistance.",
+   "author": "SAP SE",
+   "official": false,
+   "category": "development",
+   "link": "https://github.com/SAP/open-ux-tools/tree/main/plugins-coding-agents/fiori",
+   "install": "/plugin install sap-ux-fiori-tools@claude-plugins-official",
+   "firstSeen": "2026-11-16"
   },
   {
    "name": "save-to-spotify",
@@ -3169,6 +3158,17 @@
    "link": "https://github.com/anthropics/claude-plugins-public/tree/main/external_plugins/terraform",
    "install": "/plugin install terraform@claude-plugins-official",
    "firstSeen": null
+  },
+  {
+   "name": "theme-examples",
+   "title": "Theme examples",
+   "description": "An example plugin to read, copy and change: twenty animated backdrops behind the chat in the Claude desktop app, with frosted-glass panels, one per project or per session. Needs a version of Claude Desktop that draws a plugin's backdrop.",
+   "author": "Anthropic",
+   "official": true,
+   "category": "design",
+   "link": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/theme-examples",
+   "install": "/plugin install theme-examples@claude-plugins-official",
+   "firstSeen": "2026-11-16"
   },
   {
    "name": "togetherai-skills",

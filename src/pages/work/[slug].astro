@@ -1,12 +1,15 @@
 ---
 /* /work/[slug]: one project. Every block except the title, summary and status is optional and is left out when its
-   field is empty (CLAUDE.md 2.6, partial state). Updates are listed newest first. */
+   field is empty (CLAUDE.md 2.6, partial state). Updates are listed newest first. A project under NDA shows the same
+   notice as a case study, with the way to ask for its private links (docs/PRIVATE_WORK.md). */
 import FittedImage from '../../components/ui/fitted-image.astro';
 import { coverFrame } from '../../lib/images';
 import { render } from 'astro:content';
 import PageLayout from '../../layouts/page-layout.astro';
 import Button from '../../components/ui/button.astro';
 import EmailCopy from '../../components/layout/email-copy.astro';
+import NdaNotice from '../../components/private-work/nda-notice.astro';
+import { privateWorkHref } from '../../lib/private-work';
 import { listedProjects, statusLabel, timeline, updatesNewestFirst, day } from '../../lib/projects';
 import { mdxComponents } from '../../components/content/mdx-components';
 import { site } from '../../content/site';
@@ -28,11 +31,12 @@ const arrowOut = 'M7 7h10v10M7 17 17 7';
 ---
 <PageLayout hideCta title={`${d.seo.title || d.title} · Project · Aleem | AIUX`} description={description} page="work" noindex={d.fixture} bg="grid" mainStyle="outline: none; overflow: clip;">
   <article>
-    <header class="cory-container" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--space-12) var(--space-10);">
+    <header data-article-head class="cory-container" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--space-12) var(--space-10);">
       <a data-link href="/work" style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;"><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All projects</span></a>
       <p class="cory-overline" style="margin: 0;">Project</p>
       <h1 style="margin: 0; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">{d.title}</h1>
       <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">{d.summary}</p>
+      {d.nda && <NdaNotice access={privateWorkHref(`work/${project.id}`)} />}
       {(d.links.live || d.links.repo || d.caseStudy) && (
         <div data-hero-ctas style="display: flex; gap: var(--space-3) var(--space-5); flex-wrap: wrap; align-items: center;">
           {d.links.live && <Button variant="primary" size="lg" href={d.links.live} target="_blank" rel="noopener">Live site<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>}
@@ -41,7 +45,7 @@ const arrowOut = 'M7 7h10v10M7 17 17 7';
         </div>
       )}
       <dl class="project-meta">
-        {meta.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
+        {meta.map(([k, v]) => <div data-wide={String(v).length > 40 ? '' : undefined}><dt>{k}</dt><dd>{v}</dd></div>)}
       </dl>
       <div class="project-cover" style={d.cover ? `aspect-ratio: ${coverFrame(d.cover.src)};` : undefined}>
         {d.cover

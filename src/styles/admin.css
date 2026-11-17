@@ -570,3 +570,52 @@ html:not([data-admin-js]) .admin-tabbar ul { grid-template-columns: repeat(3, mi
 /* Round four (review 8/10): in the cards two by two, a closing fold (Top 10 pages, the table) sits at the card's foot, so equal-height cards end on their link rather than on blank space. */
 .admin-bento li.span-2 > .admin-card { display: flex; flex-direction: column; }
 .admin-bento li.span-2 > .admin-card > .dash-details:last-child { margin-block-start: auto; }
+
+/* On a touch screen the admin's grouped targets stand 8 px apart, as targets must (CLAUDE.md 2.4 and 2.11; mobile test,
+   16 November 2026, L-74): the period chips were 2 px apart, the publishing tabs 4 px, the cells of the bar at the foot of the
+   screen edge to edge. A mouse keeps the closer groups. */
+@media (pointer: coarse) {
+  .dash-range ul { gap: var(--space-2); }
+  .admin-queue [role="tablist"] { gap: var(--space-2); }
+  .admin-tabbar ul { column-gap: var(--space-2); }
+}
+/* Private work (docs/PRIVATE_WORK.md): the access requests on /admin/access and the private links list. Built from the
+   publishing queue's tabs, the lists' rows and the site's tokens; no new token. */
+.access-queue { display: grid; gap: var(--space-4); padding: 0; min-inline-size: 0; }
+/* Three tabs wrap on a narrow screen rather than run off it. */
+.access-queue [role="tablist"] { flex-wrap: wrap; }
+/* While a search is on, every tab's matches show, each under its heading, and the tabs step aside (islands/admin-shell.ts, part 3). */
+.access-queue[data-searching] [role="tablist"] { display: none; }
+.access-queue[data-searching] .admin-queue-panel[hidden] { display: grid; }
+.access-queue.admin-queue[data-searching][data-tabbed] .admin-queue-panel > .admin-card-head { display: flex; }
+.access-queue.admin-queue[data-searching] .admin-queue-title { position: static; inline-size: auto; block-size: auto; overflow: visible; clip-path: none; white-space: normal; }
+.access-queue[data-searching] .admin-queue-panel:not(:has([data-filter-row]:not([hidden]))) { display: none; }
+.access-list { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.access-item { display: grid; gap: var(--space-3); min-inline-size: 0; padding-block: var(--space-5); border-block-start: 1px solid var(--border-subtle); }
+.access-item:first-child { border-block-start: 0; padding-block-start: var(--space-2); }
+.access-item[hidden] { display: none; }
+.access-item > * { margin: 0; }
+.access-item-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); min-inline-size: 0; }
+.access-name { margin: 0; min-inline-size: 0; font-family: var(--font-display); font-size: var(--text-h4); font-weight: var(--weight-extrabold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
+.access-who { font-size: var(--text-body-md); line-height: var(--leading-normal); color: var(--text-body); overflow-wrap: anywhere; }
+.access-mail a { display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); font-weight: var(--weight-semibold); color: var(--text-link); overflow-wrap: anywhere; }
+.access-mail a > svg { flex-shrink: 0; }
+.access-reason { display: grid; gap: var(--space-1); max-inline-size: var(--measure-body); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); background: var(--surface-sunken); }
+.access-reason p { margin: 0; font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-body); overflow-wrap: anywhere; white-space: pre-line; }
+.access-reason .access-reason-label { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); white-space: normal; }
+.access-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: var(--space-2) var(--space-5); margin: 0; }
+.access-facts > div { display: grid; gap: 2px; min-inline-size: 0; }
+.access-facts dt { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
+.access-facts dd { margin: 0; font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-body); overflow-wrap: anywhere; }
+.access-actions { align-items: center; }
+.access-actions > form { display: contents; }
+/* The sign-in link, when the owner sends it himself: the whole address, wrapping anywhere, to read and select. */
+.access-link-box { margin: 0; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); background: var(--surface-sunken); border: 1px solid var(--border-subtle); }
+.access-link-box code { font-family: var(--font-mono); font-size: var(--text-mono-sm); line-height: var(--leading-mono); color: var(--text-strong); overflow-wrap: anywhere; word-break: break-all; }
+.access-copy { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.access-notice .admin-actions { align-items: center; }
+/* The links list: a page's title, a long note and a long host wrap, so the table never needs to scroll for them. */
+.access-sub { display: block; font-size: var(--text-caption); font-weight: var(--weight-regular); color: var(--text-muted); overflow-wrap: anywhere; }
+.admin-list.access-links td:is([data-label="Belongs to"], [data-label="Opens"]) { white-space: normal; overflow-wrap: anywhere; }
+.admin-list.access-links thead th:nth-child(2) { inline-size: auto; }
+.access-host { font-family: var(--font-mono); font-size: var(--text-mono-sm); overflow-wrap: anywhere; }

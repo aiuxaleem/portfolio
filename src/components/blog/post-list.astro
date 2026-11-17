@@ -56,7 +56,7 @@ const description = tag
         : <div class="project-empty"><p class="project-empty-title">No posts are published yet.</p><p class="project-empty-body">The case studies cover the work in depth.</p><div><Button variant="secondary" href="/case-studies">Read the case studies</Button></div></div>)
       : <Fragment>
           {page === 1 && !tag && posts.length > 2 && <PostCard post={posts[0]} wide />}
-          <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{(page === 1 && !tag && posts.length > 2 ? posts.slice(1) : posts).map(p => <li><PostCard post={p} /></li>)}</ul></div>
+          <div data-cq><ul data-cq-balance data-stack-scroll style="display: grid; gap: var(--grid-gap);">{(page === 1 && !tag && posts.length > 2 ? posts.slice(1) : posts).map(p => <li><PostCard post={p} /></li>)}</ul></div>
         </Fragment>}
     {pages > 1 && (
       <nav class="post-pagination" aria-label="Pages">
@@ -67,3 +67,7 @@ const description = tag
     )}
   </section>
 </PageLayout>
+
+<script>
+  import '../islands/stack-scroll.ts';
+</script>

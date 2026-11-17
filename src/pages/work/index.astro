@@ -44,7 +44,7 @@ const stack = await projectCards();
                 <h2 id={`work-${g.status}`} class="project-h2">{g.title} <span class="work-group-count">{g.list.length}</span></h2>
                 <p class="project-filter-count">{g.blurb}</p>
               </div>
-              <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{g.list.map(p => <li><ProjectCard project={p} first={p === firstCard} /></li>)}</ul></div>
+              <div data-cq><ul data-cq-balance data-stack-scroll style="display: grid; gap: var(--grid-gap);">{g.list.map(p => <li><ProjectCard project={p} first={p === firstCard} /></li>)}</ul></div>
             </section>
           ))}
         </div>}
@@ -57,6 +57,7 @@ const stack = await projectCards();
     .work-group:not(:has(li:not([hidden]))) { display: none; }
   </style>
   <script>
+    import '../../components/islands/stack-scroll.ts';
     import '../../components/islands/project-filters.ts';
   </script>
 </PageLayout>

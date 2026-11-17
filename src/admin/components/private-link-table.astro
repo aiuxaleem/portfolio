@@ -1,0 +1,28 @@
+---
+/* The private links on /admin/access/links (docs/PRIVATE_WORK.md), one row each: what the link is (it opens its editor) and
+   its note, the case study or project it belongs to (marked when under NDA, or when that page has left the site), the
+   host it opens, and when it was last edited (Gulf time). Rows can be searched (islands/admin-shell.ts). A row is a card
+   under 640px, as in every admin list. States: rows; a link without a note; a page no longer on the site; stress content
+   (a 120-character label, an unbroken address). The empty and no-match states are the page's. */
+import { when } from '../lib/publishing';
+
+interface Row { id: number; label: string; note: string; url: string; updatedAt: string; page: { title: string; kind: string; nda: boolean; href: string } }
+interface Props { rows: Row[]; uid?: string; /** The region's name; unique on /_states, where the table is shown twice. */ label?: string; /** One address for every row's link, on /_states, where the editors do not exist. */ linkTo?: string }
+const { rows, uid = 'links', label = 'Private links', linkTo } = Astro.props;
+const host = (url: string) => { try { return new URL(url).host.replace(/^www\./, ''); } catch { return url; } };
+---
+<div class="post-table admin-list access-links" tabindex="0" role="region" aria-label={label} data-filter-table>
+  <table id={`${uid}-table`}>
+    <thead><tr><th scope="col">Link</th><th scope="col">Belongs to</th><th scope="col">Opens</th><th scope="col" data-col="edited">Last edited</th></tr></thead>
+    <tbody>
+      {rows.map(r => (
+        <tr>
+          <th scope="row"><a data-link href={linkTo ?? `/admin/access/links/${r.id}`}><bdi>{r.label}</bdi></a>{r.note && <span class="access-sub">{r.note}</span>}</th>
+          <td data-label="Belongs to"><bdi>{r.page.title}</bdi><span class="access-sub">{r.page.href ? r.page.kind : `${r.page.kind}, no longer on the site`}{r.page.nda && ' · under NDA'}</span></td>
+          <td data-label="Opens"><bdi class="access-host">{host(r.url)}</bdi></td>
+          <td data-label="Last edited">{when(r.updatedAt)}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

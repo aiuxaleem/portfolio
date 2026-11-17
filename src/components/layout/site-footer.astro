@@ -64,6 +64,13 @@ const socialStyle = 'display: inline-flex; align-items: center; min-block-size: 
   .footer-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6) var(--space-8); }
   @media (min-width: 640px) { .footer-columns { grid-template-columns: repeat(4, minmax(0, max-content)); } }
   .footer-column { display: grid; align-content: start; gap: var(--space-1); }
+  /* Headings in one row share a height, so the link lists start level: at 320 px "About and more" took two lines and its links
+     sat 18 px below the column beside it (mobile review, 16 November 2026, L-74). */
+  @supports (grid-template-rows: subgrid) { .footer-column { grid-row: span 2; grid-template-rows: subgrid; row-gap: var(--space-1); } .footer-column ul { align-content: start; } }
+  /* (align-content: start: the shared row is as tall as the longest list; a shorter list keeps its own spacing at the top of it.) */
   .footer-column ul { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+  /* On a touch screen the links stand 8 px apart, as targets must (CLAUDE.md 2.4; mobile test, 16 November 2026, L-74): each
+     is 44 px tall, and stacked edge to edge a finger could land on the next one. A mouse keeps the closer list. */
+  @media (pointer: coarse) { .footer-column ul { gap: var(--space-2); } }
   .footer-column-label { margin: 0 0 var(--space-1); font-size: var(--text-overline); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-overline); text-transform: uppercase; color: var(--on-ink-link); }
 </style>

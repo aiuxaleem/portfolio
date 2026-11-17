@@ -31,7 +31,7 @@ const videos = defineCollection({
 
 const linkedinPosts = defineCollection({
   loader: glob({ pattern: '**/*.yaml', base: './src/content/linkedin-posts' }),
-  schema: linkedinPostSchema,
+  schema: ({ image }) => linkedinPostSchema(image),
 });
 
 const linkedinArticles = defineCollection({

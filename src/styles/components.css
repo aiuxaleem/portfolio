@@ -28,6 +28,8 @@
 .project-meta { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: var(--space-4) var(--space-6); padding-block: var(--space-5); border-block: 1px solid var(--border-subtle); }
 .project-meta dt { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
 .project-meta dd { margin: 0; font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-strong); overflow-wrap: anywhere; }
+/* A long value (a list of tools) takes the whole row: in a half-width column it ran to five ragged lines on a phone (mobile review, 16 November 2026, L-74). */
+.project-meta > [data-wide] { grid-column: 1 / -1; }
 .project-cover { position: relative; aspect-ratio: var(--aspect-video); border-radius: var(--radius-xl); overflow: hidden; background: var(--surface-sunken); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
 .project-cover img { inline-size: 100%; block-size: 100%; object-fit: contain; object-position: center; } /* whole, never cut (L-60) */
 /* A picture whose shape differs from its frame: shown whole over a soft, blurred copy of itself (ui/fitted-image.astro). */
@@ -44,6 +46,10 @@
 .project-pager a { display: grid; gap: var(--space-1); min-block-size: var(--tap-target); text-decoration: none; color: var(--text-link); }
 .project-pager a span { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
 .project-pager a strong { font-size: var(--text-body-md); overflow-wrap: anywhere; }
+/* With no previous page, the next link takes the whole row: beside an empty slot it had half and its title ran to three
+   ragged lines on a phone (mobile review, 16 November 2026, L-74). */
+.project-pager > span:empty { display: none; }
+.project-pager:has(> span:empty) > a { grid-column: 1 / -1; }
 .project-cta { background: var(--gradient-ink); color: var(--on-ink-body); border-radius: var(--radius-2xl); }
 /* The decorative title on a missing-cover fallback is clamped; the full title is the heading next to it. */
 .project-cover [data-cover-fallback] > span, .project-card-media [data-cover-fallback] > span, .embed-frame [data-cover-fallback] > span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; max-inline-size: 100%; }
@@ -91,8 +97,12 @@ html [data-deck-kicker], html [data-deck-kicker] span { overflow-wrap: anywhere;
   .feed-card-row > .project-card-body > * { grid-column: 1; }
   .feed-card-row > .project-card-body > .project-card-cta { grid-column: 2; grid-row: 1; margin: 0; }
 }
-/* A lead card set straight above its list (Blog, Videos) keeps the list's gap below it. */
-.video-card-wide, :not(li) > .case-card-wide { margin-block-end: var(--space-10); }
+/* A lead card set straight above its list (Videos) keeps the list's gap below it. */
+.video-card-wide { margin-block-end: var(--space-10); }
+/* The blog's lead post card stands outside a list, in a grid whose gap spaces it: it takes its own height. With a card's
+   block-size of 100% its margin became 40 px of empty card above "Read the post" (mobile review, 16 November 2026, L-74);
+   the space below it is the grid's gap, as it was. */
+:not(li) > .case-card-wide { block-size: auto; }
 /* The lead video: the player beside its words where the card is wide enough. */
 @container (min-width: 720px) {
   .video-card.video-card-wide { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--space-8); align-items: center; }
@@ -195,9 +205,12 @@ html [data-deck-kicker], html [data-deck-kicker] span { overflow-wrap: anywhere;
 .resource-disclosure > summary { display: flex; align-items: center; gap: var(--space-3); min-block-size: var(--tap-target); padding: var(--space-3) var(--space-5); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-strong); }
 .resource-disclosure > summary [data-disclosure-state] { flex: 1 1 auto; min-inline-size: 0; font-weight: var(--weight-medium); color: var(--text-muted); overflow-wrap: anywhere; }
 .resource-disclosure > summary [data-chevron] { flex-shrink: 0; }
+/* The summary's name keeps its word whole; the count beside it wraps instead ("Category" broke on a phone with large
+   system text; mobile test, 16 November 2026, L-74). */
+.resource-disclosure > summary .project-filter-label { flex-shrink: 0; }
 .resource-disclosure[open] > summary [data-chevron] { transform: rotate(180deg); }
 .resource-disclosure > summary:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
-.resource-disclosure > .project-filter-group { padding: 0 var(--space-5) var(--space-5); }
+.resource-disclosure > .project-filter-group { padding: var(--space-2) var(--space-5) var(--space-5); }
 .resource-disclosure .ui-chip svg { flex-shrink: 0; }
 /* Category bento: on a narrow screen the one-column tiles drop their description and "Open" line, so the whole grid
    stays a short scroll; the wide (fullest) tiles keep theirs. */
@@ -216,7 +229,7 @@ html:has(dialog[data-image-preview][open]) { overflow: hidden; }
 .image-preview-frame { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; block-size: 100%; border-radius: var(--radius-2xl); background: var(--surface-card); border: 1px solid var(--border-default); box-shadow: var(--shadow-lg); overflow: hidden; }
 .image-preview-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); padding: var(--space-3) var(--space-4); border-block-end: 1px solid var(--border-subtle); }
 .image-preview-caption { margin: 0; flex: 1 1 12rem; min-inline-size: 0; font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-muted); overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
-.image-preview-controls { display: flex; align-items: center; gap: var(--space-1); flex: none; margin-inline-start: auto; }
+.image-preview-controls { display: flex; align-items: center; gap: var(--space-2); flex: none; margin-inline-start: auto; }
 .image-preview-level { min-inline-size: 4.5ch; text-align: center; font-family: var(--font-mono); font-size: var(--text-mono); color: var(--text-subtle); font-variant-numeric: tabular-nums; }
 .image-preview .ui-icon-button:disabled { opacity: var(--opacity-disabled); cursor: not-allowed; transform: none; }
 .image-preview-stage { position: relative; overflow: auto; display: grid; place-items: center; background: var(--surface-sunken); overscroll-behavior: contain; }

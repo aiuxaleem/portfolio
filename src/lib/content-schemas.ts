@@ -48,9 +48,14 @@ export const projectSchema = <I extends z.ZodTypeAny>(image: () => I) => S({
     tags: z.array(z.string()).default([]),
     /* Slug of the related case study page under /case-studies/. */
     caseStudy: z.string().optional(),
+    /* NDA notice: shown at the top of the page when on, with the line that live links and prototypes are for approved
+       visitors (docs/PRIVATE_WORK.md), as on a case study. */
+    nda: z.boolean().default(false),
     updates: z.array(z.object({ date: z.coerce.date(), title: z.string(), body: z.string(), link: link.optional() })).default([]),
     order: z.number().default(0),
     featured: z.boolean().default(false),
+    /* Picked for the hero stack of its list page, up to five in list order (owner request, 16 November 2026, L-76). */
+    heroStack: z.boolean().default(false),
     seo, ...flags,
   });
 
@@ -93,6 +98,8 @@ export const caseStudySchema = <I extends z.ZodTypeAny>(image: () => I) => {
       order: z.number().default(0),
       /* Featured case studies are shown on the home page. */
       featured: z.boolean().default(false),
+      /* Picked for the hero stack of its list page, up to five in list order (owner request, 16 November 2026, L-76). */
+      heroStack: z.boolean().default(false),
       seo, ...flags,
     });
   };
@@ -145,9 +152,14 @@ export const linkedinUrn = (url: string): string | null => {
   return m ? `urn:li:${m[1]}:${m[2]}` : null;
 };
 
-export const linkedinPostSchema = S({
+export const linkedinPostSchema = <I extends z.ZodTypeAny>(image: () => I) => S({
     title: z.string(),
     excerpt: z.string().optional(),
+    /* The post's own words, pasted from LinkedIn. With them the site shows the post itself, so a visitor reads it without
+       a click and nothing is loaded from LinkedIn (owner decision, 16 November 2026, L-75). A blank line starts a paragraph. */
+    text: z.string().max(3000, 'A LinkedIn post holds at most 3,000 characters. Check that only the post was pasted.').optional(),
+    /* The post's picture, shown whole under its words (L-60). */
+    image: z.object({ src: image(), alt, focus }).optional(),
     url: z.string().url(),
     published: z.coerce.date().refine(d => d.getFullYear() >= 2003 && d.getTime() < Date.now() + 86400000, 'A LinkedIn post cannot be dated before LinkedIn existed or in the future. Check the year.'),
     series: z.string().optional(),
@@ -352,6 +364,8 @@ export const designSystemSchema = <I extends z.ZodTypeAny>(image: () => I) => S(
     project: z.string().regex(/^\/work\/[a-z0-9-]+$/).optional(),
     caseStudy: z.string().regex(/^\/case-studies\/[a-z0-9-]+$/).optional(),
     cover: z.object({ src: image(), alt, focus }).optional(),
+    /* One of mine, picked for the hero stack on My Design Systems, up to five in list order (owner request, 16 November 2026, L-76). */
+    heroStack: z.boolean().default(false),
     note: z.string().max(240).optional(),
     added: z.coerce.date(),
     order: z.number().int().default(100),

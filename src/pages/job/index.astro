@@ -50,7 +50,7 @@ const facts: [string, string][] = [
 <PageLayout title={`${profile.headline} · Aleem, for hiring managers`} description={`For recruiters and hiring managers: ${site.name}, ${profile.headline}. Experience, case studies, certifications and the resume in one place.`} page="hiring" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
   <SiteHero id="hiring" overline="For hiring managers" title={`A ${profile.headline} for your team.`} accent="AI Product Designer" lead={`I'm ${site.name}. ${profile.positioning}`} primary={{ label: c.call, href: site.calendarUrl, newTab: true }} secondary={{ label: resumeExternal ? 'View resume' : 'Download resume', href: site.resumeUrl, newTab: resumeExternal, download: !resumeExternal }}>
     <div slot="after" data-cq><dl data-cq-grid class="hiring-facts">{facts.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl></div>
-    {featured.length > 0 && <HeroStack slot="art" id="hiring-stack" label="Selected work" noun="case study" cards={featured.map(c => caseCard(c, listed))} />}
+    {featured.length > 0 && <HeroStack slot="art" id="hiring-stack" label="Selected work" noun="case study" cards={featured.map(c => caseCard(c))} />}
   </SiteHero>
 
   {cases.length > 0 && (
@@ -101,7 +101,7 @@ const facts: [string, string][] = [
 
   <DoorSwitch to="clients" id="hiring-switch" />
 
-  <ContactBlock id="contact" overline="Next step" title="Hiring for a design lead? Let's talk." lead="Book a 15-minute call, or send the role and the team. I reply within 48 hours." topic="role" />
+  <ContactBlock id="contact" overline="Next step" title="Hiring for a design lead? Let's talk." lead={"Book a 15-\u2060minute call, or send the role and the team. I reply within 48 hours."} topic="role" />
 </PageLayout>
 
 <style>

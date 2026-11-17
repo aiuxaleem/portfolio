@@ -3,6 +3,7 @@
 // npm run quality:legacy     run the same checks against the untouched export in legacy/
 // Exit code 1 if anything fails. No check is skipped or downgraded.
 // Since 1 November 2026 the full run ends with the measured sections of verify.mjs (contrast, zoom and text spacing, first view).
+// Since 16 November 2026 it ends with the mobile test (check-mobile.mjs): phones and tablets by touch.
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
@@ -24,13 +25,13 @@ const run = (cmd, env = {}) => spawnSync(cmd, { cwd: ROOT, shell: true, stdio: '
 
 // 1. Types, content and build (built site only)
 if (target === 'dist') {
-  console.log('\n[1/5] astro check');
+  console.log('\n[1/6] astro check');
   if (!run('npx astro check')) fail('type-check', '-', '-', 'astro check reported errors');
-  console.log('\n[2/5] build (with /_states)');
+  console.log('\n[2/6] build (with /_states)');
   if (!run('npx astro build', { QUALITY_BUILD: '1' })) { fail('build', '-', '-', 'astro build failed'); report(); }
 
   // 2. Budgets (CLAUDE.md 2.9): gzipped JS <= 100 KB and CSS <= 50 KB per page
-  console.log('\n[3/5] budgets');
+  console.log('\n[3/6] budgets');
   const dist = path.join(ROOT, 'dist');
   const gz = file => zlib.gzipSync(fs.readFileSync(file)).length;
   const htmlFiles = fs.readdirSync(dist, { recursive: true }).filter(f => String(f).endsWith('.html'));
@@ -69,7 +70,7 @@ if (target === 'dist') {
 }
 
 // 3. Browser checks on every route x viewport x theme
-console.log(`\n[4/5] browser checks against ${target}/`);
+console.log(`\n[4/6] browser checks against ${target}/`);
 const server = await serve(target === 'legacy' ? 'legacy' : 'dist', PORT);
 const origin = `http://127.0.0.1:${PORT}`;
 const browser = await launch();
@@ -150,7 +151,7 @@ await browser.close(); server.close();
 //    (2.8). Every finding is a failure. Lighthouse stays in `npm run perf`: its numbers swing with the machine
 //    (docs/PERFORMANCE.md), so they are read, not gated. The quick run, for use while working, leaves this step out.
 if (target === 'dist' && !quick) {
-  console.log('\n[5/5] contrast, zoom and text spacing, first view (verify.mjs)');
+  console.log('\n[5/6] contrast, zoom and text spacing, first view (verify.mjs)');
   const t5 = Date.now();
   const ok = run('node scripts/quality/verify.mjs --dir=dist --only=contrast,zoom,fold');
   const file = path.join(ROOT, 'reports/verify/verify-contrast-zoom-fold.json');
@@ -158,11 +159,40 @@ if (target === 'dist' && !quick) {
   else for (const [name, s] of Object.entries(JSON.parse(fs.readFileSync(file, 'utf8')).sections)) for (const f of s.findings || []) fail(`verify-${name}`, String(f).split(' ')[0], '-', String(f));
   console.log(`  step 5 took ${elapsed(t5)}`);
 }
+
+// 6. Phones and tablets by touch (scripts/quality/check-mobile.mjs; part of the gate since 16 November 2026, after the second
+//    mobile review found it run only by hand, L-74): every public route on three emulated touch devices with the page
+//    checks, axe and the space between targets, a pass at the system text size of 130%, then the touch tests (menu,
+//    keyboard, swipes, rotation, preview, responsiveness from taps, the accessibility tree, Arabic pages, fades, slow 4G,
+//    blocked pictures, JavaScript off). The quick run sweeps the key routes only. Every failure there is a failure here.
+if (target === 'dist') {
+  console.log(`\n[6/6] phones and tablets by touch (check-mobile.mjs${quick ? ' --quick' : ''})`);
+  const t6 = Date.now(), file = path.join(ROOT, 'reports/mobile/report.json');
+  fs.rmSync(file, { force: true });
+  const ok = run(`node scripts/quality/check-mobile.mjs${quick ? ' --quick' : ''}`);
+  if (!fs.existsSync(file)) fail('mobile', '-', '-', 'check-mobile.mjs did not finish; see the output above');
+  else {
+    const r = JSON.parse(fs.readFileSync(file, 'utf8'));
+    for (const f of r.fails) fail('mobile', String(f).split(':')[0], '-', String(f));
+    if (!ok && !r.fails.length) fail('mobile', '-', '-', 'check-mobile.mjs ended with an error; see the output above');
+  }
+  console.log(`  step 6 took ${elapsed(t6)}`);
+}
+// 6b. The admin on a phone (check-admin-mobile.mjs), when a site with the admin is running and named: the admin needs a server
+//     and its database, which this static build has not. Set ADMIN_ORIGIN (for example http://localhost:4323 from
+//     serve-production.mjs) with ADMIN_EMAIL and ADMIN_PASSWORD in .env.local; without ADMIN_ORIGIN the step says it was not run.
+if (target === 'dist' && process.env.ADMIN_ORIGIN) {
+  console.log(`\n[6b] the admin on a phone (check-admin-mobile.mjs against ${process.env.ADMIN_ORIGIN})`);
+  const file = path.join(ROOT, 'reports/mobile/admin-report.json'); fs.rmSync(file, { force: true });
+  const ok = run(`node scripts/quality/check-admin-mobile.mjs --origin=${process.env.ADMIN_ORIGIN}`);
+  if (!fs.existsSync(file)) fail('admin-mobile', '-', '-', 'check-admin-mobile.mjs did not finish; see the output above');
+  else { const r = JSON.parse(fs.readFileSync(file, 'utf8')); for (const f of r.fails) fail('admin-mobile', String(f).split(':')[0], '-', String(f)); if (!ok && !r.fails.length) fail('admin-mobile', '-', '-', 'check-admin-mobile.mjs ended with an error'); }
+} else if (target === 'dist') console.log('\n[6b] the admin on a phone: not run (set ADMIN_ORIGIN to a running site with the admin)');
 report();
 
 function report() {
   const dir = path.join(ROOT, 'reports/quality'); fs.mkdirSync(dir, { recursive: true });
-  const pending = ['hover and touch states', 'JavaScript-off and blocked-host runs', 'stress fixtures on /_states', 'typography scale and measure', 'link check', 'Lighthouse budgets', 'lint rules (no raw colours, no physical properties)'];
+  const pending = [...(target === 'dist' && !process.env.ADMIN_ORIGIN ? ['the admin on a phone (step 6b; set ADMIN_ORIGIN to a running site with the admin)'] : []), 'hover states', 'JavaScript-off and blocked-host runs on every page (step 6 covers four and three pages on a phone)', 'stress fixtures on /_states', 'typography scale and measure', 'link check', 'Lighthouse budgets', 'lint rules (no raw colours, no physical properties)'];
   fs.writeFileSync(path.join(dir, `${target}${quick ? '-quick' : ''}.json`), JSON.stringify({ target, quick, date: new Date().toISOString(), failures, notYetWired: pending }, null, 1));
   const byCheck = {};
   for (const f of failures) (byCheck[f.check] = byCheck[f.check] || []).push(f);

@@ -119,7 +119,7 @@ const swatches = ['--action-solid', '--navy-800', '--blue-600', '--cyan-500', '-
   .ds-show-prompt .email-copy-button:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
   .ds-show-status { grid-column: 1 / -1; font-size: var(--text-caption); color: var(--text-muted); }
   .ds-show-status:empty { display: none; }
-  .ds-show-links { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 0 var(--space-5); }
+  .ds-show-links { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); }
   .ds-show-links a { display: inline-flex; align-items: center; gap: var(--space-1); min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none; overflow-wrap: anywhere; }
   @media (hover: hover) { .ds-show-links a:hover { text-decoration: underline; text-underline-offset: 3px; } }
   .ds-show-links a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
@@ -135,5 +135,7 @@ const swatches = ['--action-solid', '--navy-800', '--blue-600', '--cyan-500', '-
     .ds-show[data-media="no"] :is(.ds-show-facts, .project-card-meta) { grid-column: 2; }
   }
   /* On a narrow card the panel loses its own box, so the line to copy is not three boxes deep. */
+  /* (and the summary at the body size of the other cards: at 18 px it set 24 to 28 characters a line on a phone; L-74) */
+  @container (max-width: 519px) { .ds-show-summary { font-size: var(--text-body-md); } }
   @container (max-width: 519px) { .ds-show { padding: var(--space-4); } .ds-show-use { padding: 0; background: none; border: 0; } }
 </style>

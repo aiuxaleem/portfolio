@@ -48,6 +48,10 @@ const attrs = (a: Action) => ({ ...(a.newTab ? { target: '_blank', rel: 'noopene
   /* A short laptop screen: less air above the words, so the first screen holds the hero whole. */
   @media (min-width: 1024px) and (max-height: 900px) { .site-hero { padding-block: var(--space-8) var(--space-8); } .site-hero-words { gap: var(--space-5); } .site-hero-title { max-inline-size: 20ch; } .site-hero { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); } }
   .site-hero-words { display: grid; gap: var(--space-6); align-content: center; min-inline-size: 0; }
+  /* A phone on its side (under 600 px tall): the hero starts close under the header and its parts sit closer, so the main
+     action shows on the first screen (it began 343 px down a 390 px screen on Projects and Contact; mobile review,
+     16 November 2026, L-74). */
+  @media (orientation: landscape) and (not (min-height: 600px)) and (min-aspect-ratio: 3/2) { .site-hero { padding-block-start: var(--space-4); gap: var(--space-6); } .site-hero-words { gap: var(--space-3); } }
   .site-hero-title { margin: 0; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
   .site-hero-accent { background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .site-hero-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted); }

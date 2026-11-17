@@ -28,6 +28,9 @@ const ROUTES = [
   { name: 'images', path: '/admin/images' }, { name: 'youtube', path: '/admin/youtube' },
   /* The share page that takes a LinkedIn link (docs/LINKEDIN_CAPTURE.md): its box, and its refused state. */
   { name: 'share', path: '/admin/share' }, { name: 'share refused', path: '/admin/share?url=https%3A%2F%2Fexample.com%2Fnot-a-post' },
+  /* Private work (docs/PRIVATE_WORK.md): the access requests, the private links, a new link, and the first link's editor. */
+  { name: 'access requests', path: '/admin/access' },
+  { name: 'private links list', path: '/admin/access/links' }, { name: 'private link new', path: '/admin/access/links/new' }, { name: 'private link editor', path: '/admin/access/links', first: true },
 ];
 const only = String(arg('only', '')).split(',').filter(Boolean); const routes = ROUTES.filter(r => !only.length || only.some(o => r.name.includes(o)));
 

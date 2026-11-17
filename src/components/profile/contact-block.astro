@@ -28,7 +28,7 @@ const c = chrome.en;
 const Heading = `h${level}` as any;
 const endpoint = formEndpoint || (process.env.QUALITY_BUILD === '1' ? 'https://formspree.io/f/fixture' : undefined);
 const steps = [
-  { title: 'Write or book', body: 'Send a message here, email me, or book a 15-minute call at a time that suits you.' },
+  { title: 'Write or book', body: 'Send a message here, email me, or book a 15-\u2060minute call at a time that suits you.' },
   { title: 'I reply within 48 hours', body: 'To the address you gave, on GCC working hours.' },
   { title: 'A short first call', body: 'Fifteen minutes to see whether the role or the project fits, before anyone commits more time.' },
 ];
@@ -70,6 +70,8 @@ const elsewhere = [
   .contact-block { padding-block: var(--section-y); }
   .contact-block-grid { display: grid; gap: var(--space-10); align-items: start; }
   .contact-block-intro { display: grid; gap: var(--space-6); align-content: start; min-inline-size: 0; }
+  /* A phone on its side: the block starts closer to what is above it and its parts sit closer, as the page heroes do (L-74). */
+  @media (orientation: landscape) and (not (min-height: 600px)) and (min-aspect-ratio: 3/2) { .contact-block { padding-block-start: var(--space-4); } .contact-block-intro { gap: var(--space-3); } }
   @media (min-width: 1024px) { .contact-block-split { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: var(--space-16); } }
   .contact-block-title { margin: 0; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
   .contact-block-title-page { max-inline-size: 16ch; font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); }
@@ -85,6 +87,8 @@ const elsewhere = [
   .contact-block-step { margin: 0; font-weight: var(--weight-semibold); color: var(--text-strong); }
   .contact-block-step-body { margin: 0; max-inline-size: var(--measure-body); color: var(--text-muted); }
   .contact-block-links { display: flex; flex-wrap: wrap; gap: 0 var(--space-4); }
+  /* Wrapped onto two rows on a touch screen, the links keep 8 px between rows (CLAUDE.md 2.4; mobile test, 16 November 2026, L-74). */
+  @media (pointer: coarse) { .contact-block-links { row-gap: var(--space-2); } }
   .contact-block-links a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); }
   .contact-block-form { min-inline-size: 0; }
   @media (max-width: 1023.98px) {

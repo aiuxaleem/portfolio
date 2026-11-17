@@ -7,6 +7,7 @@
    the strike draws itself as the block scrolls in (motion.css, [data-two-users]). The heading and the three checks that
    follow are the owner's own words; the field's move is credited to NN/g where the blog piece goes into it. */
 import Button from '../ui/button.astro';
+import TwoUsersArt from './two-users-art.astro';
 const checks = [
   { title: 'Can an agent read it and finish the task?', body: 'Structure, data and rules, not visual hierarchy: an agent needs names it can rely on, states it can tell apart and a clear record of what it has done.' },
   { title: 'Is the handoff back to the person designed?', body: 'The agent picks the option, then the person has to log in, confirm or pay. That moment is where each part works and the experience still fails, so it gets designed on purpose.' },
@@ -15,6 +16,7 @@ const checks = [
 ---
 <section id="two-users" data-section="" data-two-users="" aria-labelledby="two-users-title" style="position: relative; padding-block: var(--section-y); border-block-start: 1px solid var(--border-subtle);">
   <div class="cory-container" style="display: grid; gap: var(--space-10);">
+    <div class="two-users-head">
     <figure class="two-users-figure" data-reveal="">
       <p class="two-users-line">
         <span class="two-users-struck"><ins class="two-users-note">Human + Agent</ins><span class="two-users-wordwrap"><del class="two-users-word">User</del><svg class="two-users-strike" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M2 8 C 24 4, 52 10, 98 5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" pathLength="1"></path></svg></span></span>
@@ -22,9 +24,11 @@ const checks = [
       </p>
       <figcaption class="cory-visually-hidden">The word User struck out of User Experience Design, with Human + Agent written above it.</figcaption>
     </figure>
-    <div data-reveal="" style="display: grid; gap: var(--space-3);">
+    <div class="two-users-words" data-reveal="" style="display: grid; gap: var(--space-3);">
       <h2 id="two-users-title" style="margin: 0px; max-inline-size: 24ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">Two users now: the person, and the agent acting for them</h2>
       <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-body);">When someone sends an AI agent to book, file or cancel something, the agent reads the product first. The person still decides whether it worked, and may never see a screen. I design for both, and for the moment the work passes between them.</p>
+    </div>
+    <TwoUsersArt />
     </div>
     <div data-cq=""><ol class="two-users-checks" data-reveal-group="" data-cq-3="" style="display: grid; gap: var(--grid-gap);">
       {checks.map((c, i) => (
@@ -46,6 +50,15 @@ const checks = [
   /* The drawn line. The note sits above the struck word on its own row, a little off true like a hand-written mark
      (rotate only, so it costs no layout); the strike is a path across the word; both keep the word's own size. */
   .two-users-figure { margin: 0; display: grid; gap: var(--space-2); justify-items: start; }
+  /* The line and the heading on the left, the drawing of the handoff on the right from 1024 px (owner request, 16 November
+     2026, L-77: the right-hand side was empty); below that the drawing follows the words. */
+  .two-users-head { display: grid; gap: var(--space-10); min-inline-size: 0; }
+  @media (min-width: 1024px) {
+    .two-users-head { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); grid-template-areas: "line art" "words art"; column-gap: var(--space-12); row-gap: var(--space-8); align-items: center; }
+    .two-users-figure { grid-area: line; }
+    .two-users-words { grid-area: words; }
+    .two-users-head > :global(.two-users-art) { grid-area: art; }
+  }
   .two-users-line { margin: 0; display: grid; gap: var(--space-1); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-tight); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
   .two-users-struck { position: relative; display: inline-grid; justify-items: start; row-gap: 0.12em; }
   .two-users-note { display: inline-block; text-decoration: none; font-family: var(--font-mono); font-weight: var(--weight-semibold); font-size: var(--text-body-md); line-height: var(--leading-normal); letter-spacing: normal; color: var(--text-link); rotate: -3deg; transform-origin: left bottom; margin-inline-start: var(--space-2); }

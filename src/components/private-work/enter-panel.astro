@@ -1,0 +1,58 @@
+---
+/* /private-work/enter, the page an emailed sign-in link opens (docs/PRIVATE_WORK.md). Opening the link uses nothing: the
+   page asks for one press of Continue, which posts the token. Email programs and link scanners open links to check them,
+   and a link that signed in on opening would be used up before the visitor ever saw it.
+   States: ready (Continue); used; expired; unknown (incomplete, replaced by a newer link, or withdrawn: the visitor is not
+   told which); unavailable (the site cannot check links just now). Every state that is not ready says what happened and
+   offers a new link: ask again, or email. On /_states `fixed` keeps Continue from posting and the heading at h3. */
+import Button from '../ui/button.astro';
+import { SESSION_DAYS, TOKEN_DAYS } from '../../lib/private-work';
+
+interface Props { state: 'ready' | 'used' | 'expired' | 'unknown' | 'unavailable'; token?: string; email: string; level?: 1 | 3; uid?: string; fixed?: boolean }
+const { state, token = '', email, level = 1, uid = 'enter', fixed = false } = Astro.props;
+const H: any = `h${level}`;
+const why = {
+  used: ['It has already been used.', `A sign-in link works once. If you used it in another browser, the private work is open there for ${SESSION_DAYS} days.`],
+  expired: ['It has expired.', `A sign-in link works for ${TOKEN_DAYS} days after it is sent.`],
+  unknown: ['It is not one this site can use.', 'It may have been copied without its end, or replaced by a newer link.'],
+  unavailable: ['The site cannot check sign-in links just now.', 'Nothing is wrong with your link. Try it again in a few minutes.'],
+} as const;
+const mail = `mailto:${email}?subject=${encodeURIComponent('A new sign-in link for your private work')}`;
+---
+<div class="pw-enter">
+  {state === 'ready' ? (
+    <Fragment>
+      <H id={`${uid}-title`} class={level === 1 ? 'pw-h1' : 'pw-h3'}>Continue to the private work</H>
+      <p class="pw-enter-lead">This sign-in link works once. Press Continue to use it; this browser then stays signed in for {SESSION_DAYS} days.</p>
+      <form method={fixed ? undefined : 'post'} action={fixed ? undefined : '/private-work/enter'} data-once={fixed ? undefined : ''}>
+        <input type="hidden" name="token" value={token} />
+        <Button variant="primary" size="lg" type={fixed ? 'button' : 'submit'} data-busy-label="Opening…">Continue to the private work</Button>
+      </form>
+      <p class="form-note">The extra press keeps the link from being used up by an email program that opens links to check them.</p>
+    </Fragment>
+  ) : (
+    <Fragment>
+      <H id={`${uid}-title`} class={level === 1 ? 'pw-h1' : 'pw-h3'}>{state === 'unavailable' ? 'Please try again shortly' : 'This sign-in link does not work'}</H>
+      <div class="form-panel" role={fixed ? undefined : 'alert'}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4M12 16h.01"></path></svg>
+        <div><p class="form-panel-title">{why[state][0]}</p><p>{why[state][1]}</p></div>
+      </div>
+      {state !== 'unavailable' && <p class="pw-enter-lead">For a new link, ask again or email me at <a href={mail}>{email}</a>. If you were approved before, say so and I'll send one.</p>}
+      {state === 'unavailable' ? <div><Button variant="secondary" href={`mailto:${email}`}>Email me instead</Button></div> : <div><Button variant="primary" href="/private-work#ask">Ask for a new link</Button></div>}
+    </Fragment>
+  )}
+</div>
+
+<style>
+  .pw-enter { display: grid; gap: var(--space-5); justify-items: start; max-inline-size: var(--measure-body); min-inline-size: 0; }
+  .pw-enter > * { margin: 0; }
+  .pw-h1 { max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); overflow-wrap: anywhere; }
+  .pw-h3 { font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
+  .pw-enter-lead { font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); }
+  .pw-enter-lead a { color: var(--text-link); font-weight: var(--weight-semibold); text-decoration: underline; text-underline-offset: 0.22em; overflow-wrap: anywhere; }
+  .pw-enter .form-panel { inline-size: 100%; }
+</style>
+
+<script>
+  import '../islands/private-work-form.ts';
+</script>

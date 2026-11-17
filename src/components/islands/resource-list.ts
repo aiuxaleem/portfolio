@@ -41,7 +41,10 @@ if (bar && list) {
     const words = fold(search?.value || '').split(/\s+/).filter(Boolean);
     const order = sorts.find(s => s.getAttribute('aria-pressed') === 'true')?.dataset.sort || 'newest';
     const sorted = [...items].sort((a, b) => (order === 'title' ? a.title.localeCompare(b.title) || b.added.localeCompare(a.added) : b.added.localeCompare(a.added) || a.title.localeCompare(b.title)));
-    sorted.forEach(item => list.append(item.row));
+    /* The cards move only when the order changed: moving all 52 on every Show more restyled and laid out the whole list,
+       about 450 to 720 ms from the tap to the next paint with a phone's processor (INP; mobile test, 16 November 2026, L-74). */
+    const current = list.children;
+    if (sorted.some((item, i) => current[i] !== item.row)) sorted.forEach(item => list.append(item.row));
     const matching = sorted.filter(item => chosen.every(g => g.values.length === 0 || g.values.includes(item.values[g.key])) && words.every(w => item.text.includes(w)));
     const visible = matching.slice(0, limit);
     let firstNew: HTMLElement | undefined;

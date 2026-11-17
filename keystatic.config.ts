@@ -110,8 +110,9 @@ export default config({
         links: fields.object({ live: fields.url({ label: 'Live site' }), repo: fields.url({ label: 'Repository' }) }, { label: 'Links' }),
         tags,
         caseStudy: fields.text({ label: 'Related case study', description: 'The slug of the page under /case-studies/, for example colaberry-design-system' }),
+        nda: fields.checkbox({ label: 'Show the NDA notice' }),
         updates: fields.array(fields.object({ date: fields.date({ label: 'Date', validation: { isRequired: true } }), title: fields.text({ label: 'Title' }), body: fields.text({ label: 'Note', multiline: true }) }), { label: 'Updates log', itemLabel: p => `${p.fields.date.value || ''} ${p.fields.title.value}` }),
-        order: fields.integer({ label: 'Order', defaultValue: 0 }), featured: fields.checkbox({ label: 'Featured' }), ...flags,
+        order: fields.integer({ label: 'Order', defaultValue: 0 }), featured: fields.checkbox({ label: 'Featured' }), heroStack: fields.checkbox({ label: 'Show in the hero stack on Projects' }), ...flags,
         content: body('Body', 'projects'),
       },
     }),
@@ -144,7 +145,7 @@ export default config({
         quote: fields.text({ label: 'Pull quote' }),
         reflection: fields.object({ summary: long('Summary'), learnings: lines('Learnings') }, { label: 'Reflection' }),
         project: fields.text({ label: 'Related project', description: 'The slug of the page under /work/' }),
-        order: fields.integer({ label: 'Order', defaultValue: 0 }), featured: fields.checkbox({ label: 'Featured on the home page' }), ...flags,
+        order: fields.integer({ label: 'Order', defaultValue: 0 }), featured: fields.checkbox({ label: 'Featured on the home page' }), heroStack: fields.checkbox({ label: 'Show in the hero stack on Case studies' }), ...flags,
         content: body('Notes (optional extra text)', 'cases'),
       },
     }),
@@ -181,7 +182,7 @@ export default config({
     }),
     linkedinPosts: collection({
       label: 'LinkedIn posts', slugField: 'title', path: 'src/content/linkedin-posts/*', format: { data: 'yaml' },
-      schema: { title: fields.slug({ name: { label: 'Title' } }), excerpt: fields.text({ label: 'Excerpt', multiline: true }), url: fields.url({ label: 'Link to the post', validation: { isRequired: true } }), published: fields.date({ label: 'Published', validation: { isRequired: true } }), series: fields.text({ label: 'Series' }), stats: fields.text({ label: 'Stats' }), tags, embed: fields.checkbox({ label: 'Let visitors load this post on the Read page', defaultValue: true }), ...flags },
+      schema: { title: fields.slug({ name: { label: 'Title' } }), excerpt: fields.text({ label: 'Excerpt', multiline: true }), url: fields.url({ label: 'Link to the post', validation: { isRequired: true } }), published: fields.date({ label: 'Published', validation: { isRequired: true } }), text: fields.text({ label: 'The post (its words, pasted from LinkedIn)', multiline: true }), image: img('Picture in the post', 'posts'), series: fields.text({ label: 'Series' }), stats: fields.text({ label: 'Stats' }), tags, embed: fields.checkbox({ label: 'Let visitors load this post from LinkedIn (only while the post is empty)', defaultValue: true }), ...flags },
     }),
     linkedinArticles: collection({
       label: 'LinkedIn articles', slugField: 'title', path: 'src/content/linkedin-articles/*', format: { data: 'yaml' },

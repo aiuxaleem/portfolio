@@ -1,5 +1,6 @@
 /* What the Read page and the home page list: blog posts, LinkedIn articles and LinkedIn posts, newest first.
    Drafts never show; fixtures show only in dev and quality builds. Items with no date come last. */
+import type { ImageMetadata } from 'astro';
 import { getCollection } from 'astro:content';
 import { listedPosts, postUrl } from './posts';
 import { linkedinUrn } from './content-schemas';
@@ -28,11 +29,11 @@ export async function feedItems(): Promise<FeedItem[]> {
   return [...posts, ...articles, ...linkedin].sort((a, b) => Number(a.fixture) - Number(b.fixture) || when(b) - when(a) || a.title.localeCompare(b.title) || a.id.localeCompare(b.id));
 }
 
-export interface LinkedinEntry { id: string; title: string; excerpt?: string; url: string; date: Date; series?: string; /** Set when the post may be loaded on the page. */ urn?: string; fixture: boolean }
+export interface LinkedinEntry { id: string; title: string; excerpt?: string; url: string; date: Date; series?: string; /** Set when the post may be loaded on the page. */ urn?: string; /** The post's own words and picture, shown on the site (L-75). */ text?: string; image?: { src: ImageMetadata; alt: string }; fixture: boolean }
 
 /** LinkedIn posts for the Read page, newest first, fixtures last. */
 export async function linkedinEntries(): Promise<LinkedinEntry[]> {
-  return (await getCollection('linkedinPosts', keep)).map(p => ({ id: p.id, title: p.data.title, excerpt: p.data.excerpt, url: p.data.url, date: p.data.published, series: p.data.series, urn: (p.data.embed && linkedinUrn(p.data.url)) || undefined, fixture: p.data.fixture }))
+  return (await getCollection('linkedinPosts', keep)).map(p => ({ id: p.id, title: p.data.title, excerpt: p.data.excerpt, url: p.data.url, date: p.data.published, series: p.data.series, urn: (p.data.embed && linkedinUrn(p.data.url)) || undefined, text: p.data.text, image: p.data.image, fixture: p.data.fixture }))
     .sort((a, b) => Number(a.fixture) - Number(b.fixture) || b.date.getTime() - a.date.getTime() || a.title.localeCompare(b.title));
 }
 

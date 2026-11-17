@@ -1,6 +1,8 @@
 /* The stacks on the audience websites' first screens (components/sites/hero-stack.astro): the arrows bring the next card
    forward, the counter says which card is in front, and only the front card's link can be reached. The same poses as the
-   Home deck (islands/page-behaviours.ts); several stacks on one page (/_states) each work on their own. */
+   Home deck (islands/page-behaviours.ts); several stacks on one page (/_states) each work on their own. A card can also be
+   swiped or dragged aside, or moved with the arrow keys (islands/stack-swipe.ts, L-76). */
+import { swipeable } from './stack-swipe';
 document.querySelectorAll<HTMLElement>('[data-site-stack]').forEach(stack => {
   const cards = [...stack.querySelectorAll<HTMLElement>('[data-stack-card]')];
   const head = stack.previousElementSibling;
@@ -18,6 +20,8 @@ document.querySelectorAll<HTMLElement>('[data-site-stack]').forEach(stack => {
     });
     if (counter) counter.textContent = `${pad(front + 1)} / ${pad(cards.length)}`;
   };
-  prev.addEventListener('click', () => { front = (front - 1 + cards.length) % cards.length; paint(); });
-  next.addEventListener('click', () => { front = (front + 1) % cards.length; paint(); });
+  const go = (step: 1 | -1) => { front = (front + step + cards.length) % cards.length; paint(); };
+  prev.addEventListener('click', () => go(-1));
+  next.addEventListener('click', () => go(1));
+  swipeable(stack, go);
 });

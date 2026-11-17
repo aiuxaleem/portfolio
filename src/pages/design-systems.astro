@@ -144,6 +144,8 @@ const arrow = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" strok
   .dsl-stat-words { font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-strong); line-height: var(--leading-snug); }
   .dsl-layer { display: grid; align-content: start; }
   .dsl-study { display: flex; flex-direction: column; align-items: flex-start; margin-block-start: var(--space-2) !important; padding-block-start: var(--space-2); border-block-start: 1px solid var(--border-subtle); }
+  /* 8 px between two stacked links, so a finger meant for one does not land on the next (CLAUDE.md 2.4, L-74). */
+  .dsl-study a + a { margin-block-start: var(--space-2); }
   .dsl-study-label { inline-size: 100%; font-size: var(--text-caption); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-subtle); }
   /* Inline blocks, so a name that wraps keeps its arrow after its last word; the padding keeps the 44px target. */
   .dsl-study a, .dsl-reading a { display: inline-block; padding-block: 10px; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none; overflow-wrap: anywhere; }

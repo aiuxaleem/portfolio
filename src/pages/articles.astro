@@ -23,7 +23,7 @@ const articles = (await feedItems()).filter(i => i.type === 'article');
   <section class="cory-container" aria-label="Articles" style="display: grid; gap: var(--grid-gap); padding-block-end: var(--section-y);">
     {articles.length === 0
       ? <div class="project-empty"><p class="project-empty-title">No articles are listed here yet.</p><p class="project-empty-body">New LinkedIn articles appear here once they are added. Until then, the blog has the longer pieces.</p><div><Button variant="secondary" href="/blog">Read the blog</Button></div></div>
-      : <ul class="articles-rest">{articles.map(a => <li><FeedCard item={a} level={2} row /></li>)}</ul>}
+      : <ul class="articles-rest" data-stack-scroll>{articles.map(a => <li><FeedCard item={a} level={2} row /></li>)}</ul>}
   </section>
 </PageLayout>
 
@@ -32,3 +32,7 @@ const articles = (await feedItems()).filter(i => i.type === 'article');
   .articles-rest { display: grid; gap: var(--space-4); margin: 0; padding: 0; list-style: none; }
   .articles-rest > li { min-inline-size: 0; }
 </style>
+
+<script>
+  import '../components/islands/stack-scroll.ts';
+</script>

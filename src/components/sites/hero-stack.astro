@@ -1,11 +1,13 @@
 ---
 /* The stack beside the words on every first screen of the audience websites (docs/SITES.md): the main site's Home deck
-   (components/home/case-deck.astro), made general. Up to three ink cards of the page's own content, one in front; two
+   (components/home/case-deck.astro), made general. Up to five ink cards (three before L-76) of the page's own content, one in front; two
    arrow buttons and a counter bring the next one forward (islands/hero-stack.ts). Each card is one link: its kicker,
    title, a line, and below them either a picture in a window (a cover, the portrait) or a white sheet of up to five
    short points (the deliverables of a service, the companies of a career). The cards share one grid cell, so the stack
    is as tall as its tallest card and no card ends in an empty band. Card poses, the hover lift and the line clamps are
-   the deck's own global rules in site.css and components.css ([data-stack-card], [data-deck-title], [data-deck-line]);
+   the deck's own global rules in site.css and components.css ([data-stack-card], [data-deck-title], [data-deck-line]).
+   Up to five cards since L-76 (the owner's picks; the cards past the third wait unseen behind it), and a card can be
+   swiped aside (islands/stack-swipe.ts);
    the arrows' hover and press come from audit-fixes.css. Without JavaScript the front card shows and links. */
 import { getImage } from 'astro:assets';
 import type { StackCard } from '../../lib/site-stacks';
@@ -21,7 +23,7 @@ interface Props {
 }
 const { id, label, noun, cards: all } = Astro.props;
 /* A cover far from the window's 16:10 is shown whole over a blurred copy of itself (as ui/fitted-image.astro does). */
-const cards = await Promise.all(all.slice(0, 3).map(async c => {
+const cards = await Promise.all(all.slice(0, 5).map(async c => {
   const whole = c.image ? shownWhole(c.image, 16 / 10) : false;
   return { ...c, whole, img: c.image ? await getImage({ src: c.image, widths: [400, 640, 960] }) : undefined, backdrop: whole && c.image ? await getImage({ src: c.image, width: 48, format: 'webp' }) : undefined };
 }));
@@ -80,7 +82,10 @@ const arrow = (d: string, size = 20) => `<svg data-dir-icon width="${size}" heig
 </script>
 
 <style>
-  .hero-stack { position: relative; display: flex; flex-direction: column; gap: var(--space-4); inline-size: min(100%, 440px); margin-inline-start: auto; min-inline-size: 0; }
+  /* The deck stands at the end of the hero's second column from 1024 px; in the one column below that it starts at the page's
+     edge with the words (at 768 px it stood 290 px in, away from its own overline; mobile review, 16 November 2026, L-74). */
+  .hero-stack { position: relative; display: flex; flex-direction: column; gap: var(--space-4); inline-size: min(100%, 440px); min-inline-size: 0; }
+  @media (min-width: 1024px) { .hero-stack { margin-inline-start: auto; } }
   .hero-stack-glow { position: absolute; inset: -18% -14%; background: var(--glow-cyan) no-repeat 85% 15% / 70% 70%, var(--glow-blue) no-repeat 10% 90% / 65% 65%; z-index: -1; pointer-events: none; }
   .hero-stack-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
   .hero-stack-nav { display: flex; align-items: center; gap: var(--space-3); }
@@ -92,17 +97,19 @@ const arrow = (d: string, size = 20) => `<svg data-dir-icon width="${size}" heig
   .hero-stack-card-glow { position: absolute; inline-size: 80%; aspect-ratio: 1 / 1; inset-inline-end: -30%; inset-block-end: -35%; background: var(--glow-cyan); z-index: -1; pointer-events: none; }
   .hero-stack-link { flex: 1 1 auto; display: flex; flex-direction: column; gap: var(--space-5); padding-block-end: var(--space-6); color: var(--on-ink-strong); text-decoration: none; outline-offset: -3px; min-inline-size: 0; }
   .hero-stack-caption { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-6) var(--space-6) 0; min-inline-size: 0; }
-  .hero-stack-kicker { display: flex; justify-content: space-between; gap: var(--space-3); font-family: var(--font-mono); font-size: var(--text-mono-sm); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--on-ink-link); }
+  .hero-stack-kicker { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-1) var(--space-3); font-family: var(--font-mono); font-size: var(--text-mono-sm); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--on-ink-link); }
   .hero-stack-kicker > span { flex: 1 1 auto; min-inline-size: 0; }
-  .hero-stack-kicker > bdi { flex: 0 0 auto; }
+  .hero-stack-kicker > bdi { flex: 0 1 auto; min-inline-size: 0; }
   .hero-stack-title { font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-snug); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); text-wrap: balance; }
   .hero-stack-line { font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--on-ink-body); text-wrap: pretty; }
   .hero-stack-cta { display: inline-flex; align-items: center; gap: var(--space-1); align-self: flex-start; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--on-ink-link); }
-  /* A picture sits in a tilted window that runs off the card's foot and end, as on the Home deck. */
-  /* 9:5 makes the window, which runs past the card's foot and end, 16:10: the shape of the covers. */
+  /* A picture sits in a tilted window inside the card, as on the Home deck. */
   .hero-stack-stage { position: relative; display: block; margin-block: auto calc(-1 * var(--space-6)); aspect-ratio: 9 / 5; }
-  .hero-stack-frame { position: absolute; inset-inline: 10% -6%; inset-block: 0 -8%; display: block; border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-card); border: 1px solid var(--on-ink-border-strong); box-shadow: var(--shadow-xl); transform: rotate(calc(-4deg * var(--dir-x))); transform-origin: 0 100%; }
-  .hero-stack-frame img { display: block; inline-size: 100%; block-size: 100%; object-fit: contain; object-position: center top; } /* whole, never cut (L-60) */
+  /* Inside the card: past its side and foot the card cut the picture (L-60; L-74). */
+  .hero-stack-frame { position: absolute; inset-inline: 10% var(--space-6); inset-block: 0 var(--space-6); display: flex; flex-direction: column; border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-card); border: 1px solid var(--on-ink-border-strong); box-shadow: var(--shadow-xl); transform: rotate(calc(-4deg * var(--dir-x))); transform-origin: 0 100%; }
+  /* Whole, never cut (L-60): the picture fills the window under its bar. At 100% of the window's height it ran the bar's
+     height (about 22 px) past the window's foot, which cut it (mobile test, 16 November 2026, L-74). */
+  .hero-stack-frame img { display: block; inline-size: 100%; flex: 1 1 0; min-block-size: 0; object-fit: contain; object-position: center top; }
   .hero-stack-frame .hero-stack-picture { object-position: center; background: var(--surface-sunken); }
   .hero-stack-frame { isolation: isolate; }
   .hero-stack-frame .fitted-backdrop { z-index: -1; }

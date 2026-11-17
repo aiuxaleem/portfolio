@@ -1,0 +1,111 @@
+---
+/* The request form on /private-work (docs/PRIVATE_WORK.md): a visitor asks to see the live links and prototypes of NDA
+   projects. Posted to the server, which checks the same rules (src/admin/lib/private-work.ts) and answers with this form
+   in a state. States (CLAUDE.md 2.6): idle; invalid (an error summary linking to each field, and each field's own error,
+   the input kept); submitting (the button steps back, the fields lock, a status line); success (what happens next);
+   failure (the input kept, why, and email instead): the site could not save it, too many requests from one place, or
+   requests cannot be taken here.
+   The fields follow the contact form (profile.css: .form-field, .form-panel, .form-error); the confidentiality box is
+   drawn like the admin's tick boxes, from the same tokens. Without JavaScript the browser's own required checks apply and
+   the server's answer does the rest. Behaviour: islands/private-work-form.ts (blur checks, the summary, the busy state). */
+import Button from '../ui/button.astro';
+import { FIELD_ERRORS, LIMITS, PER_HOUR, TOKEN_DAYS, type RequestInput } from '../../lib/private-work';
+
+interface Problem { field: string; message: string }
+interface Props {
+  email: string;
+  id?: string;
+  /** Off on /_states, where several forms share the page: a named form is a landmark and landmark names must be unique. */
+  landmark?: boolean;
+  state?: 'idle' | 'invalid' | 'submitting' | 'success' | 'failure';
+  /** Why a send failed: the site could not save it, too many from one place, or requests cannot be taken here. */
+  failure?: 'fault' | 'limited' | 'unavailable';
+  values?: Partial<RequestInput>;
+  problems?: Problem[];
+  /** Fixed in its state, for /_states: the script leaves it alone. */
+  fixed?: boolean;
+  action?: string;
+}
+const { email, id = 'access', landmark = true, state = 'idle', failure = 'fault', values = {}, problems = [], fixed = false, action = '/private-work' } = Astro.props;
+const busy = state === 'submitting';
+const problemOf = (field: string) => problems.find(p => p.field === field)?.message;
+const fields = [
+  { name: 'name', label: 'Your name', type: 'text', autocomplete: 'name', max: LIMITS.name, required: true },
+  { name: 'email', label: 'Work email', type: 'email', autocomplete: 'email', max: LIMITS.email, required: true, hint: 'The sign-in link is sent here. A company address helps me see who is asking.' },
+  { name: 'company', label: 'Company', type: 'text', autocomplete: 'organization', max: LIMITS.company, required: true },
+  { name: 'role', label: 'Your role', type: 'text', autocomplete: 'organization-title', max: LIMITS.role, required: true, hint: 'For example: Head of Design, or Talent Partner.' },
+  { name: 'reason', label: 'What would you like to see? (optional)', type: 'textarea', autocomplete: 'off', max: LIMITS.reason, required: false, hint: 'A project, or the kind of work your team needs.' },
+] as const;
+const errorText = (name: string) => FIELD_ERRORS[name as keyof typeof FIELD_ERRORS];
+const value = (name: string) => String((values as Record<string, unknown>)[name] ?? '');
+const described = (name: string, hint: boolean) => [hint && `${id}-${name}-hint`, problemOf(name) && `${id}-${name}-error`].filter(Boolean).join(' ') || undefined;
+const alertIcon = 'M12 8v4M12 16h.01';
+const failures = {
+  fault: 'The site could not save it just now.',
+  limited: `That is more than ${PER_HOUR} requests in an hour from one place.`,
+  unavailable: 'Requests cannot be taken here at the moment.',
+} as const;
+const mail = `mailto:${email}?subject=${encodeURIComponent('Access to your private work')}`;
+---
+<div class="contact-form access-form" data-access-form data-state={state} data-static={fixed ? '' : undefined}>
+  <div class="form-panel form-success" data-form-success tabindex="-1" hidden={state !== 'success'}>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8.5 12.5 2.5 2.5 4.5-5"></path></svg>
+    <div><p class="form-panel-title">Request sent.</p><p>Thank you. I read every request myself. If I approve yours, a sign-in link comes to {value('email') ? <bdi>{value('email')}</bdi> : 'the email address you gave'}. It works once and expires after {TOKEN_DAYS} days. There is nothing else to do for now.</p></div>
+  </div>
+
+  <form method="post" action={action} hidden={state === 'success'} aria-labelledby={landmark ? `${id}-form-title` : undefined} data-access-request>
+    <h2 id={`${id}-form-title`} class="form-title">Ask for access</h2>
+    <p class="form-note">Every field is needed except the last one.</p>
+
+    <div class="form-panel form-summary" data-form-summary tabindex="-1" role="alert" hidden={problems.length === 0}>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={alertIcon}></path></svg>
+      <div><p class="form-panel-title" data-form-summary-title>{problems.length ? `Fix ${problems.length} ${problems.length === 1 ? 'field' : 'fields'} to send your request` : ''}</p><ul data-form-summary-list>{problems.map(p => <li><a href={`#${id}-${p.field}`}>{p.message}</a></li>)}</ul></div>
+    </div>
+
+    <div class="form-panel form-failure" data-form-failure tabindex="-1" role="alert" hidden={state !== 'failure'}>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={alertIcon}></path></svg>
+      <div><p class="form-panel-title">Your request was not sent.</p><p>{failures[failure]} What you typed is still in the form. {failure === 'limited' ? 'Try again later' : failure === 'fault' ? 'Try again in a few minutes' : 'Try again later'}, or email me at <a href={mail}>{email}</a>.</p></div>
+    </div>
+
+    {fields.map(f => (
+      <div class="form-field" data-field data-error-text={errorText(f.name)}>
+        <label for={`${id}-${f.name}`}>{f.label}</label>
+        {'hint' in f && <p class="form-hint" id={`${id}-${f.name}-hint`}>{f.hint}</p>}
+        {f.type === 'textarea'
+          ? <textarea id={`${id}-${f.name}`} name={f.name} rows="4" maxlength={f.max} autocomplete={f.autocomplete} aria-invalid={problemOf(f.name) ? 'true' : undefined} aria-describedby={described(f.name, 'hint' in f)} disabled={busy}>{value(f.name)}</textarea>
+          : <input id={`${id}-${f.name}`} name={f.name} type={f.type} maxlength={f.max} required={f.required} autocomplete={f.autocomplete} value={value(f.name)} aria-invalid={problemOf(f.name) ? 'true' : undefined} aria-describedby={described(f.name, 'hint' in f)} disabled={busy} />}
+        <p class="form-error" id={`${id}-${f.name}-error`} data-field-error hidden={!problemOf(f.name)}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={alertIcon}></path></svg><span>{problemOf(f.name) ?? ''}</span></p>
+      </div>
+    ))}
+
+    <div class="access-consent" data-field data-error-text={FIELD_ERRORS.consent}>
+      <label class="access-check" for={`${id}-consent`}><input type="checkbox" id={`${id}-consent`} name="consent" value="yes" required checked={!!values.consent} aria-invalid={problemOf('consent') ? 'true' : undefined} aria-describedby={problemOf('consent') ? `${id}-consent-error` : undefined} disabled={busy} /><span>I'll keep what I see confidential and won't share the links.</span></label>
+      <p class="form-error" id={`${id}-consent-error`} data-field-error hidden={!problemOf('consent')}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d={alertIcon}></path></svg><span>{problemOf('consent') ?? ''}</span></p>
+    </div>
+    <!-- Spam trap: people never see or reach this field. -->
+    <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" hidden />
+
+    <div class="form-actions">
+      <Button variant="primary" size="lg" type="submit" data-form-submit disabled={busy}>{busy ? 'Sending' : 'Send the request'}</Button>
+      <p class="form-status" role="status" data-form-status>{busy ? 'Sending your request. This takes a moment.' : ''}</p>
+    </div>
+  </form>
+</div>
+
+<style>
+  /* The confidentiality box: the admin's tick box (admin.css, label.admin-check), from the same tokens, with its 44px target. */
+  .access-consent { display: grid; gap: var(--space-2); min-inline-size: 0; }
+  .access-check { display: flex; align-items: center; min-block-size: var(--tap-target); font-size: var(--text-body-md); line-height: var(--leading-normal); color: var(--text-strong); cursor: pointer; }
+  .access-check input { appearance: none; position: relative; display: grid; place-content: center; inline-size: var(--tap-target); block-size: var(--tap-target); margin: 0; margin-inline-start: calc(-1 * var(--space-3)); flex-shrink: 0; border: 0; padding: 0; border-radius: var(--radius-md); background: transparent; cursor: pointer; }
+  .access-check input::before { content: ""; inline-size: 20px; block-size: 20px; border-radius: var(--radius-xs); border: 1.5px solid var(--border-interactive); background: var(--surface-card); }
+  .access-check input:checked::before { background: var(--action-primary); border-color: var(--action-primary); }
+  .access-check input:checked::after { content: ""; position: absolute; inset-block-start: 50%; inset-inline-start: 50%; inline-size: 6px; block-size: 11px; border: solid var(--text-on-brand); border-width: 0 2px 2px 0; transform: translate(-50%, -60%) rotate(45deg); }
+  .access-check input[aria-invalid="true"]::before { border-color: var(--red-500); }
+  .access-check input:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: -4px; }
+  .access-check input:disabled { cursor: not-allowed; }
+  .access-check span { min-inline-size: 0; overflow-wrap: anywhere; }
+</style>
+
+<script>
+  import '../islands/private-work-form.ts';
+</script>

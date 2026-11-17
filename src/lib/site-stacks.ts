@@ -2,10 +2,11 @@
    Every card is built from published content: case studies, projects, the profile, the AI tools, the UX Library. */
 import type { ImageMetadata } from 'astro';
 import { getCollection } from 'astro:content';
-import { listedCaseStudies, type CaseStudy, caseNumberIn } from './case-studies';
+import { listedCaseStudies, type CaseStudy } from './case-studies';
 import { listedProjects, statusLabel } from './projects';
 import { listedAiTools, aiCategoryCounts, aiCostLabel } from './ai-tools';
 import { listedResources, categoryCounts } from './resources';
+import { listedDesignSystems } from './design-systems';
 import { profile, careerByCompany } from '../content/profile';
 import { site } from '../content/site';
 
@@ -43,9 +44,11 @@ function careerCard(href: string, cta: string): StackCard {
   return { kicker: 'Career', meta: first ? `${first} to now` : undefined, title: `${groups.length} companies since ${first}`, line: `Now ${now.role} at ${groups[0].company}, after ${groups.slice(1).map(g => g.company).join(', ')}.`, href, cta, points: groups.map(g => `${g.company} · ${span(g.roles)}`) };
 }
 
-/** `all`: the listed case studies without fixtures, so the kicker's number is the card's place in the series (L-59 m). */
-export const caseCard = (c: CaseStudy, all?: CaseStudy[]): StackCard => ({
-  kicker: [all ? caseNumberIn(all, c) : c.data.index, c.data.category?.split(' · ')[0]].filter(Boolean).join(' · '),
+/** A case study as a deck card. Its kicker is the category alone: a deck has its own counter ("01 / 03"), and the case's
+    number in the series beside it read as a second, different count ("01 / 03" over "02"; mobile review, 16 November 2026,
+    L-74). The list cards keep the series number (L-59 m). */
+export const caseCard = (c: CaseStudy): StackCard => ({
+  kicker: c.data.category?.split(' · ')[0] || 'Case study',
   meta: c.data.timeline,
   title: c.data.title,
   line: c.data.lead,
@@ -57,13 +60,19 @@ export const caseCard = (c: CaseStudy, all?: CaseStudy[]): StackCard => ({
 
 
 /** The three case studies after the newest (the newest is the wide card straight below the first screen). */
+/* The owner's picks for a list page's hero stack: up to five, in list order (owner request, 16 November 2026, L-76).
+   With none picked the page picks as before: three, so a stack is never empty. */
+const PICKS = 5;
+const picksOr = <T extends { data: { heroStack?: boolean } }>(all: T[], fallback: T[]): T[] => { const picked = all.filter(x => x.data.heroStack); return picked.length ? picked.slice(0, PICKS) : fallback.slice(0, 3); };
+
 export async function moreCases(): Promise<StackCard[]> {
   const all = (await listedCaseStudies()).filter(c => !c.data.fixture);
-  return (all.length > 3 ? all.slice(1) : all).slice(0, 3).map(c => caseCard(c, all));
+  return picksOr(all, all.length > 3 ? all.slice(1) : all).map(c => caseCard(c));
 }
 
 export async function projectCards(): Promise<StackCard[]> {
-  return (await listedProjects()).filter(p => !p.data.fixture).slice(0, 3).map(p => ({
+  const all = (await listedProjects()).filter(p => !p.data.fixture);
+  return picksOr(all, all).map(p => ({
     kicker: [statusLabel[p.data.status], p.data.tags[0]].filter(Boolean).join(' · '),
     title: p.data.title,
     line: p.data.summary,
@@ -139,4 +148,22 @@ export function aboutCards(anchors: { method: string; principles: string; expert
     { kicker: 'Principles', meta: String(profile.principles.length), title: "Things I won't trade away", line: profile.principles[0]?.body, href: anchors.principles, cta: 'See the principles below', points: profile.principles.map(p => p.title) },
     { kicker: 'Expertise', meta: `${profile.expertise.length} areas`, title: 'What I bring to a product team', line: profile.expertise[0]?.body, href: anchors.expertise, cta: 'See the expertise below', points: profile.expertise.map(e => e.title) },
   ];
+}
+
+/** My Design Systems' hero stack: the systems the owner built and picked (or the first three), each linking to its card on
+    the page (#system-N, as the page numbers them), with what is inside as its points when it has no cover. */
+export async function mySystemCards(): Promise<StackCard[]> {
+  const mine = (await listedDesignSystems()).filter(s => s.data.mine);
+  const real = mine.filter(s => !s.data.fixture);
+  return picksOr(real, real).map(s => ({
+    kicker: s.data.here ? 'This site' : 'Design system',
+    meta: s.data.facts[0] ? `${s.data.facts[0].value} ${s.data.facts[0].label}` : undefined,
+    title: s.data.title,
+    line: s.data.summary,
+    href: `#system-${mine.indexOf(s) + 1}`,
+    cta: 'See what is inside',
+    image: s.data.cover?.src,
+    focus: s.data.cover?.focus,
+    points: s.data.facts.length ? s.data.facts.map(f => `${f.value} ${f.label}`) : s.data.madeWith,
+  }));
 }

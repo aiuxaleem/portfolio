@@ -10,10 +10,14 @@ import DesignSystemShowcase from '../components/cards/design-system-showcase.ast
 import Button from '../components/ui/button.astro';
 import ContactBlock from '../components/profile/contact-block.astro';
 import { listedDesignSystems } from '../lib/design-systems';
+import HeroStack from '../components/sites/hero-stack.astro';
+import { mySystemCards } from '../lib/site-stacks';
 
 const mine = (await listedDesignSystems()).filter(s => s.data.mine);
 const real = mine.filter(s => !s.data.fixture);
 const usable = real.filter(s => s.data.prompt).length;
+/* The owner's picks (or the first three) as a stack beside the words, as on Projects and Case studies (L-76). */
+const stack = await mySystemCards();
 const num = (i: number) => String(i + 1).padStart(2, '0');
 const stat = 'margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-heading); color: var(--text-strong); font-variant-numeric: tabular-nums;';
 const steps = [
@@ -23,8 +27,9 @@ const steps = [
   { title: 'Publish it for people and agents', body: 'Docs for people, plus a design system artifact, a skill or a prompt file per component, so an AI agent builds on the system too.' },
 ];
 ---
-<PageLayout title="My Design Systems · Aleem | AIUX" description="Design systems Mohammad Abdul Aleem built in Claude Design for people and AI agents: tokens, components, templates, and how to build with each in a Claude chat." page="my-design-systems" bg="grid" mainStyle="outline: none; overflow: clip;">
-  <section class="cory-container" aria-labelledby="mds-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+<PageLayout hideCta title="My Design Systems · Aleem | AIUX" description="Design systems Mohammad Abdul Aleem built in Claude Design for people and AI agents: tokens, components, templates, and how to build with each in a Claude chat." page="my-design-systems" bg="grid" mainStyle="outline: none; overflow: clip;">
+  <section class="cory-container hero-split" aria-labelledby="mds-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <div class="hero-split-words">
     <p class="cory-overline" style="margin: 0px;">Work · My Design Systems</p>
     <h1 id="mds-title" style="margin: 0px; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">Design systems people and <span style="background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent;">AI agents</span> build on.</h1>
     <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">I build design systems in Claude Design: tokens first, then components and templates, published so a person and an AI agent read the same source. Here is each one, what is inside, and how to build with it in your own Claude chat.</p>
@@ -37,6 +42,8 @@ const steps = [
       <div><dt>Open to build with now</dt><dd style={stat}>{usable}</dd></div>
       <div><dt>Made with</dt><dd class="mds-stat-words">Claude Design and Claude Code</dd></div>
     </dl>
+    </div>
+    <HeroStack id="systems-stack" label="Design systems" noun="design system" cards={stack} />
   </section>
 
   <section class="page-section" data-surface="card" aria-labelledby="how-title">
@@ -51,11 +58,11 @@ const steps = [
       <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Made by me</p><h2 id="systems-title" class="page-h2">The systems</h2><p class="project-filter-count">The counts are taken from each system itself. For a public system, copy its line into a Claude chat that can read the web and change the last part to what you need. One built inside a company or for a client is shown through its project and case study.</p></div>
       {mine.length === 0
         ? <div class="project-empty"><p class="project-empty-title">No design systems of mine are listed yet.</p><p class="project-empty-body">Meanwhile, Design Systems lists the public ones worth studying.</p><div><Button variant="secondary" href="/design-systems">See Design Systems</Button></div></div>
-        : <div data-cq><ul class="mds-list">{mine.map((s, i) => <li><DesignSystemShowcase system={s} id={`system-${i + 1}`} first={i === 0} /></li>)}</ul></div>}
+        : <div data-cq><ul class="mds-list" data-stack-scroll>{mine.map((s, i) => <li><DesignSystemShowcase system={s} id={`system-${i + 1}`} first={i === 0} /></li>)}</ul></div>}
     </div>
   </section>
 
-  <ContactBlock id="contact" overline="Next step" title="Need a design system your team and its AI tools both read?" lead="I build systems that a designer, a developer and an AI agent can all work from: tokens, components, the rules, and the files that keep generated screens on the system. Book a 15-minute call, or send what your team needs." topic="project" />
+  <ContactBlock id="contact" overline="Next step" title="Need a design system your team and its AI tools both read?" lead={"I build systems that a designer, a developer and an AI agent can all work from: tokens, components, the rules, and the files that keep generated screens on the system. Book a 15-\u2060minute call, or send what your team needs."} topic="project" />
 </PageLayout>
 
 <style>
@@ -66,3 +73,7 @@ const steps = [
   .mds-stat-words { font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-strong); line-height: var(--leading-snug); max-inline-size: 18ch; }
   .mds-list { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--grid-gap); }
 </style>
+
+<script>
+  import '../components/islands/stack-scroll.ts';
+</script>

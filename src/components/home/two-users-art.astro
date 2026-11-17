@@ -1,0 +1,95 @@
+---
+/* The drawing beside "Human + Agent" on Home (owner request, 16 November 2026, L-77: "the right-hand side looks empty, we
+   can show an illustration there"). It draws the section's point: a person asks, an AI agent acts on a website for them,
+   and the last step (log in, confirm, pay) comes back to the person: the handoff the section says must be designed.
+   Drawn in SVG from the site's tokens only (surfaces, borders, text and link colours), so it follows both themes and needs
+   no picture file. The three paths draw themselves as the block scrolls in, one after another (motion.css,
+   [data-two-users] .tu-flow); with reduced motion or without view timelines the drawing is simply there. The drawing is
+   decorative; its three steps are written under it, so nothing is said by the picture alone. */
+---
+<figure class="two-users-art" data-reveal="">
+  <svg viewBox="0 0 400 300" class="tu-svg" aria-hidden="true" focusable="false">
+    <defs>
+      <marker id="tu-tip-link" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tu-tip-link" d="M0 0 10 5 0 10z"></path></marker>
+      <marker id="tu-tip-strong" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tu-tip-strong" d="M0 0 10 5 0 10z"></path></marker>
+      <marker id="tu-tip-muted" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tu-tip-muted" d="M0 0 10 5 0 10z"></path></marker>
+    </defs>
+
+    <!-- The website the agent works on: a window with its bar, three lines of content and the step that needs a person. -->
+    <g class="tu-window">
+      <rect class="tu-surface" x="118" y="18" width="208" height="150" rx="14"></rect>
+      <line class="tu-rule" x1="118" y1="46" x2="326" y2="46"></line>
+      <circle class="tu-dot" cx="136" cy="32" r="4"></circle><circle class="tu-dot" cx="150" cy="32" r="4"></circle><circle class="tu-dot" cx="164" cy="32" r="4"></circle>
+      <rect class="tu-line" x="138" y="64" width="128" height="8" rx="4"></rect>
+      <rect class="tu-line" x="138" y="82" width="164" height="8" rx="4"></rect>
+      <rect class="tu-line" x="138" y="100" width="96" height="8" rx="4"></rect>
+      <rect class="tu-action" x="138" y="128" width="92" height="24" rx="12"></rect>
+      <path class="tu-check" d="M176 140l6 6 11-12"></path>
+    </g>
+
+    <!-- The person. -->
+    <g class="tu-person">
+      <circle class="tu-figure" cx="66" cy="214" r="20"></circle>
+      <path class="tu-figure" d="M30 286a36 36 0 0 1 72 0"></path>
+    </g>
+
+    <!-- The agent: a rounded tile with a face and an antenna, in the action colour. -->
+    <g class="tu-agent">
+      <line class="tu-antenna" x1="332" y1="200" x2="332" y2="184"></line>
+      <circle class="tu-spark" cx="332" cy="180" r="5"></circle>
+      <rect class="tu-agent-body" x="290" y="200" width="84" height="80" rx="22"></rect>
+      <circle class="tu-eye" cx="317" cy="236" r="6"></circle><circle class="tu-eye" cx="347" cy="236" r="6"></circle>
+      <path class="tu-mouth" d="M318 256q14 9 28 0"></path>
+    </g>
+
+    <!-- 1. The person asks the agent. 2. The agent acts on the website. 3. The step that needs the person comes back to them. -->
+    <path class="tu-flow tu-flow-ask" pathLength="1" d="M104 252C160 280 232 282 282 252" marker-end="url(#tu-tip-muted)"></path>
+    <path class="tu-flow tu-flow-act" pathLength="1" d="M318 194C312 168 280 150 238 144" marker-end="url(#tu-tip-link)"></path>
+    <path class="tu-flow tu-flow-back" pathLength="1" d="M134 146C100 154 76 168 70 186" marker-end="url(#tu-tip-strong)"></path>
+  </svg>
+  <figcaption class="tu-steps">
+    <ol>
+      <li><span class="tu-key tu-key-ask" aria-hidden="true"></span>You ask an agent</li>
+      <li><span class="tu-key tu-key-act" aria-hidden="true"></span>It acts on a website for you</li>
+      <li><span class="tu-key tu-key-back" aria-hidden="true"></span>The handoff: you confirm, sign in or pay</li>
+    </ol>
+  </figcaption>
+</figure>
+
+<style>
+  .two-users-art { margin: 0; display: grid; gap: var(--space-4); justify-items: center; inline-size: min(100%, 440px); justify-self: center; min-inline-size: 0; }
+  .tu-svg { display: block; inline-size: 100%; block-size: auto; overflow: visible; }
+  .tu-surface { fill: var(--surface-card); stroke: var(--border-default); stroke-width: 1.5; }
+  .tu-rule { stroke: var(--border-subtle); stroke-width: 1.5; }
+  .tu-dot { fill: var(--border-strong); }
+  .tu-line { fill: var(--border-subtle); }
+  .tu-action { fill: var(--action-solid); }
+  .tu-check { fill: none; stroke: var(--on-ink-strong); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .tu-figure { fill: none; stroke: var(--text-strong); stroke-width: 2.5; stroke-linecap: round; }
+  .tu-agent-body { fill: var(--action-solid); }
+  .tu-eye { fill: var(--on-ink-strong); }
+  .tu-mouth { fill: none; stroke: var(--on-ink-strong); stroke-width: 2.5; stroke-linecap: round; }
+  .tu-antenna { stroke: var(--action-solid); stroke-width: 2.5; stroke-linecap: round; }
+  .tu-spark { fill: var(--text-link); }
+  .tu-flow { fill: none; stroke-width: 2.5; stroke-linecap: round; }
+  .tu-flow-ask { stroke: var(--text-muted); }
+  .tu-flow-act { stroke: var(--text-link); }
+  .tu-flow-back { stroke: var(--text-strong); }
+  .tu-tip-muted { fill: var(--text-muted); }
+  .tu-tip-link { fill: var(--text-link); }
+  .tu-tip-strong { fill: var(--text-strong); }
+  /* The three steps, each keyed to its path by the path's colour and by its place in the order (never colour alone). */
+  .tu-steps ol { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-2); counter-reset: tu; }
+  .tu-steps li { counter-increment: tu; display: flex; align-items: baseline; gap: var(--space-2); font-family: var(--font-mono); font-size: var(--text-mono-sm); line-height: var(--leading-normal); color: var(--text-muted); overflow-wrap: anywhere; }
+  .tu-steps li::before { content: counter(tu) "."; flex-shrink: 0; color: var(--text-subtle); }
+  .tu-key { flex-shrink: 0; align-self: center; inline-size: 18px; block-size: 3px; border-radius: 2px; }
+  .tu-key-ask { background: var(--text-muted); }
+  .tu-key-act { background: var(--text-link); }
+  .tu-key-back { background: var(--text-strong); }
+  @media (forced-colors: active) {
+    .tu-surface, .tu-figure, .tu-flow, .tu-mouth, .tu-antenna, .tu-check { stroke: CanvasText; }
+    .tu-action, .tu-agent-body, .tu-tip-muted, .tu-tip-link, .tu-tip-strong, .tu-spark, .tu-dot, .tu-line { fill: CanvasText; }
+    .tu-eye { fill: Canvas; }
+    .tu-key { background: CanvasText; }
+  }
+</style>

@@ -1,31 +1,68 @@
 ---
-/* LinkedIn post: the official embed iframe behind a click-to-load facade. Until the visitor asks for it, the card shows
-   the title, an excerpt and a link, and nothing is requested from LinkedIn. If the embed is blocked or fails, the same
+/* LinkedIn post. With the post's own words (`text`, pasted in the editor) the card is the post: its words, its picture shown
+   whole, and a link to it on LinkedIn, so a visitor reads it without a click and nothing is requested from LinkedIn (owner
+   decision, 16 November 2026, L-75). A long post shows its opening and a "Read the whole post" disclosure that opens in place
+   (a native <details>, so it works without JavaScript); the picture opens in the image preview (L-60).
+   Without the words it is the official embed iframe behind a click-to-load facade: until the visitor asks for it, the card
+   shows the title, an excerpt and a link, and nothing is requested from LinkedIn. If the embed is blocked or fails, the same
    card stays as the fallback, with the link to the post. Without a post id there is no button, only the link.
    In a list (/posts) the card takes a heading level, a date and a series, and fills its grid cell.
-   States: facade, loading, failed, link only. Behaviour: islands/embeds.ts */
+   States: native (short, long, with and without a picture), facade, loading, failed, link only. Behaviour: islands/embeds.ts */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import PreviewLink from '../ui/preview-link.astro';
 import { formatDate } from '../../lib/posts';
 
-interface Props { urn?: string; url: string; title: string; excerpt?: string; date?: Date; series?: string; /** A heading level for the title, when the card is an item in a list. */ level?: 2 | 3; state?: 'facade' | 'loading' | 'failed'; /** Off where the page already says these are LinkedIn posts. */ kicker?: boolean }
-const { urn = '', url, title, excerpt, date, series, level, state = 'facade', kicker = true } = Astro.props;
+interface Props { urn?: string; url: string; title: string; excerpt?: string; date?: Date; series?: string; /** The post's own words: the card shows the post itself. */ text?: string; /** The post's picture, with its words. */ image?: { src: ImageMetadata; alt: string }; /** A heading level for the title, when the card is an item in a list. */ level?: 2 | 3; state?: 'facade' | 'loading' | 'failed'; /** Off where the page already says these are LinkedIn posts. */ kicker?: boolean }
+const { urn = '', url, title, excerpt, date, series, text, image, level, state = 'facade', kicker = true } = Astro.props;
 const valid = /^urn:li:(share|activity|ugcPost):\d+$/.test(urn);
 const Title = (level ? `h${level}` : 'p') as any;
+
+/* The words as paragraphs (a blank line starts one) of lines. The opening shows; the rest folds when it is long enough to be
+   worth a fold, so a short post never ends in a button that reveals a line. */
+const paragraphs = (text || '').replace(/\r\n?/g, '\n').trim().split(/\n\s*\n/).map(p => p.split('\n').map(l => l.trim()).filter(Boolean)).filter(p => p.length > 0);
+const OPENING = 320, WORTH_A_FOLD = 160;
+let opening: string[][] = [], used = 0;
+for (const p of paragraphs) { if (opening.length && used >= OPENING) break; opening.push(p); used += p.join(' ').length; }
+let rest = paragraphs.slice(opening.length);
+if (rest.reduce((n, p) => n + p.join(' ').length, 0) < WORTH_A_FOLD) { opening = paragraphs; rest = []; }
+const native = paragraphs.length > 0;
+const widths = image ? [...new Set([400, 800, 1200].filter(w => w < image.src.width).concat(Math.min(image.src.width, 1600)))] : [];
 ---
-<figure class="embed embed-linkedin" data-embed="linkedin" data-fill={level ? '' : undefined} data-embed-src={valid ? `https://www.linkedin.com/embed/feed/update/${urn}` : undefined} data-embed-title={`LinkedIn post: ${title}`} data-embed-loading="Loading the LinkedIn post" data-state={state} data-static={Astro.props.state ? '' : undefined}>
-  <div class="embed-card">
-    {kicker && <p class="cory-overline">LinkedIn post</p>}
-    <Title class="embed-card-title">{title}</Title>
-    {(date || series) && <p class="case-kicker">{date && <time datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time>}{date && series && ' · '}{series}</p>}
-    {excerpt && <p class="embed-card-excerpt">{excerpt}</p>}
-    <div class="embed-actions">
-      {valid && <button type="button" class="ui-button ui-button-secondary ui-button-sm" data-embed-load><span class="ui-button-label">Load the post here<span class="cory-visually-hidden">: {title}</span></span></button>}
-      <a data-link class="embed-card-link" href={url} target="_blank" rel="noopener"><span>Read on LinkedIn<span class="cory-visually-hidden">: {title} (opens in a new tab)</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"></path></svg></a>
-    </div>
-    <p class="embed-status" role="status">{state === 'loading' ? 'Loading the LinkedIn post' : ''}</p>
-    <p class="embed-card-failed"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4M12 16h.01"></path></svg><span>The post didn't load here. Your network may block LinkedIn embeds. Use the link above to read it on LinkedIn, or try again.</span></p>
-  </div>
-  <div class="embed-frame embed-frame-post"></div>
-</figure>
+{native
+  ? <figure class="embed embed-linkedin li-post" data-fill={level ? '' : undefined} data-state="native">
+      <div class="embed-card">
+        {kicker && <p class="cory-overline">LinkedIn post</p>}
+        <Title class="embed-card-title">{title}</Title>
+        {(date || series) && <p class="case-kicker">{date && <time datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time>}{date && series && ' · '}{series}</p>}
+        <div class="li-post-text">
+          {opening.map(p => <p>{p.map((line, i) => <>{i > 0 && <br />}{line}</>)}</p>)}
+          {rest.length > 0 && <details class="li-post-more">
+            <summary><span class="li-post-more-open">Read the whole post</span><span class="li-post-more-close">Show less</span><span class="cory-visually-hidden">: {title}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+            {rest.map(p => <p>{p.map((line, i) => <>{i > 0 && <br />}{line}</>)}</p>)}
+          </details>}
+        </div>
+        {image && <div class="li-post-picture" style={`aspect-ratio: ${image.src.width} / ${image.src.height};`}><PreviewLink src={image.src} alt={image.alt}><Image src={image.src} alt={image.alt} widths={widths} sizes="(min-width: 1024px) 420px, (min-width: 600px) 50vw, 100vw" loading="lazy" decoding="async" /></PreviewLink></div>}
+        <div class="embed-actions">
+          <a data-link class="embed-card-link" href={url} target="_blank" rel="noopener"><span>View on LinkedIn<span class="cory-visually-hidden">: {title} (opens in a new tab)</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"></path></svg></a>
+        </div>
+      </div>
+    </figure>
+  : <figure class="embed embed-linkedin" data-embed="linkedin" data-fill={level ? '' : undefined} data-embed-src={valid ? `https://www.linkedin.com/embed/feed/update/${urn}` : undefined} data-embed-title={`LinkedIn post: ${title}`} data-embed-loading="Loading the LinkedIn post" data-state={state} data-static={Astro.props.state ? '' : undefined}>
+      <div class="embed-card">
+        {kicker && <p class="cory-overline">LinkedIn post</p>}
+        <Title class="embed-card-title">{title}</Title>
+        {(date || series) && <p class="case-kicker">{date && <time datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time>}{date && series && ' · '}{series}</p>}
+        {excerpt && <p class="embed-card-excerpt">{excerpt}</p>}
+        <div class="embed-actions">
+          {valid && <button type="button" class="ui-button ui-button-secondary ui-button-sm" data-embed-load><span class="ui-button-label">Load the post here<span class="cory-visually-hidden">: {title}</span></span></button>}
+          <a data-link class="embed-card-link" href={url} target="_blank" rel="noopener"><span>Read on LinkedIn<span class="cory-visually-hidden">: {title} (opens in a new tab)</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"></path></svg></a>
+        </div>
+        <p class="embed-status" role="status">{state === 'loading' ? 'Loading the LinkedIn post' : ''}</p>
+        <p class="embed-card-failed"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4M12 16h.01"></path></svg><span>The post didn't load here. Your network may block LinkedIn embeds. Use the link above to read it on LinkedIn, or try again.</span></p>
+      </div>
+      <div class="embed-frame embed-frame-post"></div>
+    </figure>}
 
 <script>
   import '../islands/embeds.ts';

@@ -73,10 +73,22 @@ const arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" strok
   .skill-show-name .case-kicker { overflow-wrap: anywhere; }
   .skill-show-summary { margin: 0; font-size: var(--text-body-lg); line-height: var(--leading-relaxed); color: var(--text-body); max-inline-size: var(--measure-body); }
   .skill-show-part { display: grid; gap: var(--space-2); }
+  /* A narrow card (a 320 px phone): the letter tile sits above the name, which then has the card's width (beside it the name had
+     182 px and ran to three lines), the nested boxes keep less padding so the install path has room, and the summary takes the
+     body size of the other cards (at 18 px it set 24 to 28 characters a line; CLAUDE.md 2.8; mobile review, 16 November 2026,
+     L-74). */
+  @container (max-width: 519px) {
+    .skill-show { padding: var(--space-5); }
+    .skill-show-use { padding: var(--space-4); }
+    .skill-show-head { flex-direction: column; align-items: flex-start; }
+    .skill-show-summary { font-size: var(--text-body-md); }
+  }
   .skill-show h4 { margin: 0; font-size: var(--text-caption); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-subtle); }
   .skill-show-part > p { margin: 0; line-height: var(--leading-relaxed); color: var(--text-body); max-inline-size: var(--measure-body); }
   .skill-show-prompts { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
-  .skill-show-prompts q { display: inline-block; padding: var(--space-2) var(--space-3); border-radius: var(--radius-pill); background: var(--action-ghost-hover); color: var(--text-link); font-weight: var(--weight-semibold); font-size: var(--text-body-sm); quotes: '\201C' '\201D'; overflow-wrap: anywhere; }
+  /* A line to say, set as a quotation: as a blue pill it read as a button that did nothing when tapped (mobile review,
+     16 November 2026, L-74). */
+  .skill-show-prompts q { display: inline-block; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); border-inline-start: 2px solid var(--border-strong); background: var(--surface-sunken); color: var(--text-body); font-weight: var(--weight-medium); font-size: var(--text-body-sm); quotes: '\201C' '\201D'; overflow-wrap: anywhere; }
   .skill-show-needs { margin: 0; padding-inline-start: var(--space-5); display: grid; gap: var(--space-1); list-style: disc; color: var(--text-body); line-height: var(--leading-relaxed); }
   .skill-show-note { margin: 0; padding-inline-start: var(--space-3); border-inline-start: 2px solid var(--border-default); font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-muted); }
   .skill-show-get { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
@@ -85,6 +97,9 @@ const arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" strok
   @media (hover: hover) { .skill-show-link:hover { text-decoration: underline; text-underline-offset: 3px; } }
   .skill-show-link:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
   .skill-show-steps { display: grid; gap: var(--space-2); min-inline-size: 0; }
+  /* The install path wraps, as an address may (CLAUDE.md 2.3): in a scrolling box a phone showed "~/.claude/skills/ui-ux" and
+     hid the rest of a path the reader is meant to type (mobile review, 16 November 2026, L-74). Code blocks elsewhere still scroll. */
+  .skill-show-steps :global(.post-code code) { white-space: pre-wrap; overflow-wrap: anywhere; }
   .skill-show-steps ol { margin: 0; padding-inline-start: var(--space-6); display: grid; gap: var(--space-1); list-style: decimal; color: var(--text-body); line-height: var(--leading-relaxed); overflow-wrap: anywhere; }
   .skill-show-steps ol li::marker { font-family: var(--font-mono); font-size: var(--text-mono); color: var(--text-subtle); }
   .skill-show-steps p { margin: 0; line-height: var(--leading-relaxed); color: var(--text-body); }

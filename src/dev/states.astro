@@ -71,6 +71,7 @@ import WorkBento from '../components/home/work-bento.astro';
 import InPublic from '../components/home/in-public.astro';
 import CaseDeck from '../components/home/case-deck.astro';
 import HeroStack from '../components/sites/hero-stack.astro';
+import TwoUsersArt from '../components/home/two-users-art.astro';
 import FittedImage from '../components/ui/fitted-image.astro';
 import ImagePreview from '../components/ui/image-preview.astro';
 import { getImage } from 'astro:assets';
@@ -79,6 +80,7 @@ import { verdict, VERDICT_ICON } from '../admin/lib/opportunities';
 import fitCover from '../assets/cases/colaberry-ds-components.jpg';
 import fitTall from '../assets/cases/reel-still.jpg';
 import fitWide from '../assets/cases/multi-brand-family.jpg';
+import liPicture from '../assets/posts/infographic-a-day-02-rulebook.png';
 import { caseCard, type StackCard } from '../lib/site-stacks';
 import WorkedWith from '../components/home/worked-with.astro';
 import Skills from '../components/home/skills.astro';
@@ -94,7 +96,57 @@ import Testimonials from '../components/profile/testimonials.astro';
 import { verifyNotes } from '../content/profile';
 import { site } from '../content/site';
 const formStates = [['idle', 'Idle (live: try it; it posts to a fixture address, so sending ends in the failure state)'], ['invalid', 'Inline errors and the error summary'], ['submitting', 'Submitting: fields locked, button disabled, status message'], ['success', 'Success'], ['failure', 'Failure: the input is kept and email is offered']] as const;
+/* Private work (docs/PRIVATE_WORK.md): the request form's states, the signed-in view, the sign-in step, and the admin's pieces. */
+import NdaNotice from '../components/private-work/nda-notice.astro';
+import RequestForm from '../components/private-work/request-form.astro';
+import PrivateLinks from '../components/private-work/private-links.astro';
+import EnterPanel from '../components/private-work/enter-panel.astro';
+import AccessRequestItem from '../admin/components/access-request.astro';
+import AccessLink from '../admin/components/access-link.astro';
+import PrivateLinkTable from '../admin/components/private-link-table.astro';
+import { FIELD_ERRORS } from '../lib/private-work';
+import type { AccessRequest } from '../admin/lib/private-work';
+const pwSample = { name: 'Fixture name', email: 'fixture@example.com', company: 'Fixture company', role: 'Fixture role', reason: 'Fixture reason. What was typed stays in the form.', consent: true };
+const pwInvalid = { values: { name: '', email: 'fixture-at-example', company: 'Fixture company', role: '', reason: '', consent: false }, problems: (['name', 'email', 'role', 'consent'] as const).map(field => ({ field, message: FIELD_ERRORS[field] })) };
+const pwStates: { key: string; label: string; props: Record<string, any> }[] = [
+  { key: 'idle', label: 'Idle (live: each field is checked when it loses focus; it posts to /private-work, which exists only where the admin is: dev and Vercel)', props: {} },
+  { key: 'invalid', label: 'Inline errors and the error summary, the input kept', props: { state: 'invalid', fixed: true, ...pwInvalid } },
+  { key: 'submitting', label: 'Submitting: fields locked, button disabled, status message', props: { state: 'submitting', fixed: true, values: pwSample } },
+  { key: 'success', label: 'Success: what happens next', props: { state: 'success', fixed: true, values: pwSample } },
+  { key: 'fault', label: 'Failure: the site could not save it; the input is kept and email is offered', props: { state: 'failure', failure: 'fault', fixed: true, values: pwSample } },
+  { key: 'limited', label: 'Failure: too many requests from one place', props: { state: 'failure', failure: 'limited', fixed: true, values: { ...pwSample, name: stress.longTitle, company: stress.unbroken } } },
+];
+const pwGroups = [
+  { title: 'Full fixture', kind: 'Case study', href: '/case-studies/full-fixture', links: [{ label: 'Figma file: the onboarding flow', url: 'https://www.figma.com/design/fixture', note: 'Start at the page called Flows.' }, { label: 'Clickable prototype', url: 'https://example.com/prototype', note: '' }] },
+  { title: stress.longTitle, kind: 'Project', href: '/work/stress-fixture', links: [{ label: stress.longTitle, url: `https://${stress.unbroken}.example/prototype`, note: stress.longTitle }] },
+  { title: 'Work', kind: 'Case study', href: '', links: [{ label: 'Live site', url: 'https://example.com', note: '' }] },
+];
+/* The admin's request list: one of each status, the stress content, the partial one, and a link in each state. */
+const accessNow = Date.parse('2026-11-16T09:00:00.000Z');
+const accessAt = (days: number, hour = 9) => new Date(accessNow - days * 86_400_000 + (hour - 9) * 3_600_000).toISOString();
+const accessReq = (o: Partial<AccessRequest> & Pick<AccessRequest, 'id' | 'status'>): AccessRequest => ({ name: 'Fixture name', email: 'fixture@example.com', company: 'Fixture company', role: 'Fixture role', reason: '', consentedAt: accessAt(3), decidedAt: '', createdAt: accessAt(3), earlier: 0, sessions: 0, lastLink: null, ...o });
+const accessSamples: AccessRequest[] = [
+  accessReq({ id: 1, status: 'waiting', name: stress.longTitle, company: stress.unbroken, role: 'Head of Design', reason: `${stress.longTitle}\n${stress.unbroken}`, earlier: 2, createdAt: accessAt(0, 7), consentedAt: accessAt(0, 7) }),
+  accessReq({ id: 2, status: 'waiting', name: 'Work', role: '' }),
+  accessReq({ id: 3, status: 'approved', decidedAt: accessAt(2), lastLink: { createdAt: accessAt(2), expiresAt: accessAt(-5), usedAt: '' } }),
+  accessReq({ id: 4, status: 'approved', decidedAt: accessAt(10), sessions: 2, lastLink: { createdAt: accessAt(10), expiresAt: accessAt(3), usedAt: accessAt(9) } }),
+  accessReq({ id: 5, status: 'approved', decidedAt: accessAt(12), lastLink: { createdAt: accessAt(12), expiresAt: accessAt(5), usedAt: '' } }),
+  accessReq({ id: 6, status: 'approved', decidedAt: accessAt(1) }),
+  accessReq({ id: 7, status: 'declined', decidedAt: accessAt(1) }),
+  accessReq({ id: 8, status: 'revoked', decidedAt: accessAt(1), lastLink: { createdAt: accessAt(20), expiresAt: accessAt(13), usedAt: accessAt(19) } }),
+];
+const accessLink = `https://example.com/private-work/enter?token=fixture-${stress.unbroken}`;
+const linkRows = [
+  { id: 1, label: 'Figma file: the onboarding flow', note: 'Start at the page called Flows.', url: 'https://www.figma.com/design/fixture', updatedAt: accessAt(1), page: { title: 'Full fixture', kind: 'Case study', nda: true, href: '/case-studies/full-fixture' } },
+  { id: 2, label: stress.longTitle, note: '', url: `https://${stress.unbroken}.example/prototype`, updatedAt: accessAt(2), page: { title: stress.longTitle, kind: 'Project', nda: false, href: '/work/stress-fixture' } },
+  { id: 3, label: 'Work', note: stress.longTitle, url: 'https://example.com', updatedAt: accessAt(30), page: { title: 'gone-fixture', kind: 'Case study', nda: false, href: '' } },
+];
 const li = { urn: 'urn:li:share:0000000000000000000', url: 'https://www.linkedin.com/in/aiuxaleem' };
+/* A LinkedIn post shown on the site (L-75): a short one, a long one with the fold, one with a picture, and the stress text. */
+const NL2 = '\n\n';
+const liShort = ['Fixture post. One short paragraph that shows whole, with no fold.', '#Fixture #States'].join(NL2);
+const liLong = [...Array.from({ length: 8 }, (_, i) => `Fixture paragraph ${i + 1}. A line of the post that runs long enough to fill a card's width on a phone and to wrap once on a desktop.`), '#uxdesign #aiproductdesign #designsystems'].join(NL2);
+const liStress = ['https://example.com/an-unbroken-string-of-sixty-characters-x1\nA second line in the same paragraph.', ...Array.from({ length: 6 }, () => 'Stress paragraph that repeats to push the fold past its opening.'), '#one #two #three #four #five #six #seven #eight #nine'].join(NL2);
 const allCases = await listedCaseStudies();
 /* Samples for the admin's Opportunity check verdicts and for pictures in frames (casts stay out of the markup). */
 const verdictSamples: Record<string, unknown>[] = [{ scores: { northStar: '5', pay: '4', culture: '5', risks: '4' }, checklist: { writtenOffer: true, payBreakdown: true, terms: true } }, { scores: { northStar: '4', pay: '3', culture: '4', risks: '4' } }, { scores: { northStar: '5', pay: '2', culture: '4', risks: '1' } }, { scores: { northStar: '4' } }];
@@ -190,7 +242,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <div style={row}>{variants.map(v => <Button variant={v} size="lg" href="#main">{v} large</Button>)}</div>
             <div style={row}><Button variant="primary" size="sm" href="#main">primary small</Button><Button variant="secondary" size="sm" href="#main">secondary small</Button><Button variant="ghost" size="sm" href="#main">ghost small</Button><Button variant="primary" disabled>primary disabled</Button><Button variant="secondary" disabled>secondary disabled</Button><Button variant="ink" disabled>ink disabled</Button></div>
             <div style="padding: var(--space-6); border-radius: var(--radius-xl); background: var(--gradient-ink);"><div style={row}>{inkVariants.map(v => <Button variant={v} href="#main">{v}</Button>)}</div></div>
-            <p style={note}>Stress: one-word label, a 60-character unbroken label, and a 120-character label. The label must wrap, never clip.</p>
+            <p style={note}>Stress: one-word label, a 60-⁠character unbroken label, and a 120-⁠character label. The label must wrap, never clip.</p>
             <div style="display: grid; gap: var(--space-3); max-inline-size: 320px;">
               <Button variant="primary" href="#main" class="ui-button ui-button-primary ui-button-md states-wrap">{stress.oneWord}</Button>
               <Button variant="secondary" href="#main" class="ui-button ui-button-secondary ui-button-md states-wrap">{stress.unbroken}</Button>
@@ -219,7 +271,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Badge and tags</h2>
-            <p style={note}>Default, a 60-character unbroken string, a missing value (renders nothing), and nine tags.</p>
+            <p style={note}>Default, a 60-⁠character unbroken string, a missing value (renders nothing), and nine tags.</p>
             <div style={row}><span data-badge class="ui-badge">Design systems</span><span data-badge class="ui-badge">{stress.unbroken}</span>{stress.missing && <span data-badge class="ui-badge">{stress.missing}</span>}</div>
             <ul style="display: flex; flex-wrap: wrap; gap: var(--space-2); max-inline-size: 320px;">{stress.tags.map(t => <li><span data-badge class="ui-badge">{t}</span></li>)}</ul>
           </div>
@@ -252,10 +304,10 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Project card</h2>
-            <p style={note}>Default with a cover; and the stress fixture: no cover (typographic fallback at the same size), a 120-character title, a 60-character unbroken string and nine tags. Cards in a row stay the same height.</p>
+            <p style={note}>Default with a cover; and the stress fixture: no cover (typographic fallback at the same size), a 120-⁠character title, a 60-⁠character unbroken string and nine tags. Cards in a row stay the same height.</p>
             <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{projects.map(p => <li><ProjectCard project={p} level={3} /></li>)}</ul></div>
             <h2 style={h2}>Case cards</h2>
-            <p style={note}>The card on /case-studies: the full fixture and the stress fixture (a 120-character title, an unbroken address, 8+ tags, a missing cover).</p>
+            <p style={note}>The card on /case-studies: the full fixture and the stress fixture (a 120-⁠character title, an unbroken address, 8+ tags, a missing cover).</p>
             <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{caseCards.map(c => <li><CaseCard entry={c} level={3} /></li>)}</ul></div>
           </div>
 
@@ -276,9 +328,10 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Case study pieces</h2>
-            <p style={note}>NDA notice, the 30-second summary block, and the before/after comparison (range input and two buttons, so it works from the keyboard; without JavaScript the two images sit side by side). The whole template with every section is at <a data-link href="/case-studies/full-fixture" style="color: var(--text-link);">/case-studies/full-fixture</a>; with every optional section missing at <a data-link href="/case-studies/stress-fixture" style="color: var(--text-link);">/case-studies/stress-fixture</a>.</p>
-            <p class="case-nda"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg><span><strong>Under NDA.</strong> Some details are changed or left out to respect a confidentiality agreement.</span></p>
-            <div class="case-section case-tldr"><p class="cory-overline">30-second read</p><h3 style="margin: 0; font-size: var(--text-h3); color: var(--text-strong);">In short</h3><ul>{stress.tags.slice(0, 3).map(t => <li>{t}: {stress.unbroken}</li>)}</ul></div>
+            <p style={note}>NDA notice (the default note; then a long note with the line that live links and prototypes are for approved visitors, and its link), the 30-⁠second summary block, and the before/after comparison (range input and two buttons, so it works from the keyboard; without JavaScript the two images sit side by side). The whole template with every section is at <a data-link href="/case-studies/full-fixture" style="color: var(--text-link);">/case-studies/full-fixture</a>; with every optional section missing at <a data-link href="/case-studies/stress-fixture" style="color: var(--text-link);">/case-studies/stress-fixture</a>.</p>
+            <NdaNotice />
+            <NdaNotice note={stress.longTitle} access="/private-work?from=case-studies%2Ffull-fixture" />
+            <div class="case-section case-tldr"><p class="cory-overline">30-⁠second read</p><h3 style="margin: 0; font-size: var(--text-h3); color: var(--text-strong);">In short</h3><ul>{stress.tags.slice(0, 3).map(t => <li>{t}: {stress.unbroken}</li>)}</ul></div>
             {fullCase?.data.process.beforeAfter && <BeforeAfter before={fullCase.data.process.beforeAfter.before} after={fullCase.data.process.beforeAfter.after} caption={fullCase.data.process.beforeAfter.caption} />}
           </div>
 
@@ -295,8 +348,11 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Embed: LinkedIn post</h2>
-            <p style={note}>Facade card, loading, and failed (the card stays as the fallback with the link). The first one is live.</p>
+            <p style={note}>Shown on the site (short, long with the fold and a picture, stress), then the facade card, loading, and failed (the card stays as the fallback with the link). The first facade is live.</p>
             <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
+              <li><LinkedInPost {...li} title="Fixture LinkedIn post shown on the site, short" text={liShort} date={new Date('2026-01-15')} level={3} /></li>
+              <li><LinkedInPost {...li} title="Fixture LinkedIn post shown on the site, long, with a picture" text={liLong} image={{ src: liPicture, alt: 'Fixture picture of an infographic' }} date={new Date('2026-01-15')} series="Fixture series" level={3} /></li>
+              <li><LinkedInPost {...li} title={stress.longTitle} text={liStress} date={new Date('2026-01-15')} series={stress.unbroken} level={3} /></li>
               <li><LinkedInPost {...li} title="Fixture LinkedIn post, facade (live)" excerpt="Fixture excerpt of the post." /></li>
               <li><LinkedInPost {...li} title="Fixture LinkedIn post, loading" excerpt="Fixture excerpt of the post." state="loading" /></li>
               <li><LinkedInPost {...li} title="Fixture LinkedIn post, failed" excerpt="Fixture excerpt of the post." state="failed" /></li>
@@ -363,16 +419,16 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <p style={note}>One of the owner's skills on /skills (cards/skill-showcase.astro): with its download, what to say and what it needs; one shown through its case study; one without a download yet (a fixture).</p>
             <div data-cq><ul style="display: grid; gap: var(--grid-gap); margin: 0; padding: 0; list-style: none;">{[skillsAll.find(x => x.data.mine && x.data.download && (x.data.prompts ?? []).length), skillsAll.find(x => x.data.mine && x.data.caseStudy), skillsAll.find(x => x.data.mine && x.data.fixture)].filter(Boolean).map((x, i) => <li><SkillShowcase skill={x!} id={`states-show-${theme}-${i}`} /></li>)}</ul></div>
             <h2 style={h2}>Claude Skills: a directory card</h2>
-            <p style={note}>An entry of Anthropic's official directory on /claude-skills (cards/plugin-card.astro): by Anthropic, a partner whose maker the directory does not name, and the stress entry (a 120-character title, an unbroken description token, maker and install line, marked New).</p>
+            <p style={note}>An entry of Anthropic's official directory on /claude-skills (cards/plugin-card.astro): by Anthropic, a partner whose maker the directory does not name, and the stress entry (a 120-⁠character title, an unbroken description token, maker and install line, marked New).</p>
             <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{pluginSample.map(p => <li><PluginCard plugin={p} /></li>)}</ul></div>
             <h2 style={h2}>Claude skill card</h2>
-            <p style={note}>The two kinds on /skills (cards/skill-card.astro): one of mine as a tile with its download (size and format named), its SKILL.md and a note; one of mine without a download yet; one from someone else as a whole-card link with maker, official or community, licence and the one-line install; the stress fixture with a 120-character title, an unbroken install line and nine tags.</p>
+            <p style={note}>The two kinds on /skills (cards/skill-card.astro): one of mine as a tile with its download (size and format named), its SKILL.md and a note; one of mine without a download yet; one from someone else as a whole-card link with maker, official or community, licence and the one-line install; the stress fixture with a 120-⁠character title, an unbroken install line and nine tags.</p>
             <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{skillSample.map(x => <li><SkillCard skill={x} level={3} /></li>)}</ul></div>
             <h2 style={h2}>My Design Systems: the showcase</h2>
             <p style={note}>One of the owner's systems on /my-design-systems (cards/design-system-showcase.astro): this site's own with its live tokens and counted token total; one with its project's cover and a line to copy; one built for a client (no line, a walkthrough offered); the fixture with every field (five facts, a shared artifact, an unbroken address in the line); the fixture with only the required fields (no picture).</p>
             <div data-cq><ul style="display: grid; gap: var(--grid-gap); margin: 0; padding: 0; list-style: none;">{dsShowSample.map((x, i) => <li><DesignSystemShowcase system={x} id={`states-ds-${theme}-${i}`} /></li>)}</ul></div>
             <h2 style={h2}>Design Systems: a library card</h2>
-            <p style={note}>A public system on /design-systems (cards/design-system-card.astro): with code, Figma kit, tokens and AI links; without a Figma kit; the partial fixture (docs only); the stress fixture (a 120-character name, every platform, three AI links, a long licence and accessibility line).</p>
+            <p style={note}>A public system on /design-systems (cards/design-system-card.astro): with code, Figma kit, tokens and AI links; without a Figma kit; the partial fixture (docs only); the stress fixture (a 120-⁠character name, every platform, three AI links, a long licence and accessibility line).</p>
             <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{dsCardSample.map(x => <li><DesignSystemCard system={x} /></li>)}</ul></div>
             <h2 style={h2}>AI tool card and the AI Tools filter bar</h2>
             <p style={note}>Cards on <a data-link href="/ai-tools" style="color: var(--text-link);">/ai-tools</a>: one I use (marked), one I do not, the partial fixture (one-word name, no description, no tags) and the stress fixture (long name, unbroken address, nine tags). Then the filter bar with its search field and its twelve categories folded (more than six chips fold), in the empty-result state with "Clear filters".</p>
@@ -388,7 +444,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Home hero: case study deck</h2>
-            <p style={note}>The deck from the Home hero, still, with the stress fixture on the front card (a 120-character title, a long subtitle, no cover image). On Home it holds the featured case studies and the arrows bring the next card forward.</p>
+            <p style={note}>The deck from the Home hero, still, with the stress fixture on the front card (a 120-⁠character title, a long subtitle, no cover image). On Home it holds the featured case studies and the arrows bring the next card forward.</p>
             <div style="max-inline-size: min(100%, 440px); overflow: clip;"><CaseDeck fixtures /></div>
             <h2 style={h2}>Pictures in frames</h2>
             <p style={note}>How a card or a cover frame shows a picture (ui/fitted-image.astro). A 16:10 picture fills the frame, cut at the top centre by default or at its focus point; a picture whose shape is far from the frame's (a portrait still, a wide banner) is shown whole over a blurred copy of itself. The fourth has a focus point at its lower right.</p>
@@ -402,15 +458,18 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
               {([['open', 'Fit'], ['zoomed', '200%'], ['loading', 'Fit'], ['error', 'Fit']] as const).map(([state, level]) => <li style="display: grid; gap: var(--space-2);"><div style="block-size: 360px;"><ImagePreview inline state={state} level={level} image={{ src: previewSample.src, alt: fitSamples[0][0].alt, width: previewSample.attributes.width as number, height: previewSample.attributes.height as number }} caption="A sample picture: the components page of a design system" id={`preview-${state}-${theme}`} /></div><p style={note}>{state}</p></li>)}
             </ul></div>
             <h2 style={h2}>Audience websites: first-screen stack</h2>
-            <p style={note}>The stack beside the words on every first screen of the websites for hiring teams and for clients. Live: the arrows bring the next card forward. Front card: a 120-character title, a long line and an unbroken kicker over eight points (the sheet shows four). Then a one-word title with every optional field missing, and a case study with its cover. Below it, a stack of one card, which has no arrows.</p>
-            <div style="display: grid; gap: var(--space-10); max-inline-size: min(100%, 440px); overflow-x: clip;"><HeroStack id={`states-stack-${theme}`} label="Stack" noun="card" cards={stackStress} /><HeroStack id={`states-stack-one-${theme}`} label="One card" noun="card" cards={[stackStress[1]]} /></div>
+            <p style={note}>The stack beside the words on every first screen of the websites for hiring teams and for clients. Live: the arrows bring the next card forward. Front card: a 120-⁠character title, a long line and an unbroken kicker over eight points (the sheet shows four). Then a one-word title with every optional field missing, and a case study with its cover. Below it, a stack of one card, which has no arrows, and a stack of five picks (L-76: the fourth and fifth wait unseen behind the third; live, a card can be swiped or dragged aside, or moved with the arrow keys).</p>
+            <div style="display: grid; gap: var(--space-10); max-inline-size: min(100%, 440px); overflow-x: clip;"><HeroStack id={`states-stack-${theme}`} label="Stack" noun="card" cards={stackStress} /><HeroStack id={`states-stack-one-${theme}`} label="One card" noun="card" cards={[stackStress[1]]} /><HeroStack id={`states-stack-five-${theme}`} label="Five picks" noun="card" cards={[...stackStress, ...stackStress].slice(0, 5).map((c, i) => ({ ...c, title: i < 3 ? c.title : `Pick ${i + 1}` }))} /></div>
+            <h2 style={h2}>Home: the Human + Agent drawing</h2>
+            <p style={note}>The drawing beside the Two users line (L-77): the website, the person, the agent and the three paths, with its three steps written under it. One state: it has no data. Here in a 320 px column and at full width.</p>
+            <div style="display: grid; gap: var(--space-10);"><div style="max-inline-size: 320px;"><TwoUsersArt /></div><TwoUsersArt /></div>
             <h2 style={h2}>Home: skills</h2>
             <p style={note}>The Skills section of Home, as captured from the design. It has one state: its text and tools are part of the capture, so there is nothing to be missing or empty. The Arabic capture is on the Arabic Home page.</p>
             <Skills fixture={theme} />
             <h2 style={h2}>Home: in public, and now</h2>
             <p style={note}>Two more sections of Home taken whole from the design. They are not repeated here because each has fixed ids and Now carries the page's one certificate dialog; see them, in both themes, on <a data-link href="/#content" style="color: var(--text-link);">Home</a>. Each has one state.</p>
             <h2 style={h2}>Home: teams worked with</h2>
-            <p style={note}>The band under the Home hero, with stress content: a 120-character name, an unbroken string, a one-word name and nine entries. With no entries the band is empty and only the heading shows.</p>
+            <p style={note}>The band under the Home hero, with stress content: a 120-⁠character name, an unbroken string, a one-word name and nine entries. With no entries the band is empty and only the heading shows.</p>
             <WorkedWith id={`states-teams-${theme}`} landmark={false} teams={[{ name: stress.longTitle, sector: 'Fixture sector' }, { name: stress.unbroken, sector: stress.unbroken }, { name: 'Work', sector: 'One' }, ...[1, 2, 3, 4, 5, 6].map(n => ({ name: `Fixture team ${n}`, sector: 'Fixture sector' }))]} />
           </div>
 
@@ -422,13 +481,13 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
         <HomeFeeds fixtures landmark={false} idPrefix={`states-${theme}`} />
         <div class="cory-container" style="padding-block: var(--space-12) 0; display: grid; gap: var(--space-4);">
           <h2 style={h2}>Home: the Work bento</h2>
-          <p style={note}>With fixtures first, so the stress content shows: a 120-character project, case study, system and skill, an unbroken string, missing covers, and case studies past the ones the hero deck shows. Then the empty state: every cell keeps its frame, its title and its line; counts, covers, the contents list and the line to say are left out.</p>
+          <p style={note}>With fixtures first, so the stress content shows: a 120-⁠character project, case study, system and skill, an unbroken string, missing covers, and case studies past the ones the hero deck shows. Then the empty state: every cell keeps its frame, its title and its line; counts, covers, the contents list and the line to say are left out.</p>
         </div>
         <WorkBento fixture={`states-${theme}`} />
         <WorkBento fixture={`states-empty-${theme}`} empty />
         <div class="cory-container" style="padding-block: var(--space-12) 0; display: grid; gap: var(--space-4);">
           <h2 style={h2}>Home: In public</h2>
-          <p style={note}>With fixtures first (a 120-character video and post title, an unbroken string, a video with no poster or date), then empty: no channel set (each says it is opening soon and is not a link), no video and no post (each group says why and where to look).</p>
+          <p style={note}>With fixtures first (a 120-⁠character video and post title, an unbroken string, a video with no poster or date), then empty: no channel set (each says it is opening soon and is not a link), no video and no post (each group says why and where to look).</p>
         </div>
         <InPublic fixture={`states-${theme}`} />
         <InPublic fixture={`states-empty-${theme}`} empty />
@@ -443,6 +502,25 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
           </div>
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
+            <h2 style={h2}>Private work: the request form</h2>
+            <p style={note}>The form on /private-work (docs/PRIVATE_WORK.md) in every state. The first form is live; the others are fixed in their state.</p>
+            <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
+              {pwStates.map(x => <li style="display: grid; gap: var(--space-3); align-content: start;"><p style={note}>{x.label}</p><RequestForm email={site.email} id={`pw-${theme}-${x.key}`} landmark={false} {...x.props} /></li>)}
+            </ul></div>
+          </div>
+
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
+            <h2 style={h2}>Private work: signed in, and the sign-in step</h2>
+            <p style={note}>What an approved visitor sees: with links (a 120-⁠character name, title and label, an unbroken company and host, a page that has left the site, a link without a note), then signed in with no links yet, then the links could not be read. Then the page an emailed link opens: ready (one press of Continue, so a link scanner cannot use the link up), used, expired, unknown, and the site unable to check links.</p>
+            <PrivateLinks name={stress.longTitle} company={stress.unbroken} groups={pwGroups} uid={`pw-${theme}-links`} level={3} fixed />
+            <PrivateLinks name="Fixture name" company="Fixture company" groups={[]} uid={`pw-${theme}-none`} level={3} fixed />
+            <PrivateLinks name="Fixture name" company="" groups={[]} fault uid={`pw-${theme}-fault`} level={3} fixed />
+            <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">
+              {(['ready', 'used', 'expired', 'unknown', 'unavailable'] as const).map(st => <li><EnterPanel state={st} token="fixture-token" email={site.email} level={3} uid={`pw-${theme}-enter-${st}`} fixed /></li>)}
+            </ul></div>
+          </div>
+
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Audience websites: the way across</h2>
             <p style={note}>The band near the foot of a website's Home that leads to the other audience website (docs/SITES.md), both ways.</p>
             <DoorSwitch to="clients" id={`states-switch-clients-${theme}`} landmark={false} />
@@ -452,7 +530,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Contact block</h2>
             <p style={note}>The target of "Let's talk" (/contact, with an h1) and the end of About (an h2): call and email, what happens next, where else to find me, and the form beside them from 1024px.</p>
-            <ContactBlock id={`states-contact-${theme}`} overline="Contact" title="Hiring, or building something people need to trust?" lead="Send a message, or book a 15-minute call. I reply within 48 hours." landmark={false} doors topic="project" />
+            <ContactBlock id={`states-contact-${theme}`} overline="Contact" title="Hiring, or building something people need to trust?" lead={"Send a message, or book a 15-\u2060minute call. I reply within 48 hours."} landmark={false} doors topic="project" />
           </div>
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
@@ -574,6 +652,21 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
           </div>
 
           {part === 'admin' && <Fragment>
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
+            <h2 style={h2}>Admin: private work</h2>
+            <p style={note}>The pieces of /admin/access and /admin/access/links (docs/PRIVATE_WORK.md). Requests, one of each status with its actions: waiting with stress content (a 120-⁠character name, an unbroken email and company, a two-line reason, asked before from the same email address); waiting with a one-word name and no role or reason; approved with its link not used yet, used with two browsers signed in, expired unused, and none made yet; declined; revoked. Then what the page says after making a sign-in link: emailed; not emailed because sending is not set up (the link to copy or send); not emailed because the service refused it. Then the private links list, and its empty state.</p>
+            <ul class="access-list">{accessSamples.map(r => <AccessRequestItem r={r} uid={`${theme}-acc`} now={accessNow} fixed />)}</ul>
+            <AccessLink uid={`${theme}-al-sent`} name="Fixture name" email="fixture@example.com" link={accessLink} expiresAt={accessAt(-7)} kind="approve" result={{ sent: true }} />
+            <AccessLink uid={`${theme}-al-off`} name="Fixture name" email="fixture@example.com" link={accessLink} expiresAt={accessAt(-7)} kind="approve" result={{ sent: false, configured: false, reason: 'sending is not set up yet: RESEND_API_KEY and ACCESS_EMAIL_FROM are not set on the host.' }} />
+            <AccessLink uid={`${theme}-al-fail`} name={stress.longTitle} email="fixture@example.com" link={accessLink} expiresAt={accessAt(-7)} kind="newlink" result={{ sent: false, configured: true, reason: 'the email service refused it (403: The example.com domain is not verified).' }} />
+            <PrivateLinkTable rows={linkRows} uid={`${theme}-pl`} label={`Private links, ${theme} theme fixture`} linkTo="#main" />
+            <div class="project-empty">
+              <AdminIcon name="link" size={24} />
+              <p class="project-empty-title">No private links yet.</p>
+              <p class="project-empty-body">Add the first: choose the case study or project, say what the link is, and paste its address. Approved visitors see it at once. Press Add a link at the top of the page.</p>
+            </div>
+          </div>
+
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
             <h2 style={h2}>Admin: a LinkedIn post from its link</h2>
             <p style={note}>The box on /admin/share, which a phone's share sheet opens with the link (docs/LINKEDIN_CAPTURE.md): empty; refused, with the link kept; and the editor's notice when a link was taken in.</p>

@@ -19,7 +19,7 @@ const steps = [
   { title: 'Say what you want', body: 'Use one of the lines shown with each skill, or your own words. Claude opens the skill when your request matches what it is for.' },
 ];
 ---
-<PageLayout title="My Claude Skills · Aleem | AIUX" description="Claude skills Mohammad Abdul Aleem built: a UI/UX audit, a LinkedIn board, a reel to LinkedIn post, a blog post. What each does and how to install it." page="skills" bg="grid" mainStyle="outline: none; overflow: clip;">
+<PageLayout hideCta title="My Claude Skills · Aleem | AIUX" description="Claude skills Mohammad Abdul Aleem built: a UI/UX audit, a LinkedIn board, a reel to LinkedIn post, a blog post. What each does and how to install it." page="skills" bg="grid" mainStyle="outline: none; overflow: clip;">
   <section class="cory-container" aria-labelledby="skills-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
     <p class="cory-overline" style="margin: 0px;">Work · My Claude Skills</p>
     <h1 id="skills-title" style="margin: 0px; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">Skills I built, <span style="background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent;">ready to use</span>.</h1>
@@ -47,11 +47,11 @@ const steps = [
       <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Made by me</p><h2 id="mine-title" class="page-h2">The skills</h2><p class="project-filter-count">Each one encodes how I work: the rules, the checks, the order of steps. Before you add any skill, mine included, read its SKILL.md: a skill gives Claude instructions and code, so treat it like installing software.</p></div>
       {mine.length === 0
         ? <div class="project-empty"><p class="project-empty-title">No skills of mine are listed yet.</p><p class="project-empty-body">Meanwhile, Claude Skills lists the best ones published by others.</p><div><Button variant="secondary" href="/claude-skills">See Claude Skills</Button></div></div>
-        : <div data-cq><ul class="skills-show-list">{mine.map((s, i) => <li><SkillShowcase skill={s} id={`skill-${i + 1}`} /></li>)}</ul></div>}
+        : <div data-cq><ul class="skills-show-list" data-stack-scroll>{mine.map((s, i) => <li><SkillShowcase skill={s} id={`skill-${i + 1}`} /></li>)}</ul></div>}
     </div>
   </section>
 
-  <ContactBlock id="contact" overline="Next step" title="Want a skill for your team's design system?" lead="I build skills that make Claude design on your system: your tokens, your components, your checks. Book a 15-minute call, or send what your team needs." topic="project" />
+  <ContactBlock id="contact" overline="Next step" title="Want a skill for your team's design system?" lead={"I build skills that make Claude design on your system: your tokens, your components, your checks. Book a 15-\u2060minute call, or send what your team needs."} topic="project" />
 </PageLayout>
 
 <style>
@@ -62,3 +62,7 @@ const steps = [
   .skills-stat-words { font-size: var(--text-body-md); font-weight: var(--weight-semibold); color: var(--text-strong); line-height: var(--leading-snug); max-inline-size: 18ch; }
   .skills-show-list { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--grid-gap); }
 </style>
+
+<script>
+  import '../components/islands/stack-scroll.ts';
+</script>

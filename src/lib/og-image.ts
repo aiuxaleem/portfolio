@@ -35,7 +35,10 @@ const el = (style: Record<string, unknown>, children?: unknown) => ({ type: 'div
 /** Title size steps down with length; anything longer than four lines is cut with an ellipsis. */
 const titleSize = (t: string) => (t.length <= 28 ? 88 : t.length <= 48 ? 74 : t.length <= 80 ? 60 : 50);
 
-export async function renderOg({ title, kicker }: { title: string; kicker?: string }): Promise<Buffer> {
+export async function renderOg({ title: given, kicker }: { title: string; kicker?: string }): Promise<Buffer> {
+  /* A title may carry a word joiner after a hyphen so "8-section" never breaks on a page (CLAUDE.md 2.3, L-74); the share
+     card has its own fixed width and no glyph for the joiner, so it is drawn without it. */
+  const title = given.replace(/⁠/g, '');
   const strong = token('on-ink-strong'), body = token('on-ink-body'), muted = token('on-ink-muted');
   const tree = el({ position: 'relative', width: OG.width, height: OG.height, flexDirection: 'column', justifyContent: 'space-between', padding: '72px 80px', backgroundImage: token('gradient-ink'), color: strong, fontFamily: 'Plus Jakarta Sans' }, [
     el({ position: 'absolute', top: -220, right: -160, width: 760, height: 760, backgroundImage: token('glow-cyan') }),

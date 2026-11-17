@@ -27,7 +27,7 @@ const tags = [...new Set(projects.filter(p => !p.data.fixture).flatMap(p => p.da
               <h2 id={`dir-${g.status}`} class="project-h2">{g.title} <span class="dir-count">{g.list.length}</span></h2>
               <p class="project-filter-count">{g.blurb}</p>
             </div>
-            <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{g.list.map(p => <li><ProjectCard project={p} /></li>)}</ul></div>
+            <div data-cq><ul data-cq-balance data-stack-scroll style="display: grid; gap: var(--grid-gap);">{g.list.map(p => <li><ProjectCard project={p} /></li>)}</ul></div>
           </section>
         ))}
       </div>}
@@ -41,5 +41,6 @@ const tags = [...new Set(projects.filter(p => !p.data.fixture).flatMap(p => p.da
 </style>
 
 <script>
+  import '../islands/stack-scroll.ts';
   import '../islands/project-filters.ts';
 </script>

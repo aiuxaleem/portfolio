@@ -7,7 +7,7 @@
 .post-origin a { color: var(--text-link); text-decoration: underline; text-underline-offset: 0.22em; }
 .post-tags { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 .post-tags ul, .post-pagination ol { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.post-topics-body { padding: 0 var(--space-5) var(--space-5); }
+.post-topics-body { padding: var(--space-2) var(--space-5) var(--space-5); }
 a.ui-chip { text-decoration: none; overflow-wrap: anywhere; }
 /* Current tag or page: filled, with a check mark or weight, never colour alone. */
 /* A current topic or page: filled, bold; a topic also carries the check mark the pressed filter chips use. */
@@ -121,6 +121,20 @@ a.ui-chip[aria-current="page"] { background: var(--action-ink); box-shadow: inse
 .paged-section h2:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: var(--space-1); }
 /* Once a post is open, the cards beside it keep their own height instead of stretching to the height of the post. */
 [data-paged]:has([data-state="loading"], [data-state="loaded"]) .embed-linkedin[data-fill] { block-size: auto; }
+/* A LinkedIn post shown on the site (L-75): its words in paragraphs, the rest of a long post in a disclosure that opens in
+   place, and its picture whole at its own shape over the placeholder colour, opening in the image preview (L-60). */
+.li-post-text { display: grid; gap: var(--space-3); min-inline-size: 0; }
+.li-post-text p { margin: 0; max-inline-size: none; color: var(--text-body); line-height: var(--leading-relaxed); overflow-wrap: anywhere; }
+.li-post-more { display: grid; gap: var(--space-3); min-inline-size: 0; }
+.li-post-more > summary { display: inline-flex; align-items: center; gap: var(--space-2); justify-self: start; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); cursor: pointer; list-style: none; }
+.li-post-more > summary > svg { flex-shrink: 0; }
+.li-post-more:not([open]) .li-post-more-close, .li-post-more[open] .li-post-more-open { display: none; }
+.li-post-more[open] > summary > svg { rotate: 180deg; }
+.li-post-more > summary:focus-visible { text-decoration: underline; text-underline-offset: 0.2em; }
+@media (hover: hover) { .li-post-more > summary:hover { text-decoration: underline; text-underline-offset: 0.2em; } }
+.li-post-picture { position: relative; overflow: hidden; border-radius: var(--radius-md); background: var(--surface-sunken); }
+/* Once a post is read in full, the cards beside it keep their own height instead of stretching to its height. */
+[data-project-list]:has(.li-post-more[open]) .embed-linkedin[data-fill] { block-size: auto; }
 /* A link in a table cell is a target of its own, not a word in running text, so it takes the site's tap size (CLAUDE.md 2.4;
    first met in the tools table of "How I Build One LinkedIn Infographic a Day", 10 November 2026). */
-.post-table td a, .post-table th a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); overflow-wrap: anywhere; }
+.post-table td a, .post-table th a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); margin-block: var(--space-1); overflow-wrap: anywhere; }

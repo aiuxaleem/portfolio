@@ -2,7 +2,10 @@
    Each block does nothing when its elements are not on the page. These move into their components as pages are componentised. */
 import { openImagePreview } from './image-preview';
 
-/* ---------- Hero work deck: three stacked cards; arrows bring the next one to the front ---------- */
+import { swipeable } from './stack-swipe';
+
+/* ---------- Hero work deck: three stacked cards; arrows bring the next one to the front, and a card can be swiped or dragged
+   aside or moved with the arrow keys (islands/stack-swipe.ts, L-76) ---------- */
 const stack = document.querySelector<HTMLElement>('[data-hero-stack]');
 if (stack) {
   const cards = [...stack.querySelectorAll<HTMLElement>('[data-stack-card]')];
@@ -25,8 +28,10 @@ if (stack) {
   const later = () => stack.querySelectorAll<HTMLImageElement>('img[data-deck-src]').forEach(img => { img.srcset = img.dataset.deckSrcset || ''; img.src = img.dataset.deckSrc || ''; delete img.dataset.deckSrc; });
   if (document.readyState === 'complete') window.setTimeout(later, 1500); else window.addEventListener('load', () => window.setTimeout(later, 1500), { once: true });
   if (cards.length > 1 && prev && next) {
-    prev.addEventListener('click', () => { later(); front = (front - 1 + cards.length) % cards.length; paint(); });
-    next.addEventListener('click', () => { later(); front = (front + 1) % cards.length; paint(); });
+    const go = (step: 1 | -1) => { later(); front = (front + step + cards.length) % cards.length; paint(); };
+    prev.addEventListener('click', () => go(-1));
+    next.addEventListener('click', () => go(1));
+    swipeable(stack, go);
   }
 }
 

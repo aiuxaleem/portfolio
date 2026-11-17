@@ -1,0 +1,38 @@
+---
+/* What /admin/access says after it makes a sign-in link (Approve, Send a new link; docs/PRIVATE_WORK.md).
+   States: emailed (says to whom and until when; the link itself is not shown, nothing is left to do); not emailed because
+   sending is not set up (RESEND_API_KEY or ACCESS_EMAIL_FROM missing: an information note); not emailed because sending
+   failed (the service's reason: an alert). When it was not emailed the link is shown once, with Copy (islands/admin-shell.ts)
+   and Open in your email (the same message, written for the owner to send), and what to do if it is lost. */
+import AdminIcon from './admin-icon.astro';
+import Button from '../../components/ui/button.astro';
+import { when } from '../lib/publishing';
+import { accessEmail, type SendResult } from '../lib/access-email';
+
+interface Props { name: string; email: string; link: string; expiresAt: string; result: SendResult; /** Approve, or Send a new link. */ kind: 'approve' | 'newlink'; uid?: string }
+const { name, email, link, expiresAt, result, kind, uid = 'link' } = Astro.props;
+const until = when(expiresAt);
+const mail = accessEmail(name, link, expiresAt);
+const mailto = `mailto:${email}?subject=${encodeURIComponent(mail.subject)}&body=${encodeURIComponent(mail.text)}`;
+const title = result.sent
+  ? (kind === 'approve' ? 'Approved. The sign-in link is on its way.' : 'A new sign-in link is on its way.')
+  : (kind === 'approve' ? 'Approved, but the sign-in link was not emailed.' : 'A new sign-in link is ready, but it was not emailed.');
+const tone = result.sent ? 'success' : !result.configured ? 'info' : undefined;
+---
+<div class="form-panel admin-note access-notice" role={result.sent ? 'status' : 'alert'} data-tone={tone}>
+  <AdminIcon name={result.sent ? 'ok' : result.configured ? 'alert' : 'info'} />
+  <div>
+    <p><strong>{title}</strong></p>
+    {result.sent
+      ? <p>It was emailed to <bdi>{email}</bdi> and works once, until {until}. Any earlier unused link for this request no longer works. There is nothing else to do.</p>
+      : <Fragment>
+          <p>It was not emailed because {result.reason} Send it to <bdi>{email}</bdi> yourself: copy the link, or open your email with the message already written. It works once, until {until}.</p>
+          <p class="access-link-box"><span class="cory-visually-hidden">Sign-in link for {name}: </span><code id={`${uid}-code`}>{link}</code></p>
+          <div class="admin-actions">
+            <span class="access-copy"><Button variant="secondary" size="sm" data-copy={link} data-copied="Copied" aria-describedby={`${uid}-code`}><AdminIcon name="copy" size={16} slot="icon-left" />Copy the link</Button><span role="status" class="form-note"></span></span>
+            <Button variant="secondary" size="sm" href={mailto}><AdminIcon name="suggested" size={16} slot="icon-left" />Open in your email</Button>
+          </div>
+          <p class="form-note">The link is shown only now. If it is lost, press Send a new link on the request: the old one then stops working.</p>
+        </Fragment>}
+  </div>
+</div>

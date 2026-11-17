@@ -22,7 +22,7 @@ const stack = await moreCases();
       <h1 id="cases-title" style="margin: 0px; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">{word} {shown === 1 ? 'product' : 'products'}, one <span style="background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent;">method</span>.</h1>
       <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">Understand the workflow, redesign it, build it with AI, validate it with people. Each case study below applies that method to a different problem.</p>
       <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
-        <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">Book a 15-min call<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
+        <Button variant="primary" size="lg" href={site.calendarUrl} target="_blank" rel="noopener">Book a 15-&#8288;min call<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
         <Button variant="secondary" size="lg" href={site.resumeUrl} {...resumeAttrs}>{resumeExternal ? 'View resume' : 'Download resume'}{resumeExternal && <span class="cory-visually-hidden"> (opens in a new tab)</span>}</Button>
       </div>
     </div>
@@ -31,7 +31,7 @@ const stack = await moreCases();
   <section id="cases" class="cory-container" aria-label="Case study list" style="padding-block-end: var(--section-y);">
     {cases.length === 0
       ? <div class="project-empty"><p class="project-empty-title">No case studies are published yet.</p><p class="project-empty-body">The projects page lists current work.</p><div><Button variant="secondary" href="/work">See the projects</Button></div></div>
-      : <ul class="case-bento">
+      : <ul class="case-bento" data-stack-scroll>
           {cases.map((entry, i) => <li class={i === 0 ? 'case-bento-lead' : undefined}><CaseCard entry={entry} first={i === 0} wide={i === 0} /></li>)}
         </ul>}
   </section>
@@ -43,3 +43,7 @@ const stack = await moreCases();
   .case-bento > li { display: grid; min-inline-size: 0; }
   @media (min-width: 768px) { .case-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); } .case-bento-lead { grid-column: 1 / -1; } }
 </style>
+
+<script>
+  import '../../components/islands/stack-scroll.ts';
+</script>

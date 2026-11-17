@@ -47,6 +47,16 @@ const devOnly = {
         injectRoute({ pattern: '/admin/opportunities', entrypoint: './src/admin/pages/opportunities/index.astro' });
         injectRoute({ pattern: '/admin/opportunities/new', entrypoint: './src/admin/pages/opportunities/edit.astro' });
         injectRoute({ pattern: '/admin/opportunities/[id]', entrypoint: './src/admin/pages/opportunities/edit.astro' });
+        // Private work (docs/PRIVATE_WORK.md): the access requests and the private links, in the database. Before the [kind] routes.
+        injectRoute({ pattern: '/admin/access', entrypoint: './src/admin/pages/access/index.astro' });
+        injectRoute({ pattern: '/admin/access/links', entrypoint: './src/admin/pages/access/links.astro' });
+        injectRoute({ pattern: '/admin/access/links/new', entrypoint: './src/admin/pages/access/link-edit.astro' });
+        injectRoute({ pattern: '/admin/access/links/[id]', entrypoint: './src/admin/pages/access/link-edit.astro' });
+        // ...and its public side: the request page, the sign-in step an emailed link opens, and Sign out. Server pages with a
+        // session of their own (viewer_session); the middleware gives them the admin's headers but not its sign-in guard.
+        injectRoute({ pattern: '/private-work', entrypoint: './src/admin/pages/private-work/index.astro' });
+        injectRoute({ pattern: '/private-work/enter', entrypoint: './src/admin/pages/private-work/enter.astro' });
+        injectRoute({ pattern: '/private-work/leave', entrypoint: './src/admin/pages/private-work/leave.ts' });
         injectRoute({ pattern: '/admin/[kind]', entrypoint: './src/admin/pages/entries/index.astro' });
         injectRoute({ pattern: '/admin/[kind]/new', entrypoint: './src/admin/pages/entries/edit.astro' });
         injectRoute({ pattern: '/admin/[kind]/[slug]', entrypoint: './src/admin/pages/entries/edit.astro' });
@@ -63,7 +73,8 @@ const inSitemap = page => {
   if (/^\/(job|clients)(\/|$)/.test(new URL(page).pathname)) return false;
   /* The owner's area and the endpoints are rendered by the server, so there is no built file whose noindex could be read:
      on the Vercel build all seven admin pages reached the live sitemap (QA 15 Nov 2026). They never belong in it. */
-  if (/^\/(admin|api)(\/|$)/.test(new URL(page).pathname)) return false;
+  /* The private work pages (docs/PRIVATE_WORK.md) are for approved visitors and are never indexed either. */
+  if (/^\/(admin|api|private-work)(\/|$)/.test(new URL(page).pathname)) return false;
   const route = new URL(page).pathname.replace(/\/$/, '');
   // With the Vercel adapter the built pages are under dist/client.
   const file = ['dist', 'dist/client'].flatMap(d => [`${d}${route || '/index'}.html`, `${d}${route}/index.html`]).find(f => fs.existsSync(f));

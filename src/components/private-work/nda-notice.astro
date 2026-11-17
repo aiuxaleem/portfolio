@@ -1,0 +1,17 @@
+---
+/* The NDA notice at the top of a case study or project under NDA (case-study.css, .case-nda), and since 16 November 2026 its
+   second line: live links and prototypes are for approved visitors, with the way to ask (docs/PRIVATE_WORK.md). The link
+   is the page's own back-link style (a text link with a 44px target and the arrow that leans the way it points).
+   States: with the access line; without it (`access` absent: the stress fixture on /_states); the default note when
+   the entry gives none. */
+interface Props { note?: string; /** Where to ask for the private links; absent, the line is left out. */ access?: string }
+const { note, access } = Astro.props;
+---
+<p class="case-nda"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg><span><strong>Under NDA.</strong> {note || 'Some details are changed or left out to respect a confidentiality agreement.'}{access && <span class="case-nda-access">Live links and prototypes are available to approved visitors. <a data-link href={access}>Ask for access<svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a></span>}</span></p>
+
+<style>
+  /* The access line sits under the note; its link keeps the 44px target of the page's other text links. */
+  .case-nda-access { display: block; margin-block-start: var(--space-2); }
+  .case-nda-access a { display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none; overflow-wrap: anywhere; }
+  .case-nda-access a svg { flex-shrink: 0; }
+</style>

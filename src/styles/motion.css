@@ -219,8 +219,14 @@
      menu fades in and its groups rise in turn. display is transitioned too (allow-discrete), so the closing fade plays
      before a card goes; a browser without that shows and hides them as before. ---------- */
   .nav-panel { opacity: 0; translate: 0 calc(-1 * var(--space-2)); transition: opacity var(--duration-base) var(--ease-out), translate var(--duration-spring-soft) var(--ease-spring-soft), display var(--duration-base) allow-discrete; }
-  .nav-group-button[aria-expanded="true"] + .nav-panel, :root:not([data-nav-ready]) .nav-group:hover > .nav-panel { opacity: 1; translate: 0 0; }
-  @starting-style { .nav-group-button[aria-expanded="true"] + .nav-panel, :root:not([data-nav-ready]) .nav-group:hover > .nav-panel { opacity: 0; translate: 0 calc(-1 * var(--space-2)); } }
+  .nav-group-button[aria-expanded="true"] + .nav-panel { opacity: 1; translate: 0 0; }
+  @starting-style { .nav-group-button[aria-expanded="true"] + .nav-panel { opacity: 0; translate: 0 calc(-1 * var(--space-2)); } }
+  /* The panel opened by hover before the script is ready, on a pointer that hovers only, as its display rule is (CLAUDE.md 2.7;
+     the mobile test's hover lint, 16 November 2026, L-74). */
+  @media (hover: hover) {
+    :root:not([data-nav-ready]) .nav-group:hover > .nav-panel { opacity: 1; translate: 0 0; }
+    @starting-style { :root:not([data-nav-ready]) .nav-group:hover > .nav-panel { opacity: 0; translate: 0 calc(-1 * var(--space-2)); } }
+  }
   .nav-panel-list > li { transition: opacity var(--duration-base) var(--ease-out), translate var(--duration-base) var(--ease-out); }
   .nav-panel-list > li:nth-child(2) { transition-delay: var(--stagger-menu); }
   .nav-panel-list > li:nth-child(3) { transition-delay: calc(2 * var(--stagger-menu)); }
@@ -259,6 +265,11 @@
     @keyframes strike-draw { to { stroke-dashoffset: 0; } }
     [data-two-users] .two-users-note { animation: note-in linear both; animation-timeline: view(); animation-range: entry 45% cover 25%; }
     @keyframes note-in { from { opacity: 0; translate: 0 var(--space-3); rotate: 0deg; } }
+    /* The drawing beside it (home/two-users-art.astro, L-77): ask, act, hand back, drawn one after another. */
+    [data-two-users] .tu-flow { stroke-dasharray: 1; stroke-dashoffset: 1; animation: strike-draw linear both; animation-timeline: view(); }
+    [data-two-users] .tu-flow-ask { animation-range: entry 40% cover 30%; }
+    [data-two-users] .tu-flow-act { animation-range: cover 25% cover 40%; }
+    [data-two-users] .tu-flow-back { animation-range: cover 35% cover 50%; }
   }
 
   /* ---------- Micro-interactions (owner request, 8 November 2026, L-56) ----------
@@ -290,6 +301,16 @@
     /* A card in a sideways row does not lean or settle: the row, not the page, is its scroller. */
     @container (min-width: 320px) and (max-width: 519px) { [data-scroll-row] > li > .project-card, [data-scroll-row] img { animation: none !important; } }
   }
+
+  /* ---------- Cards that stack as the page scrolls (owner request, 16 November 2026, L-76; islands/stack-scroll.ts) ----------
+     The script marks a list of four or more cards `data-stacking` and gives each card its row's place under the header
+     (--stack-top) and how far the next row covers it (--stack-recede, 0 to 1). The row underneath settles back by up to 4%
+     and dims toward the page; the cards sit on the page colour, so a glass card does not show the one beneath through it.
+     `scale` (not `transform`) leaves the reveals' own transforms alone. A focused card comes to the front, uncovered
+     (2.4.11). Only with motion on: the script does nothing otherwise, so the list stays as authored. */
+  html[data-motion="on"] [data-stacking] > li { position: sticky; inset-block-start: var(--stack-top, 0px); scale: calc(1 - var(--stack-recede, 0) * 0.04); transform-origin: 50% 0; border-radius: var(--radius-xl); background: var(--surface-page); }
+  html[data-motion="on"] [data-stacking] > li::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--surface-page); opacity: calc(var(--stack-recede, 0) * 0.5); pointer-events: none; }
+  html[data-motion="on"] [data-stacking] > li:focus-within { z-index: 2; --stack-recede: 0 !important; }
 }
 
 /* ---------- Fade mode (owner instruction, 6 November 2026): the device asks for reduced motion, so nothing moves, but the first view

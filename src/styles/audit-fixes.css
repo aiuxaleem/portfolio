@@ -29,7 +29,13 @@
 [dir="rtl"] .menu-nav-link[aria-current="page"] { background-position: right bottom 4px; }
 
 /* M-03 (continued): at the narrowest widths the header gaps tighten so the menu button stays inside the gutter in both directions. */
-@container (max-width: 379px) { [data-site-header] .cory-container { gap: var(--space-2) !important; } [data-site-header] [role="group"] { gap: var(--space-1) !important; } }
+/* The theme and language controls keep 8 px between them, the space touch targets need (CLAUDE.md 2.4; L-74): at 4 px they
+   were too close for a finger; the 320 px sweep checks the menu button still fits. */
+@container (max-width: 379px) { [data-site-header] .cory-container { gap: var(--space-2) !important; } }
+/* Under 300 px (a phone with the system text at 150% lays out at 262 px) the theme and language controls leave the bar, which then
+   holds the logo and the menu button; both controls are in the menu's foot. With them the menu button sat off the screen
+   (x 231 to 275 on 262 px, and x -13 on the Arabic pages; mobile test, 16 November 2026, L-74). */
+@container (max-width: 299px) { [data-site-header] [role="group"]:has([data-theme-toggle]) { display: none !important; } }
 
 /* MO-D2: controls that had no hover or press state get the one their siblings use. */
 :is(div:has(+ [data-hero-stack]), div:has(+ [data-deck-static])) button:not(:disabled):active { transform: scale(var(--press-scale)) !important; }
@@ -66,7 +72,9 @@ a:is([data-ds-button="primary"], [data-ds-button="on-ink-solid"]):not([download]
 @media (max-width: 519px) { div:has(> .sc-host-x > a[data-ds-button="primary"]):has(> .sc-host-x > a:is([data-ds-button="secondary"], [data-ds-button="on-ink"])) { flex-direction: column; align-items: stretch; } div:has(> .sc-host-x > a[data-ds-button="primary"]):has(> .sc-host-x > a:is([data-ds-button="secondary"], [data-ds-button="on-ink"])) > .sc-host-x > a { width: 100% !important; } }
 /* A legacy button may wrap on a phone, so it never runs past its row: at 320px the large pair with the arrow well measured
    288px of row and 336px of button (13 November 2026, the gate and verify.mjs zoom; CLAUDE.md 2.3: buttons grow with their content). */
-@media (max-width: 519px) { [data-ds-button] { white-space: normal !important; max-inline-size: 100% !important; text-align: center; } [data-ds-button] > span { min-inline-size: 0; } }
+/* Wrapped, its lines need room: the inline line-height of 1 set two Arabic lines 17 px apart on 17 px text, so the marks
+   nearly touched (mobile review, 16 November 2026, L-74). */
+@media (max-width: 519px) { [data-ds-button] { white-space: normal !important; max-inline-size: 100% !important; text-align: center; line-height: var(--leading-snug) !important; } [data-ds-button] > span { min-inline-size: 0; } }
 @media (max-width: 519px) { [data-cta-row] { flex-direction: column !important; align-items: stretch !important; justify-self: stretch; } [data-cta-row] > span { display: block !important; } [data-cta-row] .ui-button { inline-size: 100%; } }
 a:is([data-ds-button="primary"], [data-ds-button="on-ink-solid"]):not([download]) [data-arrow-tile] { display: none !important; }
 a:is([data-ds-button="primary"], [data-ds-button="on-ink-solid"]):not([download]) > span > svg:first-child { display: none !important; }
@@ -106,8 +114,34 @@ section[data-contact] [data-stack] a[href*="cal.com"]:focus-visible { box-shadow
   :is(.hero-split, .site-hero, main article > header.cory-container, section[aria-labelledby="about-title"], main > section:has(> .cory-split)) { padding-block-start: var(--space-6) !important; gap: var(--space-5) !important; }
   :is(.hero-split, .site-hero, main article > header.cory-container, section[aria-labelledby="about-title"], main > section:has(> .cory-split)) :is([style*="gap: var(--space-6)"], [style*="gap: var(--space-8)"], .site-hero-words, .hero-split-words) { gap: var(--space-4) !important; }
 }
+/* The same heroes on a phone on its side (under 600 px tall, at least 3:2 wide, so a portrait screen shrunk by a keyboard is
+   left alone): they start close under the header and their parts sit closer, so the main action shows on the first screen
+   where the words allow (it began 343 to 484 px down a 390 px screen; mobile review, 16 November 2026, L-74). */
+@media (orientation: landscape) and (not (min-height: 600px)) and (min-aspect-ratio: 3/2) {
+  :is(.hero-split, .site-hero, main article > header.cory-container, section[aria-labelledby="about-title"], main > section:has(> .cory-split), main > section:first-of-type[style*="padding-block: var(--section-y) var(--space-10)"]) { padding-block-start: var(--space-4) !important; gap: var(--space-3) !important; }
+  :is(.hero-split, .site-hero, main article > header.cory-container, section[aria-labelledby="about-title"], main > section:has(> .cory-split), main > section:first-of-type[style*="padding-block: var(--section-y) var(--space-10)"]) :is([style*="gap: var(--space-5)"], [style*="gap: var(--space-6)"], [style*="gap: var(--space-8)"], .site-hero-words, .hero-split-words) { gap: var(--space-2) !important; }
+}
 /* (L-60) Nothing uploaded is cut: the frozen card covers of the Arabic Home (a snapshot) show the whole picture on the sunken surface. */
 main img:is([style*="object-fit:cover"], [style*="object-fit: cover"]):not([data-crop="scene"]) { object-fit: contain !important; object-position: center !important; background: var(--surface-sunken); }
+/* The legacy deck's tilted window (the Arabic Home) as on the live decks (L-74): inside the card, not 14% past its side and
+   10% past its foot, and its picture under the window's bar, not 100% of the window's height, which ran the bar's height
+   past the foot. Both cut the picture (L-60; mobile test, 16 November 2026). */
+main [data-stack-frame][style*="inset-inline: 12% -14%"] { inset-inline: 12% var(--space-6) !important; inset-block-end: var(--space-6) !important; display: flex !important; flex-direction: column; }
+main [data-stack-frame][style*="inset-inline: 12% -14%"] > img { block-size: auto !important; flex: 1 1 0; min-block-size: 0; }
+/* Its stage may shrink: kept at 120 px under a long Arabic caption it pushed the window 28 px past the card's foot (L-74). */
+main span:has(> [data-stack-frame][style*="inset-inline: 12% -14%"]) { min-block-size: 0 !important; }
 /* (L-61) English words set into the Arabic Home's tiles (lib/home-tiles.ts marks them lang="en" dir="ltr") read as a
    left-aligned block of their own, not a ragged right edge inside the right-to-left page. */
 [dir="rtl"] span.sc-interp[lang="en"][dir="ltr"] { display: block; text-align: start; }
+
+/* The legacy email copy (Home, Arabic Home) set its address and its copy button 4 px apart; touch targets keep 8 px (CLAUDE.md 2.4;
+   mobile test, 16 November 2026, L-74), as the live component does. */
+[data-email-copy] { column-gap: var(--space-2) !important; }
+
+/* The skill card's pill ("UX" in "UX strategy and research", Home) has a tail 0.4 em below it; with 0.25 em of margin a wrapped
+   heading's next line ran into the tail on a phone. The margin now clears the tail (mobile review, 16 November 2026, L-74). */
+.skl-2 { margin-block-end: 0.5em !important; }
+
+/* The Home deck (case-deck.astro, inline styles) as the other decks: at the end of the hero's second column from 1024 px, at the
+   page's edge in the one column below that (it stood 290 px in at 768 px; mobile review, 16 November 2026, L-74). */
+@media (max-width: 1023px) { [data-hero-el][style*="inline-size: min(100%, 440px)"] { margin-inline-start: 0 !important; } }

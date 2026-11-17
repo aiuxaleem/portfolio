@@ -9,7 +9,7 @@ export const chrome = {
     langLabel: 'العربية', langLabelLang: 'ar', langHint: 'read this page in Arabic', langHintFallback: 'this page is English only, so this opens the closest Arabic page',
     langTip: 'Arabic', langTipFallback: 'English only. Opens the closest Arabic page.',
     resumeMenu: 'Download resume (PDF)', resume: 'Download resume', resumeView: 'View resume', copyEmail: 'Copy email address', copied: 'Copied', pressCopy: 'Selected. Press Ctrl+C or Cmd+C to copy.',
-    footerOverline: 'Hiring or building?', footerTitle: "Let's make it trustworthy", call: 'Book a 15-min call', newTab: '(opens in a new tab)', subject: 'subject',
+    footerOverline: 'Hiring or building?', footerTitle: "Let's make it trustworthy", call: 'Book a 15-\u2060min call', newTab: '(opens in a new tab)', subject: 'subject',
     bio: 'Mohammad Abdul Aleem, Lead AI Product Designer: AI products, agents and design systems for enterprise teams. In Hyderabad on GCC hours, open to KSA and the UAE.',
     rights: '© 2026 Mohammad Abdul Aleem · Hyderabad, India', privacy: 'Visits are counted without cookies. No address or personal detail is stored.', footerNav: 'Footer', sitemap: 'Sitemap', talk: "Let's talk",
   },
