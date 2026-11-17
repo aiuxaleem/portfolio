@@ -413,7 +413,7 @@ body:has(> .ai-field) [data-bg~="grid"]::before { display: none; }
    background and below everything in it. The script gives each card its width and height (--aw, --ah) so the paths
    can cross the whole card whatever its size.
    The strength of the inner glows is set by measurement: at their brightest point, with the pointer glow on, the cyan
-   link text on the card keeps at least 4.5:1 (reports/aurora-probe.mjs). Do not raise it without measuring again. The
+   link text on the card keeps at least 4.5:1 (scripts/quality/aurora-probe.mjs). Do not raise it without measuring again. The
    light on the edge can be bright because no text sits on the edge. */
 [data-aurora] { position: relative; isolation: isolate; overflow: clip; }
 [data-aurora][style*="position: absolute"], [data-aurora][style*="position:absolute"] { position: absolute; }

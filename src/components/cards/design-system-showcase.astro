@@ -28,7 +28,7 @@ const platforms = d.platforms.map(p => platformLabel[p]).join(', ');
 const arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"></path></svg>';
 const swatches = ['--action-solid', '--navy-800', '--blue-600', '--cyan-500', '--surface-card', '--text-strong'];
 ---
-<article class="ds-show" aria-labelledby={`${id}-title`} data-media={cover || d.here ? 'yes' : 'no'}>
+<article class="ds-show" id={id} aria-labelledby={`${id}-title`} data-media={cover || d.here ? 'yes' : 'no'}>
   {d.here
     ? <div class="ds-show-media ds-specimen" role="img" aria-label="This site's tokens, live: six colour swatches, the display and body type, and four corner radii">
         <ul class="ds-swatches" aria-hidden="true">{swatches.map(s => <li><span style={`background: var(${s});`}></span><code>{s}</code></li>)}</ul>

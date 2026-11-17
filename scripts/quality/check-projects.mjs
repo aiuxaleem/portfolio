@@ -9,10 +9,12 @@ const state = () => page.evaluate(() => ({ count: document.querySelector('[data-
 out.filtersVisibleWithJs = await page.evaluate(() => !document.querySelector('[data-project-filters]').hidden);
 out.initial = await state();
 // keyboard: Tab until the first chip, press Space, then keep tabbing to a status chip and press Enter
-const focusChip = async text => { for (let i = 0; i < 40; i++) { await page.keyboard.press('Tab'); if (await page.evaluate(t => document.activeElement.classList.contains('ui-chip') && document.activeElement.textContent === t, text)) return true; } return false; };
-out.reachedAI = await focusChip('AI'); await page.keyboard.press('Space'); await page.waitForTimeout(150); out.afterAI = await state();
+// Chips are found by their data attribute: their text carries a count ("Marketing, 1"), and the status chips are
+// In progress and Shipped. Marketing (one shipped project) and In progress together match nothing: the empty state.
+const focusChip = async sel => { for (let i = 0; i < 40; i++) { await page.keyboard.press('Tab'); if (await page.evaluate(s => document.activeElement.matches('.ui-chip' + s), sel)) return true; } return false; };
+out.reachedMarketing = await focusChip('[data-filter-tag="Marketing"]'); await page.keyboard.press('Space'); await page.waitForTimeout(150); out.afterMarketing = await state();
 out.focusOutlineOnChip = await page.evaluate(() => getComputedStyle(document.activeElement).outlineStyle + ' ' + getComputedStyle(document.activeElement).outlineWidth);
-out.reachedConcept = await focusChip('Concept'); await page.keyboard.press('Enter'); await page.waitForTimeout(150); out.afterAIandConcept = await state();
+out.reachedInProgress = await focusChip('[data-filter-status="in-progress"]'); await page.keyboard.press('Enter'); await page.waitForTimeout(150); out.afterMarketingAndInProgress = await state();
 await page.screenshot({ path: 'reports/projects/work-empty-1280-light.png' });
 // clear filters from the keyboard
 for (let i = 0; i < 6; i++) { await page.keyboard.press('Tab'); if (await page.evaluate(() => document.activeElement.hasAttribute('data-clear-filters'))) break; }

@@ -331,7 +331,8 @@ console.log('depth: the portrait scene and the two-users line on Home, a project
   if (!row) fail('row: no sideways row on Home');
   else if (row.display !== 'flex' || row.overflowX !== 'auto' || !/x/.test(row.snap) || !row.scrollable || row.tabIndex !== 0 || !row.label || row.pageSideways) fail(`row at 390: ${JSON.stringify(row)}`);
   // The keyboard reaches a card beyond the edge: focusing its link scrolls the row until the link is on screen.
-  const reach = await p.evaluate(async () => { const link = document.querySelector('[data-scroll-row] > li:nth-child(2) a'); if (!link) return null; const before = link.getBoundingClientRect(); link.focus(); await new Promise(r => setTimeout(r, 800)); const r = link.getBoundingClientRect(); return { offBefore: before.right > innerWidth, left: Math.round(r.left), right: Math.round(r.right), onScreen: r.left >= 0 && r.right <= innerWidth, focused: document.activeElement === link }; });
+  // The card's first visible control: a video card's first link is in its hidden failure panel, its control is Play.
+  const reach = await p.evaluate(async () => { const link = [...document.querySelectorAll('[data-scroll-row] > li:nth-child(2) :is(a[href], button)')].find(e => e.checkVisibility()); if (!link) return null; const before = link.getBoundingClientRect(); link.focus(); await new Promise(r => setTimeout(r, 800)); const r = link.getBoundingClientRect(); return { offBefore: before.right > innerWidth, left: Math.round(r.left), right: Math.round(r.right), onScreen: r.left >= 0 && r.right <= innerWidth, focused: document.activeElement === link }; });
   out['sideways row reach'] = reach;
   if (!reach || !reach.onScreen || !reach.focused || !reach.offBefore) fail(`row reach: ${JSON.stringify(reach)} (focusing the second card should scroll it on screen)`);
   await ctx.close();

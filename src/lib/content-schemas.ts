@@ -207,8 +207,6 @@ export const RESOURCE_CATEGORIES = {
 export const RESOURCE_TYPES = { tool: 'Tool', ai: 'AI tool', workflow: 'AI workflow', skill: 'Claude skill', artifact: 'Claude artifact', article: 'Article', library: 'Library', template: 'Template', course: 'Course', book: 'Book', plugin: 'Plugin', video: 'Video', community: 'Community' } as const;
 export const RESOURCE_COSTS = { free: 'Free', freemium: 'Free tier', paid: 'Paid' } as const;
 export type ResourceCategory = keyof typeof RESOURCE_CATEGORIES;
-export type ResourceType = keyof typeof RESOURCE_TYPES;
-export type ResourceCost = keyof typeof RESOURCE_COSTS;
 const keys = <T extends Record<string, string>>(o: T) => Object.keys(o) as [keyof T & string, ...(keyof T & string)[]];
 
 export const resourceSchema = S({

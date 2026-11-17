@@ -22,7 +22,6 @@ export const FIELD_ERRORS = {
   reason: `Keep this to ${LIMITS.reason} characters.`,
   consent: 'Tick the box to agree to keep the work confidential.',
 } as const;
-export type RequestField = keyof typeof FIELD_ERRORS;
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /* /private-work is a server page, part of a build only where the admin is (Vercel, ADMIN_APP=1, and dev: COUNT_VISITS is
