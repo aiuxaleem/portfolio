@@ -29,12 +29,13 @@
       "location": "Hyderabad",
       "summary": "Design across product, marketing, AI research and AI agent teams: enterprise products, web experiences, multi-brand design systems and AI-assisted workflows.",
       "highlights": [
-        "Created and maintain the Colaberry Design System, which developers and coding agents use to build on-brand interfaces.",
-        "Redesigned the AI Systems Architect Accelerator homepage and three audience landing pages with Claude Design, and led site-wide QA.",
-        "Designed learner-portal features that are in production: gamification, presence and chat.",
-        "Rebranded an AI freight platform: brand identity, design system and a modernised console in light and dark themes.",
-        "Wrote UI improvement prompt packs and design direction playbooks for AI-assisted development.",
-        "Mentor the UX team and support AgentCory with UX flows and explainers."
+        "Cut text below WCAG AA contrast on an AI freight platform’s console from 1,646 nodes to 7 in light mode across 97 screens in testing, by re-theming it on its own design system and building an audit skill that checks every screen in both themes.",
+        "Made five brands’ colours accessible, with all 80 measured colour pairs meeting WCAG 2.1 AA in light and dark, by building every brand on one component library.",
+        "Gave developers, coding agents and the sales and marketing team one source for on-brand work, built out to 20 typed React components, 15 templates and 231 token values, by creating and maintaining the Colaberry Design System.",
+        "Made IT access requests ready for an ISO 27001 audit, with 10 of 14 IT action items completed, by generating the access log from Basecamp instead of typing it into Excel.",
+        "Redesigned the AI Systems Architect Accelerator homepage and three audience landing pages, by designing them in Claude Design and leading QA across the site.",
+        "Brought gamification, presence and chat to the learner portal, all three now in production, by designing the features.",
+        "Set design direction for AI-assisted development and the UX team, by writing UI prompt packs and design playbooks, mentoring the team and designing AgentCory’s UX flows and explainers."
       ],
       "verify": ""
     },
@@ -46,10 +47,10 @@
       "location": "Hyderabad",
       "summary": "Became Senior Product Designer on the Latitude account and modernised its legacy enterprise interfaces, with accessibility as part of the brief.",
       "highlights": [
-        "Ran user research and usability testing so design decisions rested on what users did.",
-        "Led design workshops that aligned stakeholders on the problem before the solution.",
-        "Designed real-time metric dashboards for stakeholders.",
-        "Brought the work to WCAG conformance."
+        "Brought the Latitude account’s legacy enterprise interfaces to WCAG conformance, by modernising them with accessibility as part of the brief.",
+        "Grounded design decisions in what users actually did, by running user research and usability testing.",
+        "Aligned stakeholders on the problem before the solution, by leading design workshops.",
+        "Gave stakeholders their metrics in real time, by designing live metric dashboards."
       ],
       "verify": ""
     },
@@ -61,8 +62,8 @@
       "location": "Hyderabad",
       "summary": "A short assignment on the same Latitude account: worked directly with the Product Owner, handled the tickets, and wrote the business requirements document and the user stories in Jira for the client.",
       "highlights": [
-        "Analysed customer-letter processes and defined the requirements for automating them.",
-        "Delivered flow maps, personas and solution documentation for each letter type."
+        "Defined how customer letters would be automated, by analysing the customer-letter processes and writing their requirements.",
+        "Gave the team one picture of every letter type, by delivering flow maps, personas and solution documentation for each."
       ],
       "verify": ""
     },
@@ -74,9 +75,9 @@
       "location": "Hyderabad",
       "summary": "Joined NTT DATA India as a designer in a small agile web team for its client Latitude Financial Services, Australia, working in quarterly sprints.",
       "highlights": [
-        "Produced high-fidelity designs inside the client's design system and design language.",
-        "Redesigned mobile app interfaces and web pages.",
-        "Worked with the digital marketing team on page layouts and search requirements."
+        "Kept new screens consistent with the client’s brand, by producing high-fidelity designs inside its design system and design language.",
+        "Redesigned the client’s mobile app interfaces and web pages.",
+        "Shaped page layouts around search requirements, by working with the digital marketing team."
       ],
       "verify": ""
     },
@@ -88,8 +89,8 @@
       "location": "Hyderabad",
       "summary": "Led the design of a fintech platform.",
       "highlights": [
-        "Built reusable design frameworks so new work started from shared parts.",
-        "Refined the interface through A/B tests and behaviour analytics (Google Analytics, Hotjar)."
+        "Let new fintech work start from shared parts, by building reusable design frameworks.",
+        "Refined the platform’s interface on evidence, by running A/B tests and reading behaviour analytics in Google Analytics and Hotjar."
       ],
       "verify": ""
     },
