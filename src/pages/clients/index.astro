@@ -1,53 +1,104 @@
 ---
-/* The website for clients (docs/SITES.md), its Home: clients.aiuxaleem.com. The main site's Services page, rewritten in a
-   few places so it speaks to teams with a product problem only. Its first screen is the audience websites' own (the
-   words, and the stack of the three services with what each delivers, read from the snapshot below it), with one line
-   across to the website for hiring managers. The snapshot itself is not edited. */
-import SnapshotPage from '../../layouts/snapshot-page.astro';
-import SiteHero from '../../components/sites/site-hero.astro';
-import HeroStack from '../../components/sites/hero-stack.astro';
-import snapshot from '../../snapshots/services.json';
+/* The website for clients (docs/SITES.md), its Home: clients.aiuxaleem.com. Redesigned as a landing page on 18 November 2026
+   (owner request, L-83; brand kept, layout new, the field a hand-written shader). Until then this page was the main site's
+   Services snapshot with a new first screen; the offer is now read from that snapshot as data (lib/services-content.ts), so
+   /services and this page still say the same thing. In order: the hero over the live field with the index of the three
+   services, the idea (what a model produces, made something a person can check), the three services with their fit, what
+   you get and the proof, the numbers, the case studies, the four moves of the process, the questions before you write, the
+   way across to the website for hiring managers, then the call. */
+import PageLayout from '../../layouts/page-layout.astro';
+import LandingHero from '../../components/landing/landing-hero.astro';
+import LandingStatement from '../../components/landing/landing-statement.astro';
+import LandingBand from '../../components/landing/landing-band.astro';
+import LandingSection from '../../components/landing/landing-section.astro';
+import LandingWork from '../../components/landing/landing-work.astro';
+import LandingFigures from '../../components/landing/landing-figures.astro';
+import LandingRows from '../../components/landing/landing-rows.astro';
+import LandingSteps from '../../components/landing/landing-steps.astro';
+import LandingFaq from '../../components/landing/landing-faq.astro';
+import Button from '../../components/ui/button.astro';
+import ContactBlock from '../../components/profile/contact-block.astro';
+import DoorSwitch from '../../components/sites/door-switch.astro';
 import { SUB_SITES } from '../../lib/sites';
 import { site } from '../../content/site';
 import { profile } from '../../content/profile';
-import type { StackCard } from '../../lib/site-stacks';
+import { listedCaseStudies } from '../../lib/case-studies';
+import { offers, steps, processTitle, processLead, faq, unsure } from '../../lib/services-content';
+import { landingFigures, twoUsers } from '../../lib/landing';
 
-const swap = (html: string, a: string | RegExp, b: string) => { const out = html.replace(a, b); if (out === html) throw new Error(`v2 services: not found: ${a}`); return out; };
-const text = (html: string) => html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
-
-/* The three services as the snapshot has them: title, the line under it and "What you get". */
-const services: StackCard[] = ['offer-ai', 'offer-ds', 'offer-audit'].map((id, i) => {
-  const at = snapshot.main.indexOf(`id="${id}"`);
-  if (at < 0) throw new Error(`clients: service ${id} not found`);
-  const block = snapshot.main.slice(at, snapshot.main.indexOf('</article>', at) > at ? snapshot.main.indexOf('</article>', at) : at + 8000);
-  const title = text(block.match(new RegExp(`id="${id}-title"[^>]*>([\\s\\S]*?)</h3>`))?.[1] ?? '');
-  const line = text(block.slice(block.indexOf(`id="${id}-title"`)).match(/<\/h3>\s*<p[^>]*>([\s\S]*?)<\/p>/)?.[1] ?? '');
-  const gets = block.slice(block.indexOf('What you get'));
-  const points = [...gets.slice(0, gets.indexOf('</ul>')).matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)].map(m => text(m[1]));
-  if (!title || points.length === 0) throw new Error(`clients: service ${id} has changed shape`);
-  return { kicker: `Service ${String(i + 1).padStart(2, '0')}`, title, line, href: `#${id}`, cta: 'What you get', points };
-});
-
-const rewrite = (html: string) => {
-  let s = html;
-  /* The snapshot's first screen gives way to the audience websites' own (above). */
-  const head = s.indexOf('<section data-bg="grid rings" aria-labelledby="services-title"');
-  const end = s.indexOf('</section>', head) + '</section>'.length;
-  if (head < 0 || end < '</section>'.length) throw new Error('clients: hero not found');
-  s = s.slice(0, head) + s.slice(end);
-  s = swap(s, 'Both. Companies hiring a senior or lead product designer in KSA or the UAE, on-site or remote, can start with the resume. Teams with a product problem can bring me in for a scoped project, with me doing the work.', 'Both. Companies hiring a Lead or Principal product designer in KSA or the UAE have a website of their own, for hiring managers. Teams with a product problem can bring me in for a scoped project, with me doing the work.');
-  s = swap(s, "Tell me what you're building, or who you're hiring", "Tell me what you're building");
-  return s;
-};
+/* The questions as on /services, with the first answer pointing a hiring company to its own website (as before). */
+const questions = faq.map(f => f.q === 'Full-time role or project work?' ? { ...f, a: 'Both. Companies hiring a Lead or Principal product designer in KSA or the UAE have a website of their own, for hiring managers. Teams with a product problem can bring me in for a scoped project, with me doing the work.' } : f);
+/* The proof: the featured case studies first, then the newest others, four in all. */
+const listed = (await listedCaseStudies()).filter(x => !x.data.fixture);
+const featured = listed.filter(x => x.data.featured);
+const cases = [...featured, ...listed.filter(x => !featured.includes(x))].slice(0, 4);
+const call = { label: 'Book a 15-⁠min call', href: site.calendarUrl, newTab: true };
 ---
-<SnapshotPage snapshot={snapshot} title="Services for product teams · Aleem, for clients" description="AI product design, design system builds and UX audits for product teams in the GCC and beyond: what you get, how it runs, and the proof." rewrite={rewrite} slotBefore={'<section aria-labelledby="offers-title"'} hideCta>
-  <SiteHero id="services" overline="For clients · What I offer" title="Three things I can do for your team." accent="team" lead={`I'm ${site.name}, a ${profile.headline} with 13+ years in enterprise UX and AI products. For teams with a product problem: what I do on a project, what you get, and the work that proves it.`} primary={{ label: 'Book a 15-\u2060min call', href: site.calendarUrl, newTab: true }} secondary={{ label: 'How I work', href: '#process-title' }}>
-    <p slot="after" class="services-across"><a data-link href={SUB_SITES.job.live}>Hiring instead? Open the website for hiring managers</a></p>
-    <HeroStack slot="art" id="services-stack" label="Services" noun="service" cards={services} />
-  </SiteHero>
-</SnapshotPage>
+<PageLayout title="Services for product teams · Aleem, for clients" description="AI product design, design system builds and UX audits for product teams in the GCC and beyond: what you get, how it runs, and the proof." page="clients" hideCta bg="grid" mainStyle="outline: none; overflow: clip;">
+  <LandingHero id="services" overline="For clients" status="What I offer" title="Three things I can do for your team." accent="your team." lead={`I'm ${site.name}, a ${profile.headline} with 13+ years in enterprise UX and AI products. For teams with a product problem: what I do on a project, what you get, and the work that proves it.`} primary={call} secondary={{ label: 'How I work', href: '#process' }}>
+    <nav slot="aside" class="services-index" aria-label="The three services">
+      <ol role="list">{offers.map((o, i) => <li><a href={`#${o.id}`}><bdi aria-hidden="true">{String(i + 1).padStart(2, '0')}</bdi><span>{o.title}</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"></path></svg></a></li>)}</ol>
+      <p class="services-across"><a data-link href={SUB_SITES.job.live}>Hiring instead? Open the website for hiring managers</a></p>
+    </nav>
+  </LandingHero>
+
+  <LandingStatement id="services-idea" overline="The idea behind the work" text={profile.positioning} accent="check, trust and act on." body={twoUsers.body} />
+
+  <LandingBand items={offers.map(o => o.title).concat(['Enterprise UX', 'Coded prototypes'])} />
+
+  <LandingSection id="services-offer" index="01" overline="Capabilities" title="What I do, what you get, and the proof" split>
+    <LandingRows rows={offers.map(o => ({ id: o.id, title: o.title, body: o.line, fit: o.fit, gets: o.gets, links: o.links }))} />
+    <div class="services-unsure">
+      <div><p class="services-unsure-title">{unsure.title}</p><p class="services-unsure-body">{unsure.body}</p></div>
+      <div class="services-unsure-ctas">
+        <Button variant="secondary" href={call.href} target="_blank" rel="noopener">{call.label}<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>
+        <Button variant="ghost" href={`mailto:${site.email}`}>Email me</Button>
+      </div>
+    </div>
+  </LandingSection>
+
+  <LandingSection id="services-numbers" index="02" overline="Proof" title="What the work measured" lead="Each figure is from a case study, where the method and the before and after are shown." surface="card">
+    <LandingFigures figures={landingFigures} />
+  </LandingSection>
+
+  {cases.length > 0 && (
+    <LandingSection id="services-work" index="03" overline="Selected work" title="The work that proves it" lead="The problem, the constraints, the decisions with their trade-offs, and what shipped.">
+      <LandingWork entries={cases} />
+      <a data-link class="post-back services-all" href="/case-studies"><span>All case studies</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
+    </LandingSection>
+  )}
+
+  <LandingSection id="services-process" anchor="process" index="04" overline="How I work" title={processTitle} lead={processLead} surface="card">
+    <LandingSteps steps={steps} />
+  </LandingSection>
+
+  <LandingSection id="services-faq" index="05" overline="Good to know" title="Before you write" split>
+    <LandingFaq items={questions} />
+  </LandingSection>
+
+  <DoorSwitch to="hiring" id="services-switch" />
+
+  <ContactBlock id="contact" overline="Next step" title="Tell me what you're building" lead={"A 15-⁠minute call is enough. I reply within 48 hours."} topic="project" />
+</PageLayout>
 
 <style>
+  /* The index of the three services beside the lead: each a link down to its row. */
+  .services-index { display: grid; gap: var(--space-4); }
+  .services-index ol { margin: 0; padding: 0; list-style: none; display: grid; }
+  /* The rules sit on the rows, with 4 px inside each, so the links keep 8 px between them (2.4, L-74) at the same height. */
+  .services-index li { padding-block: var(--space-1); border-block-start: 1px solid var(--border-default); }
+  .services-index li:last-child { border-block-end: 1px solid var(--border-default); }
+  .services-index li a { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--space-4); min-block-size: var(--tap-target); padding-block: var(--space-3); font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-h4); line-height: var(--leading-heading); color: var(--text-strong); text-decoration: none; overflow-wrap: anywhere; }
+  .services-index bdi { font-family: var(--font-mono); font-size: var(--text-mono-sm); font-weight: var(--weight-semibold); color: var(--text-link); }
+  .services-index svg { color: var(--text-muted); transition: translate var(--duration-spring-soft) var(--ease-spring-soft), color var(--duration-base) var(--ease-out); }
+  .services-index li a:focus-visible svg { translate: 0 3px; color: var(--text-link); }
+  @media (hover: hover) { .services-index li a:hover svg { translate: 0 3px; color: var(--text-link); } .services-index li a:hover span { color: var(--text-link); } }
   .services-across { margin: 0; font-size: var(--text-body-sm); }
   .services-across a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); color: var(--text-link); font-weight: var(--weight-semibold); }
+  .services-unsure { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-6); padding: var(--space-6) var(--space-8); border-radius: var(--radius-xl); background: var(--surface-glass-strong); border: 1px solid var(--border-default); }
+  .services-unsure > div:first-child { flex: 1 1 22rem; min-inline-size: 0; display: grid; gap: var(--space-1); }
+  .services-unsure-title { margin: 0; font-weight: var(--weight-bold); color: var(--text-strong); }
+  .services-unsure-body { margin: 0; color: var(--text-muted); max-inline-size: var(--measure-lead); }
+  .services-unsure-ctas { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+  .services-all { justify-self: start; }
 </style>

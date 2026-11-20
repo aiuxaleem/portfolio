@@ -1,0 +1,105 @@
+---
+/* The first screen of the two audience landing pages (owner request, 18 November 2026, L-83). The headline runs across the
+   page in the oversized display size; under it the lead and the two calls to action on the left and, in the `aside` slot,
+   the facts a visitor checks first (the hiring page) or the index of the services (the client page). Behind it the field:
+   a CSS picture of two lights joined by a ribbon (the person, the agent acting for them, the handoff), which
+   islands/landing.ts replaces with the live WebGL field when motion is on. The headline's words rise into place one after
+   another (motion.css, "Landing pages"); the lead and the buttons follow. Everything a visitor needs (who, what level, what
+   to do) is in the first view at 1280 x 720 and 390 x 844 (verify.mjs, fold). */
+import Button from '../ui/button.astro';
+
+interface Action { label: string; href: string; newTab?: boolean; download?: boolean }
+interface Props {
+  id: string;
+  overline: string;
+  /** A short status after the overline (availability). */
+  status?: string;
+  title: string;
+  /** The words of the title drawn in the brand gradient. */
+  accent?: string;
+  lead: string;
+  primary: Action;
+  secondary?: Action;
+  /** 2 on /_states, where the page has its own h1. */
+  level?: 1 | 2;
+  /** Off on /_states, where the hero is shown twice per theme: landmark names must be unique. */
+  landmark?: boolean;
+}
+const { id, overline, status, title, accent, lead, primary, secondary, level = 1, landmark = true } = Astro.props;
+const Heading = `h${level}` as any;
+const Wrap = (landmark ? 'section' : 'div') as any;
+const words = title.split(/\s+/).filter(Boolean);
+const accentWords = accent ? accent.split(/\s+/) : [];
+/* Which words belong to the accent: the first run of words in the title that matches the accent phrase. */
+const at = accentWords.length ? words.findIndex((_, i) => accentWords.every((a, j) => words[i + j]?.replace(/[.,!?]$/, '') === a.replace(/[.,!?]$/, ''))) : -1;
+const isAccent = (i: number) => at >= 0 && i >= at && i < at + accentWords.length;
+const attrs = (a: Action) => ({ ...(a.newTab ? { target: '_blank', rel: 'noopener' } : {}), ...(a.download ? { download: true } : {}) });
+---
+<Wrap class="lp-hero" data-lp-hero aria-labelledby={landmark ? `${id}-title` : undefined}>
+  <div class="lp-field" data-lp-field aria-hidden="true"><canvas></canvas></div>
+  <div class="cory-container lp-hero-inner">
+    <p class="lp-kicker"><span class="lp-kicker-dot" aria-hidden="true"></span><span>{overline}</span>{status && <><span class="lp-kicker-sep" aria-hidden="true">/</span><span>{status}</span></>}</p>
+    <Heading id={`${id}-title`} class="lp-hero-title">{words.map((w, i) => <>{i > 0 && ' '}<span class:list={['lp-word', { 'lp-word-accent': isAccent(i) }]} style={`--i: ${i};`}>{w}</span></>)}</Heading>
+    <div class="lp-hero-foot">
+      <div class="lp-hero-intro">
+        <p class="lp-hero-lead">{lead}</p>
+        <div data-hero-ctas class="lp-hero-ctas">
+          <Button variant="primary" size="lg" href={primary.href} {...attrs(primary)}>{primary.label}{primary.newTab && <span class="cory-visually-hidden"> (opens in a new tab)</span>}</Button>
+          {secondary && <Button variant="secondary" size="lg" href={secondary.href} {...attrs(secondary)}>{secondary.label}{secondary.newTab && <span class="cory-visually-hidden"> (opens in a new tab)</span>}</Button>}
+        </div>
+      </div>
+      {Astro.slots.has('aside') && <div class="lp-hero-aside"><slot name="aside" /></div>}
+    </div>
+  </div>
+</Wrap>
+
+<script>
+  import '../islands/landing.ts';
+</script>
+
+<style>
+  /* As tall as the screen under the header (the header and the bar of websites above it), never less than its content. */
+  .lp-hero { --lp-top: calc(var(--header-height) + var(--tap-target)); position: relative; isolation: isolate; display: grid; align-items: end; min-block-size: calc(100vh - var(--lp-top)); min-block-size: calc(100svh - var(--lp-top)); overflow-x: clip; }
+  /* The field. Its strength (--lp-gain) was set by measurement: the hero's smallest text keeps 4.5:1 at the brightest point
+     of the light in both themes (scripts/quality/check-landing-field.mjs, quality step 3e, L-83): the live field holds the light under every text box to
+     --lp-floor, and the CSS picture keeps its two lights clear of the text. It fades out at its foot into the page. */
+  .lp-field { --lp-a: var(--cyan-300); --lp-b: var(--blue-300); --lp-gain: 0.55; --lp-floor: 0.08; position: absolute; inset: 0; z-index: -1; pointer-events: none; -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent); mask-image: linear-gradient(to bottom, #000 70%, transparent);
+    background:
+      radial-gradient(16% 22% at 79% 26%, color-mix(in srgb, var(--lp-a) calc(var(--lp-gain) * 100%), transparent), transparent 72%),
+      radial-gradient(16% 22% at 95% 62%, color-mix(in srgb, var(--lp-b) calc(var(--lp-gain) * 100%), transparent), transparent 72%); }
+  :global([data-theme="dark"]) .lp-field { --lp-a: var(--cyan-500); --lp-b: var(--blue-500); --lp-gain: 0.55; }
+  /* Under 1200 px the text spans most of the screen, so the CSS picture keeps one weak light in the top corner. */
+  @media (max-width: 1199.98px) {
+    .lp-field { --lp-gain: 0.4; background: radial-gradient(34% 14% at 100% 0%, color-mix(in srgb, var(--lp-a) calc(var(--lp-gain) * 60%), transparent), transparent 72%); }
+    :global([data-theme="dark"]) .lp-field { --lp-gain: 0.4; }
+  }
+  .lp-field canvas { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; opacity: 0; transition: opacity 1.2s var(--ease-out); }
+  .lp-field[data-ready] { background: none; }
+  .lp-field[data-ready] canvas { opacity: 1; }
+
+  .lp-hero-inner { display: grid; gap: var(--space-8); padding-block: var(--space-12) var(--space-12); min-inline-size: 0; }
+  @media (min-width: 1024px) { .lp-hero-inner { gap: var(--space-10); padding-block: var(--space-16) var(--space-16); } }
+
+  .lp-kicker { margin: 0; display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); justify-self: start; font-family: var(--font-mono); font-size: var(--text-mono-sm); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-muted); overflow-wrap: anywhere; }
+  .lp-kicker-dot { inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--accent-mint); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-mint) 22%, transparent); flex: none; }
+  .lp-kicker-sep { color: var(--text-muted); }
+
+  .lp-hero-title { margin: 0; max-inline-size: 15ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-hero); line-height: var(--leading-tight); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
+  .lp-word { display: inline-block; max-inline-size: 100%; }
+  .lp-word-accent { background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent; padding-inline-end: 0.04em; }
+
+  .lp-hero-foot { display: grid; gap: var(--space-8); align-items: end; min-inline-size: 0; padding-block-start: var(--space-6); border-block-start: 1px solid var(--border-default); }
+  @media (min-width: 1024px) { .lp-hero-foot { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-16); } }
+  .lp-hero-intro { display: grid; gap: var(--space-6); min-inline-size: 0; }
+  .lp-hero-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-body); text-wrap: pretty; }
+  .lp-hero-ctas { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+  .lp-hero-aside { min-inline-size: 0; }
+
+  /* A short laptop screen or a phone on its side: the headline a step smaller and less air, so the whole first screen fits. */
+  @media (min-width: 1024px) and (max-height: 820px) { .lp-hero-title { font-size: clamp(44px, 6.2vw, 104px); } .lp-hero-inner { gap: var(--space-6); padding-block: var(--space-6) var(--space-10); } .lp-hero-foot { padding-block-start: var(--space-5); } }
+  @media (orientation: landscape) and (not (min-height: 600px)) and (min-aspect-ratio: 3/2) { .lp-hero { min-block-size: 0; } .lp-hero-inner { gap: var(--space-5); padding-block: var(--space-4) var(--space-8); } .lp-hero-title { font-size: var(--text-fluid-title); max-inline-size: 22ch; } }
+  /* Light theme: the deep brand gradient (the same blue to cyan, darker), so every part of these large words keeps 3:1 even where it
+     crosses the page grid's hairlines (blue-500, the light gradient's end, falls to 2.4:1 there; L-83). */
+  :global([data-theme="light"]) .lp-word-accent { background-image: var(--gradient-brand-deep); }
+  @media (forced-colors: active) { .lp-word-accent { background: none; color: CanvasText; } .lp-field { display: none; } }
+</style>

@@ -1,0 +1,31 @@
+---
+/* Questions and answers on the client landing page (L-83): native disclosures (they open with the keyboard and without
+   JavaScript), the question large, a plus that turns into a minus; the first one open. */
+export interface Faq { q: string; a: string }
+interface Props { items: Faq[] }
+const { items } = Astro.props;
+---
+<div class="lp-faq">
+  {items.map((f, i) => (
+    <details class="lp-faq-item" open={i === 0}>
+      <summary class="lp-faq-q"><span>{f.q}</span><span class="lp-faq-mark" aria-hidden="true"></span></summary>
+      <p class="lp-faq-a">{f.a}</p>
+    </details>
+  ))}
+</div>
+
+<style>
+  .lp-faq { display: grid; border-block-start: 1px solid var(--border-default); }
+  /* 4 px around each question, so two closed questions keep 8 px between their targets (2.4, L-74); the question keeps its height. */
+  .lp-faq-item { padding-block: var(--space-1); border-block-end: 1px solid var(--border-default); }
+  .lp-faq-q { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-6); min-block-size: var(--tap-target); padding-block: var(--space-5); cursor: pointer; list-style: none; font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-fluid-h2); line-height: var(--leading-snug); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; }
+  .lp-faq-q::-webkit-details-marker { display: none; }
+  .lp-faq-q:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 4px; border-radius: var(--radius-sm); }
+  .lp-faq-mark { position: relative; inline-size: 44px; block-size: 44px; border-radius: 50%; border: 1px solid var(--border-interactive); transition: background-color var(--duration-base) var(--ease-out), rotate var(--duration-spring-soft) var(--ease-spring-soft); }
+  .lp-faq-mark::before, .lp-faq-mark::after { content: ""; position: absolute; inset-block-start: 50%; inset-inline-start: 50%; inline-size: 14px; block-size: 2px; margin: -1px 0 0 -7px; border-radius: 1px; background: var(--text-strong); transition: rotate var(--duration-spring-soft) var(--ease-spring-soft); }
+  .lp-faq-mark::after { rotate: 90deg; }
+  .lp-faq-item[open] .lp-faq-mark::after { rotate: 0deg; }
+  .lp-faq-item[open] .lp-faq-mark { background: var(--action-ghost-hover); }
+  @media (hover: hover) { .lp-faq-q:hover .lp-faq-mark { background: var(--action-ghost-hover); } }
+  .lp-faq-a { margin: 0; padding-block-end: calc(var(--space-8) - var(--space-1)); max-inline-size: var(--measure-body); font-size: var(--text-body-lg); line-height: var(--leading-relaxed); color: var(--text-body); text-wrap: pretty; }
+</style>

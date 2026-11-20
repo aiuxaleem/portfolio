@@ -281,6 +281,10 @@
   --text-fluid-title: clamp(32px, 4vw, 48px); /* @kind font */
   --text-fluid-h2: clamp(24px, 2.8vw, 34px); /* @kind font */
   --text-fluid-lead: clamp(16px, 1.5vw, 19px); /* @kind font */
+  /* The two audience landing pages (owner request, 18 November 2026, L-83: "awwwards-worthy", oversized type approved): the
+     hero's headline across the width, and the one statement after it. */
+  --text-fluid-hero: clamp(44px, 7.4vw, 128px); /* @kind font */
+  --text-fluid-statement: clamp(28px, 4.2vw, 60px); /* @kind font */
 
   /* --- Mono scale --- */
   --text-mono-sm: 12px;

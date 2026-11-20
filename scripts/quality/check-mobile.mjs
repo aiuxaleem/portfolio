@@ -1067,11 +1067,18 @@ async function touchTests() {
           await page.evaluate(() => scrollBy(0, 240)); await pause(page, 120);
         }
         /* Focus a card that is covered: it must come to the front, uncovered (2.4.11). */
-        const focus = await page.evaluate(() => {
+        /* The page scrolls smoothly with motion on (site.css), so the focus brings the card into view over a few frames: it is
+           judged once the scrolling has stopped (four frames in a row at the same place, at most 2 s), not in the same instant as the
+           focus, which read a card still on its way (18 November 2026: the same build passed in the morning and failed under
+           load in the afternoon; on the main build too the card arrives uncovered 133 px down once the scroll ends). */
+        const focus = await page.evaluate(async () => {
           const lis = [...document.querySelectorAll('[data-stacking] > li')].filter(li => !li.hidden);
           const target = lis.find(li => Number(li.style.getPropertyValue('--stack-recede')) > 0.5) || lis[0];
           const a = target?.querySelector('a, button'); if (!a) return { tested: false };
-          a.focus(); const r = a.getBoundingClientRect(); const top = document.elementFromPoint(Math.min(innerWidth - 2, r.left + Math.min(20, r.width / 2)), Math.max(1, r.top + Math.min(10, r.height / 2)));
+          a.focus();
+          const frame = () => new Promise(r => requestAnimationFrame(r));
+          for (let t = performance.now(), last = -1, same = 0; performance.now() - t < 2000 && same < 4;) { await frame(); same = scrollY === last ? same + 1 : 0; last = scrollY; }
+          const r = a.getBoundingClientRect(); const top = document.elementFromPoint(Math.min(innerWidth - 2, r.left + Math.min(20, r.width / 2)), Math.max(1, r.top + Math.min(10, r.height / 2)));
           return { tested: true, front: !!top && (target.contains(top) || top === target) };
         });
         res[`${label} ${p}`] = { lists: marked, worstAboveHeader: worst, rowsCovered: covered, sideways: wide, focus };

@@ -1,0 +1,41 @@
+---
+/* The statement after the first screen of the landing pages (L-83): the positioning in one sentence, in the statement size,
+   its last words in the brand gradient; with motion on, each line of it brightens as it crosses the middle of the screen
+   (motion.css, "Landing pages"). Under it, the two users (the person, the agent acting for them) in the owner's words from
+   the main site's Home, and the link to the blog piece. */
+import Button from '../ui/button.astro';
+
+interface Props { id: string; overline: string; text: string; accent?: string; body?: string; link?: { label: string; href: string }; /** Off on /_states, where the statement is shown twice per theme: landmark names must be unique. */ landmark?: boolean }
+const { id, overline, text, accent, body, link, landmark = true } = Astro.props;
+const Wrap = (landmark ? 'section' : 'div') as any;
+const words = text.split(/\s+/).filter(Boolean);
+const accentWords = accent ? accent.split(/\s+/) : [];
+const at = accentWords.length ? words.findIndex((_, i) => accentWords.every((a, j) => words[i + j] === a)) : -1;
+const isAccent = (i: number) => at >= 0 && i >= at && i < at + accentWords.length;
+---
+<Wrap class="lp-statement-wrap" aria-labelledby={landmark ? `${id}-title` : undefined}>
+  <div class="cory-container lp-statement-inner">
+    <p class="cory-overline" style="margin: 0;">{overline}</p>
+    <h2 id={`${id}-title`} class="lp-statement">{words.map((w, i) => <>{i > 0 && ' '}<span class:list={['lp-read', { 'lp-read-accent': isAccent(i) }]}>{w}</span></>)}</h2>
+    {(body || link) && (
+      <div class="lp-statement-foot">
+        {body && <p class="lp-statement-body">{body}</p>}
+        {link && <Button variant="secondary" href={link.href}>{link.label}</Button>}
+      </div>
+    )}
+  </div>
+</Wrap>
+
+<style>
+  .lp-statement-wrap { padding-block: var(--section-y); }
+  .lp-statement-inner { display: grid; gap: var(--space-8); }
+  .lp-statement { margin: 0; max-inline-size: 26ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-statement); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: pretty; overflow-wrap: anywhere; }
+  .lp-read-accent { background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lp-statement-foot { display: grid; gap: var(--space-6); align-items: start; justify-items: start; padding-block-start: var(--space-6); border-block-start: 1px solid var(--border-default); }
+  @media (min-width: 1024px) { .lp-statement-foot { grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: var(--space-16); } }
+  .lp-statement-body { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-body); text-wrap: pretty; }
+  /* Light theme: the deep brand gradient (the same blue to cyan, darker), so every part of these large words keeps 3:1 even where it
+     crosses the page grid's hairlines (blue-500, the light gradient's end, falls to 2.4:1 there; L-83). */
+  :global([data-theme="light"]) .lp-read-accent { background-image: var(--gradient-brand-deep); }
+  @media (forced-colors: active) { .lp-read-accent { background: none; color: CanvasText; } }
+</style>

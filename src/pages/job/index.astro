@@ -1,12 +1,19 @@
 ---
-/* The website for hiring managers (docs/SITES.md), its Home: job.aiuxaleem.com. Everything a recruiter or a hiring manager
-   screens for, in the order they screen: who, what level, where and what for (the hero, its four facts and the stack
-   of featured case studies, as on the main site's Home), more work, what he brings, the experience in short, the certifications, then the call. No client offer: the
-   band before the call leads to the website for clients. Every fact comes from the profile and site settings. */
+/* The website for hiring managers (docs/SITES.md), its Home: job.aiuxaleem.com. Redesigned as a landing page on
+   18 November 2026 (owner request, L-83: "modern, awwwards-worthy … GSAP and/or Three.js"; brand kept, layout new, the
+   field a hand-written shader). Everything a recruiter or a hiring manager screens for, in the order they screen: who, what
+   level, where and what for (the hero with its four facts over the live field), the idea of the work (two users), the case
+   studies (a stack of wide cards), the numbers with their sources, what he brings, the experience in short, the
+   certifications, how he works and what he will ask, then the call. No client offer: the band before the call leads to the
+   website for clients. Every fact comes from the profile, the site settings and the case studies. */
 import PageLayout from '../../layouts/page-layout.astro';
-import SiteHero from '../../components/sites/site-hero.astro';
-import HeroStack from '../../components/sites/hero-stack.astro';
-import CaseCard from '../../components/cards/case-card.astro';
+import LandingHero from '../../components/landing/landing-hero.astro';
+import LandingStatement from '../../components/landing/landing-statement.astro';
+import LandingBand from '../../components/landing/landing-band.astro';
+import LandingSection from '../../components/landing/landing-section.astro';
+import LandingWork from '../../components/landing/landing-work.astro';
+import LandingFigures from '../../components/landing/landing-figures.astro';
+import LandingRows from '../../components/landing/landing-rows.astro';
 import Career from '../../components/profile/career.astro';
 import Certifications from '../../components/profile/certifications.astro';
 import ContactBlock from '../../components/profile/contact-block.astro';
@@ -14,16 +21,16 @@ import DoorSwitch from '../../components/sites/door-switch.astro';
 import { site, resumeExternal } from '../../content/site';
 import { profile } from '../../content/profile';
 import { listedCaseStudies } from '../../lib/case-studies';
-import { caseCard } from '../../lib/site-stacks';
+import { landingFigures, twoUsers } from '../../lib/landing';
 import { personLd } from '../../lib/seo';
 import { chrome } from '../../i18n/chrome';
 
 const c = chrome.en;
 const now = profile.career[0];
-/* The stack holds the featured case studies; the section after the first screen, the newest of the others. */
+/* The case studies: the featured ones first, then the newest of the others, six in all. */
 const listed = (await listedCaseStudies()).filter(x => !x.data.fixture);
-const featured = listed.filter(x => x.data.featured).slice(0, 3);
-const cases = listed.filter(x => !featured.includes(x)).slice(0, 3);
+const featured = listed.filter(x => x.data.featured);
+const cases = [...featured, ...listed.filter(x => !featured.includes(x))].slice(0, 6);
 /* How I work best, and what I will ask (the owner's career framework of 25 October 2026, his own words made short): the
    conditions he does his best work in, and the questions he brings to a first call. Hiring is a decision on both sides. */
 const conditions: [string, string][] = [
@@ -39,7 +46,7 @@ const questions = [
   'How are disagreements resolved, and competing priorities settled?',
   'Why is this role open, and how long has the team been together?',
 ];
-/* Four facts under the buttons, as on the main site's Home: what a hiring manager checks in the first seconds. */
+/* Four facts beside the lead: what a hiring manager checks in the first seconds. */
 const facts: [string, string][] = [
   ['Now', `${now.role} at ${now.company}, since ${now.start.slice(0, 4)}`],
   ['Experience', '13+ years, from enterprise UX to AI products'],
@@ -48,73 +55,64 @@ const facts: [string, string][] = [
 ];
 ---
 <PageLayout title={`${profile.headline} · Aleem, for hiring managers`} description={`For recruiters and hiring managers: ${site.name}, ${profile.headline}. Experience, case studies, certifications and the resume in one place.`} page="hiring" hideCta bg="grid" mainStyle="outline: none; overflow: clip;" jsonLd={[personLd()]}>
-  <SiteHero id="hiring" overline="For hiring managers" title={`A ${profile.headline} for your team.`} accent="AI Product Designer" lead={`I'm ${site.name}. ${profile.positioning}`} primary={{ label: c.call, href: site.calendarUrl, newTab: true }} secondary={{ label: resumeExternal ? 'View resume' : 'Download resume', href: site.resumeUrl, newTab: resumeExternal, download: !resumeExternal }}>
-    <div slot="after" data-cq><dl data-cq-grid class="hiring-facts">{facts.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl></div>
-    {featured.length > 0 && <HeroStack slot="art" id="hiring-stack" label="Selected work" noun="case study" cards={featured.map(c => caseCard(c))} />}
-  </SiteHero>
+  <LandingHero id="hiring" overline="For hiring managers" status={site.availability.label} title={`A ${profile.headline} for your team.`} accent="AI Product Designer" lead={`I'm ${site.name}. ${profile.positioning}`} primary={{ label: c.call, href: site.calendarUrl, newTab: true }} secondary={{ label: resumeExternal ? 'View resume' : 'Download resume', href: site.resumeUrl, newTab: resumeExternal, download: !resumeExternal }}>
+    <dl slot="aside" class="hiring-facts">{facts.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+  </LandingHero>
+
+  <LandingStatement id="hiring-idea" overline="The idea behind the work" text={twoUsers.title} accent={twoUsers.accent} body={twoUsers.body} />
+
+  <LandingBand items={profile.expertise.map(e => e.title)} />
 
   {cases.length > 0 && (
-    <section class="page-section" data-surface="card" aria-labelledby="hiring-work-title">
-      <div class="cory-container">
-        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">The work</p><h2 id="hiring-work-title" class="page-h2">{featured.length > 0 ? 'More case studies' : 'Case studies to start with'}</h2><p class="project-filter-count" style="max-inline-size: var(--measure-lead);">Each one gives the problem, the constraints, the decisions with their trade-offs, and what shipped.</p></div>
-        <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{cases.map(entry => <li><CaseCard entry={entry} level={3} /></li>)}</ul></div>
-        <a data-link class="post-back" href="/case-studies"><span>All case studies</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
-      </div>
-    </section>
+    <LandingSection id="hiring-work" index="01" overline="Selected work" title="Case studies" lead="Each one gives the problem, the constraints, the decisions with their trade-offs, and what shipped.">
+      <LandingWork entries={cases} />
+      <a data-link class="post-back hiring-all" href="/case-studies"><span>All case studies</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
+    </LandingSection>
   )}
 
-  <section class="page-section" aria-labelledby="hiring-bring-title">
-    <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Expertise</p><h2 id="hiring-bring-title" class="page-h2">What I bring to a product team</h2></div>
-      <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.expertise.map(e => <li><div class="tile"><h3>{e.title}</h3><p>{e.body}</p></div></li>)}</ul></div>
-    </div>
-  </section>
+  <LandingSection id="hiring-numbers" index="02" overline="In numbers" title="What the work measured" lead="Each figure is from a case study, where the method and the before and after are shown." surface="card">
+    <LandingFigures figures={landingFigures} />
+  </LandingSection>
 
-  <section class="page-section" data-surface="card" aria-labelledby="hiring-career-title">
-    <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Work experience</p><h2 id="hiring-career-title" class="page-h2">Enterprise UX to AI product design</h2><p class="project-filter-count">Newest first. Each role, with what it shipped, is on the Experience page.</p></div>
-      <Career highlights={false} />
-      <a data-link class="post-back" href="/experience"><span>The full experience, with what each role shipped</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
-    </div>
-  </section>
+  <LandingSection id="hiring-bring" index="03" overline="Expertise" title="What I bring to a product team" split>
+    <LandingRows rows={profile.expertise.map(e => ({ title: e.title, body: e.body }))} />
+  </LandingSection>
 
-  <section class="page-section" aria-labelledby="hiring-certs-title">
-    <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="hiring-certs-title" class="page-h2">Certifications</h2><p class="project-filter-count">Verified certificates and the ones in progress. The full list is on the Experience page.</p></div>
-      <Certifications only={['in-progress', 'verified']} />
-    </div>
-  </section>
+  <LandingSection id="hiring-career" index="04" overline="Work experience" title="Enterprise UX to AI product design" lead="Newest first. Each role, with what it shipped, is on the Experience page." surface="card">
+    <Career highlights={false} />
+    <a data-link class="post-back hiring-all" href="/experience"><span>The full experience, with what each role shipped</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
+  </LandingSection>
 
-  <section class="page-section" data-surface="card" aria-labelledby="hiring-how-title">
-    <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">How I work</p><h2 id="hiring-how-title" class="page-h2">Where I do my best work, and what I'll ask you</h2><p class="project-filter-count" style="max-inline-size: var(--measure-lead);">Hiring is a decision on both sides. These are the conditions I do my best work in, and the questions I bring to a first call.</p></div>
-      <div class="hiring-how">
-        <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">{conditions.map(([t, b]) => <li><div class="tile"><h3>{t}</h3><p>{b}</p></div></li>)}</ul></div>
-        <div class="project-cta hiring-ask" role="region" aria-labelledby="hiring-ask-title">
-          <p class="cory-overline" style="margin: 0; color: var(--on-ink-link);">In a first call</p>
-          <h3 id="hiring-ask-title" class="hiring-ask-title">What I will ask you</h3>
-          <ol class="hiring-ask-list">{questions.map((q, i) => <li><bdi aria-hidden="true">{String(i + 1).padStart(2, '0')}</bdi><span>{q}</span></li>)}</ol>
-        </div>
+  <LandingSection id="hiring-certs" index="05" overline="Learning" title="Certifications" lead="Verified certificates and the ones in progress. The full list is on the Experience page.">
+    <Certifications only={['in-progress', 'verified']} />
+  </LandingSection>
+
+  <LandingSection id="hiring-how" index="06" overline="How I work" title="Where I do my best work, and what I'll ask you" lead="Hiring is a decision on both sides. These are the conditions I do my best work in, and the questions I bring to a first call." surface="card">
+    <div class="hiring-how">
+      <LandingRows rows={conditions.map(([t, b]) => ({ title: t, body: b }))} />
+      <div class="project-cta hiring-ask" role="region" aria-labelledby="hiring-ask-title">
+        <p class="cory-overline" style="margin: 0; color: var(--on-ink-link);">In a first call</p>
+        <h3 id="hiring-ask-title" class="hiring-ask-title">What I will ask you</h3>
+        <ol class="hiring-ask-list">{questions.map((q, i) => <li><bdi aria-hidden="true">{String(i + 1).padStart(2, '0')}</bdi><span>{q}</span></li>)}</ol>
       </div>
     </div>
-  </section>
+  </LandingSection>
 
   <DoorSwitch to="clients" id="hiring-switch" />
 
-  <ContactBlock id="contact" overline="Next step" title="Hiring for a design lead? Let's talk." lead={"Book a 15-\u2060minute call, or send the role and the team. I reply within 48 hours."} topic="role" />
+  <ContactBlock id="contact" overline="Next step" title="Hiring for a design lead? Let's talk." lead={"Book a 15-⁠minute call, or send the role and the team. I reply within 48 hours."} topic="role" />
 </PageLayout>
 
 <style>
-  /* The four facts: the main site's Home hero row (a rule above each, the label small, the fact strong). */
-  .hiring-facts { display: grid; gap: var(--space-4) var(--space-6); margin: var(--space-2) 0 0; }
+  /* The four facts beside the lead, two by two: a rule above each, the label small, the fact strong. */
+  .hiring-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: var(--space-5) var(--space-8); margin: 0; }
   .hiring-facts > div { display: grid; gap: var(--space-1); align-content: start; padding-block-start: var(--space-3); border-block-start: 1px solid var(--border-default); min-inline-size: 0; }
-  .hiring-facts dt { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
-  /* A short laptop screen: the four facts in one row of four, so they stay on the first screen. */
-  @media (min-width: 1024px) and (max-height: 900px) { .hiring-facts { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap: var(--space-4); } .hiring-facts dd { font-size: var(--text-body-sm); } }
+  .hiring-facts dt { font-family: var(--font-mono); font-size: var(--text-mono-sm); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-muted); }
   .hiring-facts dd { margin: 0; font-size: var(--text-body-md); font-weight: var(--weight-semibold); line-height: var(--leading-heading); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
-  /* How I work: the conditions beside the questions where there is room (the main site's split), stacked below that. */
+  .hiring-all { justify-self: start; }
+  /* How I work: the conditions beside the questions where there is room, the questions first below that. */
   .hiring-how { display: grid; gap: var(--space-10); align-items: start; }
-  @media (min-width: 1024px) { .hiring-how { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); } }
+  @media (min-width: 1024px) { .hiring-how { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); } .hiring-ask { position: sticky; inset-block-start: calc(var(--header-height) + var(--space-10)); } }
   @media (max-width: 1023.98px) { .hiring-ask { order: -1; } }
   .hiring-ask { display: grid; gap: var(--space-4); padding: var(--space-8); box-shadow: var(--shadow-md); }
   .hiring-ask-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); }

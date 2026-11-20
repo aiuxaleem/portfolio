@@ -1,0 +1,67 @@
+---
+/* The case studies on the landing pages (L-83): one wide card per case, the cover beside the words from 960 px of
+   container (the cover first on a phone), numbered in the series. Four or more stack as the page scrolls (data-stack-scroll,
+   L-76): each card sticks under the header and the next covers it. One link per card, on the title, stretched over the
+   whole card; the cover is shown whole over a blur of itself (ui/fitted-image.astro, L-60). Hover and focus light the
+   card's edge and send its arrow on; nothing moves the picture, which would cut it. */
+import FittedImage from '../ui/fitted-image.astro';
+import type { CaseStudy } from '../../lib/case-studies';
+
+interface Props { entries: CaseStudy[]; /** Heading level of the card titles. */ level?: 3 | 4 }
+const { entries, level = 3 } = Astro.props;
+const H = `h${level}` as any;
+---
+<ol class="lp-work" role="list" data-stack-scroll={entries.length >= 4 ? '' : undefined}>
+  {entries.map((c, i) => (
+    <li>
+      <article class="lp-case" data-cq-case>
+        <div class="lp-case-media">
+          {c.data.cover
+            ? <FittedImage image={{ src: c.data.cover.src, alt: c.data.cover.alt ?? '', focus: c.data.cover.focus }} widths={[480, 720, 960, 1280]} sizes="(min-width: 1440px) 700px, (min-width: 960px) 52vw, calc(100vw - 32px)" />
+            : <span class="lp-case-blank" aria-hidden="true"></span>}
+        </div>
+        <div class="lp-case-body">
+          <p class="lp-case-meta"><bdi class="lp-case-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</bdi>{c.data.category && <span>{c.data.category}</span>}{c.data.timeline && <time>{c.data.timeline}</time>}</p>
+          <H class="lp-case-title"><a class="lp-case-link" href={`/case-studies/${c.id}`}>{c.data.title}</a></H>
+          {c.data.lead && <p class="lp-case-lead">{c.data.lead}</p>}
+          <span class="lp-case-cta" aria-hidden="true"><span>Read the case study</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span>
+        </div>
+      </article>
+    </li>
+  ))}
+</ol>
+
+<script>
+  import '../islands/stack-scroll.ts';
+</script>
+
+<style>
+  .lp-work { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--grid-gap); container-type: inline-size; }
+  .lp-case { position: relative; display: grid; block-size: 100%; border-radius: var(--radius-2xl); overflow: hidden; background: var(--surface-card); border: 1px solid var(--border-default); box-shadow: var(--shadow-md); transition: border-color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out); }
+  @container (min-width: 960px) { .lp-case { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); } }
+  .lp-case-media { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: linear-gradient(160deg, var(--surface-sunken), var(--surface-card)); }
+  @container (min-width: 960px) { .lp-case-media { aspect-ratio: auto; min-block-size: 420px; } }
+  /* The cover is pinned to the frame, so a tall picture never makes the card taller; it is shown whole (contain). */
+  .lp-case-media :global(img) { position: absolute; inset: 0; z-index: 1; inline-size: 100%; block-size: 100%; object-fit: contain; object-position: center; }
+  .lp-case-blank { position: absolute; inset: 0; background: var(--gradient-ink); }
+  .lp-case-body { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-8); min-inline-size: 0; }
+  @container (min-width: 960px) { .lp-case-body { padding: var(--space-12) var(--space-10); justify-content: center; } }
+  .lp-case-meta { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); font-family: var(--font-mono); font-size: var(--text-mono-sm); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-muted); overflow-wrap: anywhere; }
+  .lp-case-meta time { white-space: nowrap; }
+  .lp-case-num { color: var(--text-link); font-weight: var(--weight-semibold); }
+  .lp-case-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
+  /* At least 44 px tall without moving the text (the pattern of .project-card-link, components.css). */
+  .lp-case-link { display: flex; align-items: center; min-block-size: var(--tap-target); padding-block: var(--space-2); margin-block: calc(var(--space-2) * -1); color: inherit; text-decoration: none; }
+  /* The one link, stretched over the card. */
+  .lp-case-link::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+  .lp-case-link:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; border-radius: var(--radius-xs); }
+  .lp-case-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-body-lg); line-height: var(--leading-relaxed); color: var(--text-body); text-wrap: pretty; }
+  .lp-case-cta { margin-block-start: var(--space-2); display: inline-flex; align-items: center; gap: var(--space-2); font-weight: var(--weight-semibold); color: var(--text-link); }
+  .lp-case-cta svg { transition: translate var(--duration-spring-soft) var(--ease-spring-soft); }
+  .lp-case:has(.lp-case-link:focus-visible) { border-color: var(--border-focus); }
+  .lp-case:has(.lp-case-link:focus-visible) .lp-case-cta svg { translate: calc(4px * var(--dir-x, 1)) 0; }
+  @media (hover: hover) {
+    .lp-case:hover { border-color: var(--border-interactive); box-shadow: var(--shadow-lg); }
+    .lp-case:hover .lp-case-cta svg { translate: calc(4px * var(--dir-x, 1)) 0; }
+  }
+</style>

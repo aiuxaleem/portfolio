@@ -1,0 +1,27 @@
+---
+/* A band of large words between two sections of the landing pages (L-83): the disciplines, every other one in the brand
+   gradient. With motion on it slides sideways as the page scrolls past it (a scroll-driven animation in motion.css, so it
+   moves only while the visitor scrolls, never by itself); otherwise it stands still. It repeats the section that
+   follows, so it is hidden from assistive technology. The page never scrolls sideways: the band clips its own overflow. */
+interface Props { items: string[] }
+const { items } = Astro.props;
+const row = [...items, ...items];
+---
+<div class="lp-band" aria-hidden="true">
+  <p class="lp-band-track">{row.map((t, i) => <><span class:list={['lp-band-item', { 'lp-band-accent': i % 2 === 1 }]}>{t}</span><span class="lp-band-star">✦</span></>)}</p>
+</div>
+
+<style>
+  /* overflow: hidden, not clip: axe (4.13) counts only `hidden` as clipping, and measured the clipped words against whatever
+     lies past the band's edge (on /_states, the dark page behind the light panel: 1.13:1). Hidden makes the band a scroll
+     container, so the slide follows the band's own named view timeline (motion.css), whose scroller is the page. */
+  .lp-band { overflow: hidden; padding-block: var(--space-6); border-block: 1px solid var(--border-subtle); }
+  .lp-band-track { margin: 0; display: flex; align-items: center; gap: var(--space-8); inline-size: max-content; white-space: nowrap; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-statement); line-height: var(--leading-tight); letter-spacing: var(--tracking-tighter); color: var(--text-strong); }
+  .lp-band-item, .lp-band-star { flex: none; overflow-wrap: normal; }
+  .lp-band-accent { background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lp-band-star { font-size: 0.5em; color: var(--text-link); }
+  /* Light theme: the deep brand gradient (the same blue to cyan, darker), so every part of these large words keeps 3:1 even where it
+     crosses the page grid's hairlines (blue-500, the light gradient's end, falls to 2.4:1 there; L-83). */
+  :global([data-theme="light"]) .lp-band-accent { background-image: var(--gradient-brand-deep); }
+  @media (forced-colors: active) { .lp-band-accent { background: none; color: CanvasText; } }
+</style>

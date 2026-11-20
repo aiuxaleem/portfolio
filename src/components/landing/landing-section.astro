@@ -1,0 +1,49 @@
+---
+/* A section of the two audience landing pages (L-83): a numbered head (the index in the mono face, the overline, the
+   heading in the statement size, an optional lead) over its content, or, with `split`, the head held beside the content as
+   it scrolls past from 1024 px (sticky, under the header). The head keeps the site's `.page-section-head` classes, so the
+   heading wipe and the GSAP section reveal (motion.ts) treat it like every other section head. */
+interface Props {
+  id: string;
+  /** The section's number on the page, "01". */
+  index: string;
+  overline: string;
+  title: string;
+  lead?: string;
+  /** The band of glass between sections, as `.page-section[data-surface="card"]`. */
+  surface?: 'card';
+  /** The head beside the content, held while the content scrolls (from 1024 px). */
+  split?: boolean;
+  /** An anchor for links into the section. */
+  anchor?: string;
+  /** Off on /_states, where the section is shown twice per theme: landmark names must be unique. */
+  landmark?: boolean;
+}
+const { id, index, overline, title, lead, surface, split = false, anchor, landmark = true } = Astro.props;
+const Wrap = (landmark ? 'section' : 'div') as any;
+---
+<Wrap class="page-section lp-section" id={anchor} data-surface={surface} aria-labelledby={landmark ? `${id}-title` : undefined}>
+  <div class:list={['cory-container lp-section-inner', { 'lp-split': split }]}>
+    <div class="page-section-head lp-head">
+      <p class="cory-overline lp-overline"><bdi class="lp-index" aria-hidden="true">{index}</bdi><span>{overline}</span></p>
+      <h2 id={`${id}-title`} class="page-h2 lp-h2">{title}</h2>
+      {lead && <p class="lp-lead">{lead}</p>}
+      <slot name="head" />
+    </div>
+    <div class="lp-body"><slot /></div>
+  </div>
+</Wrap>
+
+<style>
+  .lp-head { align-content: start; gap: var(--space-4); min-inline-size: 0; }
+  .lp-overline { margin: 0; display: inline-flex; align-items: center; gap: var(--space-3); }
+  .lp-index { display: inline-grid; place-items: center; min-inline-size: 2.6em; padding: 2px var(--space-2); border-radius: var(--radius-pill); border: 1px solid var(--border-default); font-family: var(--font-mono); font-size: var(--text-mono-sm); letter-spacing: 0; color: var(--text-muted); }
+  .lp-h2 { max-inline-size: 20ch; font-size: var(--text-fluid-statement); line-height: var(--leading-tight); overflow-wrap: anywhere; }
+  .lp-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted); text-wrap: pretty; }
+  .lp-body { min-inline-size: 0; display: grid; gap: var(--space-8); }
+  @media (min-width: 1024px) {
+    .lp-split { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: var(--space-16); align-items: start; }
+    .lp-split > .lp-head { position: sticky; inset-block-start: calc(var(--header-height) + var(--space-10)); }
+    .lp-split .lp-h2 { max-inline-size: 14ch; }
+  }
+</style>

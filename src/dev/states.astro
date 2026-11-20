@@ -11,6 +11,15 @@ import Logo from '../components/ui/logo.astro';
 import IconButton from '../components/ui/icon-button.astro';
 import EmailCopy from '../components/layout/email-copy.astro';
 import { stress } from '../fixtures/stress';
+import LandingHero from '../components/landing/landing-hero.astro';
+import LandingStatement from '../components/landing/landing-statement.astro';
+import LandingBand from '../components/landing/landing-band.astro';
+import LandingSection from '../components/landing/landing-section.astro';
+import LandingWork from '../components/landing/landing-work.astro';
+import LandingFigures from '../components/landing/landing-figures.astro';
+import LandingRows from '../components/landing/landing-rows.astro';
+import LandingSteps from '../components/landing/landing-steps.astro';
+import LandingFaq from '../components/landing/landing-faq.astro';
 import { chrome } from '../i18n/chrome';
 import { Image } from 'astro:assets';
 import { forStates, isPlaceholder } from '../lib/content';
@@ -460,6 +469,36 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <h2 style={h2}>Audience websites: first-screen stack</h2>
             <p style={note}>The stack beside the words on every first screen of the websites for hiring teams and for clients. Live: the arrows bring the next card forward. Front card: a 120-⁠character title, a long line and an unbroken kicker over eight points (the sheet shows four). Then a one-word title with every optional field missing, and a case study with its cover. Below it, a stack of one card, which has no arrows, and a stack of five picks (L-76: the fourth and fifth wait unseen behind the third; live, a card can be swiped or dragged aside, or moved with the arrow keys).</p>
             <div style="display: grid; gap: var(--space-10); max-inline-size: min(100%, 440px); overflow-x: clip;"><HeroStack id={`states-stack-${theme}`} label="Stack" noun="card" cards={stackStress} /><HeroStack id={`states-stack-one-${theme}`} label="One card" noun="card" cards={[stackStress[1]]} /><HeroStack id={`states-stack-five-${theme}`} label="Five picks" noun="card" cards={[...stackStress, ...stackStress].slice(0, 5).map((c, i) => ({ ...c, title: i < 3 ? c.title : `Pick ${i + 1}` }))} /></div>
+            <h2 style={h2}>Landing pages: the first screen</h2>
+            <p style={note}>The hero of the hiring and client landing pages (L-83), here with an h2. The field behind it is the CSS picture (the checks run without motion; live, the WebGL field replaces it after load). First: a 120-⁠character title with an unbroken string in the lead and the status, and eight facts in the aside. Then the partial state: a one-word title, no status, no second action, no aside.</p>
+            <LandingHero level={2} landmark={false} id={`states-lp-hero-${theme}`} overline="For hiring managers" status={stress.unbroken} title={stress.longTitle} accent="heading wraps" lead={`${stress.longTitle} ${stress.unbroken}`} primary={{ label: 'Book a call', href: '#' }} secondary={{ label: 'View resume', href: '#' }}>
+              <dl slot="aside" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--space-4); margin: 0;">{[...stress.tags.slice(0, 7), stress.unbroken].map((t, i) => <div style="min-inline-size: 0;"><dt style="font-size: var(--text-caption); color: var(--text-muted);">Fact {i + 1}</dt><dd style="margin: 0; color: var(--text-strong); font-weight: var(--weight-semibold); overflow-wrap: anywhere;">{t}</dd></div>)}</dl>
+            </LandingHero>
+            <LandingHero level={2} landmark={false} id={`states-lp-hero-one-${theme}`} overline="For clients" title={stress.oneWord} lead="A lead long enough to read as the hero's supporting sentence, with no second action and no aside." primary={{ label: 'Book a call', href: '#' }} />
+            <h2 style={h2}>Landing pages: the statement and the band</h2>
+            <p style={note}>The statement (live, each line brightens as it crosses the screen): a 120-⁠character sentence with an accent and an unbroken string; then one word with no body. The band of large words (live, it slides with the scroll only), with nine items and an unbroken one; it is decoration (aria-hidden), and it clips its own overflow.</p>
+            <LandingStatement landmark={false} id={`states-lp-statement-${theme}`} overline="The idea behind the work" text={`${stress.longTitle} ${stress.unbroken}`} accent="every heading wraps" body={stress.longTitle} />
+            <LandingStatement landmark={false} id={`states-lp-statement-one-${theme}`} overline="One word" text={stress.oneWord} />
+            <LandingBand items={[...stress.tags, stress.unbroken]} />
+            <h2 style={h2}>Landing pages: a section with its case studies</h2>
+            <p style={note}>A numbered section head with a lead over the wide case cards: the full fixture with its cover, and the stress fixture with no cover (the ink panel at the same size), a 120-⁠character title and an unbroken category. Four or more cards stack on the scroll live (data-stack-scroll); two do not.</p>
+            <LandingSection landmark={false} id={`states-lp-work-${theme}`} index="01" overline="Selected work" title={stress.longTitle} lead={stress.unbroken}>
+              <LandingWork entries={caseCards} level={3} />
+            </LandingSection>
+            <h2 style={h2}>Landing pages: figures</h2>
+            <p style={note}>Live, a figure below the screen counts once to its number. Here: a figure with a start value, one with a suffix, one with no link, one with a long label and an unbroken string, and a one-figure list.</p>
+            <LandingFigures figures={[{ value: 7, from: 1646, spoken: 'From 1,646 to 7', label: 'A figure with a start value and its case study.', href: '#' }, { value: 80, suffix: ' of 80', spoken: '80 of 80', label: 'A figure with a suffix.', href: '#' }, { value: 13, suffix: '+', spoken: '13 or more', label: 'A figure with no link.' }, { value: 1234567, spoken: '1,234,567', label: `${stress.longTitle} ${stress.unbroken}`, href: '#', link: stress.longTitle }]} />
+            <LandingFigures figures={[{ value: 231, spoken: '231', label: stress.oneWord }]} />
+            <h2 style={h2}>Landing pages: numbered rows (split section)</h2>
+            <p style={note}>The head held beside the rows from 1024 px. A service row with its fit, eight things you get and two links; a row with a 120-⁠character title and an unbroken body; a one-word row with nothing else (partial).</p>
+            <LandingSection landmark={false} id={`states-lp-rows-${theme}`} index="02" overline="Capabilities" title={stress.oneWord} split>
+              <LandingRows level={3} rows={[{ title: 'AI product design', body: 'From model capability to a flow people trust.', fit: 'The model works, but people do not yet trust the product around it.', gets: [...stress.tags.slice(0, 7), stress.unbroken], links: [{ label: 'See the projects', href: '#' }, { label: stress.longTitle, href: '#' }] }, { title: stress.longTitle, body: stress.unbroken }, { title: stress.oneWord }]} />
+            </LandingSection>
+            <h2 style={h2}>Landing pages: process steps and questions</h2>
+            <p style={note}>Four steps on a track (live, its light fills as it scrolls through), one with a long title and an unbroken body; one step alone. The questions: native disclosures, the first open; a 120-⁠character question with an unbroken answer; a one-word question.</p>
+            <LandingSteps level={3} steps={[{ title: 'Understand', body: 'Users, data and where trust breaks.' }, { title: stress.longTitle, body: stress.unbroken }, { title: 'Build with AI', body: 'Real, coded prototypes in days.' }, { title: stress.oneWord, body: 'One word.' }]} />
+            <LandingSteps level={3} steps={[{ title: stress.oneWord, body: 'One step.' }]} />
+            <LandingFaq items={[{ q: 'What do you need from us to start?', a: 'Access to the product, one decision-maker, and the number you want to move.' }, { q: stress.longTitle, a: stress.unbroken }, { q: stress.oneWord, a: stress.oneWord }]} />
             <h2 style={h2}>Home: the Human + Agent drawing</h2>
             <p style={note}>The drawing beside the Two users line (L-77): the website, the person, the agent and the three paths, with its three steps written under it. One state: it has no data. Here in a 320 px column and at full width.</p>
             <div style="display: grid; gap: var(--space-10);"><div style="max-inline-size: 320px;"><TwoUsersArt /></div><TwoUsersArt /></div>

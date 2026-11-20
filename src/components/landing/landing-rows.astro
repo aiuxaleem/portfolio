@@ -1,0 +1,53 @@
+---
+/* Numbered rows on the landing pages (L-83): what he brings (the hiring page) and the three services (the client page). Each
+   row: its number in the mono face, the title large, the words beside or under it, and for a service the fit, what you get
+   and the proof link. A row's number lights and a hairline runs along its top as it is hovered or holds focus, as an
+   accent only (nothing is hidden behind hover). */
+export interface Row { id?: string; title: string; body?: string; fit?: string; gets?: string[]; links?: { label: string; href: string }[] }
+interface Props { rows: Row[]; level?: 3 | 4 }
+const { rows, level = 3 } = Astro.props;
+const H = `h${level}` as any;
+---
+<ol class="lp-rows" role="list">
+  {rows.map((r, i) => (
+    <li class="lp-row" id={r.id} tabindex={r.id ? -1 : undefined}>
+      <bdi class="lp-row-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</bdi>
+      <div class="lp-row-main">
+        <H class="lp-row-title">{r.title}</H>
+        {r.body && <p class="lp-row-body">{r.body}</p>}
+        {(r.fit || r.gets?.length) && (
+          <div class="lp-row-detail">
+            {r.fit && <div><p class="lp-row-label">Good fit when</p><p class="lp-row-text">{r.fit}</p></div>}
+            {r.gets && r.gets.length > 0 && <div><p class="lp-row-label">What you get</p><ul class="lp-row-gets">{r.gets.map(g => <li>{g}</li>)}</ul></div>}
+          </div>
+        )}
+        {r.links && r.links.length > 0 && <p class="lp-row-links">{r.links.map(l => <a data-link href={l.href}><span>{l.label}</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>)}</p>}
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .lp-rows { margin: 0; padding: 0; list-style: none; display: grid; }
+  .lp-row { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-4) var(--space-6); padding-block: var(--space-8); border-block-start: 1px solid var(--border-default); scroll-margin-block-start: calc(var(--header-height) + var(--space-6)); }
+  .lp-row:last-child { border-block-end: 1px solid var(--border-default); }
+  .lp-row:focus { outline: none; }
+  .lp-row::before { content: ""; position: absolute; inset-block-start: -1px; inset-inline: 0; block-size: 2px; background: var(--gradient-brand); transform: scaleX(0); transform-origin: 0 50%; transition: transform var(--duration-slow) var(--ease-out); }
+  [dir="rtl"] .lp-row::before { transform-origin: 100% 50%; }
+  .lp-row:focus-within::before, .lp-row:target::before { transform: scaleX(1); }
+  .lp-row-num { padding-block-start: 0.4em; font-family: var(--font-mono); font-size: var(--text-mono); color: var(--text-muted); transition: color var(--duration-base) var(--ease-out); }
+  .lp-row:focus-within .lp-row-num, .lp-row:target .lp-row-num { color: var(--text-link); }
+  @media (hover: hover) { .lp-row:hover::before { transform: scaleX(1); } .lp-row:hover .lp-row-num { color: var(--text-link); } }
+  .lp-row-main { display: grid; gap: var(--space-3); min-inline-size: 0; }
+  .lp-row-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-snug); letter-spacing: var(--tracking-tight); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
+  .lp-row-body, .lp-row-text { margin: 0; max-inline-size: var(--measure-body); font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); text-wrap: pretty; }
+  .lp-row-body { font-size: var(--text-body-lg); }
+  .lp-row-detail { display: grid; gap: var(--space-6); padding-block-start: var(--space-3); }
+  @media (min-width: 768px) { .lp-row-detail { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); } }
+  .lp-row-label { margin: 0 0 var(--space-2); font-family: var(--font-mono); font-size: var(--text-mono-sm); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-muted); }
+  .lp-row-gets { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-2); }
+  .lp-row-gets li { position: relative; padding-inline-start: var(--space-5); line-height: var(--leading-relaxed); color: var(--text-body); overflow-wrap: anywhere; }
+  .lp-row-gets li::before { content: ""; position: absolute; inset-inline-start: 0; inset-block-start: 0.7em; inline-size: 8px; block-size: 2px; border-radius: 1px; background: var(--text-link); }
+  .lp-row-links { margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); }
+  .lp-row-links a { display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); font-weight: var(--weight-semibold); color: var(--text-link); }
+</style>

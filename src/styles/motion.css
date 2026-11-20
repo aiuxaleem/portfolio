@@ -210,10 +210,10 @@
      own order. A page's cover is left to the scroll (settle) and, when the visitor came from its card, to the travelling
      picture below. Decoration (aria-hidden) stays still. Sibling combinators from the page's one h1, not :has(): measured,
      :has() on every section and div of the Home page cost the first paint. ---------- */
-  main h1:not(.site-hero-title, #hero-title, .hero-split-words > h1) { animation: title-in 900ms var(--ease-out) both; }
-  main h1 ~ :not(.project-cover, [aria-hidden="true"], [data-hero] *, .site-hero-words > *, .hero-split-words > *) { animation: rise-in 800ms var(--ease-out) both; animation-delay: 80ms; }
-  main h1 + * + :not(.project-cover, [data-hero] *, .site-hero-words > *, .hero-split-words > *) { animation-delay: 160ms; }
-  main h1 + * + * ~ :not(.project-cover, [data-hero] *, .site-hero-words > *, .hero-split-words > *) { animation-delay: 240ms; }
+  main h1:not(.site-hero-title, #hero-title, .hero-split-words > h1, .lp-hero-title) { animation: title-in 900ms var(--ease-out) both; }
+  main h1 ~ :not(.project-cover, [aria-hidden="true"], [data-hero] *, .site-hero-words > *, .hero-split-words > *, .lp-hero-inner > *) { animation: rise-in 800ms var(--ease-out) both; animation-delay: 80ms; }
+  main h1 + * + :not(.project-cover, [data-hero] *, .site-hero-words > *, .hero-split-words > *, .lp-hero-inner > *) { animation-delay: 160ms; }
+  main h1 + * + * ~ :not(.project-cover, [data-hero] *, .site-hero-words > *, .hero-split-words > *, .lp-hero-inner > *) { animation-delay: 240ms; }
 
   /* ---------- Header menus and the phone menu: a card rises under its button and its pages follow one by one; the phone
      menu fades in and its groups rise in turn. display is transitioned too (allow-discrete), so the closing fade plays
@@ -335,4 +335,34 @@ dialog.image-preview[open]::backdrop { animation: preview-fade var(--duration-fa
   dialog.image-preview[open] { animation: preview-in var(--duration-base) var(--ease-out) both; }
   @keyframes preview-in { from { opacity: 0; translate: 0 var(--space-2); scale: 0.985; } to { opacity: 1; translate: 0 0; scale: 1; } }
   .image-preview-image { transition: inline-size var(--duration-fast) var(--ease-out), block-size var(--duration-fast) var(--ease-out); }
+}
+
+/* ---------- Landing pages (owner request, 18 November 2026, L-83; components/landing/) ----------
+   The hiring and client landing pages. First view, in CSS so it never waits for a script: the headline's words rise out of
+   their own masks one after another (clip-path and translate, so the largest paint is not held back by an opacity), the
+   kicker comes in first, the lead, buttons and facts follow. On the scroll: the hero's words drift down slower than the
+   page and its field stays, the statement brightens line by line as it crosses the screen, the band of disciplines slides
+   with the scroll (it never moves by itself), and the process track fills. The WebGL field and the counting figures are in
+   islands/landing.ts; the section heads are revealed by motion.ts like every other. */
+@media (prefers-reduced-motion: no-preference) {
+  .lp-kicker { animation: rise-in 700ms var(--ease-out) both; }
+  .lp-word { animation: word-in 900ms var(--ease-out) both; animation-delay: calc(80ms + var(--i, 0) * var(--stagger-word)); }
+  .lp-hero-foot { animation: rise-in 800ms var(--ease-out) both; animation-delay: 420ms; }
+  :root { --stagger-word: 55ms; }
+  @keyframes word-in { from { clip-path: inset(0 -0.1em 100% -0.1em); translate: 0 0.5em; } to { clip-path: inset(-0.3em -0.3em -0.35em -0.3em); translate: 0 0; } }
+  @supports (animation-timeline: view()) {
+    .lp-hero { clip-path: inset(-100vh -100vw 0 -100vw); }
+    .lp-hero-inner { animation: drift linear both; animation-timeline: scroll(root); animation-range: 0 90vh; }
+    html[data-motion="on"] .lp-read { animation: read-in linear both; animation-timeline: view(); animation-range: cover 8% cover 38%; }
+    @keyframes read-in { from { opacity: 0.2; } to { opacity: 1; } }
+    .lp-band { view-timeline: --band block; }
+    .lp-band-track { animation: band-slide linear both; animation-timeline: --band; animation-range: cover 0% cover 100%; }
+    @keyframes band-slide { from { translate: 0 0; } to { translate: calc(-30% * var(--dir-x, 1)) 0; } }
+    .lp-steps { view-timeline: --steps block; }
+    .lp-steps::after { animation: track-fill linear both; animation-timeline: --steps; animation-range: entry 40% cover 60%; }
+    @keyframes track-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-motion="fade"] .lp-kicker { animation: fade-in both; animation-duration: var(--duration-fade) !important; }
 }

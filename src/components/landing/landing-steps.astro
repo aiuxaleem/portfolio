@@ -1,0 +1,35 @@
+---
+/* The process on the client landing page (L-83): the four moves in a row from 1024 px (two by two from 640 px, one under
+   another on a phone), on a track whose light fills as the row scrolls through the screen (motion.css, a view timeline;
+   still and full without motion). Each step: its number on the track, its name, one line. */
+export interface Step { title: string; body: string }
+interface Props { steps: Step[]; level?: 3 | 4 }
+const { steps, level = 3 } = Astro.props;
+const H = `h${level}` as any;
+---
+<ol class="lp-steps" role="list">
+  {steps.map((s, i) => (
+    <li class="lp-step">
+      <span class="lp-step-node" aria-hidden="true"><bdi>{String(i + 1).padStart(2, '0')}</bdi></span>
+      <H class="lp-step-title">{s.title}</H>
+      <p class="lp-step-body">{s.body}</p>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .lp-steps { --lp-track: 0; margin: 0; padding: 0; list-style: none; position: relative; display: grid; gap: var(--space-8); }
+  @media (min-width: 640px) { .lp-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .lp-steps { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-6); } }
+  /* The track: a hairline along the nodes from 1024 px, its brand light drawn over it. */
+  @media (min-width: 1024px) {
+    .lp-steps::before, .lp-steps::after { content: ""; position: absolute; inset-block-start: 27px; inset-inline: 28px calc((100% - 3 * var(--space-6)) / 4 - 28px); block-size: 2px; border-radius: 1px; }
+    .lp-steps::before { background: var(--border-default); }
+    .lp-steps::after { background: var(--gradient-brand); transform-origin: 0 50%; }
+    [dir="rtl"] .lp-steps::after { transform-origin: 100% 50%; }
+  }
+  .lp-step { position: relative; display: grid; gap: var(--space-3); align-content: start; min-inline-size: 0; }
+  .lp-step-node { position: relative; z-index: 1; display: grid; place-items: center; inline-size: 56px; block-size: 56px; border-radius: 50%; background: var(--surface-card); border: 1px solid var(--border-interactive); box-shadow: var(--shadow-sm); font-family: var(--font-mono); font-size: var(--text-mono); font-weight: var(--weight-semibold); color: var(--text-link); }
+  .lp-step-title { margin: var(--space-3) 0 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; }
+  .lp-step-body { margin: 0; line-height: var(--leading-relaxed); color: var(--text-body); text-wrap: pretty; }
+</style>

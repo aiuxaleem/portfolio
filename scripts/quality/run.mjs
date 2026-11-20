@@ -69,6 +69,13 @@ if (target === 'dist') {
   if (!run('node scripts/quality/check-field.mjs')) fail('field-contrast', '-', '-', 'see the list above');
 }
 
+// 2e. The landing pages' first screens over their own field (L-83, 18 November 2026): every hero text box at its minimum
+//     contrast over the live WebGL field and over the CSS picture, at six sizes in both themes.
+if (target === 'dist') {
+  console.log('\n[3e] text over the landing field');
+  if (!run('node scripts/quality/check-landing-field.mjs')) fail('landing-field-contrast', '-', '-', 'see the list above');
+}
+
 // 3. Browser checks on every route x viewport x theme
 console.log(`\n[4/6] browser checks against ${target}/`);
 const server = await serve(target === 'legacy' ? 'legacy' : 'dist', PORT);

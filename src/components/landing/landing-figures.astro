@@ -1,0 +1,38 @@
+---
+/* Figures on the landing pages (L-83): a few numbers, each from a published source (a case study, the profile), each with
+   what it measures and the link to where it is shown. With motion on, a figure below the screen counts up once (or down,
+   from `from`) as it comes into view (islands/landing.ts); the number itself is in the markup, and screen readers get it
+   whole from a visually hidden copy. No number appears here that is not on the page it links to (CLAUDE.md 1). */
+export interface Figure { value: number; from?: number; prefix?: string; suffix?: string; spoken: string; label: string; href?: string; link?: string }
+interface Props { figures: Figure[] }
+const { figures } = Astro.props;
+const fmt = (n: number) => new Intl.NumberFormat('en').format(n);
+---
+<ul class="lp-figures" role="list">
+  {figures.map(f => (
+    <li class="lp-figure">
+      <p class="lp-figure-num"><span aria-hidden="true">{f.from !== undefined && <><span class="lp-figure-from">{fmt(f.from)}</span><span class="lp-figure-arrow">→</span></>}{f.prefix}<span data-count={f.value} data-from={f.from}>{fmt(f.value)}</span>{f.suffix}</span><span class="cory-visually-hidden">{f.spoken}</span></p>
+      <p class="lp-figure-label">{f.label}</p>
+      {f.href && <a data-link class="lp-figure-link" href={f.href}><span>{f.link ?? 'Read the case study'}</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>}
+    </li>
+  ))}
+</ul>
+
+<style>
+  .lp-figures { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; border-block-start: 1px solid var(--border-default); }
+  @media (min-width: 640px) { .lp-figures { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1200px) { .lp-figures { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .lp-figure { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-8) var(--space-6) var(--space-8) 0; border-block-end: 1px solid var(--border-default); min-inline-size: 0; }
+  @media (min-width: 640px) { .lp-figure:nth-child(odd) { padding-inline-end: var(--space-8); } .lp-figure:nth-child(even) { padding-inline-start: var(--space-8); border-inline-start: 1px solid var(--border-default); } }
+  @media (min-width: 1200px) { .lp-figure:not(:first-child) { padding-inline-start: var(--space-8); border-inline-start: 1px solid var(--border-default); } .lp-figure:nth-child(odd):not(:first-child) { padding-inline-start: var(--space-8); } }
+  .lp-figure-num { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--space-2); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-metric-lg); line-height: var(--leading-none); letter-spacing: var(--tracking-tighter); color: var(--text-strong); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .lp-figure-num [data-count] { background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lp-figure-from { font-size: 0.5em; color: var(--text-muted); text-decoration: line-through; text-decoration-thickness: 2px; }
+  .lp-figure-arrow { font-size: 0.5em; color: var(--text-muted); }
+  .lp-figure-label { margin: 0; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); text-wrap: pretty; }
+  .lp-figure-link { margin-block-start: auto; display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); align-self: flex-start; font-weight: var(--weight-semibold); color: var(--text-link); }
+  /* Light theme: the deep brand gradient (the same blue to cyan, darker), so every part of these large words keeps 3:1 even where it
+     crosses the page grid's hairlines (blue-500, the light gradient's end, falls to 2.4:1 there; L-83). */
+  :global([data-theme="light"]) .lp-figure-num [data-count] { background-image: var(--gradient-brand-deep); }
+  @media (forced-colors: active) { .lp-figure-num [data-count] { background: none; color: CanvasText; } }
+</style>

@@ -8,6 +8,7 @@
    follow are the owner's own words; the field's move is credited to NN/g where the blog piece goes into it. */
 import Button from '../ui/button.astro';
 import TwoUsersArt from './two-users-art.astro';
+import { twoUsers } from '../../lib/landing';
 const checks = [
   { title: 'Can an agent read it and finish the task?', body: 'Structure, data and rules, not visual hierarchy: an agent needs names it can rely on, states it can tell apart and a clear record of what it has done.' },
   { title: 'Is the handoff back to the person designed?', body: 'The agent picks the option, then the person has to log in, confirm or pay. That moment is where each part works and the experience still fails, so it gets designed on purpose.' },
@@ -25,8 +26,8 @@ const checks = [
       <figcaption class="cory-visually-hidden">The word User struck out of User Experience Design, with Human + Agent written above it.</figcaption>
     </figure>
     <div class="two-users-words" data-reveal="" style="display: grid; gap: var(--space-3);">
-      <h2 id="two-users-title" style="margin: 0px; max-inline-size: 24ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">Two users now: the person, and the agent acting for them</h2>
-      <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-body);">When someone sends an AI agent to book, file or cancel something, the agent reads the product first. The person still decides whether it worked, and may never see a screen. I design for both, and for the moment the work passes between them.</p>
+      <h2 id="two-users-title" style="margin: 0px; max-inline-size: 24ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">{twoUsers.title}</h2>
+      <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-body);">{twoUsers.body}</p>
     </div>
     <TwoUsersArt />
     </div>

@@ -41,8 +41,9 @@ for (const [route, sel] of HOVER) { const { ctx, p } = await open(route); const 
 console.log(`hover: ${HOVER.length} elements`);
 
 // 3. Home deck, and the stacks on the audience websites' first screens: a swap moves the cards (transform transitions run)
-//    and ends in the resting poses.
-for (const route of ['/', '/ar', '/job', '/clients']) { const { ctx, p } = await open(route); const next = p.locator('div:has(+ [data-hero-stack]) button >> nth=1'); if (!(await next.count())) { fail(`${route}: deck buttons not found`); await ctx.close(); continue; } await next.click(); await p.waitForTimeout(60);
+//    and ends in the resting poses. The two audience Homes became landing pages with no stack on 18 November 2026 (L-83, tested
+//    in section 8); the stacks are tested on an inner page of each website.
+for (const route of ['/', '/ar', '/job/experience', '/clients/about']) { const { ctx, p } = await open(route); const next = p.locator('div:has(+ [data-hero-stack]) button >> nth=1'); if (!(await next.count())) { fail(`${route}: deck buttons not found`); await ctx.close(); continue; } await next.click(); await p.waitForTimeout(60);
   const mid = await p.evaluate(() => document.getAnimations().filter(a => a.transitionProperty === 'transform' && a.effect?.target?.hasAttribute('data-stack-card')).length); await p.waitForTimeout(500);
   // A swap must settle: no time-based animation is left on a card. Scroll-linked ones (the cards fanning out as the page
   // scrolls, motion.css) follow the scroll, not the clock, so they are not counted.
@@ -66,7 +67,7 @@ console.log('progress bar: 3 pages');
 /* Elements with text that cannot be seen; `onScreen` limits it to the first screen (below the fold a block may be hidden
    while it waits to scroll in, by design). */
 const invisible = onScreen => [...document.querySelectorAll('main *')].filter(e => e.textContent.trim() && !e.closest('[hidden], [aria-hidden="true"], .cory-visually-hidden, details:not([open])') && (!onScreen || (e.getBoundingClientRect().top < innerHeight && e.getBoundingClientRect().bottom > 0)) && (getComputedStyle(e).visibility === 'hidden' || getComputedStyle(e).opacity === '0')).length;
-const probe = () => ({ flag: document.documentElement.dataset.motion, fetched: performance.getEntriesByType('resource').filter(e => e.name.includes('/_m/motion')).length, owned: document.querySelectorAll('[data-motion-owned]').length, lines: document.querySelectorAll('.motion-line').length, cssIntro: document.getAnimations().some(a => a.animationName === 'title-in') || !document.querySelector('.site-hero-title, #hero-title, .hero-split-words > h1') });
+const probe = () => ({ flag: document.documentElement.dataset.motion, fetched: performance.getEntriesByType('resource').filter(e => e.name.includes('/_m/motion')).length, owned: document.querySelectorAll('[data-motion-owned]').length, lines: document.querySelectorAll('.motion-line').length, cssIntro: document.getAnimations().some(a => a.animationName === 'title-in' || a.animationName === 'word-in') || !document.querySelector('.site-hero-title, #hero-title, .hero-split-words > h1') });
 for (const route of ['/', '/ar', '/work', '/about', '/blog/component-spec-files', '/job', '/clients']) {
   const { ctx, p } = await open(route);
   const atLoad = await p.evaluate(probe);
@@ -403,6 +404,56 @@ console.log('micro and sideways: the split sides, the nav underline, the copy ch
 console.log('cta: the hero primary at rest and on hover, a primary below the fold on the scroll, an outlined secondary, the admin, fade mode');
 
 console.log('flow: heads and bodies on 3 pages, the heading wipe with and without the script, cascades on 5 lists, the first view on 13 pages, the menu card, the phone menu, the theme in both settings, the travelling picture in both settings');
+
+// 8. The landing pages (owner request, 18 November 2026, L-83; islands/landing.ts, components/landing/): the first view's words
+//    rise one after another; the WebGL field starts after the load event, comes to rest within five seconds of the last input
+//    (CLAUDE.md 2.7), wakes on the pointer and stops again; in fade mode it is one still frame; without motion data (the
+//    checks) and without JavaScript the CSS picture stays; the figures count once from below the screen and end on their
+//    number; the band slides only with the scroll.
+for (const route of ['/job', '/clients']) {
+  let { ctx, p } = await open(route);
+  const first = await p.evaluate(() => ({ words: document.querySelectorAll('.lp-word').length, rising: document.getAnimations().filter(a => a.animationName === 'word-in').length }));
+  if (!first.words || first.rising < first.words) fail(`${route}: ${first.rising} of ${first.words} headline words rise in the first view`);
+  await p.waitForFunction(() => document.querySelector('[data-lp-field][data-ready]'), null, { timeout: 8000 }).catch(() => {});
+  const frames = () => p.evaluate(() => new Promise(r => { let n = 0; const c = document.querySelector('[data-lp-field] canvas'); const gl = c.getContext('webgl'); const orig = gl.drawArrays.bind(gl); gl.drawArrays = (...a) => { n++; return orig(...a); }; setTimeout(() => { gl.drawArrays = orig; r(n); }, 800); }));
+  const ready = await p.evaluate(() => !!document.querySelector('[data-lp-field][data-ready]'));
+  const early = await frames();
+  await p.waitForTimeout(6000);
+  const rest = await frames();
+  await p.mouse.move(1100, 300); await p.mouse.move(1150, 340, { steps: 6 });
+  const woken = await frames();
+  await p.waitForTimeout(6000);
+  const restAgain = await frames();
+  out[`landing field ${route}`] = { ready, early, rest, woken, restAgain };
+  if (!ready) fail(`${route}: the field never became ready with motion allowed`);
+  if (early < 5) fail(`${route}: the field drew ${early} frames in its first 0.8 s`);
+  if (rest > 0) fail(`${route}: the field still draws ${rest} frames 6 s after the last input`);
+  if (woken < 3) fail(`${route}: the pointer did not wake the field (${woken} frames)`);
+  if (restAgain > 0) fail(`${route}: the field did not rest again after the pointer (${restAgain} frames)`);
+  // Figures: below the screen they count and end on their number.
+  const counts = await p.evaluate(async () => { const els = [...document.querySelectorAll('[data-count]')]; els[0]?.scrollIntoView({ block: 'center', behavior: 'instant' }); await new Promise(r => setTimeout(r, 250)); const mid = els.map(e => e.textContent); await new Promise(r => setTimeout(r, 1800)); const fmt = new Intl.NumberFormat('en'); return { n: els.length, mid, end: els.map(e => e.textContent), want: els.map(e => fmt.format(Number(e.dataset.count))) }; });
+  out[`landing figures ${route}`] = counts;
+  if (!counts.n || counts.end.join() !== counts.want.join()) fail(`${route}: figures end on ${counts.end.join(', ')}, not ${counts.want.join(', ')}`);
+  if (counts.mid.join() === counts.want.join()) fail(`${route}: the figures did not count (already final 0.25 s after coming into view)`);
+  // The band moves with the scroll only.
+  const band = await p.evaluate(async () => { const t = document.querySelector('.lp-band-track'); t.scrollIntoView({ block: 'center', behavior: 'instant' }); await new Promise(r => setTimeout(r, 300)); const a = getComputedStyle(t).translate; await new Promise(r => setTimeout(r, 1200)); const b = getComputedStyle(t).translate; scrollBy({ top: 200, behavior: 'instant' }); await new Promise(r => setTimeout(r, 300)); return { a, b, c: getComputedStyle(t).translate }; });
+  out[`landing band ${route}`] = band;
+  if (band.a !== band.b) fail(`${route}: the band moves by itself (${band.a} to ${band.b})`);
+  if (band.b === band.c) fail(`${route}: the band does not follow the scroll`);
+  await ctx.close();
+  // Fade mode: one still frame. The automated checks under reduced motion: the CSS picture, no canvas drawing.
+  ({ ctx, p } = await open(route, { motion: 'reduce' }));
+  await p.evaluate(() => document.documentElement.setAttribute('data-motion', 'fade'));
+  const css = await p.evaluate(() => ({ ready: !!document.querySelector('[data-lp-field][data-ready]'), bg: getComputedStyle(document.querySelector('[data-lp-field]')).backgroundImage.includes('gradient') }));
+  out[`landing reduced ${route}`] = css;
+  if (css.ready || !css.bg) fail(`${route}: under reduced motion in a check the CSS picture should stay (${JSON.stringify(css)})`);
+  await ctx.close();
+  ({ ctx, p } = await open(route, { js: false }));
+  const nojs = await p.evaluate(() => ({ bg: getComputedStyle(document.querySelector('[data-lp-field]')).backgroundImage.includes('gradient'), words: [...document.querySelectorAll('.lp-word')].every(w => getComputedStyle(w).opacity !== '0') }));
+  if (!nojs.bg || !nojs.words) fail(`${route}: without JavaScript: ${JSON.stringify(nojs)}`);
+  await ctx.close();
+}
+console.log('landing: the first view, the field (starts, rests within 5 s, wakes, rests), the figures, the band, reduced motion and no JavaScript on 2 pages');
 
 await browser.close(); server.close();
 fs.mkdirSync(path.join(ROOT, 'reports/motion'), { recursive: true }); fs.writeFileSync(path.join(ROOT, 'reports/motion/check.json'), JSON.stringify({ fails, out }, null, 1));
