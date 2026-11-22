@@ -10,7 +10,8 @@ facts:
   - { value: "62", label: "Contrast pairs checked in both themes" }
   - { value: "5", label: "Brand payloads as data" }
 madeWith: [Claude Design]
-note: "Built inside Colaberry, so its files are not public. I can walk you through it on a call."
+url: https://refactored-by-colaberry.vercel.app/
+note: "Built inside Colaberry. Its live showcase is public under Documentation; I can walk you through the source on a call."
 added: 2026-11-13
 order: 60
 tags: [Rebrand, UX laws, Landing page]

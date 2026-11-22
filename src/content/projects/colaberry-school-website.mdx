@@ -1,0 +1,44 @@
+---
+title: Colaberry School website
+summary: "A 14-page marketing site for Colaberry's AI Systems Architect Accelerator, built in Claude Design on the Colaberry Design System: one program, three paths in, and one free Open House to join."
+status: in-progress
+role: Lead AI Product Designer
+stack: [Claude Design, React 18, GSAP, Colaberry Design System tokens and components]
+cover:
+  src: ../../assets/projects/colaberry-school-site-paths.jpg
+  alt: "One accelerator. Three ways in: three cards for working professionals, beginners and career switchers, and builders and founders, each with three points and an Explore this path link"
+gallery:
+  - src: ../../assets/projects/colaberry-school-site-projects.jpg
+    alt: "Student projects page: What our students actually built, above a dark panel listing the tools the shipped systems use, sized by how many use each"
+    caption: "Student projects: the stack drawn as a word cloud with counts"
+  - src: ../../assets/projects/colaberry-school-site-faq.jpg
+    alt: "FAQ page with the first question open: What is the AI Systems Architect Accelerator?"
+    caption: "FAQ: answers folded under their questions"
+links:
+  live: https://colaberry-school-website.vercel.app/
+tags: [Web, Design systems, AI]
+order: 6
+---
+
+## What it is
+
+The marketing site for Colaberry's AI Systems Architect Accelerator, a program for going from using AI to building real systems with Claude. I designed and built it in Claude Design on the [Colaberry Design System](/work/colaberry-design-system), so every page takes its colour, type, spacing and components from the system.
+
+## The pages
+
+- **The accelerator home page,** with a free Open House sign-up beside the opening.
+- **Three paths in,** one page each for working professionals, beginners and career switchers, and builders and founders. Each leads to the same Open House.
+- **Proof and people:** student projects, events, podcasts, short videos, a blog and the school's story.
+- **Getting started:** FAQ, register, contact, and a thank-you page after sign-up.
+
+It brings together an earlier home page and three single-audience landing pages that came before it.
+
+## How it is built
+
+The pages load the design system's tokens and its component bundle, so a change to a token in the system reaches every page. React is compiled in the browser, which keeps the site to plain files with no build step, and GSAP handles the motion. The site is exported from the Claude Design project; a new version is a fresh pull from the project.
+
+## Design decisions
+
+- **One primary action across the site:** the free Open House. The paths differ in what they promise, not in what they ask the visitor to do.
+- **Three paths on the home page, each with three points** (Hick's law), so a visitor recognises their own situation in a few seconds and goes deeper only on one.
+- **Answers folded under their questions** on the FAQ, so the page stays short to scan.

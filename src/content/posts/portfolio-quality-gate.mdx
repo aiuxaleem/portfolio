@@ -1,0 +1,97 @@
+---
+title: The quality gate behind my portfolio, and the rule that nothing is done without evidence
+subtitle: How I hold a personal site to a product's quality bar with Claude Code, and the skill I made from it
+excerpt: After my portfolio went live I kept building it like a product, with a written rulebook, an automated gate on every page and independent reviewers. Here is how that works, what it caught, and the skill you can use to run the same checks on your own UI.
+category: AI-assisted design
+tags:
+  - AI-assisted design
+  - Claude Code
+  - Accessibility
+  - Design systems
+  - Portfolio
+published: 2026-11-20
+updated: 2026-11-20
+cover:
+  src: ../../assets/posts/portfolio-quality-gate.png
+  alt: "Cover: the headline The quality gate behind my portfolio beside a dark panel listing the six steps of npm run quality, each marked pass, and the result of the 18 November run: 2,880 views, 42,854 text elements, 7,832 hover and focus states, 0 contrast findings."
+seo:
+  title: The quality gate behind my portfolio, built with Claude Code
+  description: How I hold my portfolio to a product's quality bar with Claude Code, a locked design, an automated gate and independent reviewers, plus the skill I made from it.
+---
+
+In October I wrote about [how I built this portfolio](/blog/portfolio-with-claude-design-and-claude-code) with Claude Design and Claude Code. This post is about what came after: four weeks of keeping it at a product's quality bar while it grew. It is for designers and design leads who build with AI tools and want a way to know, with evidence, that what shipped is right. By the end you will have the rules I use, the shape of the gate that enforces them, and a skill you can run on your own pages today.
+
+## The problem
+
+An AI coding tool is fast and confident. Both are a risk on a site with many pages. Between 23 October and 19 November the repository took 175 commits on 25 different days: new sections, an admin area, a dashboard, two audience landing pages, a mobile pass, a dark theme as the default. Every one of those changes could break something on a page nobody was looking at.
+
+The model will also tell you a fix is done. Sometimes it is. Sometimes it checked the one page it changed, at one width, in one theme. A portfolio for a Lead AI Product Designer cannot have a dark-mode contrast failure on page forty, because the people reading it are hiring managers and clients who notice exactly that.
+
+## What I did
+
+1. Wrote the rules down, once, where the model reads them every session.
+2. Built a gate that checks every page against those rules automatically.
+3. Kept a decision log, so every deviation has a reason and an approver.
+4. Asked independent reviewers to rate the work against a bar of 8.
+5. Turned the method into a skill other people can use.
+
+### 1. Wrote the rules where the model reads them
+
+The project has a `CLAUDE.md` file that Claude Code reads at the start of every session. It holds three kinds of rule.
+
+**The design is locked.** Colours, type, spacing, radii, motion and copy tone stay as they are. Every finding is one of two kinds. A defect (an accessibility or contrast failure, text overflow, a broken layout, a missing state, a theme bug) gets the smallest possible fix after I approve it. An enhancement, anything changed for taste, stays a proposal until I approve that item. This one rule removed most of the drift I used to see, because the model no longer redesigns while it repairs.
+
+**The standards are specific.** WCAG 2.2 AA as a minimum. Contrast checked in default, hover, focus, active, visited and selected states, in both themes. No sideways scroll at any width. Touch targets of 44 by 44 pixels. Every component shown in its loading, empty, error, success and partial states. Every component tested with stress content: a 120-⁠character title, an unbroken 60-⁠character URL, a one-word title, missing optional fields and eight or more tags.
+
+**The evidence rule.** The model may not write "done", "fixed" or "no issues" without a measured value, a passing check or a screenshot path. If something was not verified, it has to say so in those words. This changed the reports I get more than anything else. A sentence like "the contrast is now 5.3:1, measured in both themes" is something I can check; "fixed the contrast" is not.
+
+### 2. Built a gate that checks every page
+
+`npm run quality` is the gate, and a page is not done until it passes. It runs six steps:
+
+1. A type and content check, then a build with stress fixtures included.
+2. Budgets: at most 100 KB of JavaScript and 50 KB of CSS per page, gzipped.
+3. SEO and structured data, the owner facts (one title, one email, no phone number), and the contrast of text over the moving backgrounds.
+4. Accessibility (axe-core) and page checks on every route, at twelve screen sizes, in light and dark, plus a keyboard walk.
+5. Contrast measured in every state, 200 and 400 percent zoom, the text-spacing override, and the first view of every page.
+6. Phones and tablets by touch, and the admin area on a phone.
+
+Routes are found automatically, so a new page is checked without anyone remembering to add it. On 18 November one run covered 2,880 views and measured 42,854 text elements and 7,832 hover and focus states on 121 pages, with zero contrast findings. A full run has taken anywhere from about two hours to more than eleven, so there is also a quick version for the working loop.
+
+The rule I hold hardest is that a check is never weakened to make it pass. On 16 November a new way of measuring the space between touch targets, from their centres, cleared 76 failures in the admin area. One of the reviewers showed that it let chips stand 2 pixels apart, which broke the 8-⁠pixel spacing rule. We withdrew it, went back to measuring the gap between edges, and moved the admin's chips, tabs and bar cells 8 pixels apart on touch screens.
+
+### 3. Kept a decision log
+
+Every deviation from the design is a row in `docs/AUDIT_FINDINGS.md`, with where it is, what was found, the rule that forces it, the decision and the evidence. There are 83 rows now: 12 high, 32 medium, 38 low, and one owner-approved enhancement. When I come back to a page months later, the log tells me why it looks the way it does and who agreed to it.
+
+### 4. Asked independent reviewers to rate the work
+
+A model reviewing its own fixes is anchored on them. So before a phase ends, three or four fresh reviewers (separate agents, each given the audience, the locked design and full-page screenshots, but not the builder's conclusions) rate the work out of 10, each through one lens, such as the hiring manager, the client, phones, or the quality of the testing itself. Every finding has to cite a screenshot or a line of code and say whether it is a defect or taste. Defects are fixed; taste goes to the log as a proposal. The bar is 8.
+
+The scores are useful because they are not always flattering. On 2 November the dark theme started at 6.8, 7.2 and 7.8 and finished at 7.9, 8.4 and 8.6. On 16 November the phone experience went from 8.2 to 8.7, while the reviewer judging the testing itself held it at 7.2 and said that browser emulation without Safari tops out near 8.5. That is the honest ceiling of what I can prove without real devices.
+
+### 5. Turned the method into a skill
+
+The gate in my repository is tied to my site. The method is not, so I wrote it up as a Claude skill: the UI quality gate. It holds the four rules, a checklist of the standards, a script that checks any list of pages at ten widths in both themes, and a branded report template. You can download it from [my Claude Skills](/skills#mine).
+
+## What happened
+
+The gate caught things that no person would have found by looking.
+
+- **A bug that lived for three weeks.** On 3 November the Show password box on the live sign-in page was drawn full width. Every check and every review had looked at the development server, where stylesheets load in a different order from the production build. The fix was one import placed last; the lasting change was a rule that the admin is also tested against a production build served locally.
+- **Failures only the full run sees.** On 9 November the full gate found card rows overflowing at 320 pixels that the quick gate had passed, because the quick gate skips the zoom step. On 16 November the first full run with the new mobile checks failed 700 views, all on routes the quick runs never visit.
+- **A failure that was not the site at all.** On the night of 19 November a full run ended with 7 failures. The Windows power log showed the laptop in standby from 22:09 to 01:30 and two restarts after 04:30. Reading the machine's log before blaming the page saved a day of chasing a bug that did not exist.
+
+<Callout title="The rule that made the difference">
+Never accept "done" without a measured value, a passing check or a screenshot path. Ask the model to say plainly what it did not verify.
+</Callout>
+
+## What I would do differently
+
+I would test the production build from the first day. The three-week sign-in bug came entirely from checking the development server, and a production build served locally would have caught it in minutes.
+
+I would also plan the gate's length earlier. It grew to six steps and, on a slow night, more than eleven hours, which turns a quick change into an overnight wait. Splitting the slowest pages into their own lane helped, and so did running nothing else while the gate runs. Some things are still not verified: I have not tested with a screen reader, on real devices or in the Safari engine, and the reports say so.
+
+## Try it yourself
+
+Download the UI quality gate from [my Claude Skills](/skills#mine), add it to Claude, and point it at one page you care about with "run the quality gate on this page". Start in report-only mode. Read the findings, approve the defects you agree with, and ask for the evidence after every fix.

@@ -240,6 +240,10 @@ html:has(dialog[data-image-preview][open]) { overflow: hidden; }
 .image-preview-frame[data-state="zoomed"] .image-preview-image { max-inline-size: none; max-block-size: none; }
 .image-preview-status { position: absolute; inset-block-end: var(--space-3); inset-inline: var(--space-3); margin: 0; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); background: var(--surface-glass-strong); border: 1px solid var(--border-subtle); font-size: var(--text-body-sm); color: var(--text-body); display: none; }
 .image-preview-frame:is([data-state="loading"], [data-state="error"]) .image-preview-status { display: block; }
+/* A loading message waits 300 ms (the design system's loading rule, L-84), so a picture from the cache never flashes it; the
+   LinkedIn skeleton uses the same. The delay is a step, not motion, so it holds under reduced motion too. */
+.image-preview-frame[data-state="loading"] .image-preview-status { animation: appear-late 1ms linear 300ms both; }
+@keyframes appear-late { from { opacity: 0; } to { opacity: 1; } }
 .image-preview-hint { margin: 0; padding: var(--space-2) var(--space-4); font-size: var(--text-caption); line-height: var(--leading-normal); color: var(--text-subtle); border-block-start: 1px solid var(--border-subtle); }
 @media (hover: none) { .image-preview-hint { display: none; } }
 @media (max-width: 639px) {

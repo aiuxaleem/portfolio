@@ -351,6 +351,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
               <li><YouTube id="aaaaaaaaaaa" title="Fixture video, facade (live)" /></li>
               <li><YouTube id="aaaaaaaaaaa" title="Fixture video, loading" state="loading" /></li>
               <li><YouTube id="aaaaaaaaaaa" title="Fixture video, failed" state="failed" /></li>
+              <li><YouTube id="aaaaaaaaaaa" title="Fixture video, failed while offline" state="failed" reason="offline" /></li>
               <li><YouTube id="[VERIFY]" title={stress.longTitle} state="facade" /></li>
             </ul></div>
           </div>
@@ -365,6 +366,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
               <li><LinkedInPost {...li} title="Fixture LinkedIn post, facade (live)" excerpt="Fixture excerpt of the post." /></li>
               <li><LinkedInPost {...li} title="Fixture LinkedIn post, loading" excerpt="Fixture excerpt of the post." state="loading" /></li>
               <li><LinkedInPost {...li} title="Fixture LinkedIn post, failed" excerpt="Fixture excerpt of the post." state="failed" /></li>
+              <li><LinkedInPost {...li} title="Fixture LinkedIn post, failed while offline" excerpt="Fixture excerpt of the post." state="failed" reason="offline" /></li>
               <li><LinkedInPost {...li} title={stress.longTitle} excerpt={stress.unbroken} state="facade" /></li>
               <li><LinkedInPost url={li.url} title="Fixture LinkedIn post, link only (no post number, or the option is off)" /></li>
               <li><LinkedInPost {...li} title="Fixture LinkedIn post in a list: heading, date and series" date={new Date('2026-01-15')} series="Fixture series" level={3} state="facade" /></li>
@@ -585,7 +587,7 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
           </div>
           <div style="display: grid; gap: var(--space-2);">
             <h2 style={h2}>Not covered yet</h2>
-            <p style={note}>Loading skeletons and error states (no component loads data in the browser any more). Service link card, reel card, section nav and the certificate dialog are still rendered from legacy snapshots; each gets its fixtures here when it becomes a real component.</p>
+            <p style={note}>The skeleton (L-84) is covered by the LinkedIn post's loading fixture above, the only box that waits for content in the browser. Service link card, reel card, section nav and the certificate dialog are still rendered from legacy snapshots; each gets its fixtures here when it becomes a real component.</p>
           </div>
         </div>)}
         {part === 'site' && <div data-states-testimonials><Testimonials placeholders id={`testimonials-${theme}`} /></div>}

@@ -17,11 +17,11 @@ function token(name: string): string {
   if (!m) throw new Error(`og-image: token --${name} not found in tokens.css`);
   return m[1].trim().replace(/var\(--([\w-]+)\)/g, (_, n) => token(n));
 }
-/* The kit's logo on the card's navy gradient: its white file's colours (a white tile, a navy a, the gradient dot) beside the
+/* The kit's logo on the card's navy gradient: its white file's colours (a white tile, navy AIUX letters, the gradient I) beside the
    white wordmark, made from the kit's dark file by swapping the tile's and the letter's fills. */
 const logoSvg = (() => { const s = fs.readFileSync(path.join(root, 'Aleem-Brand-Kit/Aleem-Brand-Kit/01-Logo/SVG/aleem-logo-dark.svg'), 'utf8'); const [tile, letter] = [...s.matchAll(/<path d="[^"]+" fill="(#[0-9A-F]{6})"\/>/g)]; if (!tile || !letter) throw new Error('og-image: the logo file changed shape'); return s.replace(tile[0], tile[0].replace(tile[1], token('white'))).replace(letter[0], letter[0].replace(letter[1], token('navy-800'))); })();
 const logo = 'data:image/svg+xml;base64,' + Buffer.from(logoSvg).toString('base64');
-const LOGO_H = 48, LOGO_W = Math.round((LOGO_H * 423.566) / 120);
+const LOGO_H = 48, LOGO_W = Math.round((LOGO_H * 406.809) / 120);
 const font = (pkg: string, file: string) => fs.readFileSync(path.join(root, 'node_modules/@fontsource', pkg, 'files', file));
 const fonts = [
   { name: 'Plus Jakarta Sans', data: font('plus-jakarta-sans', 'plus-jakarta-sans-latin-800-normal.woff'), weight: 800 as const, style: 'normal' as const },

@@ -1,24 +1,26 @@
 ---
-/* The Aleem logo (owner's brand kit, 12 November 2026, L-67): the navy tile with the "a" whose bowl is a chat bubble, the
-   gradient dot that makes it "ai", and the "aleem" wordmark. The shapes are the kit's own outlines
-   (Aleem-Brand-Kit/01-Logo/SVG/aleem-logo.svg), never retyped in a font; only the colours come from tokens, so one drawing
-   serves the light page, the dark page (the kit's -dark colours: a navy-700 tile, a white wordmark) and the ink panels
-   (`onInk`: the kit's white file, a white tile with a navy "a", beside the white wordmark). `mark` draws the tile alone. The accessible name is "Aleem", the word the wordmark shows.
-   Minimum sizes from the kit: the mark 24px, the logo 20px tall. */
+/* The Aleem logo (owner's logo system, 20 November 2026, L-84; replaces the 12 November kit's "a" tile, L-67): a rounded
+   navy tile holding AIUX on a two-by-two grid (AI above UX, both rows justified to one width), the I alone in the
+   blue-to-cyan gradient, top to bottom, and the "Aleem" wordmark beside it. The shapes are the design system's own outlines
+   (Aleem-Brand-Kit/Aleem-Brand-Kit/01-Logo/SVG/aleem-logo.svg, from project/assets/Logo/ of the Aleem Design System), never
+   retyped in a font; only the colours come from tokens, so one drawing serves the light page, the dark page (a navy-700
+   tile, a white wordmark) and the ink panels (`onInk`: a white tile with navy letters beside the white wordmark).
+   `mark` draws the tile alone. The accessible name is "Aleem AIUX", as the logo system names it.
+   Minimum sizes from the logo system: the mark 24px (below that the favicon file), the logo 20px tall. */
 import { nextId } from '../../lib/ids';
 interface Props { /** 'logo' (tile and wordmark) or 'mark' (the tile alone). */ variant?: 'logo' | 'mark'; /** Height in px. */ size?: number; /** On an ink panel: the dark-ground colours whatever the theme. */ onInk?: boolean; /** Decorative where words beside it already name the brand. */ decorative?: boolean; class?: string }
 const { variant = 'logo', size = 28, onInk = false, decorative = false, class: className } = Astro.props;
-const [, , vbW, vbH] = '0 0 423.566 120'.split(' ').map(Number);
+const vbW = 406.809, vbH = 120;
 const width = variant === 'mark' ? vbH : vbW;
 /* One gradient id per drawing: a page shows the logo more than once. */
-const id = nextId('aleem-spark');
+const id = nextId('aleem-signal');
 ---
-<svg class:list={['aleem-logo', className]} data-on-ink={onInk ? '' : undefined} xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${width} ${vbH}`} height={size} width={Math.round((size * width) / vbH)} {...(decorative ? { 'aria-hidden': 'true' } : { role: 'img', 'aria-label': 'Aleem' })} focusable="false">
-  <defs><linearGradient id={id} x1="0" y1="0" x2="1" y2="0"><stop offset="0" style="stop-color: var(--blue-500)" /><stop offset="1" style="stop-color: var(--cyan-500)" /></linearGradient></defs>
+<svg class:list={['aleem-logo', className]} data-on-ink={onInk ? '' : undefined} xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${width} ${vbH}`} height={size} width={Math.round((size * width) / vbH)} {...(decorative ? { 'aria-hidden': 'true' } : { role: 'img', 'aria-label': 'Aleem AIUX' })} focusable="false">
+  <defs><linearGradient id={id} x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color: var(--blue-500)" /><stop offset="1" style="stop-color: var(--cyan-500)" /></linearGradient></defs>
   <path class="aleem-logo-tile" d="M27.27 0H92.73A27.27 27.27 0 0 1 120 27.27V92.73A27.27 27.27 0 0 1 92.73 120H27.27A27.27 27.27 0 0 1 0 92.73V27.27A27.27 27.27 0 0 1 27.27 0Z" />
-  <path class="aleem-logo-letter" d="M58.5 48.25A26 26 0 0 1 69.5 50.692V48.25H84.5V100.25H69.5V97.808A26 26 0 0 1 58.5 100.25H39A6.5 6.5 0 0 1 32.5 93.75V74.25A26 26 0 0 1 58.5 48.25ZM47.5 74.25A11 11 0 1 0 69.5 74.25A11 11 0 1 0 47.5 74.25Z" />
-  <circle cx="77" cy="31.75" r="9" fill={`url(#${id})`} />
-  {variant === 'logo' && <path class="aleem-logo-word" d="M177.752 46.496A25.352 25.352 0 0 1 203.104 71.848A25.352 25.352 0 0 1 177.752 97.2L157.085 97.2A4.685 4.685 0 0 1 152.4 92.515L152.4 71.848A25.352 25.352 0 0 1 177.752 46.496ZM163.555 71.848A14.197 14.197 0 1 0 191.949 71.848A14.197 14.197 0 1 0 163.555 71.848ZM191.949 46.496H203.104V97.2H191.949ZM215.375 25.2H226.53V97.2H215.375ZM280.784 88.144A25.352 25.352 0 1 1 286.715 71.848L275.561 71.848A14.197 14.197 0 1 0 272.239 80.974L280.784 88.144ZM241.589 66.27H286.715V77.425H241.589ZM338.181 88.144A25.352 25.352 0 1 1 344.113 71.848L332.958 71.848A14.197 14.197 0 1 0 329.636 80.974L338.181 88.144ZM298.986 66.27H344.113V77.425H298.986ZM353.594 66.777H364.749V97.2H353.594ZM353.594 66.777A20.282 20.282 0 0 1 394.158 66.777H383.003A9.127 9.127 0 0 0 364.749 66.777ZM383.003 66.777H394.158V97.2H383.003ZM383.003 66.777A20.282 20.282 0 0 1 423.566 66.777H412.411A9.127 9.127 0 0 0 394.158 66.777ZM412.411 66.777H423.566V97.2H412.411Z" />}
+  <path class="aleem-logo-letter" d="M49.154 24H57.01L42.851 55.95H34.994ZM51.039 24H58.896L73.055 55.95H65.199ZM43.368 44.448H64.682V50.658H43.368ZM34.994 64.05H41.744V85H34.994ZM56.994 85A11 11 0 0 1 34.994 85H41.744A4.25 4.25 0 0 0 50.244 85ZM50.244 64.05H56.994V85H50.244ZM77.541 64.05H85.006L69.659 96H62.194ZM62.194 64.05H69.659L85.006 96H77.541Z" />
+  <path d="M78.256 24H85.006V55.95H78.256Z" fill={`url(#${id})`} />
+  {variant === 'logo' && <path class="aleem-logo-word" d="M167.661 26.4H179.112L155.45 93.6H144ZM170.41 26.4H181.86L205.521 93.6H194.071ZM157.535 69.408H191.986V78.986H157.535ZM212.497 26.4H222.908V93.6H212.497ZM273.546 85.147A23.662 23.662 0 1 1 279.081 69.938L268.67 69.938A13.251 13.251 0 1 0 265.57 78.455L273.546 85.147ZM236.963 64.732H279.081V75.144H236.963ZM327.116 85.147A23.662 23.662 0 1 1 332.652 69.938L322.241 69.938A13.251 13.251 0 1 0 319.141 78.455L327.116 85.147ZM290.534 64.732H332.652V75.144H290.534ZM341.502 65.206H351.913V93.6H341.502ZM341.502 65.206A18.93 18.93 0 0 1 379.361 65.206H368.95A8.518 8.518 0 0 0 351.913 65.206ZM368.95 65.206H379.361V93.6H368.95ZM368.95 65.206A18.93 18.93 0 0 1 406.809 65.206H396.398A8.518 8.518 0 0 0 379.361 65.206ZM396.398 65.206H406.809V93.6H396.398Z" />}
 </svg>
 
 <style is:global>

@@ -38,7 +38,7 @@ Version 1.0, 12 November 2026. Everything you need to put the Aleem brand on a p
 
 ## The rules in one minute
 
-- **The idea.** The mark is an "a" whose bowl is a chat bubble. The dot on its stem makes it "ai". That dot is the only gradient in the logo.
+- **The idea (since 20 November 2026).** The mark is a rounded navy tile holding AIUX on a two-by-two grid, AI above UX, both rows set to one width. The I is the only letter in the blue-to-cyan gradient: it is the AI, and the "I" in "I design the gap". Beside the tile, "Aleem" says who does the work. The 12 November "a" mark is retired; `06-Guidelines/Aleem-Brand-Guidelines.html` still shows it until that page is redrawn.
 - **Clear space.** Keep a quarter of the tile's height free on every side.
 - **Minimum sizes:**
   - mark: 24px (the favicon file works down to 16px);

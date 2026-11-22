@@ -81,6 +81,15 @@ const autoArrow = newTab && !Astro.slots.has('icon-right') && !/<svg/i.test(body
   @media (max-width: 519px) { :is(a.ui-button-primary, a.ui-button-on-ink-solid, a[data-ds-button="primary"], a[data-ds-button="on-ink-solid"]):not([download]) { padding-inline-start: var(--space-6) !important; } }
   /* A form's send button spans the form on a phone, as its fields do. */
   @media (max-width: 519px) { form [data-form-submit] { inline-size: 100%; } }
+  /* Sending (the design system's Button loading, 20 November 2026, L-84): while a form sends, a ring turns before the label
+     ("Sending"), for at most six turns (CLAUDE.md 2.7: nothing moves for more than five seconds on its own); with reduced
+     motion the ring stands still with its gap, beside the same label and status line. On a button only (a link's ::before
+     is its arrow well); currentColor, so it takes the label's contrast. */
+  [data-state="submitting"] button[data-form-submit]::before { content: ""; flex: none; inline-size: 1em; block-size: 1em; box-sizing: border-box; border-radius: 50%; border: 2px solid currentColor; border-inline-end-color: transparent; }
+  @media (prefers-reduced-motion: no-preference) {
+    [data-state="submitting"] button[data-form-submit]::before { animation: form-sending 800ms linear 6; }
+    @keyframes form-sending { to { rotate: 1turn; } }
+  }
   /* The ghost is a text link that is still a 44px target: its underline arrives on hover and focus. */
   .ui-button-ghost { background: transparent; color: var(--text-link); padding-inline: 4px; min-height: 44px; text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 2px; text-underline-offset: 5px; }
   .ui-button-on-ink { background: var(--on-ink-fill); color: var(--on-ink-strong); border-color: var(--on-ink-border-strong); }

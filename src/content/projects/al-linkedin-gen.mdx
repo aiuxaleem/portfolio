@@ -1,0 +1,65 @@
+---
+title: "AL Linkedin Gen: on-brand LinkedIn posts from any design system"
+summary: "A Windows desktop app I designed and built: give it a design system and a post you already have, and Claude lays the post out as a bento grid that must pass six quality checks before export."
+status: shipped
+role: Designer and builder
+stack: [Electron, React, TypeScript, Vite, Tailwind, Anthropic SDK, axe-core]
+started: 2026-10-12
+ended: 2026-10-13
+cover:
+  src: ../../assets/projects/al-linkedin-gen-design.jpg
+  alt: "AL Linkedin Gen at step 3: a reading-list post laid out as a bento grid in the AgentCory style, marked Arranged by Claude, with Check quality ready"
+gallery:
+  - src: ../../assets/projects/al-linkedin-gen-content.jpg
+    alt: "Step 2: Claude has read the source post into an editable form, marked high confidence, with a note on one character it transcribed"
+    caption: "Claude reads the post you already have and keeps every word"
+  - src: ../../assets/projects/al-linkedin-gen-style.jpg
+    alt: "Step 1: choosing a style, with an empty state that explains how a design system becomes a reusable style"
+    caption: "A design system is read once and saved as a style"
+  - src: ../../assets/projects/al-linkedin-gen-settings.jpg
+    alt: "Settings dialog with the Anthropic API key field and three looks for the app: AgentCory, AgentCory dark and Studio neutral"
+    caption: "Settings: the key is encrypted by Windows, and the app itself has three looks"
+tags: [AI, Design systems, Accessibility]
+updates:
+  - date: 2026-10-12
+    title: "Version 1.0"
+    body: "The interface rebuilt on the AgentCory design system, a heuristic audit against Nielsen's ten heuristics and the UX laws with every finding fixed or listed as open, export history, and a Windows installer."
+seo:
+  title: "AL Linkedin Gen, a LinkedIn post app"
+order: 5
+---
+
+## What it is
+
+A Windows desktop app that turns a design system into on-brand LinkedIn post images. You give it two things: a design system, as a GitHub link, a folder or a zip (an export from Claude Design works), and a post you already have, as an image, slide, screenshot or draft. It returns a PNG at 1080 × 1350, 1080 × 1080 or 1200 × 627, laid out as a bento grid in that style.
+
+## How it works
+
+1. **Style.** The app reads the design system once and extracts its colours, fonts, sizes, corners, spacing and shadows. Claude then distils a Design Language Profile from them: what each colour is for, the type system, shape, layout rules and voice. The AgentCory design system is built in.
+2. **Content.** Claude reads the source image and transcribes every word exactly, sorted into hook, sections, bullets, numbers, quote, call to action and author. Photos, logos and icons are cropped out of the source and kept untouched. Everything lands in a form the person can correct.
+3. **Design and export.** An automatic bento layout appears at once, then Claude arranges the tiles for that content and that style. The person can ask for another layout or type a change, such as "make the number bigger".
+
+## The quality gate
+
+Posts are rendered as real HTML and CSS from the style's tokens, never as AI-generated pixels, so the text stays sharp and the gate can measure real boxes. Before export the post is rendered at full size and checked six ways:
+
+- no text overflows or is clipped;
+- WCAG 2.2 contrast: 4.5:1 for body text and 3:1 for large text, measured at the worst stop of a gradient;
+- an axe-core accessibility audit;
+- no text smaller than reads in the LinkedIn mobile feed: 24 px for body text and 18 px for labels on the 1080 px canvas;
+- the hook in the top third of the image;
+- spacing taken only from the style's tokens.
+
+If a check fails, the app changes the layout itself and checks again, up to three rounds, and says in plain words what it changed. Export stays locked until every check passes.
+
+## Design decisions
+
+- **Three steps, one main action on each** (Hick's law), with the preview always in view at the chosen size.
+- **Progress only after 400 ms** (Doherty threshold), so a fast action never flashes a spinner, and every long stage says what it is doing.
+- **Targets of at least 44 px** (Fitts's law).
+- **The app takes on the complexity** (Tesler's law): token extraction and distillation sit behind one Add button.
+- **The key never reaches the interface.** Claude is called only from the app's main process, the key is encrypted by Windows, and the app has no analytics.
+
+A heuristic audit ran on the day of the first build, against Nielsen's ten heuristics and the UX laws, followed by an edge-case sweep. Each finding was fixed in the same commit or listed as open.
+
+The app's own interface is built on the AgentCory design system, one of [my design systems](/my-design-systems).

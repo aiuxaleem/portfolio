@@ -1,0 +1,16 @@
+title: UI quality gate
+name: ui-quality-gate
+mine: true
+maker: Mohammad Abdul Aleem
+category: review-and-research
+summary: Checks a live UI at ten widths in both themes for accessibility, contrast, overflow, touch targets, states and what an AI agent can read, sorts each finding into a defect or a proposal, fixes the smallest thing and proves it.
+note: The method behind this site's own quality gate, with a check script that needs Node, playwright-core and axe-core. The blog post "The quality gate behind my portfolio" tells the story.
+download: /skills/ui-quality-gate.zip
+size: 15.9 KB
+readme: /skills/ui-quality-gate/SKILL.md
+prompts: ["Run the quality gate", "QA this page", "Is this ready to ship?", "Check this UI on mobile and in dark mode", "Prove it is fixed"]
+needs: ["The pages to check: URLs, a sitemap or a local build", "Whether it may change code or only report", "Node with playwright-core and axe-core, for the check script"]
+gives: A measured run across widths and themes, a findings log of defects and proposals, fixes with before and after evidence, and a branded report.
+added: 2026-11-20
+order: 15
+tags: [Quality, Accessibility, Responsive, Evidence]

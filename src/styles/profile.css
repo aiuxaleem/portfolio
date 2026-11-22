@@ -122,7 +122,10 @@
 .form-error { margin: 0; display: flex; gap: var(--space-2); align-items: flex-start; font-size: var(--text-overline); font-weight: var(--weight-medium); line-height: var(--leading-normal); color: var(--text-danger); }
 .form-error svg { flex-shrink: 0; margin-block-start: 2px; }
 .form-panel { display: flex; gap: var(--space-3); align-items: flex-start; padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-subtle); border-inline-start: 3px solid var(--text-danger); }
-.form-panel > svg { flex-shrink: 0; margin-block-start: 2px; color: var(--text-danger); }
+/* The panel's icon sits in a tinted tile (the design system's ErrorState and Alert, 20 November 2026, L-84): the tint is behind
+   the icon only, never behind the words, whose links would fall to 4.34:1 on the red tint. Icon on its tile: danger 5.39:1
+   light and 6.04:1 dark; success 4.71:1 and 7.03:1. */
+.form-panel > svg { flex-shrink: 0; box-sizing: border-box; inline-size: var(--tap-target); block-size: var(--tap-target); padding: calc((var(--tap-target) - 22px) / 2); border-radius: var(--radius-md); background: var(--surface-danger); color: var(--text-danger); }
 .form-panel > div { display: grid; gap: var(--space-2); min-inline-size: 0; }
 /* Where the panel is narrow (a 320 px phone) its icon sits above the words, which then have the panel's width, and the words
    break at spaces first: beside the icon they had 140 px and "name@example.com." broke as "name@example.c / om."
@@ -137,7 +140,7 @@
 .form-panel .form-panel-title { font-weight: var(--weight-bold); color: var(--text-strong); }
 .form-panel:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; }
 .form-success { border-inline-start-color: var(--text-success); }
-.form-success > svg { color: var(--text-success); }
+.form-success > svg { color: var(--text-success); background: var(--surface-success); }
 .form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); }
 .form-actions .ui-button:disabled { opacity: var(--opacity-disabled); cursor: not-allowed; }
 .form-status { margin: 0; font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-muted); }

@@ -9,8 +9,9 @@ document.querySelectorAll<HTMLElement>('[data-embed]:not([data-static])').forEac
   const status = figure.querySelector<HTMLElement>('.embed-status');
   const say = (text: string) => { if (status) status.textContent = text; };
   let timer = 0;
-  const fail = () => {
-    clearTimeout(timer);
+  /* Why it failed (L-84, the design system's ErrorState "offline"): the browser is offline, or the frame did not load in time. */
+  const fail = (reason: 'offline' | 'network' = 'network') => {
+    clearTimeout(timer); figure.dataset.reason = reason;
     frame.querySelector('iframe')?.remove();
     figure.dataset.state = 'failed'; say('');
     (figure.querySelector<HTMLElement>('[data-embed-retry]') || figure.querySelector<HTMLElement>('[data-embed-load]'))?.focus();
@@ -19,7 +20,7 @@ document.querySelectorAll<HTMLElement>('[data-embed]:not([data-static])').forEac
     clearTimeout(timer);
     frame.querySelector('iframe')?.remove();
     figure.dataset.state = 'loading'; say(figure.dataset.embedLoading || 'Loading');
-    if (navigator.onLine === false) { fail(); return; }
+    if (navigator.onLine === false) { fail('offline'); return; }
     const iframe = document.createElement('iframe');
     iframe.title = figure.dataset.embedTitle || 'Embedded content';
     iframe.allow = 'autoplay; encrypted-media; picture-in-picture'; iframe.allowFullscreen = true;

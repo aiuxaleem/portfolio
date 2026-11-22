@@ -34,7 +34,8 @@ const linkStyle = 'display: inline-flex; align-items: center; justify-content: c
   <div class="cory-container" data-hdr-row style="block-size: var(--header-height); display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);">
     <a href={home} aria-label={t.homeAria} style="display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); text-decoration: none; color: var(--text-strong); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h4); letter-spacing: var(--tracking-tight); flex-shrink: 0;">
       <Logo size={28} decorative />
-      {subSite ? <span class="site-audience" lang="en">{subSite.label}</span> : <span class="site-product" lang="en" dir="ltr">AIUX</span>}
+      {/* The logo says AIUX in its tile since 20 November 2026 (L-84), so the main site shows it alone; an audience site names its audience. */}
+      {subSite && <span class="site-audience" lang="en">{subSite.label}</span>}
     </a>
     <nav data-hdr-desktop aria-label="Primary">
       <ul data-nav-list style="display: flex; gap: var(--space-1); align-items: center;">
@@ -94,15 +95,10 @@ const linkStyle = 'display: inline-flex; align-items: center; justify-content: c
 <style is:global>
   /* Beside the logo (L-67): on the full portfolio its name, AIUX, after a hairline; an audience website names its audience
      instead (docs/SITES.md), hidden on narrow screens, where the menu says it. */
-  .site-product { display: inline-flex; align-items: center; gap: var(--space-3); color: var(--text-strong); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h4); line-height: 1; letter-spacing: var(--tracking-tight); white-space: nowrap; }
-  .site-product::before { content: ""; inline-size: 1px; block-size: 1.25em; background: var(--border-strong); }
   /* Under 500px the bar has no room for the name beside the logo and its controls (measured from 320 to 1280px: Menu or
      Let's talk left the screen between 375 and 480px): the logo alone, as the admin bar drops its badge on narrow
      screens (L-45); the site switch above already says Full portfolio. From 500 to 539px a step smaller. */
-  @media (max-width: 539px) { [data-hdr-row] .aleem-logo { block-size: 24px; inline-size: auto; } [data-hdr-row] .site-product { gap: var(--space-2); font-size: var(--text-body-md); } }
-  @media (max-width: 499px) { [data-hdr-row] .site-product { display: none; } }
-  .site-product-on-ink { color: var(--on-ink-strong); font-size: var(--text-h3); }
-  .site-product-on-ink::before { background: var(--on-ink-border-strong); }
+  @media (max-width: 539px) { [data-hdr-row] .aleem-logo { block-size: 24px; inline-size: auto; } }
   .site-audience { display: none; padding: 2px var(--space-2); border-radius: var(--radius-pill); background: var(--surface-sunken); box-shadow: inset 0 0 0 1px var(--border-default); color: var(--text-muted); font-family: var(--font-sans); font-size: var(--text-caption); font-weight: var(--weight-semibold); white-space: nowrap; }
   @media (min-width: 640px) { .site-audience { display: inline-block; } }
   .skip-link:focus { transform: none !important; }
@@ -150,8 +146,13 @@ const linkStyle = 'display: inline-flex; align-items: center; justify-content: c
   /* Every page link in the phone menu is one size, whether it sits in a group or not. */
   .menu-nav > .menu-nav-link { font-size: var(--text-h3) !important; font-weight: var(--weight-bold) !important; letter-spacing: normal !important; }
   .menu-nav-child { display: flex; align-items: center; min-block-size: var(--tap-target); font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-h3); color: var(--text-strong); text-decoration: none; inline-size: fit-content; }
-  /* Theme icons: the moon shows in light theme (switch to dark), the sun in dark. */
-  [data-theme="dark"] [data-icon-moon], :root:not([data-theme="dark"]) [data-icon-sun] { display: none; }
+  /* Theme icons: the moon shows in light theme (switch to dark), the sun in dark. In the header's round button both stay in
+     one cell and the hidden one is turned away and faded, so motion.css can turn one out and the other in (the design
+     system's ThemeToggle, 20 November 2026, L-84); the phone menu's row, where the icon sits beside its words, swaps them. */
+  .ui-icon-button[data-theme-toggle] > svg { grid-area: 1 / 1; }
+  [data-theme="dark"] .ui-icon-button[data-theme-toggle] > [data-icon-moon] { opacity: 0; rotate: 90deg; scale: 0.6; }
+  :root:not([data-theme="dark"]) .ui-icon-button[data-theme-toggle] > [data-icon-sun] { opacity: 0; rotate: -90deg; scale: 0.6; }
+  [data-theme="dark"] [data-menu-theme] [data-icon-moon], :root:not([data-theme="dark"]) [data-menu-theme] [data-icon-sun] { display: none; }
   @media (hover: hover) {
     .header-nav-link:hover { color: var(--text-strong) !important; }
     .header-lang:hover, .menu-setting:hover { background: var(--action-ghost-hover) !important; }

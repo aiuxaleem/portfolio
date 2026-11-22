@@ -13,8 +13,8 @@ import type { ImageMetadata } from 'astro';
 import PreviewLink from '../ui/preview-link.astro';
 import { formatDate } from '../../lib/posts';
 
-interface Props { urn?: string; url: string; title: string; excerpt?: string; date?: Date; series?: string; /** The post's own words: the card shows the post itself. */ text?: string; /** The post's picture, with its words. */ image?: { src: ImageMetadata; alt: string }; /** A heading level for the title, when the card is an item in a list. */ level?: 2 | 3; state?: 'facade' | 'loading' | 'failed'; /** Off where the page already says these are LinkedIn posts. */ kicker?: boolean }
-const { urn = '', url, title, excerpt, date, series, text, image, level, state = 'facade', kicker = true } = Astro.props;
+interface Props { urn?: string; url: string; title: string; excerpt?: string; date?: Date; series?: string; /** The post's own words: the card shows the post itself. */ text?: string; /** The post's picture, with its words. */ image?: { src: ImageMetadata; alt: string }; /** A heading level for the title, when the card is an item in a list. */ level?: 2 | 3; state?: 'facade' | 'loading' | 'failed'; /** Why a failed post failed, for /_states (L-84); the script sets it on the page. */ reason?: 'offline' | 'network'; /** Off where the page already says these are LinkedIn posts. */ kicker?: boolean }
+const { urn = '', url, title, excerpt, date, series, text, image, level, state = 'facade', kicker = true, reason } = Astro.props;
 const valid = /^urn:li:(share|activity|ugcPost):\d+$/.test(urn);
 const Title = (level ? `h${level}` : 'p') as any;
 
@@ -48,7 +48,7 @@ const widths = image ? [...new Set([400, 800, 1200].filter(w => w < image.src.wi
         </div>
       </div>
     </figure>
-  : <figure class="embed embed-linkedin" data-embed="linkedin" data-fill={level ? '' : undefined} data-embed-src={valid ? `https://www.linkedin.com/embed/feed/update/${urn}` : undefined} data-embed-title={`LinkedIn post: ${title}`} data-embed-loading="Loading the LinkedIn post" data-state={state} data-static={Astro.props.state ? '' : undefined}>
+  : <figure class="embed embed-linkedin" data-embed="linkedin" data-reason={reason} data-fill={level ? '' : undefined} data-embed-src={valid ? `https://www.linkedin.com/embed/feed/update/${urn}` : undefined} data-embed-title={`LinkedIn post: ${title}`} data-embed-loading="Loading the LinkedIn post" data-state={state} data-static={Astro.props.state ? '' : undefined}>
       <div class="embed-card">
         {kicker && <p class="cory-overline">LinkedIn post</p>}
         <Title class="embed-card-title">{title}</Title>
@@ -59,9 +59,12 @@ const widths = image ? [...new Set([400, 800, 1200].filter(w => w < image.src.wi
           <a data-link class="embed-card-link" href={url} target="_blank" rel="noopener"><span>Read on LinkedIn<span class="cory-visually-hidden">: {title} (opens in a new tab)</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"></path></svg></a>
         </div>
         <p class="embed-status" role="status">{state === 'loading' ? 'Loading the LinkedIn post' : ''}</p>
-        <p class="embed-card-failed"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4M12 16h.01"></path></svg><span>The post didn't load here. Your network may block LinkedIn embeds. Use the link above to read it on LinkedIn, or try again.</span></p>
+        <p class="embed-card-failed"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4M12 16h.01"></path></svg><span><span data-why="network">The post didn't load here. Your network may block LinkedIn embeds.</span><span data-why="offline">You're offline, so the post can't load.</span> Use the link above to read it on LinkedIn, or try again.</span></p>
       </div>
-      <div class="embed-frame embed-frame-post"></div>
+      {/* While the post loads, the shape of a post stands in its box (the design system's skeleton, L-84): avatar, name and
+          date, four lines, a picture, the reaction pills. Decorative, so hidden from assistive tech; the status line above
+          says "Loading". */}
+      <div class="embed-frame embed-frame-post"><div class="embed-bones" aria-hidden="true"><span class="bone bone-avatar"></span><span class="bone bone-name"></span><span class="bone bone-meta"></span><span class="bone bone-text"></span><span class="bone bone-text"></span><span class="bone bone-text"></span><span class="bone bone-text bone-last"></span><span class="bone bone-media"></span><span class="bone-pills"><span class="bone bone-pill"></span><span class="bone bone-pill"></span><span class="bone bone-pill"></span></span></div></div>
     </figure>}
 
 <script>

@@ -2,12 +2,12 @@
 /* YouTube embed behind a click-to-load facade (CLAUDE.md 2.6, 2.9). Nothing is requested from YouTube until the visitor
    presses play; then the privacy-enhanced player (youtube-nocookie.com) loads. The 16:9 box is reserved from the start,
    so nothing shifts. States: facade, loading, failed (with Retry and a link to YouTube). Behaviour: islands/embeds.ts */
-interface Props { id: string; title: string; poster?: string; /** Off when the surrounding card shows the title and the link itself. */ caption?: boolean; /** Force a state, for /_states. */ state?: 'facade' | 'loading' | 'failed' }
+interface Props { id: string; title: string; poster?: string; /** Off when the surrounding card shows the title and the link itself. */ caption?: boolean; /** Force a state, for /_states. */ state?: 'facade' | 'loading' | 'failed'; /** Why a failed video failed, for /_states (L-84); the script sets it on the page. */ reason?: 'offline' | 'network' }
 const { id, title, poster, caption = true, state = 'facade' } = Astro.props;
 const valid = /^[\w-]{11}$/.test(id);
 const watch = `https://www.youtube.com/watch?v=${id}`;
 ---
-<figure class="embed embed-video" data-embed="youtube" data-embed-src={valid ? `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0` : undefined} data-embed-title={title} data-embed-loading="Loading video" data-state={state} data-static={Astro.props.state ? '' : undefined}>
+<figure class="embed embed-video" data-embed="youtube" data-reason={Astro.props.reason} data-embed-src={valid ? `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0` : undefined} data-embed-title={title} data-embed-loading="Loading video" data-state={state} data-static={Astro.props.state ? '' : undefined}>
   <div class="embed-frame">
     {poster ? <img class="embed-poster" src={poster} alt="" loading="lazy" decoding="async" /> : <div data-cover-fallback="label" aria-hidden="true"></div>}
     {valid
@@ -16,7 +16,7 @@ const watch = `https://www.youtube.com/watch?v=${id}`;
     {valid && <p class="embed-status" role="status">{state === 'loading' ? 'Loading video' : ''}</p>}
     {valid && <div class="embed-failed">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4M12 16h.01"></path></svg>
-      <p>The video didn't load. Your network may block YouTube.</p>
+      <p><span data-why="network">The video didn't load. Your network may block YouTube.</span><span data-why="offline">You're offline. Connect to the internet, then try again.</span></p>
       <div class="embed-actions"><button type="button" class="ui-button ui-button-on-ink-solid ui-button-md" data-embed-retry><span class="ui-button-label">Try again</span></button><a class="ui-button ui-button-on-ink ui-button-md" href={watch} target="_blank" rel="noopener"><span class="ui-button-label">Watch on YouTube<span class="cory-visually-hidden"> (opens in a new tab)</span></span></a></div>
     </div>}
   </div>

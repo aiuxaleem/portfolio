@@ -23,7 +23,7 @@
   --navy-100: #DEE4EC;
 
   /* --- Brand: Blue (signal / primary action, gradient start) --- */
-  --blue-800: #1258B1; /* link hover: blue-700 mixed 22% toward navy-800, 6.9:1 on white where blue-600 was 4.2:1 (CLAUDE.md "Contrast") */
+  --blue-800: #0F55B2; /* link hover and the solid button's hover (the design system's value, 20 November 2026, L-84): 7.09:1 on white, was #1258B1 at 6.87:1; blue-600 was 4.2:1 (CLAUDE.md "Contrast") */
   --blue-700: #1568D4;
   --blue-600: #1B79EC;
   --blue-500: #258AFD; /* gradient start */
@@ -100,6 +100,12 @@
   --surface-sunken: var(--slate-100);
   --surface-ink: var(--navy-800);
   --surface-tile: var(--slate-50);
+  /* States (the design system's skeleton and status tints, 20 November 2026, L-84): bones while something loads, and the
+     tinted tile behind a panel's icon. Never behind text with links: blue-700 on red-100 is 4.34:1. */
+  --surface-skeleton: #E4E7EF;
+  --surface-skeleton-shine: #F3F5F9;
+  --surface-danger: var(--red-100);
+  --surface-success: var(--green-100);
   --surface-header: rgba(255, 255, 255, 0.85);
   --surface-overlay: rgba(11, 31, 54, 0.55); /* @kind color */
 
@@ -145,7 +151,7 @@
   --on-ink-muted: rgba(255, 255, 255, 0.64); /* 7.4:1 */
   --on-ink-link: var(--cyan-400);            /* 9.2:1 */
   --on-ink-border: rgba(255, 255, 255, 0.12);
-  --on-ink-border-strong: rgba(255, 255, 255, 0.28);
+  --on-ink-border-strong: rgba(255, 255, 255, 0.36); /* the design system's value (L-84): the edge reaches 3.28:1 on navy-800 and 3.07:1 on navy-700, where 0.28 gave 2.50 and 2.40 (WCAG 1.4.11) */
   --on-ink-fill: rgba(255, 255, 255, 0.08);
   --on-ink-fill-hover: rgba(255, 255, 255, 0.14);
 }
@@ -173,6 +179,10 @@
   --surface-sunken: var(--navy-950);
   --surface-ink: var(--navy-700); /* 1.40:1 above the page; was navy-950, 1.04:1, so the ink objects had no edge (L-39) */
   --surface-tile: var(--navy-700);
+  --surface-skeleton: rgba(255, 255, 255, 0.08);
+  --surface-skeleton-shine: rgba(255, 255, 255, 0.15);
+  --surface-danger: rgba(229, 72, 77, 0.16);
+  --surface-success: rgba(31, 184, 119, 0.14);
   --surface-header: rgba(6, 18, 31, 0.82);
   --surface-overlay: rgba(4, 12, 22, 0.70);
 

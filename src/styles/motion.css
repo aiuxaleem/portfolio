@@ -56,6 +56,9 @@
   .project-related:focus-visible { transform: translateY(var(--lift-hover)); box-shadow: var(--shadow-lg); }
   .embed-play:focus-visible .embed-play-disc { transform: scale(var(--grow-hover)); }
   [data-chevron] { transition: transform var(--duration-spring-pop) var(--ease-spring-pop); }
+  /* A LinkedIn post's skeleton shimmers twice while it loads, then rests (L-84; nothing moves for more than five seconds). */
+  html[data-motion="on"] .embed-linkedin[data-state="loading"] .bone { background: linear-gradient(90deg, var(--surface-skeleton) 0%, var(--surface-skeleton-shine) 50%, var(--surface-skeleton) 100%) 0 0 / 200% 100%; animation: bone-shimmer 1.6s linear 2; }
+  @keyframes bone-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
 
   /* ---------- Admin dashboard: the numbers step back while the next period loads ---------- */
   .dash[aria-busy="true"] [data-dash-grid] { transition: opacity var(--duration-base) var(--ease-out); }
@@ -63,6 +66,10 @@
   /* ---------- Header: the brand mark turns a little under the pointer; the theme switch's icon swings ---------- */
   [data-theme-toggle] svg { transition: transform var(--duration-spring-pop) var(--ease-spring-pop); }
   [data-theme-toggle]:focus-visible svg { transform: rotate(18deg); }
+  /* The switch itself (L-84): the old icon turns away and shrinks as the new one turns in on the spring. rotate and scale,
+     not transform, so the swing above still works on hover and focus. */
+  /* !important: the page turns every transition off for the two frames of the switch (site.css, data-theme-switching), and this one must play through it. */
+  .ui-icon-button[data-theme-toggle] > svg { transition: transform var(--duration-spring-pop) var(--ease-spring-pop), opacity var(--duration-base) var(--ease-out), rotate var(--duration-spring-pop) var(--ease-spring-pop), scale var(--duration-spring-pop) var(--ease-spring-pop) !important; }
 
   @media (hover: hover) {
     .ui-chip:not([aria-pressed="true"]):not([aria-current="page"]):not(:active):hover { transform: translateY(var(--lift-hover-sm)); }
