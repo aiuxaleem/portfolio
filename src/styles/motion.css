@@ -368,6 +368,10 @@ dialog.image-preview[open]::backdrop { animation: preview-fade var(--duration-fa
     .lp-steps { view-timeline: --steps block; }
     .lp-steps::after { animation: track-fill linear both; animation-timeline: --steps; animation-range: entry 40% cover 60%; }
     @keyframes track-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    /* Home Process (home/process.astro): each rail segment's brand light fills, top down, as its step scrolls through. */
+    html[data-motion="on"] [data-process] .pr-step { view-timeline: --pr-step block; }
+    html[data-motion="on"] [data-process] .pr-step::after { animation: rail-fill linear both; animation-timeline: --pr-step; animation-range: entry 70% exit 30%; }
+    @keyframes rail-fill { from { transform: scaleY(0); } to { transform: scaleY(1); } }
   }
 }
 @media (prefers-reduced-motion: reduce) {

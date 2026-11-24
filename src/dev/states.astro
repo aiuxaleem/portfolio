@@ -80,6 +80,8 @@ import WorkBento from '../components/home/work-bento.astro';
 import InPublic from '../components/home/in-public.astro';
 import CaseDeck from '../components/home/case-deck.astro';
 import HeroStack from '../components/sites/hero-stack.astro';
+import Process from '../components/home/process.astro';
+import { processSteps } from '../lib/process';
 import TwoUsersArt from '../components/home/two-users-art.astro';
 import FittedImage from '../components/ui/fitted-image.astro';
 import ImagePreview from '../components/ui/image-preview.astro';
@@ -526,6 +528,21 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
         </div>
         <WorkBento fixture={`states-${theme}`} />
         <WorkBento fixture={`states-empty-${theme}`} empty />
+        <div class="cory-container" style="padding-block: var(--space-12) 0; display: grid; gap: var(--space-4);">
+          <h2 style={h2}>Home: the Process timeline</h2>
+          <p style={note}>Three of the eight steps as Home shows them (Home itself carries all eight through every check; three keep this page inside the gate's time per view): a step with terms, the design-system step as the ink card with its proof link, and a step with one term, under the chips of their phases (each jumps to its phase's first step; live, each rail segment fills as its step scrolls through), then the route for people who don't design. Then the stress content: a 120-⁠character step with an unbroken phase, body, proof link and eight terms, one with no terms (partial), an ink step with no design-system line (partial), a one-word step with neither, and a branch with a long title and an unbroken route. Last, the timeline with no branch (partial). It has no loading or empty state: the steps are fixed text.</p>
+        </div>
+        <Process fixture={`states-${theme}`} steps={processSteps.slice(2, 5)} />
+        <Process fixture={`states-stress-${theme}`} title={stress.longTitle} steps={[
+          { phase: stress.unbroken as any, title: stress.longTitle, body: stress.unbroken, terms: stress.tags.slice(0, 8).map((t: string): { term: string; meaning: string } => ({ term: t, meaning: stress.longTitle })).concat([{ term: stress.unbroken, meaning: stress.unbroken }]), system: stress.unbroken, proof: { label: stress.unbroken, href: '/blog' } },
+          { phase: 'Define', title: "Fixture step with no terms", body: "A step that leaves out its terms.", system: "The design-system line still shows." },
+          { phase: 'Define', hub: true, title: "Fixture hub step with no system line", body: "The ink card, leaving out its design-system line.", terms: [{ term: "Term", meaning: "One term." }], proof: { label: "A proof link on ink", href: "/blog" } },
+          { phase: 'Test', title: stress.oneWord, body: stress.oneWord },
+        ]} branch={{ title: stress.longTitle, lead: stress.longTitle, routes: [{ title: stress.unbroken, body: stress.unbroken }, { title: stress.oneWord, body: stress.oneWord }] }} />
+        <Process fixture={`states-nobranch-${theme}`} branch={null} steps={[
+          { phase: 'Empathise', title: "Fixture step", body: "A timeline with no branch after it." },
+          { phase: 'Implement', title: "Fixture last step", body: "The rail stops at the last node." },
+        ]} />
         <div class="cory-container" style="padding-block: var(--space-12) 0; display: grid; gap: var(--space-4);">
           <h2 style={h2}>Home: In public</h2>
           <p style={note}>With fixtures first (a 120-⁠character video and post title, an unbroken string, a video with no poster or date), then empty: no channel set (each says it is opening soon and is not a link), no video and no post (each group says why and where to look).</p>

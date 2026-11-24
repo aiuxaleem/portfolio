@@ -1,0 +1,255 @@
+---
+/* Home "Process" (owner requests, 22 November 2026): the owner's design steps as a timeline, ordered by design thinking,
+   each with the terms of the craft it uses and how the design system enters it, then the route for colleagues who don't
+   design. The words are in src/lib/process.ts.
+   Layout, top to bottom:
+   - the head, then the phase map: the six design-thinking phases as chips in order, each a link to its first step (a long
+     section on a phone gets a way to jump), with a line saying testing loops back;
+   - the timeline (on a phone, a sideways card row with the rail across it): a rail down the inline start with a numbered node per step (40 px, 56 px from a 600 px container), each
+     step a card with its phase as the overline. Under 600 px the node sits above a full-width card, the rail runs down
+     the gaps and the term meanings fold away behind a line that names the terms. From 960 px the terms sit beside what I do. The design-system line sits at the foot of every card;
+   - the branch: two routes for people who don't design, lined up with the cards from 600 px.
+   The rail is one segment per step; with motion on, each segment's brand light fills as its step scrolls through
+   (motion.css, [data-process]); without motion, or for the checks, it is drawn full.
+   The numbers are aria-hidden: the ordered list gives the order. Terms are a description list.
+   States: the content is fixed, so there is no loading or empty state; a step may leave out its terms or its design-system
+   line, and the branch may be left out (partial). All shown on /_states with the stress content. */
+import Button from '../ui/button.astro';
+import { processHead, processSteps, processBranch, type ProcessStep } from '../../lib/process';
+
+interface Props {
+  /** On /_states: ids made unique, and the section is not a landmark. */
+  fixture?: string;
+  steps?: ProcessStep[];
+  title?: string;
+  /** null leaves the branch out. */
+  branch?: typeof processBranch | null;
+}
+const { fixture, steps = processSteps, title = processHead.title, branch = processBranch } = Astro.props;
+const id = (s: string) => (fixture ? `${s}-${fixture}` : s);
+const Tag: any = fixture ? 'div' : 'section';
+const num = (i: number) => String(i + 1).padStart(2, '0');
+/* Each phase once, in the order the steps meet it, with the step it starts at. */
+const phases = steps.reduce<{ phase: string; at: number }[]>((all, s, i) => (all.some(p => p.phase === s.phase) ? all : [...all, { phase: s.phase, at: i }]), []);
+/* Lucide drawings at the site's stroke. swatch-book is the one My Design Systems uses in the Work bento. */
+const svg = (paths: string, size = 16) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+const systemIcon = svg('<path d="M11 17a4 4 0 0 1-8 0V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2Z"/><path d="M16.7 13H19a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H7"/><path d="M7 17h.01"/><path d="m11 8 2.3-2.3a2.4 2.4 0 0 1 3.404.004L18.6 7.6a2.4 2.4 0 0 1 .026 3.434L9.9 19.8"/>');
+const threadIcon = svg('<path d="M11 17a4 4 0 0 1-8 0V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2Z"/><path d="M16.7 13H19a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H7"/><path d="M7 17h.01"/><path d="m11 8 2.3-2.3a2.4 2.4 0 0 1 3.404.004L18.6 7.6a2.4 2.4 0 0 1 .026 3.434L9.9 19.8"/>', 20);
+const loopIcon = svg('<path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/>');
+const chevron = '<svg data-chevron width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>';
+const routeIcons = [
+  svg('<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>', 20),
+  svg('<path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/>', 20),
+];
+---
+<Tag id={id('process')} data-section={fixture ? undefined : ''} data-process="" aria-labelledby={fixture ? undefined : id('process-title')} class="pr">
+  <div class="cory-container pr-inner">
+    <div class="pr-head" data-reveal="">
+      <p class="cory-overline" style="margin: 0px;">{processHead.overline}</p>
+      <h2 id={id('process-title')} class="pr-title">{title}</h2>
+      <p class="pr-lead">{processHead.lead}</p>
+    </div>
+    <div class="pr-cq">
+      <div class="pr-map" data-reveal="">
+        <ol class="pr-phases" role="list" aria-label={processHead.phasesLabel}>
+          {phases.map(p => <li class="pr-phase"><a class="ui-chip pr-phase-link" href={`#${id(`process-step-${p.at + 1}`)}`}>{p.phase}</a></li>)}
+        </ol>
+        <p class="pr-loop"><span class="pr-loop-icon" set:html={loopIcon} />{processHead.loop}</p>
+      </div>
+      <div class="pr-track">
+      <p class="pr-thread"><span class="pr-thread-node" set:html={threadIcon} /><span class="pr-thread-text">{processHead.thread}</span></p>
+      <ol class="pr-steps" role="list" data-reveal-group="" data-scroll-row="Process steps, scroll sideways for more">
+        {steps.map((s, i) => (
+          <li class="pr-step" id={id(`process-step-${i + 1}`)}>
+            <span class="pr-node" aria-hidden="true"><bdi>{num(i)}</bdi></span>
+            <div class:list={['pr-card', s.hub && 'cory-ink pr-hub']}>
+              <div class="pr-main">
+                <p class="cory-overline pr-phase-tag">{s.phase}</p>
+                <h3 class="pr-name">{s.title}</h3>
+                <p class="pr-body">{s.body}</p>
+                {s.proof && <p class="pr-proof"><Button variant="ghost" size="sm" href={s.proof.href}>In practice: {s.proof.label}</Button></p>}
+              </div>
+              {s.terms && s.terms.length > 0 && (
+                <details class="resource-disclosure home-tools-fold pr-fold">
+                  <summary><span>{processHead.termsLabel}</span><span data-disclosure-state>{s.terms.map(t => t.term).join(', ')}</span><Fragment set:html={chevron} /></summary>
+                  <dl class="pr-terms">
+                    {s.terms.map(t => <div class="pr-term"><dt>{t.term}</dt><dd>{t.meaning}</dd></div>)}
+                  </dl>
+                </details>
+              )}
+              {s.system && (
+                <p class="pr-system"><span class="pr-system-label"><span class="pr-system-icon" set:html={systemIcon} />With the design system</span><span class="pr-system-text">{s.system}</span></p>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+      </div>
+      {branch && (
+        <div class="pr-branch" data-reveal="">
+          <div class="pr-branch-head">
+            <h3 class="pr-branch-title">{branch.title}</h3>
+            <p class="pr-branch-lead">{branch.lead}</p>
+          </div>
+          <ul class="pr-routes" role="list">
+            {branch.routes.map((r, i) => (
+              <li class="pr-route">
+                <span class="pr-route-icon" set:html={routeIcons[i % routeIcons.length]} />
+                <h4 class="pr-route-title">{r.title}</h4>
+                <p class="pr-route-body">{r.body}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+    <div class="pr-foot" data-reveal="">
+      <Button variant="secondary" href="/case-studies/colaberry-design-system">See the process in a case study</Button>
+      <p class="pr-note">This site was made the same way, down to the <a data-link href="/blog/portfolio-quality-gate">quality gate</a> every page passes before it goes live.</p>
+    </div>
+  </div>
+</Tag>
+
+<style>
+  .pr { position: relative; padding-block: var(--section-y); border-block-start: 1px solid var(--border-subtle); }
+  .pr-inner { display: grid; gap: var(--space-10); }
+  .pr-head { display: grid; gap: var(--space-3); }
+  .pr-title { margin: 0; max-inline-size: 28ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; overflow-wrap: anywhere; }
+  .pr-lead { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-body); }
+
+  .pr-cq { --pr-node: 40px; --pr-gap: var(--space-6); container-type: inline-size; min-inline-size: 0; display: grid; gap: var(--space-10); }
+
+  /* The phase map: the chips in order, two to a row under 600 px, three from 600 px and one row of six from 960 px, so a
+     phase name never breaks; a chevron between the chips of a row. Each chip is a link to the phase's first step. */
+  .pr-map { display: grid; gap: var(--space-4); min-inline-size: 0; }
+  .pr-phases { --pr-chev: var(--space-4); margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3) var(--pr-chev); }
+  @container (min-width: 600px) { .pr-phases { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @container (min-width: 960px) { .pr-phases { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+  .pr-phase { position: relative; display: grid; min-inline-size: 0; }
+  .pr-phase::after { content: ""; position: absolute; inset-block-start: 50%; inset-inline-end: calc(var(--pr-chev) / -2 - 3px); inline-size: 6px; block-size: 6px; border-block-start: 2px solid var(--border-interactive); border-inline-end: 2px solid var(--border-interactive); transform: translateY(-50%) rotate(45deg); }
+  .pr-phase:nth-child(2n)::after, .pr-phase:last-child::after { content: none; }
+  @container (min-width: 600px) { .pr-phase:nth-child(2n)::after { content: ""; } .pr-phase:nth-child(3n)::after, .pr-phase:last-child::after { content: none; } }
+  @container (min-width: 960px) { .pr-phase:nth-child(3n)::after { content: ""; } .pr-phase:last-child::after { content: none; } }
+  .pr-phase-link { justify-content: center; inline-size: 100%; min-inline-size: 0; padding-inline: var(--space-2); text-align: center; text-decoration: none; line-height: var(--leading-heading); overflow-wrap: anywhere; }
+  .pr-loop { margin: 0; display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-muted); overflow-wrap: anywhere; }
+  .pr-loop-icon { display: inline-flex; flex-shrink: 0; color: var(--text-link); }
+
+  .pr-track { display: grid; gap: var(--pr-gap); min-inline-size: 0; }
+  /* The node and gap sizes are set on the container's children, since a container query cannot style the container. */
+  @container (min-width: 600px) { .pr-track, .pr-branch { --pr-node: 56px; --pr-gap: var(--space-8); } }
+  .pr-steps { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--pr-gap); }
+
+  /* The head of the rail: the design system as the first node, so the line that joins every step reads as the system
+     running through all of them. Its segment down to the first step is drawn full in the brand light. */
+  .pr-thread { position: relative; margin: 0; max-inline-size: none; display: grid; grid-template-columns: var(--pr-node) minmax(0, 1fr); column-gap: var(--space-4); align-items: center; min-inline-size: 0; }
+  @container (min-width: 600px) { .pr-thread { column-gap: var(--space-6); } }
+  .pr-thread::after { content: ""; position: absolute; inset-inline-start: calc(var(--pr-node) / 2 - 1px); inset-block: var(--pr-node) calc(-1 * var(--pr-gap)); inline-size: 2px; border-radius: 1px; background: var(--gradient-brand); }
+  .pr-thread-node { display: grid; place-items: center; inline-size: var(--pr-node); block-size: var(--pr-node); border-radius: 50%; background: var(--action-solid); color: var(--text-on-brand); border: 1px solid var(--action-solid-rim); box-shadow: var(--shadow-sm); }
+  .pr-thread-text { font-size: var(--text-body-md); font-weight: var(--weight-semibold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
+
+  /* A step. Under a 600 px container: the node above a full-width card, the rail running down the gaps between the cards
+     (node to card, card to the next node), so the card keeps the whole width of the phone. From 600 px: the node on a rail
+     down the inline start, the card beside it. A phase chip lands the step a little below the sticky header (the page already pads by the header height). */
+  .pr-step { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); row-gap: var(--space-3); justify-items: start; min-inline-size: 0; scroll-margin-block-start: var(--space-6); }
+  .pr-step > .pr-card { justify-self: stretch; }
+  .pr-step:not(:last-child)::before, .pr-step:not(:last-child)::after { content: ""; position: absolute; inset-inline-start: calc(var(--pr-node) / 2 - 1px); inset-block-start: 100%; block-size: var(--pr-gap); inline-size: 2px; border-radius: 1px; }
+  .pr-step::before { background: var(--border-default); }
+  .pr-step::after { background: var(--gradient-brand); transform-origin: 50% 0; }
+  .pr-node::after { content: ""; position: absolute; z-index: -1; inset-inline-start: calc(50% - 1px); inset-block-start: 100%; block-size: var(--space-3); inline-size: 2px; background: var(--border-default); }
+  @container (min-width: 600px) {
+    .pr-step { grid-template-columns: var(--pr-node) minmax(0, 1fr); column-gap: var(--space-6); align-items: start; }
+    .pr-step:not(:last-child)::before, .pr-step:not(:last-child)::after { inset-block: var(--pr-node) calc(-1 * var(--pr-gap)); block-size: auto; }
+    .pr-node::after { content: none; }
+  }
+  /* On a phone (a container of 320 to 519 px) the steps are the site's sideways card row (site.css [data-scroll-row], L-56),
+     so eight steps take one card's height and the phase chips jump along the row. The rail turns with it: each segment runs
+     from a node across the gap to the next node, drawn full. At 288 px (the 1.4.10 reflow width) the row stacks as above. */
+  @container (min-width: 320px) and (max-width: 519px) {
+    /* The list's own margin and padding reset would beat the row's bleed (site.css), so the row is given it back: it runs to
+       the screen's edges and snaps each card to the gutter, the same inset as the rail's head after a phase jump. */
+    .pr-steps { margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); padding-block-end: var(--space-2); }
+    .pr-step { grid-template-rows: auto 1fr; }
+    .pr-step:not(:last-child)::before, .pr-step:not(:last-child)::after { inset-block-start: calc(var(--pr-node) / 2 - 1px); inset-inline-start: var(--pr-node); inline-size: calc(100% - var(--pr-node) + var(--space-4)); block-size: 2px; }
+    .pr-steps > .pr-step::after { animation: none; transform: none; }
+    /* The row gives every card the tallest card's height: the design-system line keeps to the foot of the card. */
+    .pr-card { display: flex; flex-direction: column; }
+    .pr-system { margin-block-start: auto; }
+  }
+  .pr-node { position: relative; z-index: 1; display: grid; place-items: center; inline-size: var(--pr-node); block-size: var(--pr-node); border-radius: 50%; background: var(--surface-card); border: 1px solid var(--border-interactive); box-shadow: var(--shadow-sm); font-family: var(--font-mono); font-size: var(--text-mono-sm); font-weight: var(--weight-semibold); color: var(--text-link); }
+  @container (min-width: 600px) { .pr-node { font-size: var(--text-mono); } }
+
+  .pr-card { display: grid; gap: var(--space-5); padding: var(--space-5); border-radius: var(--radius-xl); background: var(--surface-glass-strong); border: 1px solid var(--border-default); box-shadow: var(--shadow-sm); min-inline-size: 0; }
+  @container (min-width: 600px) { .pr-card { padding: var(--space-6); } }
+  /* From 960 px: what I do on the left; the terms, then the design-system line, on the right. */
+  @container (min-width: 960px) {
+    .pr-card { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-auto-rows: auto; align-content: start; column-gap: var(--space-8); }
+    .pr-main { grid-column: 1; grid-row: 1 / span 2; }
+    .pr-fold, .pr-system { grid-column: 2; }
+    .pr-terms { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .pr-term:last-child:nth-child(odd) { grid-column: 1 / -1; }
+    .pr-system { align-self: end; }
+  }
+  .pr-main { display: grid; gap: var(--space-3); align-content: start; min-inline-size: 0; }
+  .pr-phase-tag { margin: 0 0 calc(-1 * var(--space-2)); overflow-wrap: anywhere; }
+  .pr-name { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; text-wrap: balance; }
+  .pr-body { margin: 0; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); text-wrap: pretty; overflow-wrap: anywhere; }
+
+  /* The terms of the craft the step uses, each with what it means. On a phone they sit in a closed fold whose line names
+     them (the section was 7.7 screens long at 390 px, most of it meanings); from a 600 px container the fold shows its
+     content and drops its line, where the browser can style a fold's content (::details-content). Where it cannot, the fold
+     stays a fold at every width, so nothing is ever out of reach. */
+  .pr-fold { min-inline-size: 0; }
+  .pr-fold > .pr-terms { padding-block-start: var(--space-4); }
+  @supports selector(::details-content) {
+    @container (min-width: 600px) {
+      .pr-fold { border-block-start: 0; }
+      .pr-fold > summary { display: none; }
+      .pr-fold::details-content { content-visibility: visible; display: block; block-size: auto; }
+      .pr-fold > .pr-terms { padding-block-start: 0; }
+    }
+  }
+  .pr-terms { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--space-4) var(--space-6); align-content: start; min-inline-size: 0; }
+  .pr-term { display: grid; gap: var(--space-1); align-content: start; padding-inline-start: var(--space-3); border-inline-start: 2px solid var(--border-default); min-inline-size: 0; }
+  .pr-term dt { font-size: var(--text-body-md); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
+  .pr-term dd { margin: 0; font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-muted); overflow-wrap: anywhere; }
+
+  /* How the design system enters the step: a line along the foot of the card. */
+  .pr-system { margin: 0; max-inline-size: none; display: grid; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); background: var(--surface-sunken); min-inline-size: 0; }
+  @container (min-width: 600px) { .pr-system { grid-template-columns: auto minmax(0, 1fr); column-gap: var(--space-5); align-items: baseline; padding: var(--space-4) var(--space-5); } }
+  .pr-system-label { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); line-height: var(--leading-heading); color: var(--text-link); overflow-wrap: anywhere; }
+  .pr-system-icon { display: inline-flex; flex-shrink: 0; align-self: center; }
+  .pr-system-text { font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-body); overflow-wrap: anywhere; }
+
+  /* A step's proof: a link to a page that shows the step in real work. */
+  .pr-proof { margin: 0; max-inline-size: none; }
+  .pr-proof :global(.ui-button-ghost) { margin-inline-start: calc(-1 * var(--space-1)); } /* the ghost's own 4 px padding, so its words line up with the body */
+  .pr-hub .pr-proof :global(.ui-button-ghost), .pr-hub .pr-proof :global(.ui-button-ghost:focus-visible) { color: var(--on-ink-link); }
+  @media (hover: hover) { .pr-hub .pr-proof :global(.ui-button-ghost:hover) { color: var(--on-ink-link); } }
+
+  /* The hub: the design system step as the ink card (its aurora comes with .cory-ink), every colour from the on-ink set. */
+  .pr-card.pr-hub { background: var(--gradient-ink); border-color: var(--on-ink-border); box-shadow: var(--shadow-md); }
+  .pr-hub .pr-phase-tag, .pr-hub .pr-system-label { color: var(--on-ink-link); }
+  .pr-hub .pr-name, .pr-hub .pr-term dt, .pr-hub .pr-fold > summary { color: var(--on-ink-strong); }
+  .pr-hub .pr-body, .pr-hub .pr-system-text { color: var(--on-ink-body); }
+  .pr-hub .pr-term dd, .pr-hub .pr-fold > summary [data-disclosure-state] { color: var(--on-ink-muted); }
+  .pr-hub .pr-term { border-inline-start-color: var(--on-ink-border-strong); }
+  .pr-hub .pr-fold { border-block-start-color: var(--on-ink-border); }
+  .pr-hub .pr-system { background: var(--on-ink-fill); }
+
+  /* The branch: the two routes for people who don't design, in one sunken panel, lined up with the cards from 600 px. */
+  .pr-branch { display: grid; gap: var(--space-6); padding: var(--space-4); border-radius: var(--radius-xl); background: var(--surface-sunken); border: 1px dashed var(--border-strong); min-inline-size: 0; }
+  @container (min-width: 600px) { .pr-branch { margin-inline-start: calc(var(--pr-node) + var(--space-6)); padding: var(--space-6); } }
+  .pr-branch-head { display: grid; gap: var(--space-2); min-inline-size: 0; }
+  .pr-branch-title { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; text-wrap: balance; }
+  .pr-branch-lead { margin: 0; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); overflow-wrap: anywhere; }
+  .pr-routes { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: var(--space-4); }
+  .pr-route { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-3) var(--space-4); align-content: start; padding: var(--space-4); border-radius: var(--radius-lg); background: var(--surface-card); border: 1px solid var(--border-default); min-inline-size: 0; }
+  @container (min-width: 600px) { .pr-route { padding: var(--space-5); } }
+  .pr-route-icon { display: grid; place-items: center; inline-size: var(--tap-target); block-size: var(--tap-target); border-radius: var(--radius-pill); background: var(--surface-sunken); color: var(--text-link); }
+  .pr-route-title { margin: 0; align-self: center; font-size: var(--text-body-md); font-weight: var(--weight-bold); line-height: var(--leading-heading); color: var(--text-strong); overflow-wrap: anywhere; }
+  .pr-route-body { margin: 0; grid-column: 1 / -1; font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-body); overflow-wrap: anywhere; }
+
+  .pr-foot { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); align-items: center; }
+  .pr-note { margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-body-sm); line-height: var(--leading-relaxed); color: var(--text-muted); }
+  .pr-note a { color: var(--text-link); font-weight: var(--weight-semibold); }
+</style>
