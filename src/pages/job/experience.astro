@@ -2,6 +2,9 @@
 /* Experience on the website for hiring managers (docs/SITES.md): the full timeline (each company beside its roles, with what
    each role shipped), certifications, education, the principles, and how I work with AI. The main site's About without
    the parts written for clients. */
+import SectionArt from '../../components/art/section-art.astro';
+import TileIcon from '../../components/ui/tile-icon.astro';
+import { tileIcon } from '../../lib/tile-icons';
 import PageLayout from '../../layouts/page-layout.astro';
 import Career from '../../components/profile/career.astro';
 import Learning from '../../components/sites/learning.astro';
@@ -25,14 +28,14 @@ const stack = careerCards('#experience-career-title');
 
   <section class="page-section" data-surface="card" aria-labelledby="experience-career-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Work experience</p><h2 id="experience-career-title" class="page-h2">Every role, with what it shipped</h2><p class="project-filter-count">Newest first.</p></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Work experience</p><h2 id="experience-career-title" class="page-h2">Every role, with what it shipped</h2><p class="project-filter-count">Newest first.</p><SectionArt name="career" /></div>
       <Career wide />
     </div>
   </section>
 
   <section class="page-section" aria-labelledby="experience-certs-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="experience-certs-title" class="page-h2">Certifications</h2></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="experience-certs-title" class="page-h2">Certifications</h2><SectionArt name="certs" /></div>
       <Learning id="experience-learning" />
     </div>
   </section>
@@ -40,7 +43,7 @@ const stack = careerCards('#experience-career-title');
   {profile.education.length > 0 && (
     <section class="page-section" data-surface="card" aria-labelledby="experience-education-title">
       <div class="cory-container">
-        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Education</p><h2 id="experience-education-title" class="page-h2">Education and training</h2></div>
+        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Education</p><h2 id="experience-education-title" class="page-h2">Education and training</h2><SectionArt name="education" /></div>
         <ul class="experience-education">{profile.education.map(e => <li class="tile"><h3>{e.qualification}</h3><p>{e.school}</p></li>)}</ul>
       </div>
     </section>
@@ -48,15 +51,15 @@ const stack = careerCards('#experience-career-title');
 
   <section class="page-section" aria-labelledby="experience-principles-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Principles</p><h2 id="experience-principles-title" class="page-h2">Three things I won't trade away</h2></div>
-      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.principles.map((p, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{p.title}</h3><p>{p.body}</p></div></li>)}</ol></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Principles</p><h2 id="experience-principles-title" class="page-h2">Three things I won't trade away</h2><SectionArt name="principles" /></div>
+      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.principles.map((p, i) => <li><div class="tile"><div class="tile-top"><TileIcon name={tileIcon(p.title)} /><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi></div><h3>{p.title}</h3><p>{p.body}</p></div></li>)}</ol></div>
     </div>
   </section>
 
   <section class="page-section" data-surface="card" aria-labelledby="experience-ai-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Method</p><h2 id="experience-ai-title" class="page-h2">How I work with AI</h2></div>
-      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.aiWorkflow.map((s, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Method</p><h2 id="experience-ai-title" class="page-h2">How I work with AI</h2><SectionArt name="aiMethod" /></div>
+      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.aiWorkflow.map((s, i) => <li><div class="tile"><div class="tile-top"><TileIcon name={tileIcon(s.title)} /><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi></div><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol></div>
       <div style="display: grid; gap: var(--space-3);">
         <h3 style="margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong);">Tools</h3>
         <ul class="tool-list">{profile.tools.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul>

@@ -9,5 +9,6 @@ import Gallery from './gallery.astro';
 import TableWrap from './table-wrap.astro';
 import CodeBlock from './code-block.astro';
 import BodyImage from './body-image.astro';
+import Diagram from './diagram.astro';
 
-export const mdxComponents = { YouTube, LinkedInPost, LinkedInArticle, Callout, Figure, Gallery, table: TableWrap, pre: CodeBlock, img: BodyImage };
+export const mdxComponents = { YouTube, LinkedInPost, LinkedInArticle, Callout, Figure, Gallery, Diagram, table: TableWrap, pre: CodeBlock, img: BodyImage };

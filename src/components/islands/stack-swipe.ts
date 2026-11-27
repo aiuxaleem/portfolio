@@ -12,6 +12,14 @@ export function swipeable(stack: HTMLElement, go: (step: 1 | -1) => void): void 
   let id = -1, x0 = 0, y0 = 0, t0 = 0, dx = 0, mode: 'idle' | 'maybe' | 'drag' | 'scroll' = 'idle', moved = false, card: HTMLElement | null = null;
 
   const set = (el: HTMLElement, x: number) => { el.style.setProperty('--drag-x', `${x}px`); el.style.setProperty('--drag-r', `${Math.max(-12, Math.min(12, x / 24))}deg`); };
+  /* The card that will come forward (the next for a drag to the start side, the last for the other) shows its words and
+     picture while the front one is dragged or flies off, so the stack never shows empty cards in between (owner, 24 November
+     2026: "preview images are not showing properly"). 0 clears the mark. */
+  const incoming = (step: 1 | -1 | 0) => {
+    const cards = [...stack.querySelectorAll<HTMLElement>('[data-stack-card]')];
+    const want = step === 1 ? 1 : cards.length - 1;
+    cards.forEach(c => c.toggleAttribute('data-incoming', step !== 0 && cards.length > 1 && Number(c.dataset.pos) === want));
+  };
   const clear = (el: HTMLElement) => { el.removeAttribute('data-drag'); el.removeAttribute('data-fly'); el.style.removeProperty('--drag-x'); el.style.removeProperty('--drag-r'); };
 
   stack.addEventListener('pointerdown', e => {
@@ -27,7 +35,7 @@ export function swipeable(stack: HTMLElement, go: (step: 1 | -1) => void): void 
       if (Math.abs(y) > 10 && Math.abs(y) > Math.abs(x)) { mode = 'scroll'; return; }
       if (Math.abs(x) > 8) { mode = 'drag'; moved = true; card.setAttribute('data-drag', ''); try { stack.setPointerCapture(id); } catch { /* the pointer has gone */ } }
     }
-    if (mode === 'drag') { dx = x; set(card, dx); }
+    if (mode === 'drag') { dx = x; set(card, dx); incoming(dx < 0 ? 1 : -1); }
   });
   const end = (e: PointerEvent) => {
     if (e.pointerId !== id) return;
@@ -36,14 +44,14 @@ export function swipeable(stack: HTMLElement, go: (step: 1 | -1) => void): void 
     if (!el || !dragged) return;
     const speed = Math.abs(dx) / Math.max(1, performance.now() - t0);
     const far = Math.abs(dx) > Math.min(110, el.offsetWidth * 0.25) || (speed > 0.6 && Math.abs(dx) > 30);
-    if (e.type === 'pointercancel' || !far) { el.removeAttribute('data-drag'); el.style.removeProperty('--drag-x'); el.style.removeProperty('--drag-r'); return; }
+    if (e.type === 'pointercancel' || !far) { el.removeAttribute('data-drag'); el.style.removeProperty('--drag-x'); el.style.removeProperty('--drag-r'); incoming(0); return; }
     const step: 1 | -1 = dx < 0 ? 1 : -1;
-    if (still()) { clear(el); go(step); return; }
+    if (still()) { clear(el); incoming(0); go(step); return; }
     /* It flies off to the side it was thrown, then takes its place at the back as the next card comes forward. */
     el.removeAttribute('data-drag'); el.setAttribute('data-fly', ''); set(el, (dx < 0 ? -1 : 1) * el.offsetWidth * 1.2);
     let done = false;
     /* At the back at once, not travelling back across the stack from where it was thrown. */
-    const finish = () => { if (done) return; done = true; el.style.transition = 'none'; clear(el); go(step); void el.offsetWidth; requestAnimationFrame(() => el.style.removeProperty('transition')); };
+    const finish = () => { if (done) return; done = true; el.style.transition = 'none'; clear(el); incoming(0); go(step); void el.offsetWidth; requestAnimationFrame(() => el.style.removeProperty('transition')); };
     el.addEventListener('transitionend', finish, { once: true });
     window.setTimeout(finish, 320);
   };

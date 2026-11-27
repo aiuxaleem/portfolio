@@ -1,0 +1,70 @@
+/* The illustrations' canvas and drawing vocabulary (owner request, 24 November 2026), shared by the page-head scenes
+   (components/art/hero-art.astro) and the section scenes (components/art/section-art.astro); the Process drawings on Home
+   use the same vocabulary under .pr-art (home/process.astro). A dot-grid canvas like a design tool's artboard; every colour
+   a semantic token, so both themes work with no colour in the drawings. Strokes: outlines 1.5, connectors 2, accents 3,
+   text bars 4, titles 7. */
+.art-canvas { position: relative; isolation: isolate; min-inline-size: 0; border-radius: var(--radius-xl); background-color: var(--surface-tile); background-image: radial-gradient(var(--border-default) 1px, transparent 1.5px); background-size: 14px 14px; background-position: center; border: 1px solid var(--border-default); }
+/* The deck's two glows (home/case-deck.astro), held inside the canvas so nothing spills past it. */
+.art-canvas::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--glow-cyan) no-repeat 90% 10% / 60% 60%, var(--glow-blue) no-repeat 10% 95% / 55% 55%; pointer-events: none; }
+/* Four placements of the same two glows (hero-art.astro and section-art.astro pick one by name). */
+.art-canvas[data-glow="1"]::before { background-position: 8% 8%, 94% 92%; }
+.art-canvas[data-glow="2"]::before { background-position: 50% 0%, 50% 100%; background-size: 70% 55%, 60% 50%; }
+.art-canvas[data-glow="3"]::before { background-position: 92% 92%, 8% 10%; }
+.art-canvas > svg { display: block; inline-size: 100%; block-size: auto; overflow: visible; }
+
+.art-canvas .pa-card { fill: var(--surface-card); stroke: var(--border-strong); stroke-width: 1.5; }
+.art-canvas .pa-fill { fill: var(--action-solid); }
+.art-canvas .pa-link { fill: var(--text-link); }
+.art-canvas .pa-strong { fill: var(--text-strong); }
+.art-canvas .pa-soft { fill: var(--surface-skeleton); }
+.art-canvas .pa-edge { stroke: var(--border-strong); stroke-width: 1.5; }
+.art-canvas .pa-play { fill: var(--surface-card); }
+.art-canvas .pa-chip { fill: var(--surface-card); stroke: var(--text-link); stroke-width: 2; }
+.art-canvas .pa-found { fill: var(--surface-card); stroke: var(--text-link); stroke-width: 2.5; }
+.art-canvas .pa-found-edge { stroke: var(--text-link); stroke-width: 2.5; }
+.art-canvas .pa-dashed { fill: none; stroke: var(--border-strong); stroke-width: 1.5; stroke-dasharray: 6 6; }
+.art-canvas .pa-rim { stroke: var(--surface-card); stroke-width: 3; }
+.art-canvas :is(.pa-line, .pa-title, .pa-stroke, .pa-accent, .pa-on-fill, .pa-track, .pa-arc, .pa-progress, .pa-tick, .pa-ok) { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.art-canvas .pa-line { stroke: var(--text-subtle); stroke-width: 4; opacity: 0.7; }
+.art-canvas .pa-title { stroke: var(--text-strong); stroke-width: 7; opacity: 0.85; }
+.art-canvas .pa-quote { stroke: var(--text-link); opacity: 1; }
+.art-canvas .pa-stroke { stroke: var(--border-strong); stroke-width: 2; }
+.art-canvas .pa-accent { stroke: var(--text-link); stroke-width: 3; }
+.art-canvas .pa-on-fill { stroke: var(--text-on-brand); stroke-width: 4; }
+.art-canvas .pa-faint { opacity: 0.35; }
+/* A small glyph drawn in a line class (a topic hash, the new-tab arrow, a brand mark): the outline weight, not a text bar. */
+.art-canvas .pa-glyph { stroke-width: 1.75; } /* the Lucide icons' stroke, so a glyph in a drawing matches the icons beside it (fourth review, 26 November 2026) */
+.art-canvas .pa-track { stroke: var(--border-default); stroke-width: 8; }
+.art-canvas .pa-thin { stroke-width: 6; }
+/* A ring that stops at its share (--arc of the whole): drawn to it, never full. */
+.art-canvas .pa-arc { --arc: 0.75; stroke: var(--action-solid); stroke-width: 8; stroke-dasharray: var(--arc) 1; }
+.art-canvas .pa-arc-60 { --arc: 0.6; }
+.art-canvas .pa-progress { stroke: var(--action-solid); stroke-width: 6; }
+.art-canvas .pa-tick { stroke: var(--surface-card); stroke-width: 2; }
+.art-canvas .pa-ok { stroke: var(--text-success); stroke-width: 3; }
+.art-canvas :is(.pa-type, .pa-mono) { user-select: none; }
+.art-canvas .pa-type { fill: var(--text-strong); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-display-md); letter-spacing: var(--tracking-tighter); }
+/* A step number on a filled disc. */
+.art-canvas .pa-mono.pa-num { fill: var(--text-on-brand); }
+/* A card's own icon drawn in a strip (section-scenes.ts icon()): outlined at the cards' 1.75 px whatever its size. */
+.art-canvas .pa-icon { fill: none; stroke: var(--text-strong); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.art-canvas .pa-icon * { vector-effect: non-scaling-stroke; }
+/* A diagram's step name (art/diagrams.ts), and the dashed line of a loop that returns. */
+.art-canvas .pa-label { fill: var(--text-strong); font-family: var(--font-display); font-size: var(--text-body); font-weight: var(--weight-bold); user-select: none; }
+.art-canvas .pa-label.pa-num { fill: var(--text-on-brand); }
+.art-canvas .pa-loop { stroke-dasharray: 6 6; }
+.art-canvas .pa-mono { fill: var(--text-subtle); font-family: var(--font-mono); font-size: var(--text-mono); font-weight: var(--weight-semibold); }
+
+/* A section head that holds a strip (components/art/section-art.astro): from 1024 px the heading and lead keep the left
+   column and the strip takes the right, beside all three lines; under that the strip is not shown. */
+@media (min-width: 1024px) {
+  /* The words keep their own spacing: each line has a row of its own between two that take the strip's extra height, so
+     the strip never pulls the overline, heading and lead apart (second review, 25 November 2026: 33 to 40 px between
+     heading and lead beside a strip, against 12 elsewhere). */
+  :is(.page-section-head, .wb-head, .ip-head, .pr-head):has(> .section-art:not([data-under])) { grid-template-columns: minmax(0, 1fr) minmax(0, 30rem); grid-template-rows: 1fr repeat(3, auto) 1fr; column-gap: var(--space-10); row-gap: 0; align-items: start; }
+  :is(.page-section-head, .wb-head, .ip-head, .pr-head):has(> .section-art:not([data-under])) > :not(.section-art) { grid-column: 1; }
+  :is(.page-section-head, .wb-head, .ip-head, .pr-head):has(> .section-art:not([data-under])) > :nth-child(1) { grid-row: 2; }
+  :is(.page-section-head, .wb-head, .ip-head, .pr-head):has(> .section-art:not([data-under])) > :nth-child(2) { grid-row: 3; margin-block-start: var(--space-3); }
+  :is(.page-section-head, .wb-head, .ip-head, .pr-head):has(> .section-art:not([data-under])) > :nth-child(3):not(.section-art) { grid-row: 4; margin-block-start: var(--space-3); }
+  :is(.page-section-head, .wb-head, .ip-head, .pr-head) > .section-art:not([data-under]) { grid-column: 2; grid-row: 1 / -1; align-self: center; }
+}

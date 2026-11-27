@@ -34,6 +34,7 @@ import ShareBox from '../admin/components/share-box.astro';
 import LinkedInPost from '../components/embeds/linkedin-post.astro';
 import LinkedInArticle from '../components/embeds/linkedin-article.astro';
 import Callout from '../components/content/callout.astro';
+import Diagram from '../components/content/diagram.astro';
 import TableWrap from '../components/content/table-wrap.astro';
 import CodeBlock from '../components/content/code-block.astro';
 import PostCard from '../components/cards/post-card.astro';
@@ -188,13 +189,20 @@ const inkVariants = ['on-ink-solid', 'on-ink'] as const;
 const h2 = 'margin: 0; font-size: var(--text-h3); font-weight: var(--weight-bold); color: var(--text-strong);';
 /** Which part of the fixtures this page shows: the site's components, the admin's pieces (/_states-admin), or the admin
     dashboard's states (/_states-dashboard): eight dashboards on one page took about 15 minutes a view in the quality run and
-    crashed the browser at 844x390 (13 November 2026, L-66). */
-const part = ((Astro.props as { part?: 'site' | 'admin' | 'dashboard' }).part ?? 'site');
+    crashed the browser at 844x390 (13 November 2026, L-66); or the landing pages' pieces and Home's Work bento, Process and
+    In public (/_states-home): with them, /_states ran past the 25 minutes a view (25 November 2026, L-88). */
+const part = ((Astro.props as { part?: 'site' | 'admin' | 'dashboard' | 'home' }).part ?? 'site');
 const note = 'margin: 0; font-size: var(--text-body-sm); color: var(--text-muted);';
 const row = 'display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center;';
 import DashboardView from '../admin/components/dashboard.astro';
 import AdminIcon from '../admin/components/admin-icon.astro';
 import Publishing from '../admin/components/publishing.astro';
+import HeroArt from '../components/art/hero-art.astro';
+import SectionArt from '../components/art/section-art.astro';
+import TileIcon from '../components/ui/tile-icon.astro';
+import { tileIcon } from '../lib/tile-icons';
+import { SCENES, type SceneName } from '../components/art/scenes';
+import { SECTION_SCENES, type SectionSceneName } from '../components/art/section-scenes';
 /* Fixture rows for the publishing tiles: a visitor's suggestion first, a long title, nine rows so the tile caps at eight; and the last publishes. */
 const pubAt = (h: number) => `2026-10-20T${String(h).padStart(2, '0')}:19:00.000Z`;
 const pubFull = {
@@ -234,11 +242,11 @@ const prevTail = dashPrev.slice(-5);
 const dashPartial = { ...dashFull, totals: { ...dashFull.totals, target: 0 }, previous: { series: dashPrev, totals: { views: prevTail.reduce((a, d) => a + d.views, 0), visits: prevTail.reduce((a, d) => a + d.visits, 0), target: 2 } }, previousCovered: 5, countingSince: '2026-09-12', sources: [{ source: 'LinkedIn', visits: 0, hosts: [] }, { source: 'Direct or app', visits: 185, hosts: [] }], countries: [{ country: 'SA', visits: 0 }, { country: 'AE', visits: 0 }, { country: 'IN', visits: 120 }, { country: 'GB', visits: 65 }], publishes: [], patternDays: 20, lastVisit: undefined };
 const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countingSince: dashDays[2].day, previousCovered: 0, series: dashSeries.slice(0, 7).map(d => ({ ...d, views: 0, visits: 0 })), totals: { views: 0, visits: 0, target: 0 }, previous: null, pages: [], sections: [], sources: [], countries: [{ country: 'SA', visits: 0 }, { country: 'AE', visits: 0 }], devices: [], hours: Array(24).fill(0), weekdays: Array(7).fill(0), patternDays: 0, publishes: [] };
 ---
-<BaseLayout title={part === 'admin' ? 'Admin component states · Aleem | AIUX' : part === 'dashboard' ? 'Dashboard states · Aleem | AIUX' : 'Component states · Aleem | AIUX'} description="Development page listing components in their states, in both themes, with stress content. Excluded from production and the sitemap." noindex>
+<BaseLayout title={part === 'admin' ? 'Admin component states · Aleem | AIUX' : part === 'dashboard' ? 'Dashboard states · Aleem | AIUX' : part === 'home' ? 'Home and landing states · Aleem | AIUX' : 'Component states · Aleem | AIUX'} description="Development page listing components in their states, in both themes, with stress content. Excluded from production and the sitemap." noindex>
   <main id="main" style="display: grid;">
     <div class="cory-container" style="padding-block: var(--space-12) var(--space-6); display: grid; gap: var(--space-3);">
       <p class="cory-overline" style="margin: 0;">Development</p>
-      <h1 style="margin: 0; font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter);">{part === 'admin' ? 'Admin component states' : part === 'dashboard' ? 'Dashboard states' : 'Component states'}</h1>
+      <h1 style="margin: 0; font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter);">{part === 'admin' ? 'Admin component states' : part === 'dashboard' ? 'Dashboard states' : part === 'home' ? 'Home and landing states' : 'Component states'}</h1>
       <p style={note}>Every block below is shown twice: light theme, then dark. Hover, press and keyboard focus are live states: move the pointer over a control or press Tab.</p>
     </div>
     {(['light', 'dark'] as const).map(theme => (
@@ -394,6 +402,8 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <div class="prose">
               <Callout title="Fixture note"><p>Fixture callout text. {stress.unbroken}</p></Callout>
               <Callout tone="warning" title={stress.longTitle}><p>Fixture warning text.</p></Callout>
+              <Diagram name="promptLoop" caption={stress.longTitle} />
+              <Diagram name="promptLoop" />
               <blockquote><p>Fixture block quote.</p></blockquote>
               <CodeBlock><code>{'variant: primary | ink | secondary | ghost\na-deliberately-long-line-of-code-that-must-scroll-inside-its-own-box-and-never-widen-the-page: true'}</code></CodeBlock>
               <TableWrap><thead><tr><th>Fixture column one</th><th>Fixture column two</th><th>Fixture column three</th><th>Fixture column four</th></tr></thead><tbody><tr><td>Row one</td><td>A cell with a longer piece of text</td><td>12</td><td>{stress.unbroken}</td></tr><tr><td>Row two</td><td>Another cell</td><td>34</td><td>Short</td></tr></tbody></TableWrap>
@@ -473,36 +483,6 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
             <h2 style={h2}>Audience websites: first-screen stack</h2>
             <p style={note}>The stack beside the words on every first screen of the websites for hiring teams and for clients. Live: the arrows bring the next card forward. Front card: a 120-⁠character title, a long line and an unbroken kicker over eight points (the sheet shows four). Then a one-word title with every optional field missing, and a case study with its cover. Below it, a stack of one card, which has no arrows, and a stack of five picks (L-76: the fourth and fifth wait unseen behind the third; live, a card can be swiped or dragged aside, or moved with the arrow keys).</p>
             <div style="display: grid; gap: var(--space-10); max-inline-size: min(100%, 440px); overflow-x: clip;"><HeroStack id={`states-stack-${theme}`} label="Stack" noun="card" cards={stackStress} /><HeroStack id={`states-stack-one-${theme}`} label="One card" noun="card" cards={[stackStress[1]]} /><HeroStack id={`states-stack-five-${theme}`} label="Five picks" noun="card" cards={[...stackStress, ...stackStress].slice(0, 5).map((c, i) => ({ ...c, title: i < 3 ? c.title : `Pick ${i + 1}` }))} /></div>
-            <h2 style={h2}>Landing pages: the first screen</h2>
-            <p style={note}>The hero of the hiring and client landing pages (L-83), here with an h2. The field behind it is the CSS picture (the checks run without motion; live, the WebGL field replaces it after load). First: a 120-⁠character title with an unbroken string in the lead and the status, and eight facts in the aside. Then the partial state: a one-word title, no status, no second action, no aside.</p>
-            <LandingHero level={2} landmark={false} id={`states-lp-hero-${theme}`} overline="For hiring managers" status={stress.unbroken} title={stress.longTitle} accent="heading wraps" lead={`${stress.longTitle} ${stress.unbroken}`} primary={{ label: 'Book a call', href: '#' }} secondary={{ label: 'View resume', href: '#' }}>
-              <dl slot="aside" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--space-4); margin: 0;">{[...stress.tags.slice(0, 7), stress.unbroken].map((t, i) => <div style="min-inline-size: 0;"><dt style="font-size: var(--text-caption); color: var(--text-muted);">Fact {i + 1}</dt><dd style="margin: 0; color: var(--text-strong); font-weight: var(--weight-semibold); overflow-wrap: anywhere;">{t}</dd></div>)}</dl>
-            </LandingHero>
-            <LandingHero level={2} landmark={false} id={`states-lp-hero-one-${theme}`} overline="For clients" title={stress.oneWord} lead="A lead long enough to read as the hero's supporting sentence, with no second action and no aside." primary={{ label: 'Book a call', href: '#' }} />
-            <h2 style={h2}>Landing pages: the statement and the band</h2>
-            <p style={note}>The statement (live, each line brightens as it crosses the screen): a 120-⁠character sentence with an accent and an unbroken string; then one word with no body. The band of large words (live, it slides with the scroll only), with nine items and an unbroken one; it is decoration (aria-hidden), and it clips its own overflow.</p>
-            <LandingStatement landmark={false} id={`states-lp-statement-${theme}`} overline="The idea behind the work" text={`${stress.longTitle} ${stress.unbroken}`} accent="every heading wraps" body={stress.longTitle} />
-            <LandingStatement landmark={false} id={`states-lp-statement-one-${theme}`} overline="One word" text={stress.oneWord} />
-            <LandingBand items={[...stress.tags, stress.unbroken]} />
-            <h2 style={h2}>Landing pages: a section with its case studies</h2>
-            <p style={note}>A numbered section head with a lead over the wide case cards: the full fixture with its cover, and the stress fixture with no cover (the ink panel at the same size), a 120-⁠character title and an unbroken category. Four or more cards stack on the scroll live (data-stack-scroll); two do not.</p>
-            <LandingSection landmark={false} id={`states-lp-work-${theme}`} index="01" overline="Selected work" title={stress.longTitle} lead={stress.unbroken}>
-              <LandingWork entries={caseCards} level={3} />
-            </LandingSection>
-            <h2 style={h2}>Landing pages: figures</h2>
-            <p style={note}>Live, a figure below the screen counts once to its number. Here: a figure with a start value, one with a suffix, one with no link, one with a long label and an unbroken string, and a one-figure list.</p>
-            <LandingFigures figures={[{ value: 7, from: 1646, spoken: 'From 1,646 to 7', label: 'A figure with a start value and its case study.', href: '#' }, { value: 80, suffix: ' of 80', spoken: '80 of 80', label: 'A figure with a suffix.', href: '#' }, { value: 13, suffix: '+', spoken: '13 or more', label: 'A figure with no link.' }, { value: 1234567, spoken: '1,234,567', label: `${stress.longTitle} ${stress.unbroken}`, href: '#', link: stress.longTitle }]} />
-            <LandingFigures figures={[{ value: 231, spoken: '231', label: stress.oneWord }]} />
-            <h2 style={h2}>Landing pages: numbered rows (split section)</h2>
-            <p style={note}>The head held beside the rows from 1024 px. A service row with its fit, eight things you get and two links; a row with a 120-⁠character title and an unbroken body; a one-word row with nothing else (partial).</p>
-            <LandingSection landmark={false} id={`states-lp-rows-${theme}`} index="02" overline="Capabilities" title={stress.oneWord} split>
-              <LandingRows level={3} rows={[{ title: 'AI product design', body: 'From model capability to a flow people trust.', fit: 'The model works, but people do not yet trust the product around it.', gets: [...stress.tags.slice(0, 7), stress.unbroken], links: [{ label: 'See the projects', href: '#' }, { label: stress.longTitle, href: '#' }] }, { title: stress.longTitle, body: stress.unbroken }, { title: stress.oneWord }]} />
-            </LandingSection>
-            <h2 style={h2}>Landing pages: process steps and questions</h2>
-            <p style={note}>Four steps on a track (live, its light fills as it scrolls through), one with a long title and an unbroken body; one step alone. The questions: native disclosures, the first open; a 120-⁠character question with an unbroken answer; a one-word question.</p>
-            <LandingSteps level={3} steps={[{ title: 'Understand', body: 'Users, data and where trust breaks.' }, { title: stress.longTitle, body: stress.unbroken }, { title: 'Build with AI', body: 'Real, coded prototypes in days.' }, { title: stress.oneWord, body: 'One word.' }]} />
-            <LandingSteps level={3} steps={[{ title: stress.oneWord, body: 'One step.' }]} />
-            <LandingFaq items={[{ q: 'What do you need from us to start?', a: 'Access to the product, one decision-maker, and the number you want to move.' }, { q: stress.longTitle, a: stress.unbroken }, { q: stress.oneWord, a: stress.oneWord }]} />
             <h2 style={h2}>Home: the Human + Agent drawing</h2>
             <p style={note}>The drawing beside the Two users line (L-77): the website, the person, the agent and the three paths, with its three steps written under it. One state: it has no data. Here in a 320 px column and at full width.</p>
             <div style="display: grid; gap: var(--space-10);"><div style="max-inline-size: 320px;"><TwoUsersArt /></div><TwoUsersArt /></div>
@@ -522,33 +502,6 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
           </div>
         </div>
         <HomeFeeds fixtures landmark={false} idPrefix={`states-${theme}`} />
-        <div class="cory-container" style="padding-block: var(--space-12) 0; display: grid; gap: var(--space-4);">
-          <h2 style={h2}>Home: the Work bento</h2>
-          <p style={note}>With fixtures first, so the stress content shows: a 120-⁠character project, case study, system and skill, an unbroken string, missing covers, and case studies past the ones the hero deck shows. Then the empty state: every cell keeps its frame, its title and its line; counts, covers, the contents list and the line to say are left out.</p>
-        </div>
-        <WorkBento fixture={`states-${theme}`} />
-        <WorkBento fixture={`states-empty-${theme}`} empty />
-        <div class="cory-container" style="padding-block: var(--space-12) 0; display: grid; gap: var(--space-4);">
-          <h2 style={h2}>Home: the Process timeline</h2>
-          <p style={note}>Three of the eight steps as Home shows them (Home itself carries all eight through every check; three keep this page inside the gate's time per view): a step with terms, the design-system step as the ink card with its proof link, and a step with one term, under the chips of their phases (each jumps to its phase's first step; live, each rail segment fills as its step scrolls through), then the route for people who don't design. Then the stress content: a 120-⁠character step with an unbroken phase, body, proof link and eight terms, one with no terms (partial), an ink step with no design-system line (partial), a one-word step with neither, and a branch with a long title and an unbroken route. Last, the timeline with no branch (partial). It has no loading or empty state: the steps are fixed text.</p>
-        </div>
-        <Process fixture={`states-${theme}`} steps={processSteps.slice(2, 5)} />
-        <Process fixture={`states-stress-${theme}`} title={stress.longTitle} steps={[
-          { phase: stress.unbroken as any, title: stress.longTitle, body: stress.unbroken, terms: stress.tags.slice(0, 8).map((t: string): { term: string; meaning: string } => ({ term: t, meaning: stress.longTitle })).concat([{ term: stress.unbroken, meaning: stress.unbroken }]), system: stress.unbroken, proof: { label: stress.unbroken, href: '/blog' } },
-          { phase: 'Define', title: "Fixture step with no terms", body: "A step that leaves out its terms.", system: "The design-system line still shows." },
-          { phase: 'Define', hub: true, title: "Fixture hub step with no system line", body: "The ink card, leaving out its design-system line.", terms: [{ term: "Term", meaning: "One term." }], proof: { label: "A proof link on ink", href: "/blog" } },
-          { phase: 'Test', title: stress.oneWord, body: stress.oneWord },
-        ]} branch={{ title: stress.longTitle, lead: stress.longTitle, routes: [{ title: stress.unbroken, body: stress.unbroken }, { title: stress.oneWord, body: stress.oneWord }] }} />
-        <Process fixture={`states-nobranch-${theme}`} branch={null} steps={[
-          { phase: 'Empathise', title: "Fixture step", body: "A timeline with no branch after it." },
-          { phase: 'Implement', title: "Fixture last step", body: "The rail stops at the last node." },
-        ]} />
-        <div class="cory-container" style="padding-block: var(--space-12) 0; display: grid; gap: var(--space-4);">
-          <h2 style={h2}>Home: In public</h2>
-          <p style={note}>With fixtures first (a 120-⁠character video and post title, an unbroken string, a video with no poster or date), then empty: no channel set (each says it is opening soon and is not a link), no video and no post (each group says why and where to look).</p>
-        </div>
-        <InPublic fixture={`states-${theme}`} />
-        <InPublic fixture={`states-empty-${theme}`} empty />
         <div class="cory-container" style="padding-block: var(--space-12); display: grid; gap: var(--space-10);">
 
           <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
@@ -608,6 +561,84 @@ const dashEmpty = { days: 7, from: dashDays[0].day, to: dashDays[6].day, countin
           </div>
         </div>)}
         {part === 'site' && <div data-states-testimonials><Testimonials placeholders id={`testimonials-${theme}`} /></div>}
+        {part === 'home' && (<div class="cory-container" style="padding-block: var(--space-12); display: grid; gap: var(--space-10);">
+          <p class="cory-overline" style="margin: 0;">{theme} theme</p>
+
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 900px;">
+            <h2 style={h2}>Landing pages: the first screen</h2>
+            <p style={note}>The hero of the hiring and client landing pages (L-83), here with an h2. The field behind it is the CSS picture (the checks run without motion; live, the WebGL field replaces it after load). First: a 120-⁠character title with an unbroken string in the lead and the status, and eight facts in the aside. Then the partial state: a one-word title, no status, no second action, no aside.</p>
+            <LandingHero level={2} landmark={false} id={`states-lp-hero-${theme}`} overline="For hiring managers" status={stress.unbroken} title={stress.longTitle} accent="heading wraps" lead={`${stress.longTitle} ${stress.unbroken}`} primary={{ label: 'Book a call', href: '#' }} secondary={{ label: 'View resume', href: '#' }}>
+              <dl slot="aside" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--space-4); margin: 0;">{[...stress.tags.slice(0, 7), stress.unbroken].map((t, i) => <div style="min-inline-size: 0;"><dt style="font-size: var(--text-caption); color: var(--text-muted);">Fact {i + 1}</dt><dd style="margin: 0; color: var(--text-strong); font-weight: var(--weight-semibold); overflow-wrap: anywhere;">{t}</dd></div>)}</dl>
+            </LandingHero>
+            <LandingHero level={2} landmark={false} id={`states-lp-hero-one-${theme}`} overline="For clients" title={stress.oneWord} lead="A lead long enough to read as the hero's supporting sentence, with no second action and no aside." primary={{ label: 'Book a call', href: '#' }} />
+            <h2 style={h2}>Landing pages: the statement and the band</h2>
+            <p style={note}>The statement (live, each line brightens as it crosses the screen): a 120-⁠character sentence with an accent and an unbroken string; then one word with no body. The band of large words (live, it slides with the scroll only), with nine items and an unbroken one; it is decoration (aria-hidden), and it clips its own overflow.</p>
+            <LandingStatement landmark={false} id={`states-lp-statement-${theme}`} overline="The idea behind the work" text={`${stress.longTitle} ${stress.unbroken}`} accent="every heading wraps" body={stress.longTitle} />
+            <LandingStatement landmark={false} id={`states-lp-statement-one-${theme}`} overline="One word" text={stress.oneWord} />
+            <LandingBand items={[...stress.tags, stress.unbroken]} />
+            <h2 style={h2}>Landing pages: a section with its case studies</h2>
+            <p style={note}>A numbered section head with a lead over the wide case cards: the full fixture with its cover, and the stress fixture with no cover (the ink panel at the same size), a 120-⁠character title and an unbroken category. Four or more cards stack on the scroll live (data-stack-scroll); two do not.</p>
+            <LandingSection landmark={false} id={`states-lp-work-${theme}`} index="01" overline="Selected work" title={stress.longTitle} lead={stress.unbroken}>
+              <LandingWork entries={caseCards} level={3} />
+            </LandingSection>
+            <h2 style={h2}>Landing pages: figures</h2>
+            <p style={note}>Live, a figure below the screen counts once to its number. Here: a figure with a start value, one with a suffix, one with no link, one with a long label and an unbroken string, and a one-figure list.</p>
+            <LandingFigures figures={[{ value: 7, from: 1646, spoken: 'From 1,646 to 7', label: 'A figure with a start value and its case study.', href: '#' }, { value: 80, suffix: ' of 80', spoken: '80 of 80', label: 'A figure with a suffix.', href: '#' }, { value: 13, suffix: '+', spoken: '13 or more', label: 'A figure with no link.' }, { value: 1234567, spoken: '1,234,567', label: `${stress.longTitle} ${stress.unbroken}`, href: '#', link: stress.longTitle }]} />
+            <LandingFigures figures={[{ value: 231, spoken: '231', label: stress.oneWord }]} />
+            <h2 style={h2}>Landing pages: numbered rows (split section)</h2>
+            <p style={note}>The head held beside the rows from 1024 px. A service row with its fit, eight things you get and two links; a row with a 120-⁠character title and an unbroken body; a one-word row with nothing else (partial).</p>
+            <LandingSection landmark={false} id={`states-lp-rows-${theme}`} index="02" overline="Capabilities" title={stress.oneWord} split>
+              <LandingRows level={3} rows={[{ title: 'AI product design', body: 'From model capability to a flow people trust.', fit: 'The model works, but people do not yet trust the product around it.', gets: [...stress.tags.slice(0, 7), stress.unbroken], links: [{ label: 'See the projects', href: '#' }, { label: stress.longTitle, href: '#' }] }, { title: stress.longTitle, body: stress.unbroken }, { title: stress.oneWord }]} />
+            </LandingSection>
+            <h2 style={h2}>Landing pages: process steps and questions</h2>
+            <p style={note}>Four steps on a track (live, its light fills as it scrolls through), one with a long title and an unbroken body; one step alone. The questions: native disclosures, the first open; a 120-⁠character question with an unbroken answer; a one-word question.</p>
+            <LandingSteps level={3} steps={[{ title: 'Understand', body: 'Users, data and where trust breaks.' }, { title: stress.longTitle, body: stress.unbroken }, { title: 'Build with AI', body: 'Real, coded prototypes in days.' }, { title: stress.oneWord, body: 'One word.' }]} />
+            <LandingSteps level={3} steps={[{ title: stress.oneWord, body: 'One step.' }]} />
+            <LandingFaq items={[{ q: 'What do you need from us to start?', a: 'Access to the product, one decision-maker, and the number you want to move.' }, { q: stress.longTitle, a: stress.unbroken }, { q: stress.oneWord, a: stress.oneWord }]} />
+          </div>
+
+          <div data-lazy-block style="display: grid; gap: var(--space-4); content-visibility: auto; contain-intrinsic-size: auto 1600px;">
+            <h2 style={h2}>Illustrations: page heads, section heads and tile icons</h2>
+            <p style={note}>Every page-head scene (art/hero-art.astro, 480 × 360) and section strip (art/section-art.astro, 480 × 200) on its dot canvas, by name (owner request, 24 November 2026). Both are decorative and shown from 1024 px only, where the head has a second column; under that this block shows their names and nothing else, as the pages do. They have no loading, empty or error state: each is a fixed drawing in token colours. Then the tile icon: a known title, and an unknown one with an unbroken string, which draws nothing (the partial state: a renamed item loses its icon, never gets a wrong one).</p>
+            <ul role="list" style="display: grid; gap: var(--space-6); grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); margin: 0; padding: 0; list-style: none;">
+              {(Object.keys(SCENES) as SceneName[]).map(n => <li style="display: grid; gap: var(--space-2); min-inline-size: 0;"><p class="case-kicker">hero · {n}</p><HeroArt name={n} /></li>)}
+              {(Object.keys(SECTION_SCENES) as SectionSceneName[]).map(n => <li style="display: grid; gap: var(--space-2); min-inline-size: 0;"><p class="case-kicker">section · {n}</p><SectionArt name={n} /></li>)}
+            </ul>
+            <div style="display: flex; flex-wrap: wrap; gap: var(--space-6); align-items: center;">
+              <p class="case-kicker" style="display: flex; gap: var(--space-3); align-items: center; min-inline-size: 0;"><TileIcon name={tileIcon('Tokens') ?? 'puzzle'} /> known title</p>
+              <p class="case-kicker" style="display: flex; gap: var(--space-3); align-items: center; min-inline-size: 0;"><TileIcon name={tileIcon('A title no tile has, xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')} /> unknown title: no icon</p>
+            </div>
+          </div>
+        </div>)}
+        {part === 'home' && <Fragment>
+        <div class="cory-container" style="padding-block: var(--space-12) 0; display: grid; gap: var(--space-4);">
+          <h2 style={h2}>Home: the Work bento</h2>
+          <p style={note}>With fixtures first, so the stress content shows: a 120-⁠character project, case study, system and skill, an unbroken string, missing covers, and case studies past the ones the hero deck shows. Then the empty state: every cell keeps its frame, its title and its line; counts, covers, the contents list and the line to say are left out.</p>
+        </div>
+        <WorkBento fixture={`states-${theme}`} />
+        <WorkBento fixture={`states-empty-${theme}`} empty />
+        <div class="cory-container" style="padding-block: var(--space-12) 0; display: grid; gap: var(--space-4);">
+          <h2 style={h2}>Home: the Process timeline</h2>
+          <p style={note}>Three of the eight steps as Home shows them (Home itself carries all eight through every check): each with its drawing on its dot canvas (with motion on, each drawing builds piece by piece as it scrolls in): a step with terms, the design-system step as the ink card with its proof link, and a step with one term, under the chips of their phases (each jumps to its phase's first step; live, each rail segment fills as its step scrolls through), then the route for people who don't design. Then the stress content: a 120-⁠character step with an unbroken phase, body, proof link and eight terms, one with no terms (partial), an ink step with no design-system line (partial), a one-word step with neither (the stress steps leave out their drawings and the long phase has no icon), and a branch with a long title and an unbroken route. Last, the timeline with no branch (partial). It has no loading or empty state: the steps are fixed text.</p>
+        </div>
+        <Process fixture={`states-${theme}`} steps={processSteps.slice(2, 5)} />
+        <Process fixture={`states-stress-${theme}`} title={stress.longTitle} steps={[
+          { phase: stress.unbroken as any, title: stress.longTitle, body: stress.unbroken, terms: stress.tags.slice(0, 8).map((t: string): { term: string; meaning: string } => ({ term: t, meaning: stress.longTitle })).concat([{ term: stress.unbroken, meaning: stress.unbroken }]), system: stress.unbroken, proof: { label: stress.unbroken, href: '/blog' } },
+          { phase: 'Define', title: "Fixture step with no terms", body: "A step that leaves out its terms.", system: "The design-system line still shows." },
+          { phase: 'Define', hub: true, title: "Fixture hub step with no system line", body: "The ink card, leaving out its design-system line.", terms: [{ term: "Term", meaning: "One term." }], proof: { label: "A proof link on ink", href: "/blog" } },
+          { phase: 'Test', title: stress.oneWord, body: stress.oneWord },
+        ]} branch={{ title: stress.longTitle, lead: stress.longTitle, routes: [{ title: stress.unbroken, body: stress.unbroken }, { title: stress.oneWord, body: stress.oneWord }] }} />
+        <Process fixture={`states-nobranch-${theme}`} branch={null} steps={[
+          { phase: 'Empathise', title: "Fixture step", body: "A timeline with no branch after it." },
+          { phase: 'Implement', title: "Fixture last step", body: "The rail stops at the last node." },
+        ]} />
+        <div class="cory-container" style="padding-block: var(--space-12) 0; display: grid; gap: var(--space-4);">
+          <h2 style={h2}>Home: In public</h2>
+          <p style={note}>With fixtures first (a 120-⁠character video and post title, an unbroken string, a video with no poster or date), then empty: no channel set (each says it is opening soon and is not a link), no video and no post (each group says why and where to look).</p>
+        </div>
+        <InPublic fixture={`states-${theme}`} />
+        <InPublic fixture={`states-empty-${theme}`} empty />
+        </Fragment>}
         {(part === 'admin' || part === 'dashboard') && (<div class="cory-container" style="padding-block: var(--space-12); display: grid; gap: var(--space-10);">
           <p class="cory-overline" style="margin: 0;">{theme} theme</p>
 

@@ -25,7 +25,7 @@ if (stack) {
   };
   /* The back cards' pictures (hidden until a card comes to the front) load once the page has finished, so they never compete
      with the first screen on a slow connection; a click that brings a card forward loads them at once. */
-  const later = () => stack.querySelectorAll<HTMLImageElement>('img[data-deck-src]').forEach(img => { img.srcset = img.dataset.deckSrcset || ''; img.src = img.dataset.deckSrc || ''; delete img.dataset.deckSrc; });
+  const later = () => stack.querySelectorAll<HTMLImageElement>('img[data-deck-src]').forEach(img => { img.loading = 'eager'; img.srcset = img.dataset.deckSrcset || ''; img.src = img.dataset.deckSrc || ''; delete img.dataset.deckSrc; });
   if (document.readyState === 'complete') window.setTimeout(later, 1500); else window.addEventListener('load', () => window.setTimeout(later, 1500), { once: true });
   if (cards.length > 1 && prev && next) {
     const go = (step: 1 | -1) => { later(); front = (front + step + cards.length) % cards.length; paint(); };

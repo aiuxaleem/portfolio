@@ -3,6 +3,7 @@
    equal heights in a row, padding from the spacing scale. Built from the existing card recipe and tokens.
    States: with cover, without cover (typographic fallback at the same size), optional tags and status. */
 import FittedImage from '../ui/fitted-image.astro';
+import { cardPicture } from '../../lib/images';
 import type { Project } from '../../lib/projects';
 import { statusLabel, statusTone } from '../../lib/projects';
 
@@ -10,11 +11,13 @@ interface Props { project: Project; level?: 2 | 3; /** The first card of a list 
 const { project, level = 2, first = false } = Astro.props;
 const d = project.data;
 const Heading = `h${level}` as any;
+/* A cover far wider than the card's frame gives way to a gallery picture of the frame's shape (lib/images.ts cardPicture). */
+const pic = cardPicture(d.cover, d.gallery);
 ---
 <article class="project-card" data-project data-status={d.status} data-tags={d.tags.join('|')}>
   <div class="project-card-media">
-    {d.cover
-      ? <FittedImage image={d.cover} widths={[400, 640, 960]} sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" loading={first ? 'eager' : 'lazy'} fetchpriority={first ? 'high' : undefined} />
+    {pic
+      ? <FittedImage image={pic} widths={[400, 640, 960]} sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" loading={first ? 'eager' : 'lazy'} fetchpriority={first ? 'high' : undefined} />
       : <div data-cover-fallback="label" aria-hidden="true"><span>{['Project', d.tags[0]].filter(Boolean).join(' · ')}</span></div>}
   </div>
   <div class="project-card-body">

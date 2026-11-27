@@ -5,14 +5,18 @@
    Drawn in SVG from the site's tokens only (surfaces, borders, text and link colours), so it follows both themes and needs
    no picture file. The three paths draw themselves as the block scrolls in, one after another (motion.css,
    [data-two-users] .tu-flow); with reduced motion or without view timelines the drawing is simply there. The drawing is
-   decorative; its three steps are written under it, so nothing is said by the picture alone. */
+   decorative; its three steps are written under it, so nothing is said by the picture alone. Also beside the statement of
+   the landing pages (landing/landing-statement.astro, 25 November 2026); `suffix` keeps its marker ids unique where it
+   stands more than once on a page. */
+interface Props { suffix?: string }
+const { suffix = '' } = Astro.props;
 ---
 <figure class="two-users-art" data-reveal="">
   <svg viewBox="0 0 400 300" class="tu-svg" aria-hidden="true" focusable="false">
     <defs>
-      <marker id="tu-tip-link" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tu-tip-link" d="M0 0 10 5 0 10z"></path></marker>
-      <marker id="tu-tip-strong" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tu-tip-strong" d="M0 0 10 5 0 10z"></path></marker>
-      <marker id="tu-tip-muted" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tu-tip-muted" d="M0 0 10 5 0 10z"></path></marker>
+      <marker id={`tu-tip-link${suffix}`} viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tu-tip-link" d="M0 0 10 5 0 10z"></path></marker>
+      <marker id={`tu-tip-strong${suffix}`} viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tu-tip-strong" d="M0 0 10 5 0 10z"></path></marker>
+      <marker id={`tu-tip-muted${suffix}`} viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tu-tip-muted" d="M0 0 10 5 0 10z"></path></marker>
     </defs>
 
     <!-- The website the agent works on: a window with its bar, three lines of content and the step that needs a person. -->
@@ -43,9 +47,9 @@
     </g>
 
     <!-- 1. The person asks the agent. 2. The agent acts on the website. 3. The step that needs the person comes back to them. -->
-    <path class="tu-flow tu-flow-ask" pathLength="1" d="M104 252C160 280 232 282 282 252" marker-end="url(#tu-tip-muted)"></path>
-    <path class="tu-flow tu-flow-act" pathLength="1" d="M318 194C312 168 280 150 238 144" marker-end="url(#tu-tip-link)"></path>
-    <path class="tu-flow tu-flow-back" pathLength="1" d="M134 146C100 154 76 168 70 186" marker-end="url(#tu-tip-strong)"></path>
+    <path class="tu-flow tu-flow-ask" pathLength="1" d="M104 252C160 280 232 282 282 252" marker-end={`url(#tu-tip-muted${suffix})`}></path>
+    <path class="tu-flow tu-flow-act" pathLength="1" d="M318 194C312 168 280 150 238 144" marker-end={`url(#tu-tip-link${suffix})`}></path>
+    <path class="tu-flow tu-flow-back" pathLength="1" d="M134 146C100 154 76 168 70 186" marker-end={`url(#tu-tip-strong${suffix})`}></path>
   </svg>
   <figcaption class="tu-steps">
     <ol>

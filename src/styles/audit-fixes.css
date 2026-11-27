@@ -41,7 +41,7 @@
 :is(div:has(+ [data-hero-stack]), div:has(+ [data-deck-static])) button:not(:disabled):active { transform: scale(var(--press-scale)) !important; }
 details > summary { border-radius: inherit; transition: background var(--duration-base) var(--ease-out); }
 @media (hover: hover) {
-  :is(div:has(+ [data-hero-stack]), div:has(+ [data-deck-static])) button:not(:disabled):hover { background: var(--action-secondary-hover) !important; transform: translateY(var(--lift-hover-sm)) !important; }
+  :is(div:has(+ [data-hero-stack]), div:has(+ [data-deck-static])) button:not(:disabled):hover { background: var(--action-secondary-hover) !important; color: var(--text-strong) !important; box-shadow: inset 0 0 0 1px var(--border-interactive) !important; transform: translateY(var(--lift-hover-sm)) !important; } /* the arrow takes the text colour of the fill it sits on (light theme: white on slate-50 was 1.1:1; third review, 25 November 2026), and an edge in the interactive border colour, so the pale disc keeps its outline on the pale page (eighth review, 27 November 2026) */
   details > summary:hover { background: var(--action-ghost-hover); }
 }
 details > summary:focus-visible { background: var(--action-ghost-hover); } /* the pointer's tint, for the keyboard too */

@@ -10,6 +10,7 @@
    States: with a cover, with a project's cover, the live specimen, no picture, public with a line, private (no line). */
 import { getEntry } from 'astro:content';
 import FittedImage from '../ui/fitted-image.astro';
+import { cardPicture } from '../../lib/images';
 import Button from '../ui/button.astro';
 import { type DesignSystem, strengthLabel, platformLabel, hostOf } from '../../lib/design-systems';
 import tokensCss from '../../styles/tokens.css?raw';
@@ -18,7 +19,8 @@ interface Props { system: DesignSystem; id: string; first?: boolean }
 const { system, id, first = false } = Astro.props;
 const d = system.data;
 const project = d.project ? await getEntry('projects', d.project.replace('/work/', '')) : undefined;
-const cover = d.cover ?? project?.data.cover;
+/* A project cover far wider than the frame gives way to a gallery picture of its shape (lib/images.ts cardPicture). */
+const cover = d.cover ?? cardPicture(project?.data.cover, project?.data.gallery);
 const live = project?.data.links?.live, repo = d.code?.url ?? project?.data.links?.repo;
 const docs = d.url ?? live;
 /* This site's system: its token names counted from the source, light and dark. */
@@ -56,7 +58,7 @@ const swatches = ['--action-solid', '--navy-800', '--blue-600', '--cyan-500', '-
             <p data-copy-text>{d.prompt}</p>
             <button type="button" class="email-copy-button" aria-label={`Copy the line for ${d.title}`} title="Copy the line">
               <svg data-icon-copy width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V6a2 2 0 0 1 2-2h9"></path></svg>
-              <svg data-icon-check width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>
+              <svg data-icon-check width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>
             </button>
             <span role="status" aria-live="polite" class="ds-show-status"></span>
           </div>

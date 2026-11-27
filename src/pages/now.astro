@@ -1,4 +1,5 @@
 ---
+import SectionArt from '../components/art/section-art.astro';
 /* /now: what I am working on and learning. The list is the "now" block in src/content/site/profile.json; the learning
    list is every certification marked "in progress". Each part is left out when it is empty. */
 import { getCollection } from 'astro:content';
@@ -12,17 +13,21 @@ const tone = (status: string) => (status === 'Shipped' ? 'success' : /^(In progr
 const { now } = profile;
 const studying = (await getCollection('certifications', ({ data }) => !data.draft && !data.fixture && data.status === 'in-progress')).length;
 const none = now.building.length === 0 && studying === 0;
+import HeroArt from '../components/art/hero-art.astro';
 ---
 <PageLayout title="Now · Aleem | AIUX" description="What Mohammad Abdul Aleem is working on and learning now: current product and design system work, and the certifications in progress." page="now" bg="grid" mainStyle="outline: none; overflow: clip;">
-  <section class="cory-container" aria-labelledby="now-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
-    <p class="cory-overline" style="margin: 0;">Now</p>
-    <h1 id="now-title" style="margin: 0; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">What I am building and learning.</h1>
-    <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">A short, current list. The finished work is in the case studies.</p>
-    {now.updated && <p class="case-kicker">Last updated <time datetime={now.updated}>{monthLabel(now.updated)}</time></p>}
-    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
-      <Button variant="primary" size="lg" href="/case-studies">Read the case studies</Button>
-      <Button variant="secondary" size="lg" href="/about">About</Button>
+  <section class="cory-container hero-split" aria-labelledby="now-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <div class="hero-split-words">
+      <p class="cory-overline" style="margin: 0;">Now</p>
+      <h1 id="now-title" style="margin: 0; max-inline-size: 16ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">What I am building and learning.</h1>
+      <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">A short, current list. The finished work is in the case studies.</p>
+      {now.updated && <p class="case-kicker">Last updated <time datetime={now.updated}>{monthLabel(now.updated)}</time></p>}
+      <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+        <Button variant="primary" size="lg" href="/case-studies">Read the case studies</Button>
+        <Button variant="secondary" size="lg" href="/about">About</Button>
+      </div>
     </div>
+    <HeroArt name="now" />
   </section>
 
   {none && <section class="cory-container" aria-label="Nothing listed" style="padding-block-end: var(--section-y);"><div class="project-empty"><p class="project-empty-title">Nothing is listed right now.</p><p class="project-empty-body">This page is updated as work starts and finishes. The projects page shows what has shipped.</p><div><Button variant="secondary" href="/work">See the projects</Button></div></div></section>}
@@ -30,7 +35,7 @@ const none = now.building.length === 0 && studying === 0;
   {now.building.length > 0 && (
     <section class="page-section" data-surface="card" aria-labelledby="building-title">
       <div class="cory-container">
-        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Building</p><h2 id="building-title" class="page-h2">Work in hand</h2></div>
+        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Building</p><h2 id="building-title" class="page-h2">Work in hand</h2><SectionArt name="building" /></div>
         <div data-cq><ul data-cq-grid style="display: grid; gap: var(--grid-gap);">{now.building.map(b => <li><div class="tile"><span class="ui-badge" data-tone={tone(b.status)}>{b.status}</span><h3>{b.title}</h3><p>{b.body}</p></div></li>)}</ul></div>
       </div>
     </section>
@@ -39,7 +44,7 @@ const none = now.building.length === 0 && studying === 0;
   {studying > 0 && (
     <section class="page-section" aria-labelledby="learning-title">
       <div class="cory-container">
-        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="learning-title" class="page-h2">Studying now</h2></div>
+        <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="learning-title" class="page-h2">Studying now</h2><SectionArt name="studying" /></div>
         <Certifications only={['in-progress']} />
         <a data-link class="post-back" href="/about#certs-title"><span>Completed certifications</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
       </div>

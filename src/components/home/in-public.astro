@@ -11,6 +11,7 @@
      posts another section of Home links to.
    States: a group with nothing in it keeps its heading and says why it is empty and where to look; fixtures first on
    /_states, and an empty state there. Videos load only when played (CLAUDE.md 2.9). */
+import SectionArt from '../art/section-art.astro';
 import VideoCard from '../cards/video-card.astro';
 import FeedCard from '../cards/feed-card.astro';
 import { listedVideos } from '../../lib/videos';
@@ -82,6 +83,7 @@ const external = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
       <p class="cory-overline" style="margin: 0px;">In public</p>
       <h2 id={id('content-title')} class="ip-title">{named ? `What I share on ${named}` : 'Videos and posts, on their way'}</h2>
       <p class="ip-lead">{kinds[0].toUpperCase() + kinds.slice(1)} on designing AI products people can trust, shared as I learn. Follow along where you already are.</p>
+      <SectionArt name="channels" />
     </div>
 
     <div class="ip-cq">

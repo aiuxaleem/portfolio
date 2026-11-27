@@ -11,6 +11,9 @@ facts:
   - { value: "10", label: "Screen widths checked" }
   - { value: "57", label: "Components in its Claude version" }
 madeWith: [Claude Design, Claude Code]
+cover:
+  src: ../../assets/design-systems/aleem-aiux-home.png
+  alt: "The Home page of this site in the dark theme, built on the Aleem | AIUX tokens"
 code: { url: "https://github.com/aiuxaleem/portfolio" }
 prompt: "Read the design tokens at https://github.com/aiuxaleem/portfolio/blob/main/src/styles/tokens.css and build a pricing card that uses only those tokens, in light and dark."
 added: 2026-11-13

@@ -52,6 +52,7 @@ export function routes(target) {
   if (fs.existsSync(path.join(dist, '_states.html'))) list.push({ name: 'states', path: '/_states' });
   if (fs.existsSync(path.join(dist, '_states-admin.html'))) list.push({ name: 'states-admin', path: '/_states-admin' });
   if (fs.existsSync(path.join(dist, '_states-dashboard.html'))) list.push({ name: 'states-dashboard', path: '/_states-dashboard' });
+  if (fs.existsSync(path.join(dist, '_states-home.html'))) list.push({ name: 'states-home', path: '/_states-home' });
   return list;
 }
 

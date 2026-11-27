@@ -65,6 +65,9 @@ html [data-deck-kicker], html [data-deck-kicker] span { overflow-wrap: anywhere;
 [data-deck-static] > li:not(:first-child) { display: none; }
 /* Long-form copy from the editor (MDX body). */
 .prose { display: grid; gap: var(--space-4); }
+/* A project body beside its list of sections: a heading reached from the list lands below the sticky header. */
+.project-prose h2 { scroll-margin-block-start: calc(var(--header-height) + var(--space-6)); }
+.project-prose > :first-child { margin-block-start: 0; }
 .prose h2 { margin: var(--space-6) 0 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h2); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); }
 .prose h3 { margin: var(--space-4) 0 0; font-size: var(--text-h3); color: var(--text-strong); }
 .prose p, .prose li { margin: 0; font-size: var(--text-body-md); line-height: var(--leading-relaxed); color: var(--text-body); max-inline-size: var(--measure-body); }
@@ -260,3 +263,13 @@ html:has(dialog[data-image-preview][open]) { overflow: hidden; }
 /* A link inside a section's introduction sits in running text, so it is underlined, not told apart by colour alone (WCAG 1.4.1;
    axe link-in-text-block on /claude-skills and /skills, L-63). */
 .page-section-head .project-filter-count a { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+/* A project's head (pages/work/[slug].astro; owner request, 24 November 2026: no empty side beside a heading): from 1024 px
+   the cover sits beside the title, summary and facts instead of under them, still whole and still opening in the preview;
+   under that the words and then the cover, as before. */
+.project-head-words { display: grid; gap: var(--space-6); align-content: start; min-inline-size: 0; }
+/* The facts (role, timeline, team, tools) are a row of their own under both columns from 1024 px, so the words' column ends
+   level with the cover instead of running on beside an empty side (fourth review, 26 November 2026); under that they
+   keep their place between the words and the cover. */
+.project-head > .project-cover { order: 1; }
+.project-head > .project-meta { order: 0; }
+@media (min-width: 1024px) { .project-head { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: var(--space-10); align-items: center; } .project-head > :is(.project-cover, .project-meta) { order: 0; } .project-head > .project-meta { grid-column: 1 / -1; } }

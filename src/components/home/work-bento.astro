@@ -11,6 +11,7 @@
    The case studies list names the ones after the hero deck's, so no title is shown twice on the page.
    States: every cell keeps its frame with an empty collection (a count of zero is not shown, the line under the title
    says what the page holds) and with missing covers (the covers row is left out). Shown on /_states with fixtures. */
+import SectionArt from '../art/section-art.astro';
 import FittedImage from '../ui/fitted-image.astro';
 import { listedProjects } from '../../lib/projects';
 import { listedCaseStudies } from '../../lib/case-studies';
@@ -64,6 +65,7 @@ const icon = (k: keyof typeof icons) => `<svg width="20" height="20" viewBox="0 
       <p class="cory-overline" style="margin: 0px;">Work</p>
       <h2 id={id('work-title')} class="wb-title">Four ways into my work</h2>
       <p class="wb-lead">What shipped, how it was designed, the design systems underneath and the Claude skills I wrote for others to use.</p>
+      <SectionArt name="workWays" />
     </div>
     <div class="wb-cq">
       <ul class="wb-grid" role="list">

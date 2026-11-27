@@ -3,6 +3,9 @@
    heading in the statement size, an optional lead) over its content, or, with `split`, the head held beside the content as
    it scrolls past from 1024 px (sticky, under the header). The head keeps the site's `.page-section-head` classes, so the
    heading wipe and the GSAP section reveal (motion.ts) treat it like every other section head. */
+import SectionArt from '../art/section-art.astro';
+import type { SectionSceneName } from '../art/section-scenes';
+import type { ImageMetadata } from 'astro';
 interface Props {
   id: string;
   /** The section's number on the page, "01". */
@@ -18,8 +21,12 @@ interface Props {
   anchor?: string;
   /** Off on /_states, where the section is shown twice per theme: landmark names must be unique. */
   landmark?: boolean;
+  /** A strip beside the head (from 1024 px), for a head over its content (not `split`) whose right side stood empty. */
+  art?: SectionSceneName;
+  /** Pictures from inside the work the section introduces, shown on the strip in place of its drawing. */
+  pictures?: ImageMetadata[];
 }
-const { id, index, overline, title, lead, surface, split = false, anchor, landmark = true } = Astro.props;
+const { id, index, overline, title, lead, surface, split = false, anchor, landmark = true, art, pictures } = Astro.props;
 const Wrap = (landmark ? 'section' : 'div') as any;
 ---
 <Wrap class="page-section lp-section" id={anchor} data-surface={surface} aria-labelledby={landmark ? `${id}-title` : undefined}>
@@ -29,6 +36,7 @@ const Wrap = (landmark ? 'section' : 'div') as any;
       <h2 id={`${id}-title`} class="page-h2 lp-h2">{title}</h2>
       {lead && <p class="lp-lead">{lead}</p>}
       <slot name="head" />
+      {art && <SectionArt name={art} under={split} pictures={pictures} />}
     </div>
     <div class="lp-body"><slot /></div>
   </div>

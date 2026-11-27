@@ -16,7 +16,7 @@
 .case-toc[data-open] .case-toc-toggle svg { transform: rotate(180deg); }
 .case-toc ol { display: grid; gap: var(--space-1); }
 .case-toc a { display: flex; align-items: center; gap: var(--space-3); min-block-size: var(--tap-target); padding-inline: var(--space-3); border-radius: var(--radius-md); border-inline-start: 3px solid transparent; color: var(--text-muted); font-size: var(--text-body-sm); font-weight: var(--weight-medium); text-decoration: none; }
-.case-toc a bdi { font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--text-subtle); }
+.case-toc a bdi { flex-shrink: 0; font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--text-subtle); }
 /* Current section: weight, a brand bar and a fill, never colour alone. */
 .case-toc a[aria-current="location"] { color: var(--text-strong); font-weight: var(--weight-bold); background: var(--surface-sunken); border-inline-start-color: var(--border-focus); }
 .case-toc a:focus-visible { text-decoration: underline; }
@@ -54,6 +54,10 @@
 .case-figure figcaption { font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--leading-mono); color: var(--text-muted); }
 .case-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: var(--grid-gap); }
 .case-metrics li { display: grid; gap: var(--space-2); align-content: start; padding: var(--space-6); border-radius: var(--radius-xl); background: var(--surface-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); max-inline-size: none; }
+/* In a card narrower than 200 px (four in a row beside the contents panel) the figure steps down to the display size, so a
+   number keeps its unit on one line (CLAUDE.md 2.3, L-57; eighth review, 27 November 2026: "70" and "%" split). */
+.case-metrics li { container-type: inline-size; }
+@container (max-width: 199.98px) { .case-metrics .cory-metric { font-size: var(--text-display-md); } }
 .case-metrics span { font-size: var(--text-body-sm); font-weight: var(--weight-semibold); line-height: var(--leading-normal); color: var(--text-body); }
 .case-metrics small { font-family: var(--font-mono); font-size: var(--text-mono-sm); color: var(--text-subtle); }
 .case-quote { margin: 0; padding: var(--space-8); border-radius: var(--radius-xl); background: var(--gradient-ink); color: var(--on-ink-strong); font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-snug); letter-spacing: var(--tracking-tight); box-shadow: var(--shadow-md); text-wrap: balance; }

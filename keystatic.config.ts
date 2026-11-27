@@ -46,6 +46,10 @@ const body = (label: string, dir: string) => fields.mdx({
       title: fields.text({ label: 'Title' }),
     } }),
     Figure: wrapper({ label: 'Image with caption', description: 'Put one image inside.', schema: { caption: fields.text({ label: 'Caption' }) } }),
+    Diagram: block({ label: 'Diagram', description: 'One of the drawn diagrams in src/components/art/diagrams.ts.', schema: {
+      name: fields.select({ label: 'Diagram', defaultValue: 'promptLoop', options: [{ label: 'The prompting loop', value: 'promptLoop' }] }),
+      caption: fields.text({ label: 'Caption' }),
+    } }),
     Gallery: wrapper({ label: 'Gallery', description: 'Put two or more images inside.', schema: { caption: fields.text({ label: 'Caption' }) } }),
   },
 });

@@ -3,6 +3,9 @@
    Only the skills the owner built, each shown so a visitor can use it straight away (cards/skill-showcase.astro): what it
    does and gives back, what to say to start it, what it needs, the download and the steps for Claude.ai and Claude Code.
    The skills from others, and the full guide to skills, are on Resources > Claude Skills (/claude-skills). */
+import SectionArt from '../components/art/section-art.astro';
+import TileIcon from '../components/ui/tile-icon.astro';
+import { tileIcon } from '../lib/tile-icons';
 import PageLayout from '../layouts/page-layout.astro';
 import SkillShowcase from '../components/cards/skill-showcase.astro';
 import Button from '../components/ui/button.astro';
@@ -18,33 +21,37 @@ const steps = [
   { title: 'Add it to Claude', body: 'In Claude.ai, upload the zip under Customize > Skills. In Claude Code, unzip it into ~/.claude/skills. Each skill below shows the exact steps.' },
   { title: 'Say what you want', body: 'Use one of the lines shown with each skill, or your own words. Claude opens the skill when your request matches what it is for.' },
 ];
+import HeroArt from '../components/art/hero-art.astro';
 ---
 <PageLayout hideCta title="My Claude Skills · Aleem | AIUX" description="Claude skills Mohammad Abdul Aleem built: a UI/UX audit, a UI quality gate, a LinkedIn board, a blog post and more. What each does and how to install it." page="skills" bg="grid" mainStyle="outline: none; overflow: clip;">
-  <section class="cory-container" aria-labelledby="skills-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
-    <p class="cory-overline" style="margin: 0px;">Work · My Claude Skills</p>
-    <h1 id="skills-title" style="margin: 0px; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">Skills I built, <span style="background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent;">ready to use</span>.</h1>
-    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">A Claude skill is a folder of instructions that teaches Claude to do one task a set way. These are the ones I built for my own work: audits, boards, posts. Each is free; download it, add it to Claude and say one line.</p>
-    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
-      <Button variant="primary" size="lg" href="#mine">See the skills</Button>
-      <Button variant="secondary" size="lg" href="/claude-skills">More Claude skills</Button>
+  <section class="cory-container hero-split" aria-labelledby="skills-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <div class="hero-split-words">
+      <p class="cory-overline" style="margin: 0px;">Work · My Claude Skills</p>
+      <h1 id="skills-title" style="margin: 0px; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">Skills I built, <span style="background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent;">ready to use</span>.</h1>
+      <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">A Claude skill is a folder of instructions that teaches Claude to do one task a set way. These are the ones I built for my own work: audits, boards, posts. Each is free; download it, add it to Claude and say one line.</p>
+      <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+        <Button variant="primary" size="lg" href="#mine">See the skills</Button>
+        <Button variant="secondary" size="lg" href="/claude-skills">More Claude skills</Button>
+      </div>
+      <dl class="skills-stats">
+        <div><dt>Skills</dt><dd style={stat}>{mine.filter(s => !s.data.fixture).length}</dd></div>
+        <div><dt>Free to download</dt><dd style={stat}>{downloads}</dd></div>
+        <div><dt>Works in</dt><dd class="skills-stat-words">Claude.ai and Claude Code</dd></div>
+      </dl>
     </div>
-    <dl class="skills-stats">
-      <div><dt>Skills</dt><dd style={stat}>{mine.filter(s => !s.data.fixture).length}</dd></div>
-      <div><dt>Free to download</dt><dd style={stat}>{downloads}</dd></div>
-      <div><dt>Works in</dt><dd class="skills-stat-words">Claude.ai and Claude Code</dd></div>
-    </dl>
+    <HeroArt name="skills" />
   </section>
 
   <section class="page-section" data-surface="card" aria-labelledby="how-title">
     <div class="cory-container" style="display: grid; gap: var(--space-8);">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">How it works</p><h2 id="how-title" class="page-h2">Three steps, once</h2><p class="project-filter-count">New to skills? Claude Skills explains <a href="/claude-skills#what-title">what a skill is</a> and <a href="/claude-skills#install">how to install one anywhere</a>.</p></div>
-      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{steps.map((s, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">How it works</p><h2 id="how-title" class="page-h2">Three steps, once</h2><p class="project-filter-count">New to skills? Claude Skills explains <a href="/claude-skills#what-title">what a skill is</a> and <a href="/claude-skills#install">how to install one anywhere</a>.</p><SectionArt name="threeSteps" /></div>
+      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{steps.map((s, i) => <li><div class="tile"><div class="tile-top"><TileIcon name={tileIcon(s.title)} /><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi></div><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol></div>
     </div>
   </section>
 
   <section id="mine" class="page-section" aria-labelledby="mine-title">
     <div class="cory-container" style="display: grid; gap: var(--space-8);">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Made by me</p><h2 id="mine-title" class="page-h2">The skills</h2><p class="project-filter-count">Each one encodes how I work: the rules, the checks, the order of steps. Before you add any skill, mine included, read its SKILL.md: a skill gives Claude instructions and code, so treat it like installing software.</p></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Made by me</p><h2 id="mine-title" class="page-h2">The skills</h2><p class="project-filter-count">Each one encodes how I work: the rules, the checks, the order of steps. Before you add any skill, mine included, read its SKILL.md: a skill gives Claude instructions and code, so treat it like installing software.</p><SectionArt name="skillFolders" /></div>
       {mine.length === 0
         ? <div class="project-empty"><p class="project-empty-title">No skills of mine are listed yet.</p><p class="project-empty-body">Meanwhile, Claude Skills lists the best ones published by others.</p><div><Button variant="secondary" href="/claude-skills">See Claude Skills</Button></div></div>
         : <div data-cq><ul class="skills-show-list" data-stack-scroll>{mine.map((s, i) => <li><SkillShowcase skill={s} id={`skill-${i + 1}`} /></li>)}</ul></div>}

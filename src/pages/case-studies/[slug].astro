@@ -45,18 +45,20 @@ const paras = (t?: string) => (t || '').split(/\n\s*\n/).filter(Boolean);
 <PageLayout hideCta title={`${d.seo.title || d.title} · Case study · Aleem | AIUX`} description={(d.seo.description || d.lead).slice(0, 165)} page="case" ogType="article" jsonLd={jsonLd} noindex={d.fixture} bg="grid" mainStyle="outline: none; overflow: clip;">
   <ReadProgress />
   <article>
-    <header data-article-head class="cory-container" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--space-12) var(--space-10);">
+    <header data-article-head class="cory-container project-head" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--space-12) var(--space-10);">
+      <div class="project-head-words">
       <a data-link href="/case-studies" style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All case studies</span></a>
       <p class="case-kicker">{[await caseNumber(entry), d.category].filter(Boolean).join('\u00A0· ') || 'Case study'}<span>{'\u00A0· '}{readingTime(d, entry.body)}</span></p>
       <h1 style="margin: 0; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">{d.title}</h1>
       <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">{d.lead}</p>
       {d.nda && <NdaNotice note={d.ndaNote} access={privateWorkHref(`case-studies/${entry.id}`)} />}
-      {meta.length > 0 && <dl class="project-meta">{meta.map(([k, v]) => <div data-wide={String(v).length > 40 ? '' : undefined}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>}
+      </div>
       <div class="project-cover" style={d.cover ? `aspect-ratio: ${coverFrame(d.cover.src)};` : undefined}>
         {d.cover
-          ? <FittedImage image={d.cover} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1280px) 1144px, 100vw" frame={coverFrame(d.cover.src)} loading="eager" fetchpriority="high" preview caption={d.title} />
+          ? <FittedImage image={d.cover} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1280px) 620px, (min-width: 1024px) 52vw, 100vw" frame={coverFrame(d.cover.src)} loading="eager" fetchpriority="high" preview caption={d.title} />
           : <div data-cover-fallback="label" aria-hidden="true"><span>{['Case study', d.category].filter(Boolean).join(' · ')}</span></div>}
       </div>
+      {meta.length > 0 && <dl class="project-meta">{meta.map(([k, v]) => <div data-wide={String(v).length > 40 ? '' : undefined}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>}
     </header>
 
     {toc.length > 0 && (

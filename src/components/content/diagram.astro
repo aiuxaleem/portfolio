@@ -1,0 +1,21 @@
+---
+/* A diagram in a long-form body (the MDX block Diagram): one of art/diagrams.ts on the illustration canvas, with its words
+   read out in its place and an optional caption (seventh review, 26 November 2026). Shown at every width; the drawing
+   scales with the column. */
+import '../../styles/art.css';
+import { DIAGRAMS, type DiagramName } from '../art/diagrams';
+interface Props { name: DiagramName; caption?: string }
+const { name, caption } = Astro.props;
+const d = DIAGRAMS[name];
+---
+<figure class="post-figure">
+  <div class="art-canvas post-diagram" role="img" aria-label={d.label}>
+    <svg viewBox={d.viewBox} aria-hidden="true" focusable="false" set:html={d.svg} />
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .post-diagram { padding: var(--space-4); }
+  .post-diagram > svg { max-inline-size: 36rem; margin-inline: auto; }
+</style>

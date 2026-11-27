@@ -11,7 +11,9 @@ const { fixtures = false } = Astro.props;
 const live = !fixtures;
 const all = await listedCaseStudies();
 const picked = (fixtures ? [...all.filter(c => c.data.fixture), ...all.filter(c => !c.data.fixture)] : all.filter(c => !c.data.fixture && c.data.featured)).slice(0, 3);
-const cards = await Promise.all(picked.map(async entry => ({ entry, image: entry.data.cover ? await getImage({ src: entry.data.cover.src, widths: [400, 640, 960] }) : undefined })));
+/* Each picture is shown whole in its window over a blurred copy of itself (L-60, as the hero stacks on the list pages do), so a
+   cover of another shape than the window leaves no bare bands beside it (owner, 24 November 2026). */
+const cards = await Promise.all(picked.map(async entry => ({ entry, image: entry.data.cover ? await getImage({ src: entry.data.cover.src, widths: [400, 640, 960] }) : undefined, backdrop: entry.data.cover ? await getImage({ src: entry.data.cover.src, width: 48, format: 'webp' }) : undefined })));
 ---
 {cards.length > 0 && (
 /* The hero holds the deck to the first screen; the still deck on /_states is not held, so the stress card can show its full height. */
@@ -40,12 +42,19 @@ const cards = await Promise.all(picked.map(async entry => ({ entry, image: entry
                   <span style="display: flex; justify-content: space-between; gap: var(--space-3); font-family: var(--font-mono); font-size: var(--text-mono-sm); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--on-ink-link);"><span data-deck-kicker style="flex: 1 1 auto; min-inline-size: 0px;">{/* The category alone: the case's list number here disagreed with the deck's own counter ("01 / 03" over "02"; mobile review, 16 November 2026, L-74). */}<span class="sc-interp">{c.entry.data.category}</span></span><bdi style="flex: 0 0 auto;"><span class="sc-interp">{c.entry.data.timeline}</span></bdi></span>
                   <span data-deck-title style="font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-snug); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); text-wrap: balance;"><span class="sc-interp">{c.entry.data.title}</span></span>
                   <span data-deck-line style="font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--on-ink-body); text-wrap: pretty;"><span class="sc-interp">{c.entry.data.lead}</span></span>
-                  <span style="display: inline-flex; align-items: center; gap: var(--space-1); align-self: flex-start; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--on-ink-link);"><span style="flex: 0 1 auto;"><span class="sc-interp">Read the case study</span></span><svg data-dir-icon="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span>
+                  {/* The link row is read as part of the card's name, not drawn: the whole card is the link, and its picture takes the row's
+                      height (sixth review, 26 November 2026). */}
+                  <span class="cory-visually-hidden" style="display: inline-flex; align-items: center; gap: var(--space-1); align-self: flex-start; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--on-ink-link);"><span style="flex: 0 1 auto;"><span class="sc-interp">Read the case study</span></span><svg data-dir-icon="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span>
                 </span>
-                {/* The tilted window sits inside the card: it once ran 14% past the card's side and 10% past its foot, which cut the picture in it; and the picture fills the window under its bar, where at 100% of its height it ran the bar's height past the foot; and its stage may shrink (it kept 120 px, which pushed the window past the card's foot under a long caption) (L-60; mobile review, 16 November 2026, L-74). */}
-                <span aria-hidden="true" style="position: relative; flex: 1 1 auto; min-block-size: 0px; display: block;"><span data-stack-frame="" style="position: absolute; inset-inline: 12% var(--space-6); inset-block-start: var(--space-4); inset-block-end: var(--space-6); display: flex; flex-direction: column; border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-card); border: 1px solid var(--on-ink-border-strong); box-shadow: var(--shadow-xl); transform: rotate(calc(-4deg * var(--dir-x))); transform-origin: 0px 100%;">
+                {/* The window sits upright inside the card, under the words, in the room they leave (its stage may shrink: L-74), and takes
+                    its picture's shape, square at most, at the largest size that room allows (a container query on the stage),
+                    so the picture fills it whole with no bands; a portrait picture stays whole over its blurred copy. It was
+                    tilted and as wide as the card, so a cover drew at a third of the card's width between grey bands (owner
+                    request, 24 November 2026; second review, 25 November). Never past the card's side or foot (L-60). */}
+                <span aria-hidden="true" class="deck-stage" style={`min-block-size: ${live ? '0px' : '14rem'};`}><span data-stack-frame="" class="deck-frame" style={`--ar: ${c.image ? Math.min(16 / 9, Math.max(1, c.image.attributes.width / c.image.attributes.height)).toFixed(3) : '1.6'};`}>
                   <span style="display: flex; gap: 6px; align-items: center; padding: 8px 10px; border-block-end: 1px solid var(--border-subtle); background: var(--surface-sunken);"><span style="inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--border-strong);"></span><span style="inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--border-strong);"></span><span style="inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--border-strong);"></span></span>
-                  {c.image && <img src={i === 0 ? c.image.src : undefined} srcset={i === 0 ? c.image.srcSet.attribute : undefined} data-deck-src={i === 0 ? undefined : c.image.src} data-deck-srcset={i === 0 ? undefined : c.image.srcSet.attribute} sizes="(min-width: 1024px) 400px, 90vw" alt="" loading="lazy" decoding="async" style="display: block; inline-size: 100%; flex: 1 1 0; min-block-size: 0; object-fit: contain; object-position: center top; background: var(--surface-sunken);" width={c.image.attributes.width} height={c.image.attributes.height} />}
+                  {c.backdrop && <span class="fitted-backdrop" aria-hidden="true" style={`background-image: url("${c.backdrop.src}"); z-index: -1; opacity: 0.22;`}></span>}
+                  {c.image && <img src={i === 0 ? c.image.src : undefined} srcset={i === 0 ? c.image.srcSet.attribute : undefined} data-deck-src={i === 0 ? undefined : c.image.src} data-deck-srcset={i === 0 ? undefined : c.image.srcSet.attribute} sizes="(min-width: 600px) 400px, 90vw" alt="" loading="lazy" decoding="async" class="deck-picture" width={c.image.attributes.width} height={c.image.attributes.height} />}
                 </span></span>
               </a>
             </li>
@@ -53,3 +62,10 @@ const cards = await Promise.all(picked.map(async entry => ({ entry, image: entry
 </ul>
       </div>
 )}
+
+<style>
+  /* The picture's window (see the note in the card). The bar above the picture is 25 px. */
+  .deck-stage { position: relative; flex: 1 1 auto; display: grid; place-items: center; container-type: size; padding: var(--space-2) var(--space-4) var(--space-4); }
+  .deck-frame { position: relative; display: flex; flex-direction: column; inline-size: min(100cqi, calc((100cqb - 25px) * var(--ar))); border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-card); border: 1px solid var(--on-ink-border-strong); box-shadow: var(--shadow-xl); isolation: isolate; }
+  .deck-picture { position: relative; display: block; inline-size: 100%; block-size: auto; aspect-ratio: var(--ar); object-fit: contain; object-position: center; }
+</style>

@@ -2,8 +2,10 @@
 /* The statement after the first screen of the landing pages (L-83): the positioning in one sentence, in the statement size,
    its last words in the brand gradient; with motion on, each line of it brightens as it crosses the middle of the screen
    (motion.css, "Landing pages"). Under it, the two users (the person, the agent acting for them) in the owner's words from
-   the main site's Home, and the link to the blog piece. */
+   the main site's Home, and the link to the blog piece. From 1024 px the sentence has Home's Two users drawing beside it
+   (second review, 25 November 2026: the right side stood empty); under that the sentence has the width. */
 import Button from '../ui/button.astro';
+import TwoUsersArt from '../home/two-users-art.astro';
 
 interface Props { id: string; overline: string; text: string; accent?: string; body?: string; link?: { label: string; href: string }; /** Off on /_states, where the statement is shown twice per theme: landmark names must be unique. */ landmark?: boolean }
 const { id, overline, text, accent, body, link, landmark = true } = Astro.props;
@@ -16,6 +18,7 @@ const isAccent = (i: number) => at >= 0 && i >= at && i < at + accentWords.lengt
 <Wrap class="lp-statement-wrap" aria-labelledby={landmark ? `${id}-title` : undefined}>
   <div class="cory-container lp-statement-inner">
     <p class="cory-overline" style="margin: 0;">{overline}</p>
+    <div class="lp-statement-art"><TwoUsersArt suffix={`-${id}`} /></div>
     <h2 id={`${id}-title`} class="lp-statement">{words.map((w, i) => <>{i > 0 && ' '}<span class:list={['lp-read', { 'lp-read-accent': isAccent(i) }]}>{w}</span></>)}</h2>
     {(body || link) && (
       <div class="lp-statement-foot">
@@ -29,6 +32,13 @@ const isAccent = (i: number) => at >= 0 && i >= at && i < at + accentWords.lengt
 <style>
   .lp-statement-wrap { padding-block: var(--section-y); }
   .lp-statement-inner { display: grid; gap: var(--space-8); }
+  .lp-statement-art { display: none; }
+  @media (min-width: 1024px) {
+    .lp-statement-inner { grid-template-columns: minmax(0, 1fr) minmax(0, 26rem); column-gap: var(--space-12); }
+    .lp-statement-inner > :not(.lp-statement-art) { grid-column: 1; }
+    .lp-statement-inner > .lp-statement-foot { grid-column: 1 / -1; }
+    .lp-statement-art { display: grid; grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+  }
   .lp-statement { margin: 0; max-inline-size: 26ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-statement); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: pretty; overflow-wrap: anywhere; }
   .lp-read-accent { background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .lp-statement-foot { display: grid; gap: var(--space-6); align-items: start; justify-items: start; padding-block-start: var(--space-6); border-block-start: 1px solid var(--border-default); }

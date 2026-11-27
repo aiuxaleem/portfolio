@@ -110,6 +110,15 @@
   @keyframes title-in { from { clip-path: inset(0 0 100% 0); translate: 0 0.35em; } to { clip-path: inset(-0.2em -0.2em -0.3em -0.2em); translate: 0 0; } }
   @keyframes rise-in { from { opacity: 0; translate: 0 var(--space-5); } }
   @keyframes art-in { from { opacity: 0; translate: var(--space-10) var(--space-4); rotate: 2deg; } }
+  /* A page head's illustration (art/hero-art.astro, art/scenes.ts): once the canvas has swung in, its marked lines draw
+     themselves and its marked shapes settle, one after another in the order --i gives, then everything rests (under two
+     seconds). Paint only. With the fade (reduced motion) the canvas fades in whole and nothing draws. */
+  html[data-motion="on"] .hero-art [data-draw] { stroke-dasharray: 1 1; animation: scene-draw var(--duration-reveal) var(--ease-out) calc(500ms + var(--i, 0) * var(--stagger-line)) both; }
+  html[data-motion="on"] .hero-art .pa-arc[data-draw] { stroke-dasharray: var(--arc) 1; animation-name: scene-arc; }
+  html[data-motion="on"] .hero-art [data-pop] { transform-box: fill-box; transform-origin: center; animation: scene-pop var(--duration-spring-pop) var(--ease-spring-pop) calc(420ms + var(--i, 0) * var(--stagger-line)) both; }
+  @keyframes scene-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes scene-arc { from { stroke-dashoffset: var(--arc); } to { stroke-dashoffset: 0; } }
+  @keyframes scene-pop { from { opacity: 0; scale: 0.6; } to { opacity: 1; scale: 1; } }
 
   /* ---------- GSAP (islands/motion.ts, owner request of 1 November 2026) ----------
      The head script sets html[data-motion="on"] when motion is allowed and JavaScript runs, and fetches the GSAP module
@@ -372,6 +381,34 @@ dialog.image-preview[open]::backdrop { animation: preview-fade var(--duration-fa
     html[data-motion="on"] [data-process] .pr-step { view-timeline: --pr-step block; }
     html[data-motion="on"] [data-process] .pr-step::after { animation: rail-fill linear both; animation-timeline: --pr-step; animation-range: entry 70% exit 30%; }
     @keyframes rail-fill { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+    /* Its drawings (home/process-art.ts): as a card comes up the screen, the marked lines draw themselves and the marked
+       shapes settle in, one after another in the order each piece's --i gives, then everything stays. The score ring draws only to its mark (nine tenths). Never in the first
+       view: the section is far down Home, and the range starts as the drawing enters. */
+    html[data-motion="on"] [data-process] .pr-art { view-timeline: --pr-art block; }
+    html[data-motion="on"] [data-process] .pr-art [data-draw] { stroke-dasharray: 1 1; animation: art-draw linear both; animation-timeline: --pr-art; animation-range: entry calc(20% + var(--i, 0) * 4%) cover calc(40% + var(--i, 0) * 4%); }
+    html[data-motion="on"] [data-process] .pr-art .pa-arc[data-draw] { stroke-dasharray: 0.9 1; animation-name: art-arc; }
+    html[data-motion="on"] [data-process] .pr-art [data-pop] { transform-box: fill-box; transform-origin: center; animation: art-pop linear both; animation-timeline: --pr-art; animation-range: entry calc(10% + var(--i, 0) * 4%) cover calc(30% + var(--i, 0) * 4%); }
+    @keyframes art-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+    @keyframes art-arc { from { stroke-dashoffset: 0.9; } to { stroke-dashoffset: 0; } }
+    @keyframes art-pop { from { opacity: 0; scale: 0.6; } to { opacity: 1; scale: 1; } }
+    /* A section head's strip (art/section-art.astro) draws the same way as it comes up the screen, then stays. */
+    html[data-motion="on"] .section-art { view-timeline: --sec-art block; }
+    html[data-motion="on"] .section-art [data-draw] { stroke-dasharray: 1 1; animation: art-draw linear both; animation-timeline: --sec-art; animation-range: entry calc(20% + var(--i, 0) * 5%) cover calc(40% + var(--i, 0) * 5%); }
+    html[data-motion="on"] .section-art [data-pop] { transform-box: fill-box; transform-origin: center; animation: art-pop linear both; animation-timeline: --sec-art; animation-range: entry calc(10% + var(--i, 0) * 5%) cover calc(30% + var(--i, 0) * 5%); }
+    /* While the pointer or the keyboard is on a step, its drawing plays once more on the clock, in the same order; it rests
+       when done (under a second) and goes back to its scroll timeline, already complete, when the step is left. Paint
+       only: nothing in the layout moves. */
+    html[data-motion="on"] [data-process] .pr-step:focus-within .pr-art [data-draw] { animation: art-draw-again var(--duration-reveal) var(--ease-out) calc(var(--i, 0) * var(--stagger-item)) both; animation-timeline: auto; }
+    html[data-motion="on"] [data-process] .pr-step:focus-within .pr-art .pa-arc[data-draw] { animation-name: art-arc-again; }
+    html[data-motion="on"] [data-process] .pr-step:focus-within .pr-art [data-pop] { animation: art-pop-again var(--duration-spring-pop) var(--ease-spring-pop) calc(var(--i, 0) * var(--stagger-item)) both; animation-timeline: auto; }
+    @media (hover: hover) {
+      html[data-motion="on"] [data-process] .pr-step:hover .pr-art [data-draw] { animation: art-draw-again var(--duration-reveal) var(--ease-out) calc(var(--i, 0) * var(--stagger-item)) both; animation-timeline: auto; }
+      html[data-motion="on"] [data-process] .pr-step:hover .pr-art .pa-arc[data-draw] { animation-name: art-arc-again; }
+      html[data-motion="on"] [data-process] .pr-step:hover .pr-art [data-pop] { animation: art-pop-again var(--duration-spring-pop) var(--ease-spring-pop) calc(var(--i, 0) * var(--stagger-item)) both; animation-timeline: auto; }
+    }
+    @keyframes art-draw-again { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+    @keyframes art-arc-again { from { stroke-dashoffset: 0.9; } to { stroke-dashoffset: 0; } }
+    @keyframes art-pop-again { from { opacity: 0; scale: 0.6; } to { opacity: 1; scale: 1; } }
   }
 }
 @media (prefers-reduced-motion: reduce) {

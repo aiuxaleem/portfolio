@@ -10,6 +10,9 @@
       .github/workflows/refresh-claude-skills.yml). Built at build time, so the page makes no request of its own.
    6. How to install a skill, for Claude.ai, Claude Code and the API, and the safety advice (lib/skills-guide.ts).
    The owner's own skills are on My Claude Skills (/skills). */
+import SectionArt from '../components/art/section-art.astro';
+import TileIcon from '../components/ui/tile-icon.astro';
+import { tileIcon } from '../lib/tile-icons';
 import PageLayout from '../layouts/page-layout.astro';
 import SkillCard from '../components/cards/skill-card.astro';
 import PluginCard from '../components/cards/plugin-card.astro';
@@ -22,6 +25,12 @@ import { plugins, newPlugins, categories, categoryLabel, checkedOn, directory } 
 
 const picks = (await listedSkills()).filter(s => !s.data.mine);
 const groups = skillCategoryCounts(picks).filter(g => g.count > 0 || picks.some(s => s.data.category === g.slug));
+/* Groups that hold one pick sit side by side after the fuller ones, each with its heading over its card, so no lone card
+   leaves two thirds of a row empty (fifth review, 26 November 2026); two or four of them go in halves (L-59). */
+const inGroup = (slug: string) => picks.filter(s => s.data.category === slug).length;
+const singles = groups.filter(g => inGroup(g.slug) === 1);
+const ordered = singles.length > 1 ? [...groups.filter(g => inGroup(g.slug) !== 1), ...singles] : groups;
+const singleCols = singles.length % 3 === 0 ? 3 : 2;
 const items = plugins.map(p => ({ tags: [p.category], status: p.official ? 'anthropic' : 'partner' }));
 const tagLabels = Object.fromEntries(categories.map(c => [c, categoryLabel(c)]));
 const num = (i: number) => String(i + 1).padStart(2, '0');
@@ -39,28 +48,32 @@ description: What it does and when to use it. Claude reads this
 
 # My skill
 The steps, rules and examples Claude follows.`;
+import HeroArt from '../components/art/hero-art.astro';
 ---
 <PageLayout title="Claude Skills for designers · Aleem | AIUX" description="The best Claude skills for designers, checked by hand, and Anthropic's official directory, refreshed every week. How to install a skill in Claude.ai or Claude Code." page="claude-skills" bg="grid" mainStyle="outline: none; overflow: clip;">
-  <section class="cory-container" aria-labelledby="cs-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
-    <p class="cory-overline" style="margin: 0px;">Resources · Claude Skills</p>
-    <h1 id="cs-title" style="margin: 0px; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">The Claude skills <span style="background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent;">worth knowing</span>.</h1>
-    <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">A skill teaches Claude to do one task your way. Below are the ones I would hand a designer, what is new in Anthropic's official directory, the whole directory, checked every week, and how to install any of them.</p>
-    <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
-      <Button variant="primary" size="lg" href="#picks">See the picks</Button>
-      <Button variant="secondary" size="lg" href="#install">How to install a skill</Button>
+  <section class="cory-container hero-split" aria-labelledby="cs-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <div class="hero-split-words">
+      <p class="cory-overline" style="margin: 0px;">Resources · Claude Skills</p>
+      <h1 id="cs-title" style="margin: 0px; max-inline-size: 18ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance;">The Claude skills <span style="background: var(--gradient-text); -webkit-background-clip: text; background-clip: text; color: transparent;">worth knowing</span>.</h1>
+      <p style="margin: 0px; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">A skill teaches Claude to do one task your way. Below are the ones I would hand a designer, what is new in Anthropic's official directory, the whole directory, checked every week, and how to install any of them.</p>
+      <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+        <Button variant="primary" size="lg" href="#picks">See the picks</Button>
+        <Button variant="secondary" size="lg" href="#install">How to install a skill</Button>
+      </div>
+      <dl class="cs-stats">
+        <div><dt>Picks for designers</dt><dd style={stat}>{picks.filter(s => !s.data.fixture).length}</dd></div>
+        <div><dt>In the official directory</dt><dd style={stat}>{plugins.length}</dd></div>
+        {newPlugins.length > 0 && <div><dt>New this month</dt><dd style={stat}>{newPlugins.length}</dd></div>}
+        <div><dt>Directory last changed</dt><dd class="cs-stat-words"><time datetime={directory.checked}>{checkedOn()}</time></dd></div>
+      </dl>
     </div>
-    <dl class="cs-stats">
-      <div><dt>Picks for designers</dt><dd style={stat}>{picks.filter(s => !s.data.fixture).length}</dd></div>
-      <div><dt>In the official directory</dt><dd style={stat}>{plugins.length}</dd></div>
-      {newPlugins.length > 0 && <div><dt>New this month</dt><dd style={stat}>{newPlugins.length}</dd></div>}
-      <div><dt>Directory last changed</dt><dd class="cs-stat-words"><time datetime={directory.checked}>{checkedOn()}</time></dd></div>
-    </dl>
+    <HeroArt name="claudeSkills" />
   </section>
 
   <section class="page-section" data-surface="card" aria-labelledby="what-title">
     <div class="cory-container" style="display: grid; gap: var(--space-8);">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">The idea</p><h2 id="what-title" class="page-h2">What a skill is</h2><p class="project-filter-count">{GUIDE.whatSource}</p></div>
-      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{GUIDE.what.map((w, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{w.title}</h3><p>{w.body}</p></div></li>)}</ol></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">The idea</p><h2 id="what-title" class="page-h2">What a skill is</h2><p class="project-filter-count">{GUIDE.whatSource}</p><SectionArt name="skillIdea" /></div>
+      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{GUIDE.what.map((w, i) => <li><div class="tile"><div class="tile-top"><TileIcon name={tileIcon(w.title)} /><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi></div><h3>{w.title}</h3><p>{w.body}</p></div></li>)}</ol></div>
       <div class="cs-anatomy">
         <figure class="cs-figure"><figcaption>The folder</figcaption><CodeBlock><code>{anatomy}</code></CodeBlock></figure>
         <figure class="cs-figure"><figcaption>The top of SKILL.md</figcaption><CodeBlock><code>{frontMatter}</code></CodeBlock></figure>
@@ -70,12 +83,12 @@ The steps, rules and examples Claude follows.`;
 
   <section id="picks" class="page-section" aria-labelledby="picks-title">
     <div class="cory-container" style="display: grid; gap: var(--space-8);">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Checked by hand</p><h2 id="picks-title" class="page-h2">Picks for designers</h2><p class="project-filter-count">I read each one where it is published, and give its maker, licence and install line as the maker does. Check the licence there before you use one at work. Mine are on <a href="/skills">My Claude Skills</a>.</p></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Checked by hand</p><h2 id="picks-title" class="page-h2">Picks for designers</h2><p class="project-filter-count">I read each one where it is published, and give its maker, licence and install line as the maker does. Check the licence there before you use one at work. Mine are on <a href="/skills">My Claude Skills</a>.</p><SectionArt name="picks" /></div>
       {picks.length === 0
         ? <div class="project-empty"><p class="project-empty-title">No picks are listed yet.</p><p class="project-empty-body">The official directory below lists every skill Anthropic has accepted.</p></div>
-        : <div class="cs-groups">
-            {groups.map(g => (
-              <section class="cs-group" aria-labelledby={`picks-${g.slug}`}>
+        : <div class="cs-groups" style={`--single-cols: ${singleCols};`}>
+            {ordered.map(g => (
+              <section class="cs-group" data-single={singles.length > 1 && inGroup(g.slug) === 1 ? '' : undefined} aria-labelledby={`picks-${g.slug}`}>
                 <div class="page-section-head"><h3 id={`picks-${g.slug}`} class="project-h2">{g.label} <span class="cs-count">{g.count}</span></h3><p class="project-filter-count">{g.blurb}</p></div>
                 <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{picks.filter(s => s.data.category === g.slug).map(s => <li><SkillCard skill={s} level={3} /></li>)}</ul></div>
               </section>
@@ -86,7 +99,7 @@ The steps, rules and examples Claude follows.`;
 
   <section id="new" class="page-section" data-surface="card" aria-labelledby="new-title">
     <div class="cory-container" style="display: grid; gap: var(--space-8);">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Checked every week</p><h2 id="new-title" class="page-h2">New in the official directory</h2><p class="project-filter-count">What Anthropic's directory gained in the last 30 days. Listed as the directory describes them; I have not reviewed each one.</p></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Checked every week</p><h2 id="new-title" class="page-h2">New in the official directory</h2><p class="project-filter-count">What Anthropic's directory gained in the last 30 days. Listed as the directory describes them; I have not reviewed each one.</p><SectionArt name="newInDirectory" /></div>
       {newPlugins.length === 0
         ? <div class="project-empty"><p class="project-empty-title">Nothing new in the last 30 days.</p><p class="project-empty-body">The directory last changed on <time datetime={directory.checked}>{checkedOn()}</time>; it is checked for changes every Monday. Everything it lists is below.</p><div><Button variant="secondary" href="#directory">Browse the directory</Button></div></div>
         : <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{newPlugins.slice(0, 12).map(p => <li><PluginCard plugin={p} /></li>)}</ul></div>}
@@ -95,7 +108,7 @@ The steps, rules and examples Claude follows.`;
 
   <section id="directory" class="page-section" aria-labelledby="directory-title">
     <div class="cory-container" style="display: grid; gap: var(--space-8);">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Everything, design first</p><h2 id="directory-title" class="page-h2">Anthropic's official directory</h2><p class="project-filter-count">Every plugin and skill Anthropic has accepted into its directory for Claude Code, in its own words. Install any of them with the line on its card. Source: <a href={directory.source} target="_blank" rel="noopener">anthropics/claude-plugins-official<span class="cory-visually-hidden"> (opens in a new tab)</span></a>.</p></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Everything, design first</p><h2 id="directory-title" class="page-h2">Anthropic's official directory</h2><p class="project-filter-count">Every plugin and skill Anthropic has accepted into its directory for Claude Code, in its own words. Install any of them with the line on its card. Source: <a href={directory.source} target="_blank" rel="noopener">anthropics/claude-plugins-official<span class="cory-visually-hidden"> (opens in a new tab)</span></a>.</p><SectionArt name="directory" /></div>
       <ProjectFilters tags={categories} tagLabels={tagLabels} tagsLabel="Category" total={plugins.length} items={items} options={{ anthropic: 'By Anthropic', partner: 'Partner' }} optionsLabel="Made by" noun="skill" id="cs-filter" search={{ label: 'Find a skill', placeholder: 'Name, maker or task' }} />
       <div data-cq><ul data-project-list data-page-size="12" data-cq-balance style="display: grid; gap: var(--grid-gap);">{plugins.map(p => <li><PluginCard plugin={p} /></li>)}</ul></div>
       <p data-project-more hidden style="margin: 0;"><Button variant="secondary" data-show-more>Show more</Button></p>
@@ -105,7 +118,7 @@ The steps, rules and examples Claude follows.`;
 
   <section id="install" class="page-section" data-surface="card" aria-labelledby="install-title">
     <div class="cory-container" style="display: grid; gap: var(--space-8);">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Set up</p><h2 id="install-title" class="page-h2">How to install a skill</h2><p class="project-filter-count">Pick where you use Claude. A downloaded skill is a zip with one folder inside; keep the folder whole.</p></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Set up</p><h2 id="install-title" class="page-h2">How to install a skill</h2><p class="project-filter-count">Pick where you use Claude. A downloaded skill is a zip with one folder inside; keep the folder whole.</p><SectionArt name="install" /></div>
       <div data-cq><ul data-cq-3 class="cs-install" style="display: grid; gap: var(--grid-gap);">
         {GUIDE.install.map(w => (
           <li class="tile cs-way">
@@ -118,6 +131,7 @@ The steps, rules and examples Claude follows.`;
         ))}
       </ul></div>
       <aside class="cs-safety" aria-labelledby="safety-title">
+        <SectionArt name="skillCheck" />
         <h3 id="safety-title">Before you install anyone's skill</h3>
         <p>{GUIDE.safety.body}</p>
         <p class="cs-source">Source: <a href={GUIDE.safety.source.href} target="_blank" rel="noopener">{GUIDE.safety.source.label}<span class="cory-visually-hidden"> (opens in a new tab)</span></a></p>
@@ -136,7 +150,19 @@ The steps, rules and examples Claude follows.`;
   .cs-figure { margin: 0; display: grid; gap: var(--space-2); min-inline-size: 0; }
   .cs-figure figcaption { font-size: var(--text-caption); font-weight: var(--weight-semibold); color: var(--text-subtle); }
   .cs-groups { display: grid; gap: var(--space-12); }
-  .cs-group { display: grid; gap: var(--space-5); }
+  .cs-group { display: grid; gap: var(--space-5); align-content: start; min-inline-size: 0; }
+  @media (min-width: 1024px) {
+    .cs-groups { grid-template-columns: repeat(var(--single-cols, 3), minmax(0, 1fr)); column-gap: var(--grid-gap); }
+    .cs-group:not([data-single]) { grid-column: 1 / -1; }
+    /* Side by side, the headings share one row, the lines under them the next and the cards the third, so headings, lines
+       and cards each start level (seventh review, 26 November 2026: with the head as one block aligned to its foot, a line
+       that wrapped lifted its heading above its neighbours'). The head's own 12 px gap is kept as a margin. */
+    .cs-group[data-single] { grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; }
+    .cs-group[data-single] > .page-section-head { display: contents; }
+    .cs-group[data-single] > .page-section-head > p { margin-block-start: var(--space-3); }
+    .cs-group[data-single] > [data-cq] { padding-block-start: var(--space-5); } /* padding, as its block-size is 100% of the row */
+    .cs-group[data-single] > [data-cq], .cs-group[data-single] > [data-cq] > ul, .cs-group[data-single] > [data-cq] > ul > li { block-size: 100%; }
+  }
   .cs-count { font-family: var(--font-mono); font-size: var(--text-mono); font-weight: var(--weight-medium); color: var(--text-subtle); vertical-align: middle; }
   .cs-install { margin: 0; padding: 0; list-style: none; }
   .cs-way { display: grid; gap: var(--space-4); align-content: start; min-inline-size: 0; }
@@ -148,6 +174,13 @@ The steps, rules and examples Claude follows.`;
   .cs-source { margin: 0; display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--space-1); font-size: var(--text-body-sm); color: var(--text-muted); overflow-wrap: anywhere; }
   .cs-source a { display: inline-flex; align-items: center; min-block-size: var(--tap-target); color: var(--text-link); font-weight: var(--weight-semibold); }
   .cs-safety { display: grid; gap: var(--space-2); padding: var(--space-5) var(--space-6); border-radius: var(--radius-lg); border: 1px solid var(--border-default); border-inline-start: 3px solid var(--border-focus); background: var(--surface-card); max-inline-size: var(--measure-lead); }
+  /* From 1024 px the note runs the row's width, its words in the first column and, beside them, what it says to read in a
+     skill (sixth review, 26 November 2026: the note stood at half the row with the other half empty). */
+  @media (min-width: 1024px) {
+    .cs-safety { max-inline-size: none; grid-template-columns: minmax(0, var(--measure-lead)) minmax(0, 1fr); column-gap: var(--space-10); align-items: start; }
+    .cs-safety > :not(:global(.section-art)) { grid-column: 1; }
+    .cs-safety > :global(.section-art) { grid-column: 2; grid-row: 1 / span 3; align-self: center; }
+  }
   .cs-safety h3 { margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong); }
   .cs-safety p { margin: 0; line-height: var(--leading-relaxed); color: var(--text-body); }
 </style>

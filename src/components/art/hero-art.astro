@@ -1,0 +1,31 @@
+---
+/* A page head's illustration (owner request, 24 November 2026): the second column of a .hero-split head (site.css) on
+   the index pages that had words on the left and nothing on the right. A dot-grid canvas (styles/art.css), like a
+   design tool's artboard and like the Process drawings on Home, holding one scene from art/scenes.ts. Shown from 1024 px,
+   where the head has two columns; under that the words have the width and there is no empty side to fill. Decorative
+   (aria-hidden): the head's words say what the page is. The entrance and the drawing of the lines are in motion.css
+   (.hero-art). */
+import '../../styles/art.css';
+import { SCENES, type SceneName } from './scenes';
+
+interface Props { name: SceneName }
+const { name } = Astro.props;
+/* One of four glow placements (styles/art.css), from the name, so neighbouring drawings differ. */
+const glow = [...name].reduce((a, ch) => a + ch.charCodeAt(0), 0) % 4;
+---
+<div class="art-canvas hero-art" aria-hidden="true" data-scene={name} data-glow={glow}>
+  <svg viewBox="0 0 480 360" width="480" height="360" focusable="false" set:html={SCENES[name]} />
+</div>
+
+<style>
+  .hero-art { display: none; padding: var(--space-6); box-shadow: var(--shadow-sm); }
+  /* Tablets (third review, 25 November 2026: no drawing showed under 1024 px): the scene under the words, at most its own
+     width, where a phone would give it only a sliver. */
+  @media (min-width: 600px) and (max-width: 1023.98px) { .hero-art { display: grid; place-items: center; inline-size: min(100%, 32rem); } }
+  @media (min-width: 1024px) {
+    .hero-art { display: grid; place-items: center; align-self: center; }
+    /* The words sit level with the scene, so a short head leaves no empty band under its lead (review, 25 November 2026). */
+    :global(.hero-split:has(> .hero-art)) { align-items: center; }
+  }
+  .hero-art > svg { max-inline-size: 30rem; aspect-ratio: 4 / 3; }
+</style>

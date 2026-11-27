@@ -1,0 +1,363 @@
+---
+title: Redesigning a live product by iterative prompting
+index: "11"
+category: AI workflow · Design process
+lead: "Over three weeks I improved this portfolio and its admin with plain-language prompts to Claude Code. A written design lock, an automated quality gate and independent reviewers turned each prompt into a measured change, not a guess."
+cover:
+  src: ../../assets/cases/case-study-11.png
+  alt: "Cover: Redesigning by iterative prompting. Six of my prompts as typed, each tagged with its pattern (role and scope, the bar, symptom, a check, delegate, check-in), and the ratings: Home process 7 to 9, admin dashboard 6 to 8, mobile test failures 499 to 0."
+role: Product designer and design lead, prompting an AI coding agent
+company: Personal project (aiuxaleem.com)
+timeline: 3 to 25 Nov 2026
+team: "Me, Claude Code as the builder, and fresh Claude reviewers who saw only screenshots and the built site"
+platform: Web, public site and admin, light and dark themes, phone to 1920 px
+stack:
+  - Claude Code
+  - Claude Design
+  - Astro
+  - Playwright
+  - axe-core
+  - Lighthouse
+tldr:
+  - "163 messages from me over 23 days, most of them one line. 89 were check-ins or one-word replies such as \"status?\"; 10 handed a decision over with \"you decide\"."
+  - "Every prompt landed on top of three fixed things: a design lock, a quality gate that tests every page at ten sizes in both themes, and an evidence rule (no \"done\" without a measured value)."
+  - "When I asked for a rating, a fresh reviewer gave it, not the agent that did the work. The admin dashboard went from 6 to 8 of 10, and Home's design process section from 7 to 9."
+  - "Corrections were short and precise: one sentence naming what I saw, never a specification of the fix."
+  - "One design system is the single source of truth for the look: every token comes from it, and a change made there reaches every page."
+  - The method is written below as a loop, ten prompt patterns, a copyable prompt template and a checklist an agent can follow.
+ownership:
+  owned: "The brief, every design decision the agent asked me to make, the brand kit and design system it built from, and the final yes before anything went live."
+  workedWith:
+    - Claude Code, which built, tested and wrote the records
+    - Independent Claude reviewers, given screenshots and the built site, never my opinion
+  declined:
+    - Letting the agent rate its own work as the final word
+    - Publishing anything without a passing gate and my approval
+    - Inventing metrics or client names to make a page look finished
+context:
+  problem: "A portfolio for Senior and Lead AI product design roles has to show the craft it claims. Mine had grown page by page: motion that did not run on my own laptop, buttons in several styles, an admin dashboard that was hard to read, empty columns beside headings, and swipe-deck previews that showed a sliver of each cover."
+  business: "The site is how hiring managers meet my work. It also argues a position, that I design for two users, the person and the AI agent acting for them, so the way I build it is part of the proof."
+  constraints:
+    - "The design language was locked: existing colour, type, spacing and motion tokens only, a new token needed my approval."
+    - "WCAG 2.2 AA in both themes, every state, every width from 320 px."
+    - "Nothing invented: unknown facts stay as marked placeholders, and a built page that still shows one fails the gate."
+    - "Four copies kept in step: my folder, the private repository, the live site and the public copy."
+    - "My laptop: full test runs take hours and the machine slowed while they ran."
+research:
+  summary: "Before changing anything, each request was read against the written rules in the project's CLAUDE.md and the audit log, and the cause was measured rather than assumed."
+  insights:
+    - "\"The animations are not working\" was not a code bug. Windows' Animation effects setting was off on my PC, so the browser asked for reduced motion and the site obeyed. The fix was a decision about what reduced motion should still show."
+    - "Most visual debt sits in a few shared pieces. The first run of the strengthened mobile test found 499 failures; most came from five shared components."
+    - "An agent grading its own work is optimistic. In the illustrations round, a fresh reviewer scored my second pass lower than my first (7, then 6.5) and named why, which is what made the third pass better."
+    - "Short prompts work when the rules are written down. The long instruction lives once in the project file; the daily prompt only has to say what changed."
+process:
+  summary: "One loop, repeated for every request: cast a role and a scope, let the agent read the rules, measure, change, gate, have it reviewed by someone else, then decide."
+  steps:
+    - title: Write the rules down once
+      body: "The project's CLAUDE.md holds the design lock, the accessibility and contrast bars, the 2.3 text-overflow rules, the states every component needs, the performance budgets, and the evidence rule. My audit prompts ended with \"make a rule in this project, so that if we create new pages this rule should apply alltimes\", and each became a numbered rule there."
+    - title: Ask in one line, with a role and a scope
+      body: "\"you are an interaction designer and UI developer, i need you to review all the front end pages and improve the animation\". The role sets the lens, \"all the front end pages\" sets the scope, and the rules file supplies the rest."
+    - title: Make the agent measure before it changes
+      body: "Every fix starts from a number: a contrast ratio, a width at which text overflows, the share of a card a picture fills, a count of failures. A finding that cannot be measured is checked in the code before anyone acts on it."
+    - title: Gate every change
+      body: "npm run quality type-checks, builds and runs every route at ten screen sizes in both themes with axe, contrast in every state, zoom and text spacing, the first view, and a mobile test on emulated phones. A page is not done until it ends with PASSED. Checks are never weakened to pass."
+    - title: Have someone else rate it
+      body: "When I asked for a rating, a fresh reviewer that had not done the work got screenshots and the built site, scored it, and listed what held it back. The agent fixed what the reviewer found and asked a new reviewer. My bar was 8, later 9."
+    - title: Record every decision and its reason
+      body: "Each change of look became a row in docs/AUDIT_FINDINGS.md (about forty rows in this period) with the rule that forced it; each phase a section in docs/VERIFICATION_REPORT.md with the measured evidence. When I said \"you decide\", the decision and its reason went there too, so I could overrule it later."
+    - title: Approve before it goes live
+      body: "Work happened on a branch. I saw the report, the ratings and the screenshots, said yes, and only then did a sync publish all four copies and confirm they matched."
+ai:
+  summary: "The agent is the builder and the tester; the reviewers are separate agents; I am the designer who sets the bar and makes the calls."
+  behaviour:
+    - "Claude Code reads the rules file and audit log at the start of each task, works on a branch, measures, changes code, runs the gate and writes the record."
+    - "Reviewers are fresh agents given only screenshots and the built site. They score against the request and list findings; each finding is checked in the code before it is acted on."
+  trust:
+    - Every claim of done carries its evidence, a measured value, a passing check or a screenshot path.
+    - "Ratings come from reviewers who did not do the work, and their scores are recorded even when they go down."
+    - Every change of look is a row with its reason, so any of them can be reversed.
+  humanInLoop: |-
+    I write the brief, supply the brand kit, design system and real content, and answer the questions only I can answer.
+    I approve each phase before it goes live, after the gate and the review.
+    "You decide" hands over the reversible calls, never the irreversible ones: publishing, accounts, money and anything about other people stay with me.
+  guardrails:
+    - "Design lock: existing tokens and components only."
+    - "Never invent content: placeholders for unknown facts, and the gate fails a page that still shows one."
+    - "Never weaken, skip or delete a check to make it pass."
+    - "No force-push or history rewrite; work on a branch; nothing live without my word."
+    - "Client names under NDA stay off the site."
+  failureStates:
+    - "A test machine under load gives noisy timing; responsiveness is gated on the fastest of five taps, and a failure seen before a change is recorded as pre-existing rather than hidden."
+    - "Long runs: a full gate took 13,590 s before the mobile step was added, so work is split into lanes on the changed routes and the full run is kept for the end of a phase."
+    - "A temporary-folder cleanup once deleted helper scripts mid-task. Committing to the branch early protected the real work."
+  evaluation: |-
+    The gate: npm run quality and its mobile step must end with PASSED.
+    Independent review: a 1 to 10 score from a fresh reviewer, repeated after each round of fixes, with the bar set in the prompt.
+    Visual diff against the approved baseline, so a change to an existing page is either approved or a bug.
+decisions:
+  - decision: "Keep the long instructions in one rules file and the prompts short."
+    tradeoff: "Writing the rules took time up front. After that, a one-line prompt carries the full standard, and new pages inherit it."
+  - decision: "Rate with a fresh reviewer, not the agent that did the work."
+    tradeoff: "Scores came out lower and the work took more rounds. They were also believable, and they named what to fix."
+  - decision: "Delegate reversible decisions with \"you decide\", and record each one."
+    tradeoff: "I see some decisions after the fact. Every one is logged with its reason, so I can overrule it."
+  - decision: "Correct with one sentence about what I saw, not a specification."
+    tradeoff: "The agent has to find the cause itself, which costs a round. It found causes I would not have specified, such as the Windows motion setting."
+outcomes:
+  summary: "Ratings are from independent reviewers, recorded in the project's verification report; the swipe-deck figure was measured on the illustrations branch on 25 November 2026, which ten independent reviewers rated in turn (the last four between 7.8 and 8.7 of 10)."
+  metrics:
+    - value: 8/10
+      label: Admin dashboard, independent rating, up from 6 in three rounds
+      kind: outcome
+      source: The project's verification report, section 27, 12 Nov 2026
+      verified: true
+    - value: 9/10
+      label: Home's design process section, independent rating, up from 7 in three rounds
+      kind: outcome
+      source: The project's verification report, section 40, 22 to 23 Nov 2026
+      verified: true
+    - value: "0"
+      label: Failures left in the strengthened mobile test, down from 499, fixed in rounds
+      kind: outcome
+      source: The project's verification report, section 34, 16 Nov 2026
+      verified: true
+    - value: 70%
+      label: "Of the Home swipe-deck card's width, at least, filled by its picture at every laptop size measured, up from 27–44%"
+      kind: outcome
+      source: Deck measurement on the illustrations branch, 25 Nov 2026
+      verified: true
+quote: "The long prompt lives once, in the rules. The daily prompt only has to say what changed."
+reflection:
+  summary: "Iterative prompting worked because nothing about quality was left to the prompt. The rules, the gate and the reviewers held the standard; the prompts only steered."
+  learnings:
+    - "A rating I asked for was only useful when someone else gave it."
+    - "Name the symptom and let the agent find the cause; it often finds a better one."
+    - "Every repeated complaint should become a check, so it cannot come back."
+    - "\"you decide\" is a good prompt when every decision is written down with its reason."
+    - "Next time I would ask for the work in smaller phases. Long gates on a laptop cost hours, and most of my 89 check-ins were waiting on them."
+order: 9
+seo:
+  title: Redesigning a live product by iterative prompting
+  description: "How plain-language prompts to Claude Code, a written design lock, a quality gate and independent reviewers improved a live portfolio, with the actual prompts."
+---
+
+## How to read this
+
+This case study is written for two readers. A person can read it top to bottom. An agent can follow the section **The method as a checklist**, which is written as steps to carry out. Every prompt below is quoted exactly as I typed it, typos included, because the point is that they were short and ordinary. Only a local folder path is shortened, in square brackets. What made them work is what sat underneath them.
+
+## The loop
+
+<Diagram name="promptLoop" caption="The loop. A review below the bar sends the work back to Change; nothing goes live before my approval." />
+
+1. **Rules first.** A project file states the design lock, the quality bars and the evidence rule, and names the design system as the single source of truth for the design language. The agent reads it before every task.
+2. **One-line request** with a role, a scope and, when it matters, a bar ("rate your work... if below 9...").
+3. **Measure.** The agent finds the cause and puts a number on it before changing anything.
+4. **Change** on a branch, inside the design lock.
+5. **Gate.** Every route, ten sizes, both themes, accessibility, contrast, overflow, states, performance, mobile. It must end with PASSED.
+6. **Independent review.** A fresh reviewer scores it from screenshots and the built site. Below the bar, fix what they found and ask a new reviewer.
+7. **Record.** One audit row per change of look, one verification section per phase, with evidence.
+8. **Approve.** I read the report and say yes; only then does it go live.
+
+## The prompt patterns that did the work
+
+### 1. Cast a role and name the whole scope
+
+```text
+you are an interaction designer and UI developer, i need you to review all the front end pages and improve the animation you can use any animation library lke GSAP or something i just want a good animated front end with proper flow without effecting overall layout and experience
+```
+
+```text
+you are an Senior Graphic Designer, I need you to review all the pages and improve the iconography, create illustrations where ever seem fit there should not be deadspace where if there is a Heading and paragraph on the left then should should always be an respective illustration of selected work. and in selected work swip the preview images are not showing properly
+```
+
+**What happened.** The role changed what the agent looked for. As an interaction designer it inventoried every moving thing on the site and gave each block one owner, so two scripts never animated the same heading. As a graphic designer it wrote a survey script that finds every heading and paragraph with an empty band beside it, then drew a picture for each one it found in the site's own drawing style.
+
+**Why it works.** "All the pages" plus a role turns a vague wish into an audit with a list at the end. The constraint I added in passing ("without effecting overall layout") became a measured rule: motion may not cost a page its layout-shift budget.
+
+### 2. Set the bar as a number, and make it loop
+
+```text
+check your work and give yourself rating on a sccale of 1-10, if below 8 rating resolve it and get higher rating
+```
+
+```text
+rate your work on a scale of 1-10 rating, if rating is below 9 try your best to improve to 10/10
+```
+
+**What happened.** The agent did not grade itself. It gave screenshots and the built site to a fresh reviewer, recorded the score, fixed what the reviewer named and asked again. The admin dashboard went 6, 7.5, 8. Home's design process section went 7, 8.5, 9. Buttons and calls to action went 7, 7, 8. The illustrations work went 7, then down to 6.5 when the reviewer judged my second pass, and that drop is what pointed at the swipe-deck pictures still being too small.
+
+**Why it works.** A number gives the loop a stopping point. A different reviewer keeps the number honest.
+
+### 3. Name the symptom, not the fix
+
+```text
+why animations are not working
+```
+
+```text
+the animations are still not working, figure out why
+```
+
+**What happened.** The site's motion was fine. My PC had Windows' Animation effects turned off, so the browser reported reduced motion and the site, correctly, stood still. The agent proved it by reading the setting and the browser's media query, and by running the site in a browser with motion allowed. Its first decision was to keep respecting the setting.
+
+**Why it works.** If I had written "add GSAP scroll triggers", I would have got more animation that still did not run on my laptop.
+
+### 4. Correct the reading in one sentence
+
+```text
+i think you did not understand, I want on-scroll animation revealing effect on front end page, the motion should be smooth and organized
+```
+
+**What happened.** I did not want a still page on my own laptop. This sentence changed the decision: under reduced motion the site now keeps every scroll reveal and the first view as a fade, opacity only, with nothing moving. Visitors who asked for less movement still get none, and nobody gets a page that never comes alive. The rule went into the project file, and the checks now test both modes.
+
+### 5. Turn a one-time complaint into a permanent check
+
+```text
+add one more quality check, all the image that are uploaded should be properly viewed in viewcards, thumbnails without getting cropped both in desktop and mobile. 
+
+also create image preview feature, so that when user clicks on images the popup should open showing full image with zoom in and zoom out options
+```
+
+**What happened.** The gate gained an image-crop check that fails any picture drawn with cropping into a box of another shape, and every card now shows the whole picture over a blurred copy of itself. The preview opens any page picture full size with zoom steps, and has its own behaviour test.
+
+My own audit prompts, which I use on every design system I make, end the same way:
+
+```text
+I need you to think hard and do a heuristic analysis of this entire project. Make sure there are no design issues, Spacing issues, no text overflow issues, no visual inconsistencies, No contrast ratio issues, no dark mode and light mode switching issues, No WCAG guidelines rule breaking. No a11y accessibility rule breaking (make a rule in this project, so that if we create new pages this rule should apply alltimes without any issues or text overflow)
+```
+
+**Why it works.** "Make a rule in this project" is the most valuable phrase in the set. A fix repairs one page; a rule protects every page that comes after it.
+
+### 6. Delegate the reversible decisions
+
+```text
+you decide, dont put anything on me
+```
+
+```text
+yeah go with A. Command centre
+Recommended
+```
+
+**What happened.** I wrote "you decide" ten times in three weeks. Each time the agent chose, wrote the choice and its reason into the audit log, and kept going. When a choice was big enough, it offered options with one marked as recommended, and I picked in four words. Irreversible actions (publishing, accounts, anything costing money) were never inside "you decide".
+
+### 7. Bring your own material
+
+```text
+i have created a logo for this project can you properly incorporate it you can find it here [the brand kit folder]
+```
+
+```text
+i need you to incorporate this google hr formula 
+
+Accomplished [X] as measured by [Y] by doing [Z]
+```
+
+```text
+on highlevel what now a i am doing usually is i get the breifing about design then i go create logo/design language then create a design system in claude design make it perfect and make it follow top 10 UX laws and design principles then i create templates in it for tech and non tech users.
+```
+
+**What happened.** The logo was drawn from the brand kit's own outlines, never retyped in a font. Every career line was rewritten in the XYZ form, from facts already on the site. My description of how I work became the design process section on Home, and a reviewer was asked specifically to remove any step I had not described, which it did (research and testing with people, which I had not claimed).
+
+**Why it works.** The agent cannot invent what it does not know, and the evidence rule forbids it from trying. Real material is what lets it finish.
+
+### 8. Observe like a user
+
+```text
+designer feedback:
+when i share the link i am not getting fevicon or thumbnail can you resolve it
+```
+
+```text
+i think Beyond the canvas
+section we can remove this does not make sense also can you create some illustration in Human + Agent section right hand side looks empty we can show illustration there
+```
+
+**What happened.** Each observation was reproduced, measured and fixed at its cause. One sentence from a real moment of use carried more information than a page of specification.
+
+### 9. Keep check-ins short and let the records carry the detail
+
+```text
+status?
+```
+
+I sent 89 check-ins like this one. Each answer gave what was running, what had passed with its numbers, what was next and how long it would take. When I needed the laptop back:
+
+```text
+can you pause everything right now, i  need to put PC on sleep later we will continue
+```
+
+The agent stopped every process it had started, saved the work as a commit on the branch, and wrote down where to resume. My next prompt was one word, `continue`.
+
+### 10. Make one source of truth for the design language
+
+```text
+while we are on it i have made few improvements to design system can you incorporate them into our portfolio it could be anything i let you decide
+```
+
+```text
+the design system is ready incorporate it also made changes to logo system also change the logo of this project properly
+```
+
+And, written as the rule this case study ends on:
+
+```text
+make a rule  to use a single source of truth for design language example Aleem Design System Artificats Link
+```
+
+**What happened.** My design language lives in one place, the Aleem Design System I build in Claude Design and share as an artifact. The site does not keep a second opinion of it: its colours, type, spacing, radii and motion are tokens in one file, and the project's rules say so (one source of truth for tokens, a new token only with my approval). When I improved the system, the agent read the artifact, compared it with the site's tokens and carried the changes across one by one, each with a measured reason. Two examples: the strong edge on dark panels went from 0.28 to 0.36 opacity, which raised its contrast from 2.50 to 3.28:1, and the darkest action blue moved a step so white labels on it went from 6.87 to 7.09:1. What the site's own rules had already improved went back the other way, as a note for the system. The logo came from the kit's own drawings, never retyped in a font.
+
+**Why it works.** With one source, "make it on brand" stops being a matter of taste. Every page, prompt and reviewer checks against the same file, and a change made once in the system reaches every screen.
+
+**How to write it.** Name the source and its authority in the rules file, for example: use [the Aleem Design System artifact link] as the single source of truth for the design language; take colours, type, spacing, radii, shadows, icons and motion only from it; when it changes, carry each change into the tokens and record it; if a page needs something the system lacks, propose an addition to the system rather than a one-off value. On a public page the link appears only once the artifact is shared and holds nothing private, which is why it is in square brackets here.
+
+## The guardrails that made short prompts safe
+
+- **One source of truth.** The design language comes from the design system and nowhere else.
+- **Design lock.** Existing tokens and components only. A change of look is either a defect fix with its rule, or a proposal waiting for my approval.
+- **Evidence rule.** No "done", "fixed" or "perfect" without a measured value, a passing check or a screenshot path.
+- **Never invent.** Unknown facts stay as marked placeholders, and the gate fails a built page that still shows one.
+- **Never weaken a check.** Fix the cause, or ask.
+- **Branch, gate, review, approve.** Nothing reaches the live site without all four.
+
+## A prompt template you can copy
+
+```text
+You are a [role: senior product designer / interaction designer / QA engineer / graphic designer].
+Review [scope: every page / every admin page / every card component] of this project.
+Goal: [one sentence about what should be true when you are done].
+Read the project's rules file first and keep to it: design lock, accessibility, overflow, states, performance.
+Use [my design system link] as the single source of truth for the design language: colours, type, spacing, radii, icons and motion come only from it.
+Measure before you change anything, and fix causes, not symptoms.
+If a problem could come back, add a check for it so it cannot (make it a rule in this project).
+Run the full quality checks; do not weaken any check to make it pass.
+Then have a fresh reviewer who did not do the work rate it 1 to 10 from screenshots and the built site.
+If it is below [8 / 9], fix what the reviewer found and ask a new reviewer. Stop at [the bar].
+Report what changed, the evidence for each claim, the ratings, and what needs my decision.
+Do not publish until I say yes.
+```
+
+## The method as a checklist
+
+For an agent improving the UI and UX of an application on a designer's behalf:
+
+1. Read the project's rules file and audit log before acting. If there is no rules file, propose one: design lock, accessibility bar, overflow rules, states, performance budgets, evidence rule.
+2. Find the design system the owner names as the single source of truth for the design language, and take every colour, type size, space, radius, icon and motion value from it. If the project's tokens differ from it, report the differences; never add a one-off value.
+3. Restate the request as a role, a scope and a measurable goal.
+4. For each finding, measure it (a ratio, a width, a count, a share) and find its cause in the code before changing anything.
+5. Change only inside the design lock. A change of look that is not a defect fix is a proposal for the owner.
+6. When a complaint could recur, add an automated check for it to the project's quality run.
+7. Run the project's quality checks on every route, width and theme the change touches. Never weaken a check.
+8. Get a score from a fresh reviewer that did not do the work, given screenshots and the built site. Verify each finding before acting on it. Repeat with a new reviewer until the bar in the prompt is met, and record every score, including the ones that go down.
+9. Record each change of look with its reason, and each phase with its evidence.
+10. When told "you decide", decide the reversible things, record the decision and its reason, and keep going. Never decide publishing, accounts, payments or anything about other people.
+11. Report with evidence, then wait for the owner's approval before anything goes live.
+
+## What did not work
+
+- **Self-rating.** My first "rate your work" answers were generous. Independent reviewers were stricter, and their scores are the ones in this case study.
+- **Long runs on a laptop.** A full gate took hours and slowed the machine ("my system keep getting hanged while these running"). Splitting the checks into lanes on the changed routes, at low priority, made it usable.
+- **Waiting.** Most of my 89 check-ins were waiting on those runs. Smaller phases would have meant fewer of them.
+- **Temporary files.** A cleanup of the temporary folder deleted helper scripts mid-task. Committing the work to the branch early is what protected it.
+
+The story of building the site itself, from Claude Design to Claude Code, is in the post [How I built my portfolio with Claude Design, Claude Code and the laws of UX](/blog/portfolio-with-claude-design-and-claude-code).

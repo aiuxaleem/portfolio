@@ -1,6 +1,9 @@
 ---
 /* Career timeline from src/content/site/profile.json: one block per company, its roles inside, newest first.
-   Dates, location and highlights are optional. `level` is the heading level of the company name. */
+   Dates, location and highlights are optional. `level` is the heading level of the company name. In the wide layout
+   (About) the company's side stays in view beside its roles, with its stay and a rail of its role titles (second review,
+   25 November 2026: one name stood over an empty column); the rail and a single role's dates there are aria-hidden, since
+   the roles beside them say the same. */
 import { careerByCompany, period } from '../../content/profile';
 /* A company with more than one role shows its whole tenure under its name, so a run of titles reads as one stay. */
 const tenure = (roles: { start: string; end: string }[]) => { const starts = roles.map(r => r.start).filter(Boolean).sort(); const ends = roles.map(r => r.end); return starts.length ? period({ start: starts[0], end: ends.includes('') ? '' : [...ends].sort().at(-1)! }) : ''; };
@@ -12,8 +15,12 @@ const Company = `h${level}` as any, RoleTag = `h${level + 1}` as any;
 <ol class:list={['career', wide && 'career-wide']} data-compact={highlights ? undefined : ''}>
   {careerByCompany().map(group => (
     <li class="career-company">
-      <Company>{group.company}</Company>
-      {group.roles.length > 1 && tenure(group.roles) && <p class="case-kicker career-tenure">{tenure(group.roles)}{' · '}{group.roles.length} roles</p>}
+      <div class="career-side">
+        <Company>{group.company}</Company>
+        {group.roles.length > 1 && tenure(group.roles) && <p class="case-kicker career-tenure">{tenure(group.roles)}{' · '}{group.roles.length} roles</p>}
+        {wide && group.roles.length === 1 && (period(group.roles[0]) || group.roles[0].location) && <p class="case-kicker career-tenure career-side-only" aria-hidden="true">{[period(group.roles[0]).replace(/ (\d{4})/g, '\u00A0$1'), group.roles[0].location].filter(Boolean).join('\u00A0· ')}</p>}
+        {wide && group.roles.length > 1 && <ol class="career-rail" aria-hidden="true">{group.roles.map(r => <li>{r.role}</li>)}</ol>}
+      </div>
       <div class="career-roles">
       {group.roles.map(r => (
         <div class="career-role">

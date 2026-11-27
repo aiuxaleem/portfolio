@@ -4,6 +4,9 @@
    form at the end.
    Copy and facts come from src/content/site/profile.json; certifications from the certifications collection.
    Section backgrounds alternate between the page and card surfaces. */
+import SectionArt from '../components/art/section-art.astro';
+import TileIcon from '../components/ui/tile-icon.astro';
+import { tileIcon } from '../lib/tile-icons';
 import PageLayout from '../layouts/page-layout.astro';
 import DesignSection from '../components/home/design-section.astro';
 import ContactBlock from '../components/profile/contact-block.astro';
@@ -25,7 +28,7 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 
   <section class="page-section" aria-labelledby="career-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Work experience</p><h2 id="career-title" class="page-h2">Enterprise UX to AI product design</h2><p class="project-filter-count" style="max-inline-size: var(--measure-lead);">Newest first, with what each role shipped.</p></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Work experience</p><h2 id="career-title" class="page-h2">Enterprise UX to AI product design</h2><p class="project-filter-count" style="max-inline-size: var(--measure-lead);">Newest first, with what each role shipped.</p><SectionArt name="career" /></div>
       <Career wide />
       <a data-link class="post-back" href="/resume"><span>Full detail is in the resume</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
     </div>
@@ -35,7 +38,7 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 
   <section class="page-section" data-surface="card" aria-labelledby="certs-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="certs-title" class="page-h2">Certifications</h2>{earned > 0 && <p class="project-filter-count">{earned} earned{studying.length > 0 && `, ${studying.length} in progress`}.</p>}</div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="certs-title" class="page-h2">Certifications</h2>{earned > 0 && <p class="project-filter-count">{earned} earned{studying.length > 0 && `, ${studying.length} in progress`}.</p>}<SectionArt name="certs" /></div>
       {studying.length > 0 && (
         <div class="project-cta about-studying" role="region" aria-labelledby="studying-title">
           <div style="display: grid; gap: var(--space-2);">
@@ -60,22 +63,22 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 
   <section class="page-section" aria-labelledby="principles-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Principles</p><h2 id="principles-title" class="page-h2">Three things I won't trade away</h2></div>
-      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.principles.map((p, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{p.title}</h3><p>{p.body}</p></div></li>)}</ol></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Principles</p><h2 id="principles-title" class="page-h2">Three things I won't trade away</h2><SectionArt name="principles" /></div>
+      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.principles.map((p, i) => <li><div class="tile"><div class="tile-top"><TileIcon name={tileIcon(p.title)} /><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi></div><h3>{p.title}</h3><p>{p.body}</p></div></li>)}</ol></div>
     </div>
   </section>
 
   <section class="page-section" data-surface="card" aria-labelledby="expertise-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Expertise</p><h2 id="expertise-title" class="page-h2">What I bring to a product team</h2></div>
-      <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.expertise.map(e => <li><div class="tile"><h3>{e.title}</h3><p>{e.body}</p></div></li>)}</ul></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Expertise</p><h2 id="expertise-title" class="page-h2">What I bring to a product team</h2><SectionArt name="expertise" /></div>
+      <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.expertise.map(e => <li><div class="tile"><div class="tile-top"><TileIcon name={tileIcon(e.title)} /></div><h3>{e.title}</h3><p>{e.body}</p></div></li>)}</ul></div>
     </div>
   </section>
 
   <section class="page-section" aria-labelledby="ai-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Method</p><h2 id="ai-title" class="page-h2">How I work with AI</h2></div>
-      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.aiWorkflow.map((s, i) => <li><div class="tile"><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Method</p><h2 id="ai-title" class="page-h2">How I work with AI</h2><SectionArt name="aiMethod" /></div>
+      <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.aiWorkflow.map((s, i) => <li><div class="tile"><div class="tile-top"><TileIcon name={tileIcon(s.title)} /><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi></div><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol></div>
       <div style="display: grid; gap: var(--space-3);">
         <h3 style="margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong);">Tools</h3>
         <ul class="tool-list">{profile.tools.map(t => <li><span class="ui-badge">{t}</span></li>)}</ul>

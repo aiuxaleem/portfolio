@@ -22,7 +22,10 @@ export async function getStaticPaths() {
 const { project, prev, next } = Astro.props;
 const d = project.data;
 const c = chrome.en;
-const { Content } = await render(project);
+const { Content, headings } = await render(project);
+/* The body's sections, listed beside it as a case study lists its own (owner request, 24 November 2026: no prose column
+   with an empty side), when it has two or more. */
+const toc = headings.filter(h => h.depth === 2);
 const hasBody = !!(project.body && project.body.trim());
 const updates = updatesNewestFirst(d);
 const meta = [['Role', d.role], ['Timeline', timeline(d)], ['Team', d.team], ['Tools', d.stack.join('\u00A0· ') || undefined], ['Status', statusLabel[d.status]]].filter(([, v]) => v) as [string, string][];
@@ -31,30 +34,41 @@ const arrowOut = 'M7 7h10v10M7 17 17 7';
 ---
 <PageLayout hideCta title={`${d.seo.title || d.title} · Project · Aleem | AIUX`} description={description} page="work" noindex={d.fixture} bg="grid" mainStyle="outline: none; overflow: clip;">
   <article>
-    <header data-article-head class="cory-container" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--space-12) var(--space-10);">
-      <a data-link href="/work" style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;"><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All projects</span></a>
-      <p class="cory-overline" style="margin: 0;">Project</p>
-      <h1 style="margin: 0; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">{d.title}</h1>
-      <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">{d.summary}</p>
-      {d.nda && <NdaNotice access={privateWorkHref(`work/${project.id}`)} />}
-      {(d.links.live || d.links.repo || d.caseStudy) && (
-        <div data-hero-ctas style="display: flex; gap: var(--space-3) var(--space-5); flex-wrap: wrap; align-items: center;">
-          {d.links.live && <Button variant="primary" size="lg" href={d.links.live} target="_blank" rel="noopener">Live site<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>}
-          {d.links.repo && <Button variant="secondary" size="lg" href={d.links.repo} target="_blank" rel="noopener">View on GitHub<span class="cory-visually-hidden"> (opens in a new tab)</span><svg slot="icon-right" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={arrowOut}></path></svg></Button>}
-          {d.caseStudy && <a data-link href={`/case-studies/${d.caseStudy}`} style="display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;">Read the case study<svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>}
-        </div>
-      )}
+    <header data-article-head class="cory-container project-head" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--space-12) var(--space-10);">
+      <div class="project-head-words">
+        <a data-link href="/work" style="display: inline-flex; align-items: center; gap: var(--space-2); inline-size: fit-content; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;"><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All projects</span></a>
+        <p class="cory-overline" style="margin: 0;">Project</p>
+        <h1 style="margin: 0; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong);">{d.title}</h1>
+        <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">{d.summary}</p>
+        {d.nda && <NdaNotice access={privateWorkHref(`work/${project.id}`)} />}
+        {(d.links.live || d.links.repo || d.caseStudy) && (
+          <div data-hero-ctas style="display: flex; gap: var(--space-3) var(--space-5); flex-wrap: wrap; align-items: center;">
+            {d.links.live && <Button variant="primary" size="lg" href={d.links.live} target="_blank" rel="noopener">Live site<span class="cory-visually-hidden"> (opens in a new tab)</span></Button>}
+            {d.links.repo && <Button variant="secondary" size="lg" href={d.links.repo} target="_blank" rel="noopener">View on GitHub<span class="cory-visually-hidden"> (opens in a new tab)</span><svg slot="icon-right" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={arrowOut}></path></svg></Button>}
+            {d.caseStudy && <a data-link href={`/case-studies/${d.caseStudy}`} style="display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--tap-target); font-weight: var(--weight-semibold); color: var(--text-link); text-decoration: none;">Read the case study<svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>}
+          </div>
+        )}
+      </div>
+      <div class="project-cover" style={d.cover ? `aspect-ratio: ${coverFrame(d.cover.src)};` : undefined}>
+        {d.cover
+          ? <FittedImage image={d.cover} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1280px) 552px, (min-width: 1024px) 46vw, 100vw" frame={coverFrame(d.cover.src)} loading="eager" fetchpriority="high" preview caption={d.title} />
+          : <div data-cover-fallback="label" aria-hidden="true"><span>{['Project', d.tags[0]].filter(Boolean).join(' · ')}</span></div>}
+      </div>
       <dl class="project-meta">
         {meta.map(([k, v]) => <div data-wide={String(v).length > 40 ? '' : undefined}><dt>{k}</dt><dd>{v}</dd></div>)}
       </dl>
-      <div class="project-cover" style={d.cover ? `aspect-ratio: ${coverFrame(d.cover.src)};` : undefined}>
-        {d.cover
-          ? <FittedImage image={d.cover} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1280px) 1144px, 100vw" frame={coverFrame(d.cover.src)} loading="eager" fetchpriority="high" preview caption={d.title} />
-          : <div data-cover-fallback="label" aria-hidden="true"><span>{['Project', d.tags[0]].filter(Boolean).join(' · ')}</span></div>}
-      </div>
     </header>
 
-    {hasBody && <section class="cory-container prose" style="padding-block: var(--space-10);"><Content components={mdxComponents} /></section>}
+    {hasBody && (toc.length >= 2
+      ? <div class="cory-container case-layout project-layout" style="padding-block: var(--space-10);">
+          <nav class="case-toc" data-case-toc aria-label="On this page">
+            <button type="button" class="case-toc-toggle" data-toc-toggle aria-expanded="false" aria-controls="project-toc-list"><span>On this page</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
+            <p class="case-toc-title">On this page</p>
+            <ol id="project-toc-list">{toc.map((h, i) => <li><a href={`#${h.slug}`}><bdi>{String(i + 1).padStart(2, "0")}</bdi><span>{h.text}</span></a></li>)}</ol>
+          </nav>
+          <section class="prose project-prose"><Content components={mdxComponents} /></section>
+        </div>
+      : <section class="cory-container prose" style="padding-block: var(--space-10);"><Content components={mdxComponents} /></section>)}
 
     {d.gallery.length > 0 && (
       <section class="cory-container" aria-labelledby="gallery-title" style="display: grid; gap: var(--space-6); padding-block: var(--space-10);">
@@ -97,4 +111,8 @@ const arrowOut = 'M7 7h10v10M7 17 17 7';
       </div>
     </div>
   </section>
+  <script>
+    /* The list of sections: collapsible on a phone, the current section marked (it does nothing on a page without one). */
+    import '../../components/islands/case-study.ts';
+  </script>
 </PageLayout>

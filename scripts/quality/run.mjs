@@ -84,7 +84,7 @@ const browser = await launch();
 const list = routes(target);
 const viewports = quick ? QUICK_VIEWPORTS : VIEWPORTS;
 /* Scheduling (15 November 2026, L-73): two views of one route never run at the same time, the long development pages
-   (/_states, /_states-admin, /_states-dashboard; /_states is 76,000 px tall on a phone) share one lane so only one of their
+   (/_states, /_states-admin, /_states-dashboard, /_states-home; /_states is 76,000 px tall on a phone) share one lane so only one of their
    views runs at a time, and they are queued first, so their views spread over the whole run and run beside the short pages. Queued last and taken three at a time, three phone views of /_states ran together and each took more
    than 25 minutes, where one alone takes 5.5 (scratch timing, 15 November 2026). Every view and check is unchanged. */
 const heavy = r => /^\/_states/.test(r.path);

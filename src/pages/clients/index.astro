@@ -12,6 +12,7 @@ import LandingStatement from '../../components/landing/landing-statement.astro';
 import LandingBand from '../../components/landing/landing-band.astro';
 import LandingSection from '../../components/landing/landing-section.astro';
 import LandingWork from '../../components/landing/landing-work.astro';
+import { caseInsidePictures } from '../../lib/site-stacks';
 import LandingFigures from '../../components/landing/landing-figures.astro';
 import LandingRows from '../../components/landing/landing-rows.astro';
 import LandingSteps from '../../components/landing/landing-steps.astro';
@@ -46,7 +47,7 @@ const call = { label: 'Book a 15-⁠min call', href: site.calendarUrl, newTab: t
 
   <LandingBand items={offers.map(o => o.title).concat(['Enterprise UX', 'Coded prototypes'])} />
 
-  <LandingSection id="services-offer" index="01" overline="Capabilities" title="What I do, what you get, and the proof" split>
+  <LandingSection id="services-offer" index="01" overline="Capabilities" title="What I do, what you get, and the proof" split art="offerProof">
     <LandingRows rows={offers.map(o => ({ id: o.id, title: o.title, body: o.line, fit: o.fit, gets: o.gets, links: o.links }))} />
     <div class="services-unsure">
       <div><p class="services-unsure-title">{unsure.title}</p><p class="services-unsure-body">{unsure.body}</p></div>
@@ -57,22 +58,22 @@ const call = { label: 'Book a 15-⁠min call', href: site.calendarUrl, newTab: t
     </div>
   </LandingSection>
 
-  <LandingSection id="services-numbers" index="02" overline="Proof" title="What the work measured" lead="Each figure is from a case study, where the method and the before and after are shown." surface="card">
+  <LandingSection id="services-numbers" art="measured" index="02" overline="Proof" title="What the work measured" lead="Each figure is from a case study, where the method and the before and after are shown." surface="card">
     <LandingFigures figures={landingFigures} />
   </LandingSection>
 
   {cases.length > 0 && (
-    <LandingSection id="services-work" index="03" overline="Selected work" title="The work that proves it" lead="The problem, the constraints, the decisions with their trade-offs, and what shipped.">
+    <LandingSection id="services-work" art="caseStudy" pictures={caseInsidePictures(cases)} index="03" overline="Selected work" title="The work that proves it" lead="The problem, the constraints, the decisions with their trade-offs, and what shipped.">
       <LandingWork entries={cases} />
       <a data-link class="post-back services-all" href="/case-studies"><span>All case studies</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
     </LandingSection>
   )}
 
-  <LandingSection id="services-process" anchor="process" index="04" overline="How I work" title={processTitle} lead={processLead} surface="card">
+  <LandingSection id="services-process" art="fourMoves" anchor="process" index="04" overline="How I work" title={processTitle} lead={processLead} surface="card">
     <LandingSteps steps={steps} />
   </LandingSection>
 
-  <LandingSection id="services-faq" index="05" overline="Good to know" title="Before you write" split>
+  <LandingSection id="services-faq" index="05" overline="Good to know" title="Before you write" split art="askFirst">
     <LandingFaq items={questions} />
   </LandingSection>
 

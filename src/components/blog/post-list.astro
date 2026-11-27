@@ -17,37 +17,41 @@ const title = `${tag ? `${tag} · Blog` : page > 1 ? `Blog, page ${page}` : 'Blo
 const description = tag
   ? `Posts tagged ${tag}: guides and articles by Mohammad Abdul Aleem on design systems and AI product design.`
   : `Guides by Mohammad Abdul Aleem on design systems and AI products: component spec files, AI-readable systems, designing for agents, and AI workflows.${page > 1 ? ` Page ${page} of ${pages}.` : ''}`;
+import HeroArt from '../art/hero-art.astro';
 ---
 <PageLayout title={title} description={description} page="blog" bg="grid" mainStyle="outline: none; overflow: clip;" noindex={!!tag && posts.length === 0}>
-  <section class="cory-container" aria-labelledby="blog-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
-    {tag
-      ? <a data-link href="/blog" class="post-back"><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All posts</span></a>
-      : <p class="cory-overline" style="margin: 0;">Writing · Blog</p>}
-    <h1 id="blog-title" style="margin: 0; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); overflow-wrap: anywhere;">{heading}</h1>
-    {!tag && <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">Guides and articles on design systems and designing AI products.</p>}
-    {!tag && newest && (
-      <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
-        <Button variant="primary" size="lg" href={postUrl(newest)}>Read the latest post</Button>
-        <Button variant="secondary" size="lg" href="/posts">Posts on LinkedIn</Button>
-      </div>
-    )}
-    {tags.length > 0 && tags.length <= 6 && (
-      <nav class="post-tags" aria-label="Topics">
-        <span class="project-filter-label">Topic</span>
-        <ul>{tags.map(t => <li><a class="ui-chip" href={`/blog/tag/${tagSlug(t.tag)}`} aria-current={tag && tagSlug(t.tag) === tagSlug(tag) ? 'page' : undefined}>{t.tag}<span class="cory-visually-hidden">, </span><span class="chip-n">{t.n}</span></a></li>)}</ul>
-      </nav>
-    )}
-    {/* More than six topics fold into the closed disclosure the UX Library uses, so the first post stays near the top on a
-        phone; on a topic's own page it is open, with that topic marked. */}
-    {tags.length > 6 && (
-      <details class="resource-disclosure post-topics" open={!!tag}>
-        <summary><span class="project-filter-label" style="flex-basis: auto; margin: 0;">Topic</span><span data-disclosure-state>{tag ? `Showing: ${tag}` : `${tags.length} to choose from`}</span><svg data-chevron width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></summary>
-        <nav class="post-tags post-topics-body" aria-label="Topics">
+  <section class="cory-container hero-split" aria-labelledby="blog-title" style="position: relative; display: grid; gap: var(--space-6); padding-block: var(--section-y) var(--space-10);">
+    <div class="hero-split-words">
+      {tag
+        ? <a data-link href="/blog" class="post-back"><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX(calc(-1 * var(--dir-x)));"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>All posts</span></a>
+        : <p class="cory-overline" style="margin: 0;">Writing · Blog</p>}
+      <h1 id="blog-title" style="margin: 0; max-inline-size: 20ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-display); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); overflow-wrap: anywhere;">{heading}</h1>
+      {!tag && <p style="margin: 0; max-inline-size: var(--measure-lead); font-size: var(--text-fluid-lead); line-height: var(--leading-relaxed); color: var(--text-muted);">Guides and articles on design systems and designing AI products.</p>}
+      {!tag && newest && (
+        <div data-hero-ctas style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center;">
+          <Button variant="primary" size="lg" href={postUrl(newest)}>Read the latest post</Button>
+          <Button variant="secondary" size="lg" href="/posts">Posts on LinkedIn</Button>
+        </div>
+      )}
+      {tags.length > 0 && tags.length <= 6 && (
+        <nav class="post-tags" aria-label="Topics">
+          <span class="project-filter-label">Topic</span>
           <ul>{tags.map(t => <li><a class="ui-chip" href={`/blog/tag/${tagSlug(t.tag)}`} aria-current={tag && tagSlug(t.tag) === tagSlug(tag) ? 'page' : undefined}>{t.tag}<span class="cory-visually-hidden">, </span><span class="chip-n">{t.n}</span></a></li>)}</ul>
         </nav>
-      </details>
-    )}
-    <p class="project-filter-count">{pages > 1 ? `Showing ${first} to ${last} of ${total} posts · Page ${page} of ${pages}` : total === 1 ? '1 post' : `${total} posts`}</p>
+      )}
+      {/* More than six topics fold into the closed disclosure the UX Library uses, so the first post stays near the top on a
+          phone; on a topic's own page it is open, with that topic marked. */}
+      {tags.length > 6 && (
+        <details class="resource-disclosure post-topics" open={!!tag}>
+          <summary><span class="project-filter-label" style="flex-basis: auto; margin: 0;">Topic</span><span data-disclosure-state>{tag ? `Showing: ${tag}` : `${tags.length} to choose from`}</span><svg data-chevron width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></summary>
+          <nav class="post-tags post-topics-body" aria-label="Topics">
+            <ul>{tags.map(t => <li><a class="ui-chip" href={`/blog/tag/${tagSlug(t.tag)}`} aria-current={tag && tagSlug(t.tag) === tagSlug(tag) ? 'page' : undefined}>{t.tag}<span class="cory-visually-hidden">, </span><span class="chip-n">{t.n}</span></a></li>)}</ul>
+          </nav>
+        </details>
+      )}
+      <p class="project-filter-count">{pages > 1 ? `Showing ${first} to ${last} of ${total} posts · Page ${page} of ${pages}` : total === 1 ? '1 post' : `${total} posts`}</p>
+    </div>
+    <HeroArt name={tag ? "tag" : "blog"} />
   </section>
   <section class="cory-container" aria-label="Posts" style="display: grid; gap: var(--space-8); padding-block-end: var(--section-y);">
     {posts.length === 0

@@ -12,6 +12,8 @@
 import { getImage } from 'astro:assets';
 import type { StackCard } from '../../lib/site-stacks';
 import { shownWhole } from '../../lib/images';
+import '../../styles/art.css';
+import { SECTION_SCENES } from '../art/section-scenes';
 
 interface Props {
   id: string;
@@ -25,7 +27,12 @@ const { id, label, noun, cards: all } = Astro.props;
 /* A cover far from the window's 16:10 is shown whole over a blurred copy of itself (as ui/fitted-image.astro does). */
 const cards = await Promise.all(all.slice(0, 5).map(async c => {
   const whole = c.image ? shownWhole(c.image, 16 / 10) : false;
-  return { ...c, whole, img: c.image ? await getImage({ src: c.image, widths: [400, 640, 960] }) : undefined, backdrop: whole && c.image ? await getImage({ src: c.image, width: 48, format: 'webp' }) : undefined };
+  /* The picture's own shape, from a 9:16 poster to 16:9; a tall picture or the portrait drops the browser bar (fifth review,
+     26 November 2026: a headshot and a reel poster sat in browser windows, the poster at 173 px square). */
+  const w = c.image ? c.image.width : c.picture?.width ?? 16, h = c.image ? c.image.height : c.picture?.height ?? 10;
+  const ar = Math.min(16 / 9, Math.max(9 / 16, w / h));
+  const shape = c.picture ? 'plain' : ar < 0.9 ? 'tall' : undefined;
+  return { ...c, ar, shape, whole, img: c.image ? await getImage({ src: c.image, widths: [400, 640, 960] }) : undefined, backdrop: whole && c.image ? await getImage({ src: c.image, width: 48, format: 'webp' }) : undefined };
 }));
 const pad = (n: number) => String(n).padStart(2, '0');
 const arrow = (d: string, size = 20) => `<svg data-dir-icon width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"></path></svg>`;
@@ -52,24 +59,25 @@ const arrow = (d: string, size = 20) => `<svg data-dir-icon width="${size}" heig
               <span class="hero-stack-kicker"><span data-deck-kicker>{c.kicker}</span>{c.meta && <bdi>{c.meta}</bdi>}</span>
               <span data-deck-title class="hero-stack-title">{c.title}</span>
               {c.line && <span data-deck-line class="hero-stack-line">{c.line}</span>}
-              <span class="hero-stack-cta"><span>{c.cta}</span>{c.newTab && <span class="cory-visually-hidden"> (opens in a new tab)</span>}<Fragment set:html={arrow('M5 12h14M12 5l7 7-7 7', 16)} /></span>
+              <span class="hero-stack-cta cory-visually-hidden"><span>{c.cta}</span>{c.newTab && <span class="cory-visually-hidden"> (opens in a new tab)</span>}<Fragment set:html={arrow('M5 12h14M12 5l7 7-7 7', 16)} /></span>
             </span>
             {(c.img || c.picture) ? (
               <span class="hero-stack-stage" aria-hidden="true">
-                <span data-stack-frame class="hero-stack-frame">
-                  <span class="hero-stack-bar"><span></span><span></span><span></span></span>
+                <span data-stack-frame class="hero-stack-frame" data-shape={c.shape} style={`--ar: ${c.ar.toFixed(3)};`}>
+                  {!c.shape && <span class="hero-stack-bar"><span></span><span></span><span></span></span>}
                   {c.backdrop && <span class="fitted-backdrop" style={`background-image: url("${c.backdrop.src}");`}></span>}
                   {c.img
                     ? <img src={c.img.src} srcset={c.img.srcSet.attribute} sizes="(min-width: 1024px) 400px, 90vw" alt="" width={c.img.attributes.width} height={c.img.attributes.height} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" class={c.whole ? 'hero-stack-whole' : undefined} style={!c.whole && c.focus ? `object-position: ${c.focus};` : undefined} />
                     : <img src={c.picture!.src} alt="" width={c.picture!.width} height={c.picture!.height} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" class="hero-stack-picture" />}
                 </span>
               </span>
-            ) : c.points && c.points.length > 0 && (
+            ) : c.points && c.points.length > 0 && (<Fragment>
+              {c.scene && <span class="hero-stack-scene" aria-hidden="true"><span class="art-canvas"><svg viewBox="0 0 480 200" width="480" height="200" focusable="false" set:html={SECTION_SCENES[c.scene]} /></span></span>}
               <span data-stack-frame class="hero-stack-sheet" aria-hidden="true">
                 <span class="hero-stack-bar"><span></span><span></span><span></span></span>
                 <span class="hero-stack-points">{c.points.slice(0, 5).map(p => <span>{p}</span>)}</span>
               </span>
-            )}
+            </Fragment>)}
           </a>
         </li>
       ))}
@@ -103,32 +111,60 @@ const arrow = (d: string, size = 20) => `<svg data-dir-icon width="${size}" heig
   .hero-stack-title { font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-h2); line-height: var(--leading-snug); letter-spacing: var(--tracking-tight); color: var(--on-ink-strong); text-wrap: balance; }
   .hero-stack-line { font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--on-ink-body); text-wrap: pretty; }
   .hero-stack-cta { display: inline-flex; align-items: center; gap: var(--space-1); align-self: flex-start; min-block-size: var(--tap-target); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--on-ink-link); }
-  /* A picture sits in a tilted window inside the card, as on the Home deck. */
-  .hero-stack-stage { position: relative; display: block; margin-block: auto calc(-1 * var(--space-6)); aspect-ratio: 9 / 5; }
-  /* Inside the card: past its side and foot the card cut the picture (L-60; L-74). */
-  .hero-stack-frame { position: absolute; inset-inline: 10% var(--space-6); inset-block: 0 var(--space-6); display: flex; flex-direction: column; border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-card); border: 1px solid var(--on-ink-border-strong); box-shadow: var(--shadow-xl); transform: rotate(calc(-4deg * var(--dir-x))); transform-origin: 0 100%; }
-  /* Whole, never cut (L-60): the picture fills the window under its bar. At 100% of the window's height it ran the bar's
-     height (about 22 px) past the window's foot, which cut it (mobile test, 16 November 2026, L-74). */
-  .hero-stack-frame img { display: block; inline-size: 100%; flex: 1 1 0; min-block-size: 0; object-fit: contain; object-position: center top; }
+  /* A picture sits in an upright window inside the card, as on the Home deck: the window takes its picture's shape (square
+     at most) at the largest size the stage allows, so the picture fills it whole with no bands. It was tilted and as wide as
+     the card, so a cover drew at half the card's width between grey bands (owner request, 24 November 2026; second review,
+     25 November). Never past the card's side or foot (L-60; L-74). The bar above the picture is 25 px. */
+  /* Sixth review (26 November 2026): the window stood inset 20 px under a link row and filled 45% of the card's height. The link
+     row is now read, not drawn (the whole card is the link; Home's deck the same), and the window runs 16 px from the card's
+     sides, so a 16:10 cover fills about 92% of the card's width at every size. */
+  .hero-stack-stage { position: relative; display: grid; place-items: center; margin-block: auto calc(-1 * var(--space-6)); aspect-ratio: 9 / 6; container-type: size; padding: 0 var(--space-4) var(--space-4); }
+  /* A tall picture (a 9:16 reel poster) stands beside the words at the card's full height, not under them at a sliver. */
+  .hero-stack-link:has(> .hero-stack-stage [data-shape="tall"]) { display: grid; grid-template-columns: minmax(0, 1fr) 46%; grid-template-rows: minmax(0, 1fr); gap: 0; padding-block-end: 0; }
+  .hero-stack-link:has(> .hero-stack-stage [data-shape="tall"]) > .hero-stack-caption { grid-area: 1 / 1; padding-inline-end: var(--space-4); }
+  .hero-stack-link:has(> .hero-stack-stage [data-shape="tall"]) > .hero-stack-stage { grid-area: 1 / 2; aspect-ratio: auto !important; block-size: 100%; margin: 0; padding: var(--space-5) var(--space-4) var(--space-5) 0; }
+  /* Tablets: the stack stands in the middle of the column (fifth review: 440 px at its start left 300 px empty). */
+  @media (min-width: 600px) and (max-width: 1023.98px) { .hero-stack { margin-inline: auto; } }
+  .hero-stack-frame { position: relative; display: flex; flex-direction: column; --bar: 25px; inline-size: min(100cqi, calc((100cqb - var(--bar)) * var(--ar, 1.6))); border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-card); border: 1px solid var(--on-ink-border-strong); box-shadow: var(--shadow-xl); }
+  .hero-stack-frame img { display: block; inline-size: 100%; block-size: auto; aspect-ratio: var(--ar, 1.6); object-fit: contain; object-position: center; }
   .hero-stack-frame .hero-stack-picture { object-position: center; background: var(--surface-sunken); }
   .hero-stack-frame { isolation: isolate; }
+  .hero-stack-frame[data-shape] { --bar: 0px; }
+  .hero-stack-frame[data-shape="tall"] { border-radius: var(--radius-xl); }
   .hero-stack-frame .fitted-backdrop { z-index: -1; }
   .hero-stack-frame img.hero-stack-whole { position: relative; object-fit: contain; object-position: center; }
   /* A sheet of points sits upright inside the card, so every word reads and none is cut at an edge. The picture and the
      sheet sit at the card's foot, so a card shorter than its neighbours opens space under its words, not an empty band. */
   .hero-stack-sheet { display: block; margin: auto var(--space-6) 0; border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-card); border: 1px solid var(--on-ink-border-strong); box-shadow: var(--shadow-xl); }
+  /* A card of points with a section drawing (seventh review, 26 November 2026: the space between a text card's title and its
+     sheet stood empty, because the cards share the height of the tallest). The drawing takes only that spare height (a size
+     container on a zero basis adds none), at its own shape, and gives way when 72 px or less is left. */
+  .hero-stack-scene { position: relative; flex: 1 1 0; min-block-size: 0; margin-inline: var(--space-6); container-type: size; }
+  /* Placed, not sized by its content: the drawing's own 200 px would otherwise push past a shorter slot onto the sheet. */
+  .hero-stack-scene > .art-canvas { position: absolute; inset-block: 0; inset-inline-start: 50%; translate: -50% 0; aspect-ratio: 12 / 5; max-inline-size: 100%; padding: var(--space-2) var(--space-3); border-radius: var(--radius-lg); }
+  .hero-stack-scene > .art-canvas > svg { inline-size: 100%; block-size: 100%; }
+  @container (max-height: 72px) { .hero-stack-scene > .art-canvas { display: none; } }
+  .hero-stack-scene + .hero-stack-sheet { margin-block-start: 0; }
   .hero-stack-bar { display: flex; gap: 6px; align-items: center; padding: 8px 10px; border-block-end: 1px solid var(--border-subtle); background: var(--surface-sunken); }
   .hero-stack-bar span { inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--border-strong); }
   .hero-stack-points { display: grid; gap: var(--space-3); padding: var(--space-4) var(--space-5) var(--space-5); }
   .hero-stack-points span { position: relative; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; padding-inline-start: var(--space-4); font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-body); overflow-wrap: anywhere; }
   .hero-stack-points span::before { content: ""; position: absolute; inset-inline-start: 0; inset-block-start: 0.6em; inline-size: 6px; block-size: 6px; border-radius: 50%; background: var(--text-link); }
-  /* A short laptop screen: a shallower picture window and a smaller card title, so the stack fits under the header. */
+  /* A short laptop screen: a smaller card title and no lead (it is on the page the card opens), so the stack fits under
+     the header with the picture at a useful size (second review, 25 November 2026: the lead kept the window at 9 / 3.4,
+     and the picture at half the card's width). */
   @media (min-width: 1024px) and (max-height: 900px) {
-    .hero-stack-stage { aspect-ratio: 9 / 3.4; }
+    .hero-stack-line { display: none; }
     .hero-stack-title { font-size: var(--text-h3); }
     .hero-stack-caption { padding-block-start: var(--space-5); }
     .hero-stack-points { gap: var(--space-2); padding-block: var(--space-3) var(--space-4); }
   }
+  /* Phones: the lead gives way too (sixth review: at 320 a three-line teaser took the picture's room); it is on the page the
+     card opens. */
+  @media (max-width: 599.98px) { .hero-stack-line { display: none; } .hero-stack-title { font-size: var(--text-h3); } }
+  /* Beside a tall picture the words have the card's height, so the lead stays there from 600 px (it gives way only where the
+     picture is under the words). */
+  @media (min-width: 600px) { .hero-stack-link:has(> .hero-stack-stage [data-shape="tall"]) .hero-stack-line { display: -webkit-box; } }
   /* In dark the field is deep navy too: a stronger edge keeps the ink cards apart from it. */
   :global([data-theme="dark"]) .hero-stack-card { border-color: var(--on-ink-border-strong); }
   @media (prefers-reduced-motion: reduce) { .hero-stack-arrow { transition: none; } }

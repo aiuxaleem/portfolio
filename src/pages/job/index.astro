@@ -12,6 +12,7 @@ import LandingStatement from '../../components/landing/landing-statement.astro';
 import LandingBand from '../../components/landing/landing-band.astro';
 import LandingSection from '../../components/landing/landing-section.astro';
 import LandingWork from '../../components/landing/landing-work.astro';
+import { caseInsidePictures } from '../../lib/site-stacks';
 import LandingFigures from '../../components/landing/landing-figures.astro';
 import LandingRows from '../../components/landing/landing-rows.astro';
 import Career from '../../components/profile/career.astro';
@@ -64,30 +65,30 @@ const facts: [string, string][] = [
   <LandingBand items={profile.expertise.map(e => e.title)} />
 
   {cases.length > 0 && (
-    <LandingSection id="hiring-work" index="01" overline="Selected work" title="Case studies" lead="Each one gives the problem, the constraints, the decisions with their trade-offs, and what shipped.">
+    <LandingSection id="hiring-work" art="caseStudy" pictures={caseInsidePictures(cases)} index="01" overline="Selected work" title="Case studies" lead="Each one gives the problem, the constraints, the decisions with their trade-offs, and what shipped.">
       <LandingWork entries={cases} />
       <a data-link class="post-back hiring-all" href="/case-studies"><span>All case studies</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
     </LandingSection>
   )}
 
-  <LandingSection id="hiring-numbers" index="02" overline="In numbers" title="What the work measured" lead="Each figure is from a case study, where the method and the before and after are shown." surface="card">
+  <LandingSection id="hiring-numbers" art="measured" index="02" overline="In numbers" title="What the work measured" lead="Each figure is from a case study, where the method and the before and after are shown." surface="card">
     <LandingFigures figures={landingFigures} />
   </LandingSection>
 
-  <LandingSection id="hiring-bring" index="03" overline="Expertise" title="What I bring to a product team" split>
+  <LandingSection id="hiring-bring" index="03" overline="Expertise" title="What I bring to a product team" split art="expertise">
     <LandingRows rows={profile.expertise.map(e => ({ title: e.title, body: e.body }))} />
   </LandingSection>
 
-  <LandingSection id="hiring-career" index="04" overline="Work experience" title="Enterprise UX to AI product design" lead="Newest first. Each role, with what it shipped, is on the Experience page." surface="card">
+  <LandingSection id="hiring-career" art="careerSpan" index="04" overline="Work experience" title="Enterprise UX to AI product design" lead="Newest first. Each role, with what it shipped, is on the Experience page." surface="card">
     <Career highlights={false} />
     <a data-link class="post-back hiring-all" href="/experience"><span>The full experience, with what each role shipped</span><svg data-dir-icon width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
   </LandingSection>
 
-  <LandingSection id="hiring-certs" index="05" overline="Learning" title="Certifications" lead="Verified certificates and the ones in progress. The full list is on the Experience page.">
+  <LandingSection id="hiring-certs" art="certs" index="05" overline="Learning" title="Certifications" lead="Verified certificates and the ones in progress. The full list is on the Experience page.">
     <Certifications only={['in-progress', 'verified']} />
   </LandingSection>
 
-  <LandingSection id="hiring-how" index="06" overline="How I work" title="Where I do my best work, and what I'll ask you" lead="Hiring is a decision on both sides. These are the conditions I do my best work in, and the questions I bring to a first call." surface="card">
+  <LandingSection id="hiring-how" art="conversation" index="06" overline="How I work" title="Where I do my best work, and what I'll ask you" lead="Hiring is a decision on both sides. These are the conditions I do my best work in, and the questions I bring to a first call." surface="card">
     <div class="hiring-how">
       <LandingRows rows={conditions.map(([t, b]) => ({ title: t, body: b }))} />
       <div class="project-cta hiring-ask" role="region" aria-labelledby="hiring-ask-title">

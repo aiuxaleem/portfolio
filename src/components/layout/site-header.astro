@@ -18,7 +18,7 @@ const c = chrome[ar ? 'ar' : 'en'];
 const sub = ar ? undefined : siteOf(Astro.url.pathname);
 const subSite = sub ? SUB_SITES[sub] : undefined;
 const nav: NavEntry[] = ar ? arNav : parity ? legacyChrome.nav : subSite ? subSite.nav : site.nav;
-const chevron = '<svg data-chevron width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>';
+const chevron = '<svg data-chevron width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>';
 const cta = ar ? { label: c.talk, href: '/ar#contact' } : parity ? legacyChrome.cta : subSite ? subSite.cta : site.cta;
 const current = ar ? (Astro.url.pathname.includes('/case-studies') ? 'work' : 'home') : subSite ? subCurrentKey(Astro.url.pathname) : currentKey(Astro.url.pathname);
 const home = ar ? '/ar' : '/';

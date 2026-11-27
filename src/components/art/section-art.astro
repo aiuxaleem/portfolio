@@ -1,0 +1,43 @@
+---
+/* A section head's illustration (owner request, 24 November 2026): a wide strip beside a section's heading and lead,
+   where the right side was empty. A dot-grid canvas (styles/art.css) holding one scene from art/section-scenes.ts. The
+   head that holds it (.page-section-head, or a Home head) puts it in a second column from 1024 px; under that the words
+   have the width and it is not shown. Decorative (aria-hidden). Its lines draw as it scrolls into view (motion.css).
+   With `pictures`, a head that introduces work shows that work: up to three of its real pictures fanned on the canvas,
+   each whole in its frame (L-60), the middle one in front (seventh review, 26 November 2026: a section that introduces
+   selected work should show it, not a generic drawing). */
+import '../../styles/art.css';
+import type { ImageMetadata } from 'astro';
+import FittedImage from '../ui/fitted-image.astro';
+import { SECTION_SCENES, type SectionSceneName } from './section-scenes';
+
+/* under: the strip sits under the words of a head held beside its content (landing/landing-section.astro `split`), where
+   the head's column has room below its words and none beside them. */
+interface Props { name: SectionSceneName; under?: boolean; pictures?: ImageMetadata[] }
+const { name, under = false, pictures = [] } = Astro.props;
+const shown = pictures.slice(0, 3);
+/* One of four glow placements (styles/art.css), from the name, so neighbouring drawings differ. */
+const glow = [...name].reduce((a, ch) => a + ch.charCodeAt(0), 0) % 4;
+---
+<div class="art-canvas section-art" aria-hidden="true" data-scene={name} data-glow={glow} data-under={under ? '' : undefined} data-pictures={shown.length > 0 ? shown.length : undefined}>
+  {shown.length > 0
+    ? <div class="section-art-fan">{shown.map(src => <span class="section-art-frame"><FittedImage image={{ src, alt: '' }} widths={[240, 400]} sizes="(min-width: 1024px) 14rem, 1px" /></span>)}</div>
+    : <svg viewBox="0 0 480 200" width="480" height="200" focusable="false" set:html={SECTION_SCENES[name]} />}
+</div>
+
+<style>
+  .section-art { display: none; padding: var(--space-4) var(--space-5); }
+  @media (min-width: 1024px) { .section-art { display: grid; place-items: center; } .section-art[data-under] { margin-block-start: var(--space-6); } }
+  .section-art > svg { max-inline-size: 30rem; aspect-ratio: 12 / 5; }
+  /* Three frames of the cards' 16:10 shape, each 46% of the strip wide, the outer two lower and behind the middle one. */
+  .section-art-fan { position: relative; inline-size: 100%; max-inline-size: 30rem; aspect-ratio: 12 / 5; }
+  .section-art-frame { position: absolute; inline-size: 46%; aspect-ratio: 16 / 10; inset-block-start: 22%; overflow: hidden; border: var(--border-width) solid var(--border-default); border-radius: var(--radius-md); background: var(--surface-sunken); box-shadow: var(--shadow-md); }
+  .section-art-frame:nth-child(1) { inset-inline-start: 0; }
+  .section-art-frame:nth-child(2) { inset-inline-start: 27%; inset-block-start: 4%; z-index: 1; box-shadow: var(--shadow-lg); }
+  .section-art-frame:nth-child(3) { inset-inline-start: 54%; }
+  /* One picture: the middle frame alone, larger; two: side by side. */
+  [data-pictures="1"] .section-art-frame { inline-size: 62%; inset-inline-start: 19%; inset-block-start: 6%; }
+  [data-pictures="2"] .section-art-frame:nth-child(2) { inset-inline-start: 48%; inset-block-start: 22%; }
+  [data-pictures="2"] .section-art-frame:nth-child(1) { inset-block-start: 6%; }
+  .section-art-frame :global(img) { position: relative; display: block; inline-size: 100%; block-size: 100%; object-fit: contain; object-position: center; }
+</style>

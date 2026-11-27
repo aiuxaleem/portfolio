@@ -269,6 +269,10 @@ main[tabindex] { padding-block-start: 0 !important; }
   body:has([data-site-switch]) [data-hero] { min-block-size: calc(100svh - var(--header-height) - var(--tap-target)) !important; padding-block: var(--space-6) !important; }
   [data-hero] [data-hero-el]:has(> [data-hero-stack]) { max-block-size: calc(100svh - var(--header-height) - var(--tap-target) - var(--space-12)) !important; }
   [data-hero] [data-hero-stack] { aspect-ratio: auto !important; min-block-size: 340px !important; }
+  /* There the deck's lead gives way to its picture: the title and the link stay, the lead is on the case study one click
+     away (second review, 25 November 2026: the picture drew at a third of the card's width). */
+  [data-hero] ul[data-hero-stack]:not([data-site-stack]) [data-deck-line] { display: none !important; }
+  [data-hero] ul[data-hero-stack]:not([data-site-stack]) [data-deck-title] { font-size: var(--text-h3) !important; }
   /* Heroes whose words sit beside a tall panel: the words start at the top, so the buttons stay on the first screen. */
   section[aria-labelledby="resources-title"] > .cory-split { align-items: start !important; }
   section[aria-labelledby="resources-title"] { padding-block-start: var(--space-10) !important; }
@@ -278,11 +282,25 @@ main[tabindex] { padding-block-start: 0 !important; }
 /* The shortest laptop screens (1280x720 with the browser's bars: about 600px): display type and rhythm one more step down. */
 @media (min-width: 1024px) and (max-height: 640px) {
   :root { --section-y: 40px; --text-fluid-display: clamp(30px, 3.1vw, 42px); --text-fluid-title: clamp(28px, 2.8vw, 36px); --text-fluid-lead: 16px; }
-  .hero-stack-stage { aspect-ratio: 9 / 2.6 !important; }
+  .hero-stack-stage { aspect-ratio: 9 / 5 !important; }
   .hero-stack-points > span:nth-child(n+4) { display: none !important; }
   .site-hero { padding-block-start: var(--space-5) !important; }
   .hero-stack-cards { padding-block-start: var(--space-4) !important; }
   section[aria-labelledby="services-title"] { padding-block-start: var(--space-6) !important; }
+}
+/* Phones (third review, 25 November 2026): under the hero's words the Home deck's card kept its lead and a long title, so its
+   picture drew at 87 px wide at 320 and 167 px at 360. There, as on a laptop, the lead gives way (it is on the case study one
+   click away), the title takes the card size and the card is a little taller, so the picture fills most of the card's width. */
+/* Tablets (fourth review, 26 November 2026): under the words the deck kept its 440 px at the start of a 730 px column, with
+   the empty side beyond it and a back card in the gutter; it stands in the middle there. */
+@media (min-width: 600px) and (max-width: 1023.98px) { [data-hero] [data-hero-el]:has(> [data-hero-stack]) { margin-inline: auto !important; } }
+@media (max-width: 599.98px) {
+  /* 4 / 4.7, from 4 / 5.2 (eighth review, 27 November 2026): measured on three slides from 320 to 414 px, every picture had 44
+     to 151 px of spare height around it; the shorter card keeps the tightest slide whole and closes the bands on the rest. */
+  [data-hero] ul[data-hero-stack]:not([data-site-stack]) { aspect-ratio: 4 / 4.7 !important; }
+  [data-hero] ul[data-hero-stack]:not([data-site-stack]) .deck-stage { padding-inline: var(--space-4) !important; }
+  [data-hero] ul[data-hero-stack]:not([data-site-stack]) [data-deck-line] { display: none !important; }
+  [data-hero] ul[data-hero-stack]:not([data-site-stack]) [data-deck-title] { font-size: var(--text-h3) !important; }
 }
 /* A page hero of words beside a card stack (the main Projects, Case Studies and AI Tools; the audience websites use
    sites/site-hero.astro for the same shape). */
@@ -390,6 +408,10 @@ body:has(> .ai-field) [data-bg~="grid"]::before { display: none; }
 [data-stack-card][data-pos="0"]:has(a:focus-visible) { transform: translateY(var(--lift-hover-lg)); box-shadow: var(--shadow-xl); }
 /* A stack of up to five picks (L-76): the cards past the third wait behind it, unseen, in its pose. */
 [data-stack-card]:not([data-pos="0"], [data-pos="1"], [data-pos="2"]) { z-index: 0; transform: translate(calc(-9% * var(--dir-x)), -13%) rotate(calc(-6deg * var(--dir-x))) scale(0.86); opacity: 0; pointer-events: none; }
+/* While the front card is dragged or flies off, the card coming forward shows its words and picture above the rest, so a
+   swipe never passes through empty cards (islands/stack-swipe.ts, data-incoming; owner, 24 November 2026). */
+[data-stack-card][data-incoming] { z-index: 2; opacity: 1; }
+[data-stack-card][data-incoming] [data-stack-caption], [data-stack-card][data-incoming] [data-stack-frame] { visibility: visible; }
 /* Swipe (islands/stack-swipe.ts, L-76): a sideways drag is the card's, a vertical one the page's. The front card follows the
    finger with no delay and turns a little with it; thrown, it leaves to that side and fades, then takes its place at the back. */
 [data-stack-card] { touch-action: pan-y; -webkit-user-select: none; user-select: none; }

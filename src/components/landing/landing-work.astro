@@ -15,7 +15,7 @@ const H = `h${level}` as any;
   {entries.map((c, i) => (
     <li>
       <article class="lp-case" data-cq-case>
-        <div class="lp-case-media">
+        <div class="lp-case-media" style={c.data.cover ? `--ar: ${Math.min(2.4, Math.max(1.4, c.data.cover.src.width / c.data.cover.src.height)).toFixed(3)};` : undefined}>
           {c.data.cover
             ? <FittedImage image={{ src: c.data.cover.src, alt: c.data.cover.alt ?? '', focus: c.data.cover.focus }} widths={[480, 720, 960, 1280]} sizes="(min-width: 1440px) 700px, (min-width: 960px) 52vw, calc(100vw - 32px)" />
             : <span class="lp-case-blank" aria-hidden="true"></span>}
@@ -40,7 +40,10 @@ const H = `h${level}` as any;
   .lp-case { position: relative; display: grid; block-size: 100%; border-radius: var(--radius-2xl); overflow: hidden; background: var(--surface-card); border: 1px solid var(--border-default); box-shadow: var(--shadow-md); transition: border-color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out); }
   @container (min-width: 960px) { .lp-case { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); } }
   .lp-case-media { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: linear-gradient(160deg, var(--surface-sunken), var(--surface-card)); }
-  @container (min-width: 960px) { .lp-case-media { aspect-ratio: auto; min-block-size: 420px; } }
+  /* Beside the words the frame takes its cover's own shape (between 7:5 and 12:5) and stands in the middle of the row: a
+     fixed 420 px frame left a muddy blurred band under a 16:10 cover a little shorter than it (sixth review, 26 November
+     2026). A taller picture (the reel's poster) is still shown whole in a 7:5 frame over its blurred copy. */
+  @container (min-width: 960px) { .lp-case-media { aspect-ratio: var(--ar, 1.6); align-self: center; } .lp-case-media:has(.lp-case-blank) { aspect-ratio: auto; align-self: stretch; min-block-size: 420px; } }
   /* The cover is pinned to the frame, so a tall picture never makes the card taller; it is shown whole (contain). */
   .lp-case-media :global(img) { position: absolute; inset: 0; z-index: 1; inline-size: 100%; block-size: 100%; object-fit: contain; object-position: center; }
   .lp-case-blank { position: absolute; inset: 0; background: var(--gradient-ink); }

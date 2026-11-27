@@ -9,6 +9,8 @@ import { listedResources, categoryCounts } from './resources';
 import { listedDesignSystems } from './design-systems';
 import { profile, careerByCompany } from '../content/profile';
 import { site } from '../content/site';
+import { cardPicture } from './images';
+import type { SectionSceneName } from '../components/art/section-scenes';
 
 export interface StackCard {
   kicker: string;
@@ -25,9 +27,15 @@ export interface StackCard {
   /** A picture from public/ (the portrait), with its size. */
   picture?: { src: string; width: number; height: number };
   points?: string[];
+  /** A section drawing (art/section-scenes.ts) for a card of points, in the space its words leave above the points. */
+  scene?: SectionSceneName;
 }
 
 const year = (ym: string) => ym.slice(0, 4);
+
+/* The picture a deck card shows: lib/images.ts cardPicture, the cover unless it is a strip far wider than the window. */
+const deckPicture = cardPicture;
+
 
 /** The career at a glance: every company with its years, newest first, and the year it began. */
 function career() {
@@ -78,8 +86,8 @@ export async function projectCards(): Promise<StackCard[]> {
     line: p.data.summary,
     href: `/work/${p.id}`,
     cta: 'Open the project',
-    image: p.data.cover?.src,
-    focus: p.data.cover?.focus ?? 'center top', // project covers centre their headline
+    image: deckPicture(p.data.cover, p.data.gallery)?.src,
+    focus: deckPicture(p.data.cover, p.data.gallery)?.focus ?? 'center top', // project covers centre their headline
     points: p.data.tags,
   }));
 }
@@ -104,10 +112,10 @@ export async function resumeCards(): Promise<StackCard[]> {
   /* The resume's own first lines (name, title, where) are the words beside the stack, and the career card opens the
      Experience page, so this stack starts with the expertise. */
   const cards: StackCard[] = [
-    { kicker: 'Expertise', meta: `${profile.expertise.length} areas`, title: 'What I bring to a team', line: profile.positioning, href: '#cv-expertise', cta: 'See the expertise below', points: profile.expertise.map(e => e.title) },
+    { kicker: 'Expertise', meta: `${profile.expertise.length} areas`, title: 'What I bring to a team', line: profile.positioning, href: '#cv-expertise', cta: 'See the expertise below', points: profile.expertise.map(e => e.title), scene: 'expertise' },
     careerCard('#cv-experience', 'See the experience below'),
   ];
-  if (certs.length > 0) cards.push({ kicker: 'Certifications', meta: studying.length ? `${studying.length} in progress` : undefined, title: 'Learning now', href: '#cv-certs', cta: 'See the certifications below', points: [...studying, ...certs.filter(c => c.data.status !== 'in-progress')].map(c => c.data.name) });
+  if (certs.length > 0) cards.push({ kicker: 'Certifications', meta: studying.length ? `${studying.length} in progress` : undefined, title: 'Learning now', href: '#cv-certs', cta: 'See the certifications below', points: [...studying, ...certs.filter(c => c.data.status !== 'in-progress')].map(c => c.data.name), scene: 'certs' });
   return cards;
 }
 
@@ -145,8 +153,8 @@ export async function glossaryCards(): Promise<StackCard[]> {
 export function aboutCards(anchors: { method: string; principles: string; expertise: string }): StackCard[] {
   return [
     { kicker: 'How I work', meta: `${site.location.split(',')[0]} · GCC hours`, title: 'From the workflow to the shipped screen', line: profile.aiWorkflow.map(s => s.title).join(' · '), href: anchors.method, cta: 'See how I work with AI below', picture: { src: '/assets/author-portrait.jpg', width: 836, height: 836 } },
-    { kicker: 'Principles', meta: String(profile.principles.length), title: "Things I won't trade away", line: profile.principles[0]?.body, href: anchors.principles, cta: 'See the principles below', points: profile.principles.map(p => p.title) },
-    { kicker: 'Expertise', meta: `${profile.expertise.length} areas`, title: 'What I bring to a product team', line: profile.expertise[0]?.body, href: anchors.expertise, cta: 'See the expertise below', points: profile.expertise.map(e => e.title) },
+    { kicker: 'Principles', meta: String(profile.principles.length), title: "Things I won't trade away", line: profile.principles[0]?.body, href: anchors.principles, cta: 'See the principles below', points: profile.principles.map(p => p.title), scene: 'principles' },
+    { kicker: 'Expertise', meta: `${profile.expertise.length} areas`, title: 'What I bring to a product team', line: profile.expertise[0]?.body, href: anchors.expertise, cta: 'See the expertise below', points: profile.expertise.map(e => e.title), scene: 'expertise' },
   ];
 }
 
@@ -155,6 +163,10 @@ export function aboutCards(anchors: { method: string; principles: string; expert
 export async function mySystemCards(): Promise<StackCard[]> {
   const mine = (await listedDesignSystems()).filter(s => s.data.mine);
   const real = mine.filter(s => !s.data.fixture);
+  /* A system without a cover of its own shows the cover of its project page (third review, 25 November 2026: the stack
+     showed lists where /work shows the same system's screens). */
+  const projects = await listedProjects();
+  const cover = (s: (typeof real)[number]) => { const p = projects.find(p => s.data.project === `/work/${p.id}`); return s.data.cover ?? deckPicture(p?.data.cover, p?.data.gallery); };
   return picksOr(real, real).map(s => ({
     kicker: s.data.here ? 'This site' : 'Design system',
     meta: s.data.facts[0] ? `${s.data.facts[0].value} ${s.data.facts[0].label}` : undefined,
@@ -162,8 +174,41 @@ export async function mySystemCards(): Promise<StackCard[]> {
     line: s.data.summary,
     href: `#system-${mine.indexOf(s) + 1}`,
     cta: 'See what is inside',
-    image: s.data.cover?.src,
-    focus: s.data.cover?.focus,
+    image: cover(s)?.src,
+    focus: cover(s)?.focus,
     points: s.data.facts.length ? s.data.facts.map(f => `${f.value} ${f.label}`) : s.data.madeWith,
+  }));
+}
+
+/* Pictures from inside the work, for the head of a section that introduces it (components/art/section-art.astro
+   `pictures`; seventh review, 26 November 2026: such a head should show the work, not a generic drawing). One per item,
+   in order, up to three: a screen from its pages that is not a picture its card or deck already shows, in a usual shape
+   so it reads at thumbnail size. Fewer than two found, and the head keeps its drawing. */
+const usualShape = (m: ImageMetadata) => { const r = m.width / m.height; return r >= 1.2 && r <= 2.2; };
+const inside = (sets: { shown: (ImageMetadata | undefined)[]; pool: ImageMetadata[] }[]): ImageMetadata[] => {
+  const out: ImageMetadata[] = [];
+  for (const s of sets) {
+    const seen = new Set([...s.shown, ...out].filter(Boolean).map(m => m!.src));
+    const pick = s.pool.find(m => !seen.has(m.src) && usualShape(m));
+    if (pick) out.push(pick);
+    if (out.length === 3) break;
+  }
+  return out.length >= 2 ? out : [];
+};
+
+/** Screens from inside the given case studies, never their covers. */
+export const caseInsidePictures = (cases: CaseStudy[]): ImageMetadata[] => inside(cases.map(c => ({
+  shown: [c.data.cover?.src],
+  pool: [...c.data.process.images.map(i => i.src), ...(c.data.process.beforeAfter ? [c.data.process.beforeAfter.after.src] : [])],
+})));
+
+/** Screens from the project pages of the systems I built, never the cover their card or the deck shows. The last of each
+    gallery comes first: a gallery tends to open on the cover's own page at another size. */
+export async function systemInsidePictures(): Promise<ImageMetadata[]> {
+  const real = (await listedDesignSystems()).filter(s => s.data.mine && !s.data.fixture);
+  const projects = await listedProjects();
+  return inside(real.map(s => {
+    const p = projects.find(p => s.data.project === `/work/${p.id}`);
+    return { shown: [s.data.cover?.src, p?.data.cover?.src, deckPicture(p?.data.cover, p?.data.gallery)?.src], pool: (p?.data.gallery ?? []).map(g => g.src).reverse() };
   }));
 }
