@@ -4,6 +4,10 @@
    categories and the admin already use, plus a few drawn on its grid; built by a script from those files, so the set stays
    one style. The tile is decorative: the category is written on the card. */
 export const CARD_ICON_PATHS: Record<string, string> = {
+  /* The Work bento's own icons (home/work-bento.astro), for the Four ways strip above it. */
+  'briefcase': "<path d=\"M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16\" /><rect width=\"20\" height=\"14\" x=\"2\" y=\"6\" rx=\"2\" />",
+  'book-open': "<path d=\"M12 7v14\" /><path d=\"M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z\" />",
+  'skill-mark': "<path d=\"M12 7V3\" /><path d=\"M12 21v-4\" /><path d=\"M4.93 4.93l2.83 2.83\" /><path d=\"M16.24 16.24l2.83 2.83\" /><path d=\"M3 12h4\" /><path d=\"M17 12h4\" /><circle cx=\"12\" cy=\"12\" r=\"2\" />",
   'accessibility': "<circle cx=\"16\" cy=\"4\" r=\"1\" /><path d=\"m18 19 1-7-6 1\" /><path d=\"m5 8 3-3 5.5 3-2.36 3.5\" /><path d=\"M4.24 14.5a5 5 0 0 0 6.88 6\" /><path d=\"M13.76 17.5a5 5 0 0 0-6.88-6\" />",
   'activity': "<path d=\"M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2\" />",
   'building': "<rect x=\"4\" y=\"2\" width=\"16\" height=\"20\" rx=\"2\" /><path d=\"M9 22v-4h6v4\" /><path d=\"M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01\" />",

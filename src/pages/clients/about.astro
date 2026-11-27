@@ -27,21 +27,21 @@ const stack = aboutCards({ method: '#clients-ai-title', principles: '#clients-pr
 
   <section class="page-section" data-surface="card" aria-labelledby="clients-principles-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Principles</p><h2 id="clients-principles-title" class="page-h2">Three things I won't trade away</h2><SectionArt name="principles" /></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Principles</p><h2 id="clients-principles-title" class="page-h2">Three things I won't trade away</h2><SectionArt name="principlesPledge" /></div>
       <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.principles.map((p, i) => <li><div class="tile"><div class="tile-top"><TileIcon name={tileIcon(p.title)} /><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi></div><h3>{p.title}</h3><p>{p.body}</p></div></li>)}</ol></div>
     </div>
   </section>
 
   <section class="page-section" aria-labelledby="clients-expertise-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Expertise</p><h2 id="clients-expertise-title" class="page-h2">What I bring to a product team</h2><SectionArt name="expertise" /></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Expertise</p><h2 id="clients-expertise-title" class="page-h2">What I bring to a product team</h2><SectionArt name="expertiseHub" /></div>
       <div data-cq><ul data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.expertise.map(e => <li><div class="tile"><div class="tile-top"><TileIcon name={tileIcon(e.title)} /></div><h3>{e.title}</h3><p>{e.body}</p></div></li>)}</ul></div>
     </div>
   </section>
 
   <section class="page-section" data-surface="card" aria-labelledby="clients-ai-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Method</p><h2 id="clients-ai-title" class="page-h2">How I work with AI</h2><SectionArt name="aiMethod" /></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Method</p><h2 id="clients-ai-title" class="page-h2">How I work with AI</h2><SectionArt name="aiMethodPlan" /></div>
       <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.aiWorkflow.map((s, i) => <li><div class="tile"><div class="tile-top"><TileIcon name={tileIcon(s.title)} /><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi></div><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol></div>
       <div style="display: grid; gap: var(--space-3);">
         <h3 style="margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong);">Tools</h3>
@@ -52,7 +52,7 @@ const stack = aboutCards({ method: '#clients-ai-title', principles: '#clients-pr
 
   <section class="page-section" aria-labelledby="clients-certs-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="clients-certs-title" class="page-h2">Certifications</h2><SectionArt name="certs" /></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="clients-certs-title" class="page-h2">Certifications</h2><SectionArt name="certsBadges" /></div>
       <Learning id="clients-learning" completed={false} />
     </div>
   </section>

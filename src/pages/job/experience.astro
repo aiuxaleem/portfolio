@@ -28,14 +28,14 @@ const stack = careerCards('#experience-career-title');
 
   <section class="page-section" data-surface="card" aria-labelledby="experience-career-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Work experience</p><h2 id="experience-career-title" class="page-h2">Every role, with what it shipped</h2><p class="project-filter-count">Newest first.</p><SectionArt name="career" /></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Work experience</p><h2 id="experience-career-title" class="page-h2">Every role, with what it shipped</h2><p class="project-filter-count">Newest first.</p><SectionArt name="careerRoles" /></div>
       <Career wide />
     </div>
   </section>
 
   <section class="page-section" aria-labelledby="experience-certs-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="experience-certs-title" class="page-h2">Certifications</h2><SectionArt name="certs" /></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Learning</p><h2 id="experience-certs-title" class="page-h2">Certifications</h2><SectionArt name="certsCredentials" /></div>
       <Learning id="experience-learning" />
     </div>
   </section>
@@ -51,14 +51,14 @@ const stack = careerCards('#experience-career-title');
 
   <section class="page-section" aria-labelledby="experience-principles-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Principles</p><h2 id="experience-principles-title" class="page-h2">Three things I won't trade away</h2><SectionArt name="principles" /></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Principles</p><h2 id="experience-principles-title" class="page-h2">Three things I won't trade away</h2><SectionArt name="principlesReview" /></div>
       <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.principles.map((p, i) => <li><div class="tile"><div class="tile-top"><TileIcon name={tileIcon(p.title)} /><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi></div><h3>{p.title}</h3><p>{p.body}</p></div></li>)}</ol></div>
     </div>
   </section>
 
   <section class="page-section" data-surface="card" aria-labelledby="experience-ai-title">
     <div class="cory-container">
-      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Method</p><h2 id="experience-ai-title" class="page-h2">How I work with AI</h2><SectionArt name="aiMethod" /></div>
+      <div class="page-section-head"><p class="cory-overline" style="margin: 0;">Method</p><h2 id="experience-ai-title" class="page-h2">How I work with AI</h2><SectionArt name="aiMethodLoop" /></div>
       <div data-cq><ol data-cq-balance style="display: grid; gap: var(--grid-gap);">{profile.aiWorkflow.map((s, i) => <li><div class="tile"><div class="tile-top"><TileIcon name={tileIcon(s.title)} /><bdi class="tile-num" aria-hidden="true">{num(i)}</bdi></div><h3>{s.title}</h3><p>{s.body}</p></div></li>)}</ol></div>
       <div style="display: grid; gap: var(--space-3);">
         <h3 style="margin: 0; font-size: var(--text-h4); font-weight: var(--weight-bold); color: var(--text-strong);">Tools</h3>

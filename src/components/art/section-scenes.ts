@@ -51,29 +51,16 @@ export const SECTION_SCENES = {
     <path class="pa-accent" ${d(5)} d="M386 96h12M392 90l6 6-6 6"/>
     ${agent(404, 76, 6)}`,
 
-  /* Four ways into my work, in the order of the cards below and with their glyphs, drawn in outline as the cards' icons are
-     (sixth review, 26 November 2026: filled pictograms beside outline icons): a design system (a swatch book of two
-     blades, the weight of the others: ninth review, 27 November 2026), a project (a briefcase), a case study (an open book) and a skill (the radiating mark). */
+  /* Four ways into my work, in the order of the cards below and with the same icons as their kickers (a swatch book, a
+     briefcase, an open book and the skill mark), outlined at the cards' stroke in one tile each, every card named in words;
+     the first, design systems, edged in the link colour (eleventh review, 27 November 2026: the pictograms were drawn at twice
+     the icons' weight, in two colours). */
   workWays: `
-    <rect class="pa-card" x="16" y="28" width="98" height="144" rx="14"/>
-    <path class="pa-title" d="M34 134h56"/><path class="pa-line" d="M34 152h40"/>
-    <rect class="pa-stroke" x="54" y="48" width="22" height="58" rx="7" transform="rotate(-20 65 100)"/>
-    <rect class="pa-accent" ${p(0)} x="54" y="48" width="22" height="58" rx="7" transform="rotate(16 65 100)"/>
-    <circle class="pa-stroke" cx="65" cy="98" r="3"/>
-    <rect class="pa-card" x="130" y="28" width="98" height="144" rx="14"/>
-    <path class="pa-title" d="M148 134h56"/><path class="pa-line" d="M148 152h40"/>
-    <path class="pa-stroke" d="M167 62v-6a4 4 0 0 1 4-4h16a4 4 0 0 1 4 4v6"/>
-    <rect class="pa-accent" ${p(1)} x="147" y="62" width="64" height="44" rx="8"/>
-    <path class="pa-stroke" d="M147 80h64"/><rect class="pa-accent" x="173" y="75" width="12" height="10" rx="3"/>
-    <rect class="pa-card" x="244" y="28" width="98" height="144" rx="14"/>
-    <path class="pa-title" d="M262 134h56"/><path class="pa-line" d="M262 152h40"/>
-    <path class="pa-accent" ${p(2)} d="M293 60c-11-6-25-6-37 0v46c12-6 26-6 37 0z"/><path class="pa-accent" d="M293 60c11-6 25-6 37 0v46c-12-6-26-6-37 0z"/>
-    <path class="pa-line pa-thin" d="M264 74h20M264 86h16M302 74h20M302 86h16"/><path class="pa-stroke" ${d(3)} d="M293 60v46"/>
-    <rect class="pa-card" x="358" y="28" width="98" height="144" rx="14"/>
-    <path class="pa-title" d="M376 134h56"/><path class="pa-line" d="M376 152h40"/>
-    <path class="pa-accent" d="M407 56v12M407 96v12M381 82h12M421 82h12M389 64l9 9M416 91l9 9"/>
-    <circle class="pa-accent" ${p(4)} cx="407" cy="82" r="7"/>
-    <path class="pa-accent" ${d(5)} d="M114 100h16M228 100h16M342 100h16"/>`,
+    <rect class="pa-chip" ${p(0)} x="16" y="28" width="98" height="144" rx="14"/><rect class="pa-play pa-edge" x="35" y="46" width="60" height="60" rx="16"/>${icon('swatch-book', 47, 58, 36)}<text class="pa-mono" x="65" y="148" text-anchor="middle">systems</text>
+    <rect class="pa-card" ${p(1)} x="130" y="28" width="98" height="144" rx="14"/><rect class="pa-play pa-edge" x="149" y="46" width="60" height="60" rx="16"/>${icon('briefcase', 161, 58, 36)}<text class="pa-mono" x="179" y="148" text-anchor="middle">projects</text>
+    <rect class="pa-card" ${p(2)} x="244" y="28" width="98" height="144" rx="14"/><rect class="pa-play pa-edge" x="263" y="46" width="60" height="60" rx="16"/>${icon('book-open', 275, 58, 36)}<text class="pa-mono" x="293" y="140" text-anchor="middle">case</text><text class="pa-mono" x="293" y="156" text-anchor="middle">studies</text>
+    <rect class="pa-card" ${p(3)} x="358" y="28" width="98" height="144" rx="14"/><rect class="pa-play pa-edge" x="377" y="46" width="60" height="60" rx="16"/>${icon('skill-mark', 389, 58, 36)}<text class="pa-mono" x="407" y="148" text-anchor="middle">skills</text>
+    <path class="pa-accent" ${d(4)} d="M114 76h16M228 76h16M342 76h16"/>`,
 
   /* What I share: a video, a reel (the camera), a post and the newsletter with its podcast (the waveform), fanned like cards in a hand. */
   channels: `
@@ -297,9 +284,9 @@ export const SECTION_SCENES = {
     <path class="pa-accent" ${d(3)} d="M384 106L340 92"/>
     ${agent(388, 80, 4)}`,
 
-  /* Three steps, once: download the zip, add it to Claude, say what you want; each step a card in the order of the tiles. */
+  /* Three steps, once: download the zip, add it to Claude, say what you want; each step a card in the order of the tiles.  Each card names its step in words, not bars (L-89 proposal 8). */
   threeSteps: `
-    <rect class="pa-card" x="24" y="36" width="120" height="128" rx="14"/><path class="pa-title pa-thin" d="M42 134h60"/><path class="pa-line" d="M42 150h44"/><rect class="pa-card" x="180" y="36" width="120" height="128" rx="14"/><path class="pa-title pa-thin" d="M198 134h52"/><path class="pa-line" d="M198 150h56"/><rect class="pa-card" x="336" y="36" width="120" height="128" rx="14"/><path class="pa-title pa-thin" d="M354 134h70"/><path class="pa-line" d="M354 150h40"/>
+    <rect class="pa-card" x="24" y="36" width="120" height="128" rx="14"/><text class="pa-mono" x="84" y="146" text-anchor="middle">download</text><rect class="pa-card" x="180" y="36" width="120" height="128" rx="14"/><text class="pa-mono" x="240" y="146" text-anchor="middle">add to Claude</text><rect class="pa-card" x="336" y="36" width="120" height="128" rx="14"/><text class="pa-mono" x="396" y="146" text-anchor="middle">ask</text>
     <rect class="pa-fill" ${p(0)} x="62" y="58" width="44" height="50" rx="8"/><path class="pa-on-fill pa-glyph" d="M84 68v24M76 84l8 8 8-8M74 100h20"/>
     <path class="pa-accent" ${d(1)} d="M148 100h28M170 94l6 6-6 6"/>
     <rect class="pa-chip" ${p(2)} x="206" y="60" width="68" height="48" rx="8"/><path class="pa-stroke" d="M206 72h68"/><path class="pa-accent pa-glyph" d="M240 100V80M232 88l8-8 8 8"/>
@@ -338,21 +325,21 @@ export const SECTION_SCENES = {
     <rect class="pa-soft pa-edge" x="216" y="34" width="56" height="24" rx="12"/><rect class="pa-soft pa-edge" x="280" y="34" width="56" height="24" rx="12"/>
     <rect class="pa-soft pa-edge" x="356" y="34" width="88" height="24" rx="12"/><path class="pa-line" d="M370 46h30"/><path class="pa-accent pa-glyph" ${d(1)} d="M418 43l5 5 5-5"/>
     <rect class="pa-card" ${p(2)} x="24" y="84" width="210" height="40" rx="10"/><rect class="pa-chip" x="36" y="94" width="20" height="20" rx="6"/><path class="pa-title pa-thin" d="M68 99h96"/><path class="pa-line" d="M68 112h64"/><rect class="pa-card" ${p(3)} x="246" y="84" width="210" height="40" rx="10"/><rect class="pa-chip" x="258" y="94" width="20" height="20" rx="6"/><path class="pa-title pa-thin" d="M290 99h80"/><path class="pa-line" d="M290 112h72"/><rect class="pa-card" ${p(4)} x="24" y="132" width="210" height="40" rx="10"/><rect class="pa-chip" x="36" y="142" width="20" height="20" rx="6"/><path class="pa-title pa-thin" d="M68 147h104"/><path class="pa-line" d="M68 160h56"/><rect class="pa-dashed" x="246" y="132" width="210" height="40" rx="10"/>`,
-  /* Three things I will not trade away, as three cards with the same icons as the cards below them (trust: a shield; the system: a package; accessible by default), outlined as the cards draw them (eighth review, 27 November 2026: the strip drew other signs, filled). */
+  /* Three things I will not trade away, as three cards with the same icons as the cards below them (trust: a shield; the system: a package; accessible by default), outlined as the cards draw them (eighth review, 27 November 2026: the strip drew other signs, filled).  Each card names its principle in a word, not bars (L-89 proposal 8). */
   principles: `
-    <rect class="pa-card" ${p(0)} x="20" y="24" width="132" height="152" rx="14"/><rect class="pa-play pa-edge" x="54" y="40" width="64" height="64" rx="16"/>${icon('shield', 66, 52, 40)}<path class="pa-title pa-thin" d="M46 128h80"/><path class="pa-line" ${d(1)} d="M54 148h64"/>
-    <rect class="pa-card" ${p(2)} x="174" y="24" width="132" height="152" rx="14"/><rect class="pa-play pa-edge" x="208" y="40" width="64" height="64" rx="16"/>${icon('package', 220, 52, 40)}<path class="pa-title pa-thin" d="M200 128h80"/><path class="pa-line" ${d(3)} d="M208 148h64"/>
-    <rect class="pa-card" ${p(4)} x="328" y="24" width="132" height="152" rx="14"/><rect class="pa-play pa-edge" x="362" y="40" width="64" height="64" rx="16"/>${icon('accessibility', 374, 52, 40)}<path class="pa-title pa-thin" d="M354 128h80"/><path class="pa-line" ${d(5)} d="M362 148h64"/>
+    <rect class="pa-card" ${p(0)} x="20" y="24" width="132" height="152" rx="14"/><rect class="pa-play pa-edge" x="54" y="40" width="64" height="64" rx="16"/>${icon('shield', 66, 52, 40)}<text class="pa-mono" x="86" y="140" text-anchor="middle">trust</text>
+    <rect class="pa-card" ${p(2)} x="174" y="24" width="132" height="152" rx="14"/><rect class="pa-play pa-edge" x="208" y="40" width="64" height="64" rx="16"/>${icon('package', 220, 52, 40)}<text class="pa-mono" x="240" y="140" text-anchor="middle">the system</text>
+    <rect class="pa-card" ${p(4)} x="328" y="24" width="132" height="152" rx="14"/><rect class="pa-play pa-edge" x="362" y="40" width="64" height="64" rx="16"/>${icon('accessibility', 374, 52, 40)}<text class="pa-mono" x="394" y="140" text-anchor="middle">accessible</text>
     `,
 
-  /* What I bring to a product team: the six areas as tiles in the order of the cards below, each with the same icon as its card (AI product design, enterprise UX, design systems, research, interaction, leadership), outlined as the cards draw them, the first, my lead area, edged in the link colour. */
+  /* What I bring to a product team: the six areas as tiles in the order of the cards below, each with the same icon as its card (AI product design, enterprise UX, design systems, research, interaction, leadership), outlined as the cards draw them, the first, my lead area, edged in the link colour.  Each tile shows its icon over the area's name, not bars (L-89 proposal 8). */
   expertise: `
-    <rect class="pa-chip" ${p(0)} x="20" y="28" width="136" height="64" rx="14"/><rect class="pa-play pa-edge" x="32" y="42" width="36" height="36" rx="10"/>${icon('sparkles', 40, 50, 20)}<path class="pa-title pa-thin" d="M80 54h56"/><path class="pa-line" d="M80 72h42"/>
-    <rect class="pa-card" ${p(1)} x="172" y="28" width="136" height="64" rx="14"/><rect class="pa-play pa-edge" x="184" y="42" width="36" height="36" rx="10"/>${icon('layout-dashboard', 192, 50, 20)}<path class="pa-title pa-thin" d="M232 54h56"/><path class="pa-line" d="M232 72h48"/>
-    <rect class="pa-card" ${p(2)} x="324" y="28" width="136" height="64" rx="14"/><rect class="pa-play pa-edge" x="336" y="42" width="36" height="36" rx="10"/>${icon('swatch-book', 344, 50, 20)}<path class="pa-title pa-thin" d="M384 54h56"/><path class="pa-line" d="M384 72h40"/>
-    <rect class="pa-card" ${p(3)} x="20" y="108" width="136" height="64" rx="14"/><rect class="pa-play pa-edge" x="32" y="122" width="36" height="36" rx="10"/>${icon('target', 40, 130, 20)}<path class="pa-title pa-thin" d="M80 134h56"/><path class="pa-line" d="M80 152h46"/>
-    <rect class="pa-card" ${p(4)} x="172" y="108" width="136" height="64" rx="14"/><rect class="pa-play pa-edge" x="184" y="122" width="36" height="36" rx="10"/>${icon('pen-tool', 192, 130, 20)}<path class="pa-title pa-thin" d="M232 134h56"/><path class="pa-line" d="M232 152h38"/>
-    <rect class="pa-card" ${p(5)} x="324" y="108" width="136" height="64" rx="14"/><rect class="pa-play pa-edge" x="336" y="122" width="36" height="36" rx="10"/>${icon('users', 344, 130, 20)}<path class="pa-title pa-thin" d="M384 134h56"/><path class="pa-line" d="M384 152h44"/>`,
+    <rect class="pa-chip" ${p(0)} x="20" y="28" width="136" height="64" rx="14"/>${icon('sparkles', 77, 38, 22)}<text class="pa-mono" x="88" y="80" text-anchor="middle">AI product</text>
+    <rect class="pa-card" ${p(1)} x="172" y="28" width="136" height="64" rx="14"/>${icon('layout-dashboard', 229, 38, 22)}<text class="pa-mono" x="240" y="80" text-anchor="middle">Enterprise UX</text>
+    <rect class="pa-card" ${p(2)} x="324" y="28" width="136" height="64" rx="14"/>${icon('swatch-book', 381, 38, 22)}<text class="pa-mono" x="392" y="80" text-anchor="middle">Design systems</text>
+    <rect class="pa-card" ${p(3)} x="20" y="108" width="136" height="64" rx="14"/>${icon('target', 77, 118, 22)}<text class="pa-mono" x="88" y="160" text-anchor="middle">Research</text>
+    <rect class="pa-card" ${p(4)} x="172" y="108" width="136" height="64" rx="14"/>${icon('pen-tool', 229, 118, 22)}<text class="pa-mono" x="240" y="160" text-anchor="middle">Interaction</text>
+    <rect class="pa-card" ${p(5)} x="324" y="108" width="136" height="64" rx="14"/>${icon('users', 381, 118, 22)}<text class="pa-mono" x="392" y="160" text-anchor="middle">Leadership</text>`,
 
   /* How I work with AI, its five steps in order with the same icons as the cards below (understand the workflow, redesign it, build it with AI, validate it with people, design for both users), outlined at the cards' stroke and numbered as the cards are, the last, both users, edged in the link colour (tenth review, 27 November 2026: filled figures above outline icons). */
   aiMethod: `
@@ -442,6 +429,67 @@ export const SECTION_SCENES = {
     <path class="pa-ok" d="M272 86l4 4 8-8"/><text class="pa-mono" x="296" y="91">scripts/</text>
     <path class="pa-ok" d="M272 118l4 4 8-8"/><text class="pa-mono" x="296" y="123">images</text>
     <circle class="pa-fill pa-rim" ${p(5)} cx="278" cy="150" r="10"/><path class="pa-on-fill pa-glyph" d="M278 145v5M278 155v.5"/><text class="pa-mono" x="296" y="155">network calls?</text>`,
+  /* Every role, with what it shipped (/job/experience; owner's choice, 27 November 2026, L-89 proposal 4, so the hiring site does not repeat About's company line): the seven roles at five companies (profile.json) on a rail, the current one lit, beside the screens they shipped, the front one checked. */
+  careerRoles: `
+    <rect class="pa-card" ${p(0)} x="24" y="20" width="252" height="160" rx="14"/><text class="pa-mono" x="44" y="46">7 roles · 5 companies</text>
+    <path class="pa-stroke" ${d(1)} d="M52 66v100"/><circle class="pa-fill pa-rim" cx="52" cy="66" r="6"/><path class="pa-title pa-thin" d="M68 66h120"/><circle class="pa-soft pa-edge" cx="52" cy="83" r="4"/><path class="pa-line" d="M68 83h96"/><circle class="pa-soft pa-edge" cx="52" cy="100" r="4"/><path class="pa-line" d="M68 100h84"/><circle class="pa-soft pa-edge" cx="52" cy="117" r="4"/><path class="pa-line" d="M68 117h104"/><circle class="pa-soft pa-edge" cx="52" cy="134" r="4"/><path class="pa-line" d="M68 134h72"/><circle class="pa-soft pa-edge" cx="52" cy="151" r="4"/><path class="pa-line" d="M68 151h90"/><circle class="pa-soft pa-edge" cx="52" cy="166" r="4"/><path class="pa-line" d="M68 166h64"/>
+    <text class="pa-mono" x="300" y="46">shipped</text>
+    <rect class="pa-card" ${p(2)} x="300" y="58" width="120" height="76" rx="10"/><path class="pa-line" d="M312 74h56"/><rect class="pa-soft pa-edge" x="312" y="86" width="96" height="34" rx="6"/>
+    <rect class="pa-card" ${p(3)} x="322" y="84" width="120" height="76" rx="10"/><path class="pa-line" d="M334 100h60"/><rect class="pa-soft pa-edge" x="334" y="112" width="96" height="34" rx="6"/>
+    <rect class="pa-chip" ${p(4)} x="344" y="104" width="112" height="72" rx="10"/><path class="pa-title pa-thin" d="M356 122h56"/><path class="pa-ok" d="M358 148l5 5 10-10"/><path class="pa-line" d="M382 150h56"/>`,
+  /* Certifications as credentials, for the hiring site (/job/experience; L-89 proposal 4): the verified one with its seal and the one in progress with its ring, by issuer as certifications/ lists them. */
+  certsCredentials: `
+    <rect class="pa-card" ${p(0)} x="24" y="26" width="432" height="68" rx="14"/><circle class="pa-fill pa-rim" cx="62" cy="60" r="18"/><path class="pa-on-fill pa-glyph" d="M54 60l5 5 11-11"/>
+    <text class="pa-mono" x="94" y="54">Anthropic</text><path class="pa-line" d="M94 72h132"/>
+    <rect class="pa-chip" x="332" y="46" width="104" height="28" rx="14"/><path class="pa-ok" d="M346 60l4 4 8-8"/><text class="pa-mono" x="366" y="65">verified</text>
+    <rect class="pa-card" ${p(1)} x="24" y="108" width="432" height="68" rx="14"/><circle class="pa-play pa-edge" cx="62" cy="142" r="18"/><circle class="pa-track" cx="62" cy="142" r="10"/><circle class="pa-arc pa-arc-60" ${d(2)} cx="62" cy="142" r="10" transform="rotate(-90 62 142)"/>
+    <text class="pa-mono" x="94" y="136">Google Cloud</text><rect class="pa-soft pa-edge" x="94" y="148" width="132" height="10" rx="5"/><path class="pa-progress" ${d(3)} d="M99 153h56"/>
+    <text class="pa-mono" x="340" y="147">in progress</text>`,
+  /* Three things I will not trade away, as a design review on the hiring site (/job/experience; L-89 proposal 4): each principle a line of the checklist with its card's icon, each ticked. */
+  principlesReview: `
+    <rect class="pa-card" ${p(0)} x="60" y="18" width="360" height="164" rx="16"/><text class="pa-mono" x="84" y="46">design review</text><circle class="pa-fill pa-rim" cx="392" cy="40" r="11"/><path class="pa-on-fill pa-glyph" d="M386 40l4 4 8-8"/>
+    <rect class="pa-play pa-edge" x="84" y="62" width="30" height="30" rx="8"/>${icon('shield', 90, 68, 18)}<path class="pa-title pa-thin" d="M128 73h150"/><path class="pa-line" d="M128 86h96"/><path class="pa-ok" ${d(1)} d="M378 77l5 5 10-10"/>
+    <rect class="pa-play pa-edge" x="84" y="100" width="30" height="30" rx="8"/>${icon('package', 90, 106, 18)}<path class="pa-title pa-thin" d="M128 111h136"/><path class="pa-line" d="M128 124h110"/><path class="pa-ok" ${d(2)} d="M378 115l5 5 10-10"/>
+    <rect class="pa-play pa-edge" x="84" y="138" width="30" height="30" rx="8"/>${icon('accessibility', 90, 144, 18)}<path class="pa-title pa-thin" d="M128 149h124"/><path class="pa-line" d="M128 162h84"/><path class="pa-ok" ${d(3)} d="M378 153l5 5 10-10"/>`,
+  /* How I work with AI on the hiring site (/job/experience; L-89 proposal 4): the five steps on a loop, since the last, design for both users, starts the next round; the same icons as the cards below. */
+  aiMethodLoop: `
+    <ellipse class="pa-accent pa-loop" ${d(0)} cx="240" cy="100" rx="150" ry="62"/>
+    <rect class="pa-card" ${p(1)} x="216" y="16" width="48" height="48" rx="14"/>${icon('search', 228, 28, 24)}
+    <rect class="pa-card" ${p(2)} x="348" y="54" width="48" height="48" rx="14"/>${icon('pencil-line', 360, 66, 24)}
+    <rect class="pa-card" ${p(3)} x="302" y="130" width="48" height="48" rx="14"/>${icon('sparkles', 314, 142, 24)}
+    <rect class="pa-card" ${p(4)} x="130" y="130" width="48" height="48" rx="14"/>${icon('users', 142, 142, 24)}
+    <rect class="pa-chip" ${p(5)} x="84" y="54" width="48" height="48" rx="14"/>${icon('person-agent', 96, 66, 24)}
+    <text class="pa-mono" x="240" y="106" text-anchor="middle">and again</text>`,
+  /* Three things I will not trade away, for clients (/clients/about; L-89 proposal 4): a signed page of what a client can count on, each line with its principle's icon, sealed. */
+  principlesPledge: `
+    <rect class="pa-card" ${p(0)} x="110" y="14" width="260" height="172" rx="14"/><text class="pa-mono" x="132" y="42">what you can count on</text>
+    ${icon('shield', 132, 58, 18)}<path class="pa-line" d="M160 67h150"/>
+    ${icon('package', 132, 88, 18)}<path class="pa-line" d="M160 97h132"/>
+    ${icon('accessibility', 132, 118, 18)}<path class="pa-line" d="M160 127h140"/>
+    <path class="pa-accent" ${d(1)} d="M134 160c10-14 18-14 22 0s14 10 22-4 16-6 22 4"/><path class="pa-stroke" d="M132 172h110"/><circle class="pa-fill pa-rim" ${p(2)} cx="336" cy="158" r="14"/><path class="pa-on-fill pa-glyph" d="M329 158l5 5 10-10"/>`,
+  /* What I bring to a product team, for clients (/clients/about; L-89 proposal 4): the six areas, with their cards' icons, all feeding one product, as a client gets them from one designer. */
+  expertiseHub: `
+    <rect class="pa-chip" ${p(0)} x="176" y="52" width="128" height="96" rx="14"/><rect class="pa-fill" x="176" y="52" width="128" height="20" rx="10"/><path class="pa-fill" d="M176 62h128v10H176z"/><path class="pa-title pa-thin" d="M192 92h72"/><path class="pa-line" d="M192 110h92M192 126h64"/>
+    <path class="pa-stroke" d="M84 44C140 44 150 100 176 100"/><rect class="pa-card" ${p(1)} x="40" y="22" width="44" height="44" rx="12"/>${icon('sparkles', 51, 33, 22)}
+    <path class="pa-stroke" d="M84 100C140 100 150 100 176 100"/><rect class="pa-card" ${p(2)} x="40" y="78" width="44" height="44" rx="12"/>${icon('layout-dashboard', 51, 89, 22)}
+    <path class="pa-stroke" d="M84 156C140 156 150 100 176 100"/><rect class="pa-card" ${p(3)} x="40" y="134" width="44" height="44" rx="12"/>${icon('swatch-book', 51, 145, 22)}
+    <path class="pa-stroke" d="M396 44C340 44 330 100 304 100"/><rect class="pa-card" ${p(4)} x="396" y="22" width="44" height="44" rx="12"/>${icon('target', 407, 33, 22)}
+    <path class="pa-stroke" d="M396 100C340 100 330 100 304 100"/><rect class="pa-card" ${p(5)} x="396" y="78" width="44" height="44" rx="12"/>${icon('pen-tool', 407, 89, 22)}
+    <path class="pa-stroke" d="M396 156C340 156 330 100 304 100"/><rect class="pa-card" ${p(6)} x="396" y="134" width="44" height="44" rx="12"/>${icon('users', 407, 145, 22)}`,
+  /* How I work with AI, for clients (/clients/about; L-89 proposal 4): the five steps as a project plan, each starting while the one before is under way, the last, design for both users, carried to the end; the cards' icons; no dates, which belong to each engagement. */
+  aiMethodPlan: `
+    <path class="pa-stroke pa-faint" d="M80 22v164M150 22v164M220 22v164M290 22v164M360 22v164M430 22v164"/>
+    <rect class="pa-play pa-edge" x="28" y="26" width="28" height="28" rx="8"/>${icon('search', 33, 31, 18)}<rect class="pa-soft pa-edge" ${p(0)} x="80" y="32" width="130" height="16" rx="8"/>
+    <rect class="pa-play pa-edge" x="28" y="58" width="28" height="28" rx="8"/>${icon('pencil-line', 33, 63, 18)}<rect class="pa-soft pa-edge" ${p(1)} x="140" y="64" width="130" height="16" rx="8"/>
+    <rect class="pa-play pa-edge" x="28" y="90" width="28" height="28" rx="8"/>${icon('sparkles', 33, 95, 18)}<rect class="pa-soft pa-edge" ${p(2)} x="200" y="96" width="130" height="16" rx="8"/>
+    <rect class="pa-play pa-edge" x="28" y="122" width="28" height="28" rx="8"/>${icon('users', 33, 127, 18)}<rect class="pa-soft pa-edge" ${p(3)} x="260" y="128" width="130" height="16" rx="8"/>
+    <rect class="pa-play pa-edge" x="28" y="154" width="28" height="28" rx="8"/>${icon('person-agent', 33, 159, 18)}<rect class="pa-fill" ${p(4)} x="320" y="160" width="160" height="16" rx="8"/>`,
+  /* Certifications for clients (/clients/about; L-89 proposal 4): two badges by issuer, the verified one sealed with its ribbons, the one in progress a ring part way round. */
+  certsBadges: `
+    <path class="pa-fill" d="M144 112l-10 38 15-7 10 12 5-40zM176 112l10 38-15-7-10 12-5-40z"/><circle class="pa-chip" ${p(0)} cx="160" cy="74" r="50"/><circle class="pa-fill pa-rim" cx="160" cy="74" r="30"/><path class="pa-on-fill pa-glyph" d="M147 74l9 9 17-17"/>
+    <text class="pa-mono" x="160" y="170" text-anchor="middle">Anthropic</text><text class="pa-mono" x="160" y="186" text-anchor="middle">verified</text>
+    <circle class="pa-play pa-edge" ${p(1)} cx="328" cy="74" r="50"/><circle class="pa-track" cx="328" cy="74" r="32"/><circle class="pa-arc pa-arc-60" ${d(2)} cx="328" cy="74" r="32" transform="rotate(-90 328 74)"/>
+    <text class="pa-mono" x="328" y="170" text-anchor="middle">Google Cloud</text><text class="pa-mono" x="328" y="186" text-anchor="middle">in progress</text>`,
 } as const;
 
 export type SectionSceneName = keyof typeof SECTION_SCENES;
