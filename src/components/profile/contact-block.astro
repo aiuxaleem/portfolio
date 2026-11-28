@@ -30,7 +30,7 @@ const endpoint = formEndpoint || (process.env.QUALITY_BUILD === '1' ? 'https://f
 const steps = [
   { title: 'Write or book', body: 'Send a message here, email me, or book a 15-\u2060minute call at a time that suits you.' },
   { title: 'I reply within 48 hours', body: 'To the address you gave, on GCC working hours.' },
-  { title: 'A short first call', body: 'Fifteen minutes to see whether the role or the project fits, before anyone commits more time.' },
+  { title: 'A short first call', body: `Fifteen minutes to see whether ${topic === 'project' ? 'the project' : topic === 'role' ? 'the role' : 'the role or the project'} fits, before anyone commits more time.` }, /* by audience (L-95) */
 ];
 const elsewhere = [
   { label: 'LinkedIn', href: site.socials.linkedin },
@@ -58,7 +58,7 @@ const elsewhere = [
       </div>
       <dl class="facts">
         <div><dt>Based in</dt><dd>{site.location}</dd></div>
-        <div><dt>Availability</dt><dd>{site.availability.label}</dd></div>
+        {topic !== 'project' && <div><dt>Availability</dt><dd>{site.availability.label}</dd></div>} {/* relocation is about a role, not a client's project (L-95) */}
         {elsewhere.length > 0 && <div><dt>Elsewhere</dt><dd class="contact-block-links">{elsewhere.map(l => <a data-link href={l.href} target="_blank" rel="noopener">{l.label}<span class="cory-visually-hidden"> (opens in a new tab)</span></a>)}</dd></div>}
       </dl>
     </div>

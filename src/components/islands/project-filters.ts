@@ -37,7 +37,7 @@ if (bar && list) {
     const active = tags.length > 0 || statuses.length > 0 || !!q;
     const noun = `${bar.dataset.noun || 'project'}${items.length === 1 ? '' : 's'}`;
     if (count) count.textContent = PAGE
-      ? (active || visible < shown ? `Showing ${visible} of ${shown}${active ? ' matching' : ''} ${noun}` : `${shown} ${noun}`)
+      ? (visible < shown ? `Showing ${visible} of ${shown}${active ? ` matching ${noun} (${items.length} in all)` : ` ${noun}`}` : active ? `Showing ${visible} of ${items.length} ${noun}` : `${shown} ${noun}`) /* out of the whole list, not of the matches alone (L-95) */
       : (active ? `Showing ${shown} of ${items.length} ${noun}` : `${items.length} ${noun}`);
     if (barClear) barClear.hidden = !active || shown === 0;
     if (empty) empty.hidden = shown !== 0;

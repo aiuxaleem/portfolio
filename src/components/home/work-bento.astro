@@ -167,7 +167,7 @@ const icon = (k: keyof typeof icons) => `<svg width="20" height="20" viewBox="0 
   .wb-index { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-2); font-size: var(--text-body-sm); line-height: var(--leading-normal); color: var(--text-body); }
   .wb-also { display: grid; gap: var(--space-2); }
   .wb-also > p { margin: 0; font-size: var(--text-caption); color: var(--text-subtle); }
-  .wb-index li { padding-block-start: var(--space-2); border-block-start: 1px solid var(--border-subtle); overflow-wrap: anywhere; }
+  .wb-index li { overflow-wrap: anywhere; } /* no rule lines: they made the names read as links in a card that has one link (L-95) */
 
   /* Claude skills: a line a visitor can say, from the newest skill's own triggers. */
   .wb-say { margin: 0; display: grid; gap: var(--space-2); justify-items: start; }

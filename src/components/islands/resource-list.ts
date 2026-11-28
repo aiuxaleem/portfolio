@@ -52,8 +52,8 @@ if (bar && list) {
     const shown = matching.length;
     const active = chosen.some(g => g.values.length > 0) || words.length > 0;
     describe();
-    const noun = shown === 1 ? 'resource' : 'resources';
-    if (count) count.textContent = active || visible.length < shown ? `Showing ${visible.length} of ${shown}${active ? ' matching' : ''} ${noun}` : `${shown} ${noun}`;
+    const noun = items.length === 1 ? 'resource' : 'resources';
+    if (count) count.textContent = visible.length < shown ? `Showing ${visible.length} of ${shown}${active ? ` matching ${noun} (${items.length} in all)` : ` ${noun}`}` : active ? `Showing ${visible.length} of ${items.length} ${noun}` : `${shown} ${noun}`; /* out of the whole list (L-95) */
     if (barClear) barClear.hidden = !active || shown === 0;
     if (empty) empty.hidden = shown !== 0;
     list.hidden = shown === 0;

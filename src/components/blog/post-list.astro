@@ -42,7 +42,7 @@ import HeroArt from '../art/hero-art.astro';
       {/* More than six topics fold into the closed disclosure the UX Library uses, so the first post stays near the top on a
           phone; on a topic's own page it is open, with that topic marked. */}
       {tags.length > 6 && (
-        <details class="resource-disclosure post-topics" open={!!tag}>
+        <details class="resource-disclosure post-topics"> {/* folded on a tag page too: open, its 13 topics pushed the posts a screen down on a phone; the summary names the topic (L-95) */}
           <summary><span class="project-filter-label" style="flex-basis: auto; margin: 0;">Topic</span><span data-disclosure-state>{tag ? `Showing: ${tag}` : `${tags.length} to choose from`}</span><svg data-chevron width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></summary>
           <nav class="post-tags post-topics-body" aria-label="Topics">
             <ul>{tags.map(t => <li><a class="ui-chip" href={`/blog/tag/${tagSlug(t.tag)}`} aria-current={tag && tagSlug(t.tag) === tagSlug(tag) ? 'page' : undefined}>{t.tag}<span class="cory-visually-hidden">, </span><span class="chip-n">{t.n}</span></a></li>)}</ul>

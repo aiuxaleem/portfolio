@@ -18,7 +18,7 @@ const { items } = Astro.props;
   .lp-faq { display: grid; border-block-start: 1px solid var(--border-default); }
   /* 4 px around each question, so two closed questions keep 8 px between their targets (2.4, L-74); the question keeps its height. */
   .lp-faq-item { padding-block: var(--space-1); border-block-end: 1px solid var(--border-default); }
-  .lp-faq-q { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-6); min-block-size: var(--tap-target); padding-block: var(--space-5); cursor: pointer; list-style: none; font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-fluid-h2); line-height: var(--leading-snug); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; }
+  .lp-faq-q { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-6); min-block-size: var(--tap-target); padding-block: var(--space-5); cursor: pointer; list-style: none; font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-h3); line-height: var(--leading-snug); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; } /* a step below the section heading (L-95) */
   .lp-faq-q::-webkit-details-marker { display: none; }
   .lp-faq-q:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 4px; border-radius: var(--radius-sm); }
   .lp-faq-mark { position: relative; inline-size: 44px; block-size: 44px; border-radius: 50%; border: 1px solid var(--border-interactive); transition: background-color var(--duration-base) var(--ease-out), rotate var(--duration-spring-soft) var(--ease-spring-soft); }

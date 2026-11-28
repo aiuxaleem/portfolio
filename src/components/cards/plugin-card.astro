@@ -25,7 +25,7 @@ import { cardIcon, PLUGIN_ICONS } from './card-icons';
     <p class="project-card-summary">{p.description}</p>
     <p class="plugin-install"><span class="plugin-install-label">Install in Claude Code</span><code dir="ltr" lang="en">{p.install}</code></p>
     <p class="project-card-meta">{fresh && <span class="ui-badge" data-tone="success">New</span>}<span class="ui-badge" data-tone={p.official ? 'brand' : undefined}>{p.official ? 'By Anthropic' : 'Partner'}</span><span class="ui-badge">{categoryLabel(p.category)}</span></p>
-    <span class="project-card-cta" aria-hidden="true">See it on <bdi>{host}</bdi> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"></path></svg></span>
+    <span class="project-card-cta" aria-hidden="true">Get it on <bdi>{host}</bdi> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"></path></svg></span>
   </div>
 </article>
 
