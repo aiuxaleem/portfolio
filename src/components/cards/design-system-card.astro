@@ -21,12 +21,15 @@ const links = [
   ...d.ai.map(a => ({ label: a.label, href: a.url })),
 ].filter(Boolean) as { label: string; href: string; title?: string }[];
 import { cardIcon, DS_KIND_ICONS } from './card-icons';
+/* The title may break before an opening "(": its words are joined by no-break spaces, and the chain "System 2 (SLDS 2)"
+   then split before its ")" at 320 px (heuristic review, 28 November 2026, L-94). */
+const titleText = d.title.replace(/\u00A0\(/g, ' (');
 ---
 <article class="tile ds-card" data-project data-status={d.kind} data-tags={d.strengths.join('|')} data-text={[d.title, d.maker, host, d.summary, platforms, ...d.tags].filter(Boolean).join(' ')}>
   <div class="ds-card-head">
     <span class="ds-card-mark" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" focusable="false" set:html={icon} /></span>
     <div class="ds-card-name">
-      <Heading class="ds-card-title">{d.url ? <a href={d.url} target="_blank" rel="noopener">{d.title}<span class="cory-visually-hidden"> (opens {host} in a new tab)</span></a> : d.title}</Heading>
+      <Heading class="ds-card-title">{d.url ? <a href={d.url} target="_blank" rel="noopener">{titleText}<span class="cory-visually-hidden"> (opens {host} in a new tab)</span></a> : d.title}</Heading>
       <p class="case-kicker">{d.maker}{' · '}{kindLabel[d.kind]}</p>
     </div>
   </div>

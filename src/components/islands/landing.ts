@@ -172,6 +172,11 @@ function field(host: HTMLElement, still = false) {
   host.dataset.ready = '';
   /* The headline's words finish rising after the first view's animation; measure them again then. */
   setTimeout(() => { moved = true; if (!raf) draw(); }, 1600);
+  /* And as soon as a word ends its rise and when the fonts have loaded, so the light is never held under where a word was
+     (heuristic review and quality run of 28 November 2026, L-92: between a word's arrival and the 1.6 s measure, the field
+     brightened under "your team." on /clients to 2.31 : 1). */
+  hero.addEventListener('animationend', () => { moved = true; if (!raf) draw(); }); /* the words, the kicker and the foot (the index's numbers) all rise in */
+  document.fonts?.ready.then(() => { moved = true; if (!raf) draw(); });
   raf = requestAnimationFrame(frame);
 }
 

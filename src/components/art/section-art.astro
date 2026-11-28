@@ -25,6 +25,10 @@ const glow = [...name].reduce((a, ch) => a + ch.charCodeAt(0), 0) % 4;
     : <svg viewBox="0 0 480 200" width="480" height="200" focusable="false" set:html={SECTION_SCENES[name]} />}
 </div>
 
+<script>
+  import '../islands/art-play';
+</script>
+
 <style>
   .section-art { display: none; padding: var(--space-4) var(--space-5); }
   @media (min-width: 1024px) { .section-art { display: grid; place-items: center; } .section-art[data-under] { margin-block-start: var(--space-6); } }

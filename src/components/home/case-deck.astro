@@ -33,7 +33,7 @@ const cards = await Promise.all(picked.map(async entry => ({ entry, image: entry
             card, so the stress fixture shows whole (CLAUDE.md 2.3; docs/AUDIT_FINDINGS.md L-33). A card sets no display
             of its own, because the still deck hides its back cards from the stylesheet (components.css); the link fills
             the card by height. */}
-        <ul data-hero-stack={live ? '' : undefined} data-deck-static={live ? undefined : ''} style={`position: relative; display: grid; grid-template-rows: ${live ? 'minmax(0, 1fr)' : 'auto'}; flex: 1 1 auto; min-block-size: 0px; inline-size: 100%; ${live ? 'aspect-ratio: 4 / 5;' : 'block-size: auto;'} padding-block-start: var(--space-6);`}>
+        <ul aria-label="Selected work" data-hero-stack={live ? '' : undefined} data-deck-static={live ? undefined : ''} style={`position: relative; display: grid; grid-template-rows: ${live ? 'minmax(0, 1fr)' : 'auto'}; flex: 1 1 auto; min-block-size: 0px; inline-size: 100%; ${live ? 'aspect-ratio: 4 / 5;' : 'block-size: auto;'} padding-block-start: var(--space-6);`}>
 {cards.map((c, i) => (
 <li data-stack-card="" data-pos={i} aria-hidden={i === 0 ? 'false' : 'true'} style="position: relative; grid-area: 1 / 1; border-radius: var(--radius-xl); overflow: hidden; isolation: isolate; background: var(--gradient-ink); border: 1px solid var(--on-ink-border); box-shadow: var(--shadow-lg);">
               <span aria-hidden="true" style="position: absolute; inline-size: 80%; aspect-ratio: 1 / 1; inset-inline-end: -30%; inset-block-end: -35%; background: var(--glow-cyan); z-index: -1; pointer-events: none;"></span>

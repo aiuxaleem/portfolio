@@ -6,8 +6,8 @@
    styled in hero-art.astro, so both themes work with no colour in this file. Decorative: the page's words carry the meaning.
    With motion on, lines marked data-draw draw themselves and shapes marked data-pop settle in, in the order --i gives, once,
    after the heading (motion.css, .hero-art); otherwise they are drawn whole. */
-const d = (i: number) => `data-draw="" pathLength="1" style="--i:${i}"`;
-const p = (i: number) => `data-pop="" style="--i:${i}"`;
+const d = (i: number) => `data-draw="" pathLength="1" style="--art-i:${i}"`;
+const p = (i: number) => `data-pop="" style="--art-i:${i}"`;
 
 /* A post or article card of the feed: avatar, name, time, two body lines, reactions. */
 const feedCard = (y: number, i: number, badge = false) => `

@@ -10,8 +10,8 @@
    card scrolls into view (motion.css, [data-process] .pr-art); otherwise they are drawn whole. */
 import type { ProcessArt } from '../../lib/process';
 
-const d = (i: number) => `data-draw="" pathLength="1" style="--i:${i}"`;
-const p = (i: number) => `data-pop="" style="--i:${i}"`;
+const d = (i: number) => `data-draw="" pathLength="1" style="--art-i:${i}"`;
+const p = (i: number) => `data-pop="" style="--art-i:${i}"`;
 
 export const PROCESS_ART: Record<ProcessArt, string> = {
   /* Brief and research: a person and the AI agent acting for them, both tied to the journey they share, marked where it breaks. */

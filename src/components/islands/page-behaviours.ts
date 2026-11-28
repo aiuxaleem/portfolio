@@ -14,6 +14,18 @@ if (stack) {
   const [prev, next] = header ? [...header.querySelectorAll<HTMLButtonElement>('button')] : [];
   let front = 0;
   const pad = (n: number) => String(n).padStart(2, '0');
+      /* What the counter says when the deck moves (heuristic review, 28 November 2026, L-94): "02 / 03" on screen, "Case study 2
+       of 3" to a screen reader; on an Arabic page the numbers alone. */
+    const noun = (next.getAttribute('aria-label') || '').replace(/^Next\s+/i, '');
+    const spoken = !document.documentElement.lang.startsWith('ar') && noun;
+    const say = (n: number, total: number) => {
+      if (!counter) return;
+      const seen = document.createElement('span'); seen.textContent = `${pad(n)} / ${pad(total)}`;
+      if (!spoken) { counter.replaceChildren(seen); return; }
+      seen.setAttribute('aria-hidden', 'true');
+      const heard = document.createElement('span'); heard.className = 'cory-visually-hidden'; heard.textContent = `${noun.charAt(0).toUpperCase()}${noun.slice(1)} ${n} of ${total}`;
+      counter.replaceChildren(seen, heard);
+    };
   const paint = () => {
     cards.forEach((card, i) => {
       const pos = (i - front + cards.length) % cards.length;
@@ -21,7 +33,7 @@ if (stack) {
       card.setAttribute('aria-hidden', String(pos !== 0));
       card.querySelector('a')?.setAttribute('tabindex', pos === 0 ? '0' : '-1');
     });
-    if (counter) counter.textContent = `${pad(front + 1)} / ${pad(cards.length)}`;
+    say(front + 1, cards.length);
   };
   /* The back cards' pictures (hidden until a card comes to the front) load once the page has finished, so they never compete
      with the first screen on a slow connection; a click that brings a card forward loads them at once. */
@@ -45,7 +57,7 @@ if (learning) {
     const button = document.createElement('button'); button.type = 'button'; button.className = 'ui-button ui-button-secondary ui-button-md';
     const label = document.createElement('span'); label.className = 'ui-button-label'; button.append(label); wrap.append(button);
     (learning.closest('[data-bento-cq]') || learning).after(wrap);
-    const set = (open: boolean) => { extra.forEach(li => { li.hidden = !open; }); button.setAttribute('aria-expanded', String(open)); label.textContent = open ? 'Show fewer' : `Show ${extra.length} more`; };
+    const set = (open: boolean) => { extra.forEach(li => { li.hidden = !open; }); button.setAttribute('aria-expanded', String(open)); label.textContent = document.documentElement.lang.startsWith('ar') ? (open ? 'عرض أقل' : `عرض ${extra.length} أخرى`) : (open ? 'Show fewer' : `Show ${extra.length} more`); /* Arabic on /ar (L-94) */ };
     button.addEventListener('click', () => { const open = button.getAttribute('aria-expanded') !== 'true'; set(open); if (open) (extra[0].querySelector('a, button') as HTMLElement | null)?.focus(); });
     set(false);
   }

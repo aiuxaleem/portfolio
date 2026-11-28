@@ -325,8 +325,13 @@ main[tabindex] { padding-block-start: 0 !important; }
 body:has([data-site-switch]) [data-hero] { min-block-size: min(calc(100svh - var(--header-height) - var(--tap-target)), 820px) !important; }
 
 /* Measure, corrected for Plus Jakarta Sans: its zero (the ch unit) is ~0.73em, so the system's 68ch/56ch ran 90+ characters a line.
-   54ch / 46ch land at roughly 75 / 65 characters, inside the 45-75 range. */
+   54ch / 46ch were thought to land at roughly 75 / 65 characters; measured, 54ch drew 77 to 91 a line at 16 px (heuristic
+   review, 28 November 2026, L-94), so long-form bodies take 44ch, 75 at most (below); the lead, set larger, keeps 46ch. */
 :root { --measure-body: 54ch; --measure-lead: 46ch; }
+/* Long-form reading (blog posts, case studies, project pages) at 44ch: 54ch drew 77 to 91 characters a line at 16 px, past the
+   45 to 75 of CLAUDE.md 2.8; 44ch holds them to 70 to 75 (heuristic review, 28 November 2026, L-94). Only there: a short
+   paragraph near the top of a page keeps 54ch, so no first screen grows (/job and /sitemap lost their first action at 44ch). */
+:is(.prose, .case-section) { --measure-body: 44ch; }
 /* Any paragraph that doesn't set its own measure (zero specificity, so inline values win) */
 :where(main) :where(p) { max-inline-size: var(--measure-body); }
 

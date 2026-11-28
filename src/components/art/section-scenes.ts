@@ -5,8 +5,8 @@
    (motion.css, .section-art). */
 import { CARD_ICON_PATHS } from '../cards/card-icons';
 
-const d = (i: number) => `data-draw="" pathLength="1" style="--i:${i}"`;
-const p = (i: number) => `data-pop="" style="--i:${i}"`;
+const d = (i: number) => `data-draw="" pathLength="1" style="--art-i:${i}"`;
+const p = (i: number) => `data-pop="" style="--art-i:${i}"`;
 
 /* The AI agent, as on Home's "Two users" and the Process brief: a rounded head with two eyes and an antenna. */
 const agent = (x: number, y: number, i: number) => `

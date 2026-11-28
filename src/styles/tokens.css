@@ -350,8 +350,8 @@
 
   /* --- Gutters & rhythm (fluid; replace the hard-coded 20/28/72–80px) --- */
   --gutter: clamp(16px, 2.5vw, 28px); /* @kind spacing */          /* page edge padding */
-  --grid-gap: clamp(16px, 1.8vw, 24px); /* @kind spacing */        /* card / bento gap */
-  --section-y: clamp(56px, 7vw, 96px); /* @kind spacing */         /* vertical section padding */
+  --grid-gap: clamp(16px, 2.2vw, 32px); /* @kind spacing */        /* card / bento gap */
+  --section-y: clamp(64px, 8vw, 120px); /* @kind spacing */         /* vertical section padding */
   --stack-gap: var(--space-4);                 /* default vertical stack */
 
   /* --- Radius (the logo tile rounds at ~22.7%, soft, friendly) --- */

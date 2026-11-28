@@ -41,7 +41,7 @@ const stack = await moreCases();
   /* Bento: one column on a phone; from 768px two columns, the lead card across both. */
   .case-bento { display: grid; gap: var(--grid-gap); margin: 0; padding: 0; list-style: none; }
   .case-bento > li { display: grid; min-inline-size: 0; }
-  @media (min-width: 768px) { .case-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); } .case-bento-lead { grid-column: 1 / -1; } }
+  @media (min-width: 768px) { .case-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); } .case-bento-lead { grid-column: 1 / -1; } .case-bento > li:last-child:nth-child(even) { grid-column: 1 / -1; } } /* the lead spans the row, so an even count leaves the last card alone: it spans too (L-59; heuristic review, 28 November 2026, L-94) */
 </style>
 
 <script>

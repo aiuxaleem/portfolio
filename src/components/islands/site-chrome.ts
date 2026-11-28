@@ -7,7 +7,7 @@ const root = document.documentElement;
 function paintTheme() {
   const dark = root.getAttribute('data-theme') === 'dark';
   document.querySelectorAll<HTMLElement>('[data-theme-toggle]').forEach(btn => {
-    btn.setAttribute('aria-pressed', String(dark));
+    /* The button names what it will do; no aria-pressed, which contradicted that name (L-94). */
     const label = dark ? btn.dataset.labelLight : btn.dataset.labelDark;
     if (btn.hasAttribute('data-menu-theme')) { const text = btn.querySelector('[data-theme-text]'); if (text && label) text.textContent = label; }
     else if (label) { btn.setAttribute('aria-label', label); btn.title = (dark ? btn.dataset.tipLight : btn.dataset.tipDark) || label; }

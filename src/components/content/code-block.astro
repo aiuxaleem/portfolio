@@ -1,5 +1,10 @@
 ---
 /* Code block: scrolls sideways inside its own box and can be focused so it scrolls from the keyboard. Code stays LTR.
-   The box around it draws a fade at the end edge while there is more to the right (blog.css, .post-code-box). */
+   The box around it draws a fade at the end edge while there is more to the right (blog.css, .post-code-box).
+   A plain-text block (```text) wraps, so it is not a focus stop (heuristic review, 28 November 2026, L-94: 22 unnamed focus
+   stops on one page); a code block that scrolls stays one. Not a named region: several blocks named "Code" on one page broke
+   axe's landmark-unique (the quality run's mobile step, 28 November 2026). */
+const html = await Astro.slots.render('default');
+const prose = html.includes('class="language-text"');
 ---
-<div class="post-code-box"><pre class="post-code" tabindex="0" dir="ltr" lang="en"><slot /></pre></div>
+<div class="post-code-box"><pre class="post-code" tabindex={prose ? undefined : 0} dir="ltr" lang="en" set:html={html} /></div>

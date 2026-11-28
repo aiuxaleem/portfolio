@@ -18,10 +18,11 @@ const glow = [...name].reduce((a, ch) => a + ch.charCodeAt(0), 0) % 4;
 </div>
 
 <style>
-  .hero-art { display: none; padding: var(--space-6); box-shadow: var(--shadow-sm); }
+  .hero-art { display: none; padding: var(--space-6); }
   /* Tablets (third review, 25 November 2026: no drawing showed under 1024 px): the scene under the words, at most its own
      width, where a phone would give it only a sliver. */
-  @media (min-width: 600px) and (max-width: 1023.98px) { .hero-art { display: grid; place-items: center; inline-size: min(100%, 32rem); } }
+  /* Not on a tablet (heuristic review, 28 November 2026, L-94): at 768 px a 397 px drawing pushed the first post off the
+     first screen of /blog; from 1024 px only, as the section drawings. */
   @media (min-width: 1024px) {
     .hero-art { display: grid; place-items: center; align-self: center; }
     /* The words sit level with the scene, so a short head leaves no empty band under its lead (review, 25 November 2026). */

@@ -3,6 +3,13 @@
 /* Section header used on these pages: overline + heading (same values as the home sections). */
 .page-h2 { margin: 0; max-inline-size: 24ch; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-fluid-title); line-height: var(--leading-snug); letter-spacing: var(--tracking-tighter); color: var(--text-strong); text-wrap: balance; }
 .page-section { padding-block: var(--section-y); }
+/* Negative space (owner request, 27 November 2026, L-93): from 1024 px a section's head stands further from the content it
+   introduces, so the two read as a pair and the page breathes between them. */
+@media (min-width: 1024px) { .page-section .page-section-head { margin-block-end: var(--space-4); } }
+/* On a laptop (900 px tall or less) the first screen keeps the tight --section-y it needs to fit (the quality run of 28
+   November 2026 found /sitemap's first action pushed past 720 px when the token grew there), and the sections after it take
+   the room instead (L-93). */
+@media (min-width: 1024px) and (max-height: 900px) { .page-section ~ .page-section { padding-block-start: clamp(var(--space-16), 9vh, var(--space-24)); } .page-section:has(~ .page-section) { padding-block-end: clamp(var(--space-16), 9vh, var(--space-24)); } } /* between sections only: the first section after a hero keeps its top tight, as it may be on the first screen (/sitemap) */
 .page-section[data-surface="card"] { background: var(--surface-glass); border-block: 1px solid var(--border-subtle); }
 .page-section > .cory-container { display: grid; gap: var(--space-10); }
 .page-section-head { display: grid; gap: var(--space-3); }
@@ -49,6 +56,8 @@
   .career-wide .career-roles { display: grid; gap: var(--space-5); max-inline-size: var(--measure-body); }
 }
 .career-side { display: contents; }
+/* The company heading on the type scale (it fell to the browser's 18.72 px, the size of the role under it; L-94). */
+.career-side > :is(h2, h3) { font-size: var(--text-h3); line-height: var(--leading-heading); }
 .career-side-only, .career-rail { display: none; }
 .career-company { display: grid; align-content: start; gap: var(--space-5); padding-inline-start: var(--space-5); border-inline-start: 3px solid var(--border-default); }
 .career-company > h3 { margin: 0; font-family: var(--font-display); font-weight: var(--weight-extrabold); font-size: var(--text-h3); line-height: var(--leading-heading); letter-spacing: var(--tracking-tight); color: var(--text-strong); overflow-wrap: anywhere; }
@@ -123,7 +132,7 @@
 .form-field :is(input, textarea)::placeholder { color: var(--text-subtle); opacity: 1; }
 .form-field textarea { padding: 12px 14px; resize: vertical; }
 /* A menu field (the suggest-a-resource form) takes the same box as a text field, and the browser's own arrow. */
-.form-field select { inline-size: 100%; min-block-size: 44px; padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font-family: var(--font-sans); font-size: var(--text-ui); line-height: var(--leading-normal); }
+.form-field select { inline-size: 100%; min-block-size: 44px; padding: 11px 14px; line-height: var(--leading-normal); min-block-size: calc(var(--leading-normal) * 1em + 24px); /* the text fields' height: Chromium sizes a select by its font, not its line height (L-94) */ border-radius: var(--radius-md); border: 1px solid var(--border-interactive); background: var(--surface-card); color: var(--text-strong); font-family: var(--font-sans); font-size: var(--text-ui); line-height: var(--leading-normal); }
 .form-field select:focus-visible { outline: var(--border-width-strong) solid var(--border-focus); outline-offset: 2px; border-color: var(--border-focus); }
 .form-field select:disabled { cursor: not-allowed; background: var(--surface-sunken); }
 /* On a touch screen a field's text is 16 px: iOS Safari zooms the whole page when a field under 16 px takes focus (mobile test,

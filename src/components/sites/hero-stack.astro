@@ -50,7 +50,7 @@ const arrow = (d: string, size = 20) => `<svg data-dir-icon width="${size}" heig
         </div>
       )}
     </div>
-    <ul id={`${id}-cards`} class="hero-stack-cards" data-hero-stack data-site-stack>
+    <ul id={`${id}-cards`} class="hero-stack-cards" data-hero-stack data-site-stack aria-label={label}>
       {cards.map((c, i) => (
         <li data-stack-card data-pos={i} aria-hidden={i === 0 ? 'false' : 'true'} class="hero-stack-card">
           <span class="hero-stack-card-glow" aria-hidden="true"></span>
@@ -143,6 +143,9 @@ const arrow = (d: string, size = 20) => `<svg data-dir-icon width="${size}" heig
   /* Placed, not sized by its content: the drawing's own 200 px would otherwise push past a shorter slot onto the sheet. */
   .hero-stack-scene > .art-canvas { position: absolute; inset-block: 0; inset-inline-start: 50%; translate: -50% 0; aspect-ratio: 12 / 5; max-inline-size: 100%; padding: var(--space-2) var(--space-3); border-radius: var(--radius-lg); }
   .hero-stack-scene > .art-canvas > svg { inline-size: 100%; block-size: 100%; }
+  /* Frameless, as the other drawings (L-93): no light tile under the card's words in the light theme, where the contrast pass
+     measured the card's text over it at 1.09:1 on hover and focus (/job/resume, quality run of 27 November 2026). */
+  .hero-stack-scene > .art-canvas { background: none; border-color: transparent; }
   @container (max-height: 72px) { .hero-stack-scene > .art-canvas { display: none; } }
   .hero-stack-scene + .hero-stack-sheet { margin-block-start: 0; }
   .hero-stack-bar { display: flex; gap: 6px; align-items: center; padding: 8px 10px; border-block-end: 1px solid var(--border-subtle); background: var(--surface-sunken); }
